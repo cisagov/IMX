@@ -1,0 +1,66 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Configure Windows Registry Value Type</h2>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cancelModal()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body extensions-modal-body">
+        <div class="col-md-12">
+            <span class="tab"></span>
+
+            <div class="row bump">
+                <div class="p-0 col-6">
+                    <div class="input-group mb-2">
+                        <span class="tooltipright input-group-text" [ngClass]="{ 'display-flex mt-1 pe-1': false }">
+                            <b>Name</b>
+                            <span class="float-start icon-height">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"> </fa-icon>
+                                <div class="toolttext">
+                                    Valid reference types in the bundle will be in dropdown -<br />use the box on the right for custom entires.
+                                </div>
+                            </span>
+                        </span>
+                        <input class="form-control" (input)="isAddEnabled()" [(ngModel)]="name" type="text" />
+                    </div>
+                </div>
+                <div class="p-0 col-6">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">
+                            <b>Data</b>
+                        </span>
+                        <input class="form-control" (input)="isAddEnabled()" [(ngModel)]="data" type="text" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row bump">
+                <div class="p-0 col-6">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">
+                            <b>Data Type</b>
+                        </span>
+                        <select type="text" class="form-control form-select" (change)="isAddEnabled()" [(ngModel)]="data_type">
+                            <option value=""></option>
+                            @for (opt of dataOptions; track opt) {
+                                <option [value]="opt">{{ opt }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" aria-label="Close" (click)="cancelModal()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button class="btn btn-sm btn-success btn-windows-key ms-2" [disabled]="!addEnabled" type="button" (click)="onAdd()">
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+            Add
+        </button>
+    </div>
+</div>

@@ -1,0 +1,181 @@
+<div class="main-bg">
+    <div
+        class="container-fluid header-block prod-bg pb-5 .w-100-vw"
+        style="margin-top: 49px"
+        [ngClass]="{ 'dev-bg': environment.environment == 'ten-dev' || environment.environment == 'dev' }"
+    >
+        <canvas baseChart [data]="submissionData" [options]="submissionDataOptions" [type]="chartType"> </canvas>
+    </div>
+    <div class="container-fluid mt-n5 text-break">
+        <div class="row pb-5">
+            <div class="col-2">
+                <div class="container-fluid">
+                    <div class="row dashboard-card side-card">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="side-card-item">
+                                        <div class="mb-3">TAXII Status</div>
+                                        <div class="mb-1">
+                                            @if (stixService.isLoading) {
+                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            }
+                                            @if (!stixService.isLoading && this.stixService.apiRootProcessingError != '') {
+                                                <fa-icon [icon]="faCircle" class="color-red"></fa-icon>
+                                            }
+                                            @if (!stixService.isLoading && this.stixService.apiRootProcessingError == '') {
+                                                <fa-icon [icon]="faCircle" class="color-green"></fa-icon>
+                                            }
+                                        </div>
+                                        <fa-icon
+                                            (click)="serverSettingsChanged(taxiiServerSelection, true)"
+                                            [icon]="faUndo"
+                                            class="bundle-icon mt-1 mb-3"
+                                            [ngClass]="{ 'cursor-pointer': !stixService.isLoading }"
+                                        ></fa-icon>
+
+                                        <select
+                                            [(ngModel)]="taxiiServerSelection"
+                                            [disabled]="stixService.isLoading"
+                                            (ngModelChange)="serverSettingsChanged(taxiiServerSelection, true)"
+                                            class="form-select dashboard-select"
+                                        >
+                                            <option value="default" selected>Default</option>
+                                            <option value="ais">AIS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="side-card-item">
+                                        <div class="mb-3">User</div>
+                                        <fa-icon
+                                            (click)="refresh()"
+                                            [icon]="faUndo"
+                                            class="bundle-icon mb-3"
+                                            [ngClass]="{ 'cursor-pointer': !submissionLoading && !bundleLoading }"
+                                        ></fa-icon>
+                                        <select
+                                            [disabled]="submissionLoading || bundleLoading"
+                                            class="form-control dashboard-select"
+                                            [(ngModel)]="currentSelection"
+                                            (ngModelChange)="getSubmissionData(true)"
+                                        >
+                                            @for (option of selectionOptions; track option; let i = $index) {
+                                                <option [value]="option">
+                                                    {{ option }}
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="side-card-item cursor-pointer" (click)="openModal(newBundle)">
+                                        <div class="mb-3">Start New Report</div>
+                                        <div>
+                                            <fa-icon [icon]="faPlus" class="bundle-icon"></fa-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="side-card-item cursor-pointer" [routerLink]="['/', 'bundle']">
+                                        <div class="mb-3">Continue Report</div>
+                                        <div>
+                                            <fa-icon [icon]="faArrowRight" class="bundle-icon"></fa-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-10">
+                <div class="container-fluid">
+                    <div class="row dashboard-card submission-card">
+                        <div class="col-4 align-self-center">
+                            <div class="row">
+                                <div class="col-4 d-flex justify-content-center align-items-center">
+                                    <fa-icon [icon]="faClock" class="color-yellow"></fa-icon>
+                                </div>
+                                <div class="col-8">
+                                    <div class="d-flex flex-column justify-content-center align-items-center">
+                                        <div class="card-label mb-1">Pending Submissions</div>
+                                        <div class="card-title">
+                                            {{ submissionStatus.pending }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 middle-col align-self-center">
+                            <div class="row">
+                                <div class="col-4 d-flex justify-content-center align-items-center">
+                                    <fa-icon [icon]="faCheck" class="color-green"></fa-icon>
+                                </div>
+                                <div class="col-8">
+                                    <div class="d-flex flex-column justify-content-center align-items-center">
+                                        <div class="card-label mb-1">Completed Submissions</div>
+                                        <div class="card-title">
+                                            {{ submissionStatus.complete }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 align-self-center">
+                            <div class="row">
+                                <div class="col-4 d-flex justify-content-center align-items-center">
+                                    <fa-icon [icon]="faStop" class="color-gray"></fa-icon>
+                                </div>
+                                <div class="col-8">
+                                    <div class="d-flex flex-column justify-content-center align-items-center">
+                                        <div class="card-label mb-1">Total Submissions</div>
+                                        <div class="card-title">
+                                            {{ submissionStatus.total }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <app-submission-component
+                        [currentSelection]="currentSelection"
+                        [submissionLoading]="submissionLoading"
+                        (loadingChange)="updateLoading('submission', $event)"
+                    ></app-submission-component>
+                    <app-bundle-component
+                        [currentSelection]="currentSelection"
+                        [bundleLoading]="bundleLoading"
+                        (loadingChange)="updateLoading('bundle', $event)"
+                    ></app-bundle-component>
+                    <app-misp-submission [selectionOptions]="[]" [userOverride]="true" [user]="currentSelection"></app-misp-submission>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #newBundle let-modal>
+        <div class="modal-header d-flex justify-content-center flex-column">
+            <span class="card-title"> Start a new Report? </span>
+        </div>
+        <div class="modal-body d-flex justify-content-center">
+            <span class="text-center main-text">
+                Please confirm you would like to start a new Report <br />
+                Starting a new Report will delete all contents in the bundle.
+            </span>
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+            <button class="btn btn-outline" (click)="modalService.dismissAll()">Cancel</button>
+            <button class="btn btn-outline-success" (click)="startNewBundle()">Confirm</button>
+        </div>
+    </ng-template>
+</div>

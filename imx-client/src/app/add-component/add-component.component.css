@@ -1,0 +1,111 @@
+.revoke-button {
+    color: white;
+    background-color: rgb(255, 200, 0);
+}
+.revoke-button:hover {
+    background-color: rgb(230, 160, 0);
+}
+
+.identities {
+    min-height: 100px;
+}
+
+.jsonDisplay {
+    box-shadow: 0 0 1px #666 inset;
+    padding-left: 4px;
+}
+
+.loading {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}
+
+.btn-remove {
+    width: 240px;
+}
+
+.btn-revoke {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.btn-cisa {
+    margin-right: 20px;
+}
+
+.component-button {
+    width: 160px;
+    font-size: 16px;
+    height: 35px;
+}
+
+.component-previewer {
+    min-height: 55%;
+    min-height: 55vh;
+    border: 2px solid grey;
+    border-radius: 15px;
+
+    overflow-y: auto;
+}
+
+.component-title {
+    text-transform: capitalize;
+    margin-left: -15px;
+}
+
+.json-previewer-title {
+    font-size: 20px;
+}
+
+.col-xl-12 {
+    padding-left: 65px !important;
+    padding-right: 65px !important;
+}
+
+@media screen and (max-width: 1700px) {
+    .col-xl-12 {
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+    }
+}
+
+pre {
+    border: 50px;
+    -webkit-box-shadow: 0 0 3px #666 inset;
+    -moz-box-shadow: 0 0 3px #666 inset;
+    box-shadow: 0 0 3px #666 inset;
+    line-height: 22px;
+    text-indent: 5px;
+}
+
+.add-btn {
+    background-color: white !important;
+    border-color: #ced4da !important;
+    color: #495057 !important;
+}
+
+.add-btn:hover {
+    background-color: #495057 !important;
+    color: white !important;
+}
+
+.add-btn:active {
+    background-color: #495057 !important;
+    color: white !important;
+    border-color: #ced4da !important;
+}
+
+.fa-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
+.badge-small {
+    font-size: 0.65rem;
+    padding: 0.25em 0.5em;
+}

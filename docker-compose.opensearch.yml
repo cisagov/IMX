@@ -1,0 +1,92 @@
+name: imx
+services:
+  imx-client:
+    container_name: imx-client
+    build:
+      context: .
+      dockerfile: ./imx-client/Dockerfile
+      args:
+        BUILD_ENV: "dev"
+    restart: unless-stopped
+    depends_on:
+      - imx-server
+    networks:
+      - imx
+    volumes:
+      - ./env.json:/usr/share/nginx/html/assets/env.json:ro
+    ports:
+      - 4200:8080
+
+  imx-server:
+    container_name: imx-server
+    build:
+      context: .
+      dockerfile: ./imx-server/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - imx
+    env_file: .env
+    ports:
+      - 3000:3000
+    volumes:
+      - type: tmpfs
+        target: /imx-server/uploads
+        tmpfs:
+          size: 536870912
+          mode: 01777
+
+  imx-py:
+    container_name: imx-py
+    build:
+      context: .
+      dockerfile: ./imx-py/Dockerfile
+    restart: unless-stopped
+    networks:
+      - imx
+    ports:
+      - 5000:5000
+
+  opensearch:
+    container_name: opensearch
+    image: opensearchproject/opensearch:2.14.0
+    restart: unless-stopped
+    mem_limit: 2g
+    networks:
+      - imx
+    environment:
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${DB_PASS}
+      - discovery.type=single-node
+      - path.repo=/opt/snapshots
+      - plugins.security.disabled=true
+      - bootstrap.memory_lock=true
+      - reindex.remote.allowlist=elasticsearch:9200
+    volumes:
+      - imx-os-data:/usr/share/opensearch/data
+      - ./snapshots:/opt/snapshots
+    ports:
+      - 9200:9200
+    healthcheck:
+      test: ["CMD", "curl", "--user", "admin:${DB_PASS}", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  apache-tika:
+    container_name: tika
+    image: apache/tika:3.2.3.0
+    restart: unless-stopped
+    networks:
+      - imx
+
+networks:
+  imx:
+    name: imx
+
+volumes:
+  imx-os-data:
+    driver: local

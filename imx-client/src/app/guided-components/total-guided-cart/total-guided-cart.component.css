@@ -1,0 +1,16 @@
+.btn-cart {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    transition: all 0.2s ease;
+}
+
+.cart-number {
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+    padding: 1px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}

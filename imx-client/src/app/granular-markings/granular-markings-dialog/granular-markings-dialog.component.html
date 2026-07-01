@@ -1,0 +1,159 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>Granular Markings</span>
+        </h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
+        </div>
+
+        @if (isAddingGranularMarkings) {
+            <div class="form-group mt-2 ms-2 me-2">
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
+                                <div id="gmarkings_selectors_title">
+                                    <p class="float-start nowrap pb-no-span">Selectors</p>
+                                    <span class="float-start icon-height tooltipright">
+                                        <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                                        <span class="toolttext fw-normal"
+                                            >ctrl+click to choose multiple selectors.<br />
+                                            The text field displays current selection(s).</span
+                                        >
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <input placeholder="Selectors" class="form-control add-top" [value]="getSelected()" type="text" [disabled]="true" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <select
+                                    id="gmarkings_selectors"
+                                    type="text"
+                                    size="3"
+                                    class="selectpicker form-control form-select add-bottom"
+                                    [(ngModel)]="this.newSelector"
+                                    name="newSelector"
+                                    id="newSelector"
+                                    multiple
+                                    style="height: 125px"
+                                >
+                                    @for (item of stixService.granularMarkingSelectors; track item) {
+                                        <option [value]="item">
+                                            {{ item }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
+                                <div id="gmarkings_lang_title" class="tooltipright">
+                                    <p class="float-start nowrap pb-no-span">Language</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <select
+                                    id="gmarkings_lang"
+                                    type="text"
+                                    class="form-control form-select"
+                                    [ngClass]="{ 'select-placeholder': !this.currentGranularMarking.lang }"
+                                    [(ngModel)]="this.currentGranularMarking.lang"
+                                    [disabled]="this.currentGranularMarking.marking_ref != ''"
+                                >
+                                    <option value="">Language</option>
+                                    @for (lang of this.lang_options; track lang) {
+                                        <option [value]="lang.key">{{ lang.value }}</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
+                                <div id="gmarkings_marking_refs_title">
+                                    <p class="float-start nowrap pb-no-span">Marking Reference</p>
+                                    <span class="float-start icon-height tooltipright">
+                                        <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                                        <span class="toolttext fw-normal"
+                                            >Common references in dropdown -<br />use the box on the right for custom entries.</span
+                                        >
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2 add-left pe-0">
+                                <select
+                                    type="text"
+                                    id="gmarkings_marking_refs_version"
+                                    class="form-control form-select add-left no-border-right"
+                                    (change)="getTlpOptions($event)"
+                                    [disabled]="!isTLPOne || this.currentGranularMarking.lang != ''"
+                                    [(ngModel)]="tlp_version"
+                                >
+                                    <option value=""></option>
+                                    <option value="v1">TLP v1.0</option>
+                                    <option value="v2">TLP v2.0</option>
+                                </select>
+                            </div>
+                            <div class="col-10 add-right ps-0">
+                                <select
+                                    type="text"
+                                    [(ngModel)]="this.currentGranularMarking.marking_ref"
+                                    [ngClass]="{ 'select-placeholder': !this.currentGranularMarking.marking_ref }"
+                                    [disabled]="this.currentGranularMarking.lang != ''"
+                                    id="gmarkings_marking_refs"
+                                    class="form-control form-select add-right"
+                                >
+                                    <option value="">TLP</option>
+                                    @for (tlp of tlp_options; track tlp) {
+                                        <option [value]="tlp.value">
+                                            {{ tlp.key }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="modal-footer d-flex">
+        <button id="gmarkings_cancel" type="button" class="btn btn-sm btn-secondary" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button
+            id="gmarkings_add_button"
+            type="button"
+            class="btn btn-sm btn-color ms-2"
+            (click)="onConfirm()"
+            [disabled]="
+                (this.currentGranularMarking.lang == '' && this.currentGranularMarking.marking_ref == '') ||
+                this.newSelector.length == 0 ||
+                this.newSelector[0] == ''
+            "
+        >
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+            Add
+        </button>
+    </div>
+</div>

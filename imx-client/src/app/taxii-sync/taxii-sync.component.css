@@ -1,0 +1,43 @@
+input::placeholder {
+    color: #adb5bd !important;
+}
+
+label {
+    font-weight: bold;
+    color: #6f6f6f;
+    font-size: 15px;
+}
+
+input {
+    font-size: 15px !important;
+}
+
+option {
+    font-size: 15px !important;
+}
+
+.component-button {
+    font-size: 15px;
+}
+
+.btn-color {
+    background-color: white !important;
+    border-color: #ced4da !important;
+    color: #495057 !important;
+}
+
+.btn-color:hover {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color:focus {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color:active {
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #ced4da !important;
+}

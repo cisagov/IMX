@@ -1,0 +1,77 @@
+<div class="dialog">
+    <div class="modal-header justify-content-between">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>Add Alert Subscription</span>
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div>
+            <div class="input-group mb-3">
+                <span class="input-group-text input-sm" id="taxii-api-root">API Roots</span>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        class="btn btn-outline-primary"
+                        style="height: 31px"
+                        id="sortMenu"
+                        ngbDropdownToggle
+                        [disabled]="stixService.isLoading || stixService?.apiRoots2?.length === 0"
+                    >
+                        @if (taxiiServer?.apiRoot) {
+                            <span>
+                                {{ taxiiServer?.apiRoot }}
+                            </span>
+                        }
+                    </button>
+                    <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                        @for (apiRoot of apiRoots; track apiRoot) {
+                            <button class="dropdown-item" (click)="selectApiRoot(apiRoot)" title="{{ apiRoot?.description }}">
+                                {{ apiRoot.title }}
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text input-sm" id="taxii-collection-id">Collections</span>
+                <div ngbDropdown class="d-inline-block">
+                    <button class="btn btn-outline-primary" style="height: 31px" id="sortMenu" ngbDropdownToggle [disabled]="!taxiiServer.apiRoot">
+                        @if (selectedCollection) {
+                            <span>
+                                {{ selectedCollection?.title }}
+                            </span>
+                        }
+                    </button>
+                    @if (this.selectedAPIRoot) {
+                        <div ngbDropdownMenu class="dropdown-menu collections-dropdown" aria-labelledby="sortMenu">
+                            @for (collection of collections; track collection) {
+                                @if (collection.can_write) {
+                                    <button class="dropdown-item" (click)="onCollectionChanged(collection)" title="{{ collection?.description }}">
+                                        {{ collection.title }}
+                                    </button>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary me-2" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button
+            type="button"
+            class="btn btn-sm btn-primary"
+            (click)="addSub()"
+            [disabled]="selectedAPIRoot == undefined || selectedCollection == undefined"
+        >
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+            Subscription
+        </button>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+.dialog {
+    height: 100%;
+}
+
+.dialog .modal-body {
+    padding: 1rem 1rem;
+}
+
+.dialog .modal-header {
+    padding: 1rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dialog .modal-footer {
+    padding: 1rem 1rem;
+    border-top: 1px solid #dee2e6;
+}

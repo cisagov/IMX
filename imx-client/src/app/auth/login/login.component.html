@@ -1,0 +1,99 @@
+<div class="wrapper fadeInDown">
+    <div id="formContent" [class]="{ errorMessage: !isErrorClosed }">
+        <form (submit)="onSignIn(signInForm)" #signInForm="ngForm" class="p-3">
+            <!-- Icon -->
+            <div class="fadeIn first">
+                <img src="./assets/IMX_Icon_White_NoBackground_resized.png" width="120" height="80" id="icon" alt="User Icon" />
+            </div>
+
+            <!-- Login Form -->
+            <div class="input-group mb-3 mt-5 login-field">
+                <fa-icon [icon]="faUser"></fa-icon>
+                <input
+                    type="email"
+                    ngModel
+                    name="email"
+                    #emailInput="ngModel"
+                    [(ngModel)]="email_address"
+                    email
+                    class="form-control"
+                    placeholder="Enter Email"
+                    aria-label="Email"
+                    aria-describedby="email-address"
+                    [readonly]="isNewUser"
+                />
+            </div>
+
+            <div *ngIf="!isNewUser" class="input-group mb-3 login-field">
+                <fa-icon [icon]="faLock"></fa-icon>
+                <input
+                    type="password"
+                    ngModel
+                    name="password"
+                    #passwordInput="ngModel"
+                    minlength="8"
+                    [(ngModel)]="password"
+                    placeholder="Password"
+                    required
+                    class="form-control t1t-left"
+                    aria-label="Password"
+                    aria-describedby="password"
+                />
+            </div>
+
+            <div *ngIf="isNewUser" class="input-group mb-3">
+                <span class="input-group-text" id="password">Password</span>
+                <input
+                    type="password"
+                    ngModel
+                    name="newPassword"
+                    #newPasswordInput="ngModel"
+                    minlength="8"
+                    [(ngModel)]="newPassword"
+                    placeholder="Set New Password"
+                    required
+                    class="form-control t1t-left"
+                    aria-label="Password"
+                    aria-describedby="password"
+                />
+            </div>
+
+            <div *ngIf="isNewUser" class="input-group mb-3">
+                <span class="input-group-text" id="password">Confirm Password</span>
+                <input
+                    type="password"
+                    ngModel
+                    name="newConfirmPassword"
+                    #newConfirmPasswordInput="ngModel"
+                    minlength="8"
+                    [(ngModel)]="newConfirmPassword"
+                    placeholder="Confirm New Password"
+                    required
+                    class="form-control t1t-left"
+                    aria-label="Password"
+                    aria-describedby="password"
+                />
+            </div>
+
+            <ngb-alert #loginErrorAlert *ngIf="!isErrorClosed" type="danger">
+                {{ errorMessage ? errorMessage : '' }}
+            </ngb-alert>
+
+            <!-- Remind Password -->
+            <div id="formFooter">
+                <button *ngIf="!isNewUser" type="submit" class="form-footer-button">Forgot Password?</button>
+                <button
+                    *ngIf="!isNewUser"
+                    type="submit"
+                    (keydown.enter)="onSignIn(signInForm)"
+                    class="form-footer-button"
+                    [ngClass]="{ footer_button: email_address && password }"
+                    [disabled]="!email_address || !password"
+                >
+                    Login
+                </button>
+                <button *ngIf="isNewUser" type="submit" class="form-footer-button" [disabled]="!newPassword">Set New Password</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,139 @@
+<div class="d-flex flex-column justify-content-start align-items-center content-wrapper">
+    <div class="d-flex flex-row justify-content-around align-items-end gr-top-width">
+        <div class="d-flex align-items-end me-5">
+            <fa-icon class="title-main-size4 pe-1 me-2" [icon]="faClock"></fa-icon>
+            <span class="title-main-size3">WHEN?</span>
+        </div>
+
+        <div class="title-sub-size1-2 mb-3">Let's timestamp this event.</div>
+    </div>
+
+    <div class="horizonal-rule-top"></div>
+
+    <div class="d-flex justify-content-center align-items-start w-100">
+        <div class="mt-5 d-flex flex-column justify-content-start gr-help-section me-3">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="gr-help-section-title">Timing Details</div>
+            <div class="gr-help-section-content">
+                @if (this.guidedService.eventDetails.length !== 0) {
+                    <span>Event Title: Please select the title from the previous step in order to assign Status.<br /><br /></span>
+                }
+                Status: select the current state of the event. Required if previous step provided event details.
+                <br /><br />
+                Time zone: select the time zone where the event occured.
+                <br /><br />
+                Start: select the start time of the event.
+                <br /><br />
+                End: select the end time of the event.
+            </div>
+        </div>
+        <div class="mt-5 d-flex flex-column align-items-center gr-outter-wrapper">
+            <div class="col-12 total-cart-wrapper observable-section px-4 p-2 mt-1">
+                <div class="col-8 float-start"></div>
+                <app-total-guided-cart class="float-end" (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+            </div>
+            @if (guidedService.eventDetails.length !== 0) {
+                <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 position-relative mt-4">
+                    <span class="w-25">Event Title&nbsp;<span class="text-danger">*</span></span>
+                    <select
+                        class="w-100 form-control form-select noborder me-4"
+                        style="width: 98%"
+                        type="text"
+                        [(ngModel)]="selectedEvent"
+                        (change)="checkCart()"
+                    >
+                        <option disabled selected style="color: #91a4bb" value=""></option>
+                        @for (option of guidedService.eventDetails; track option) {
+                            <option>{{ option.name }}</option>
+                        }
+                    </select>
+                </div>
+            }
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 position-relative mt-2">
+                <span class="w-25" title="Number Observed">Status&nbsp;<span class="text-danger">*</span></span>
+                <select
+                    class="w-100 form-control form-select noborder me-4"
+                    style="width: 98%"
+                    type="text"
+                    [(ngModel)]="status"
+                    (change)="checkCart()"
+                    [disabled]="guidedService.eventDetails.length !== 0 && selectedEvent === ''"
+                >
+                    <option disabled selected style="color: #91a4bb" value=""></option>
+                    @for (option of statusOptions; track option) {
+                        <option>{{ option }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 position-relative mt-2">
+                <span class="w-25" title="Time Zone">Time Zone</span>
+                <select
+                    type="text"
+                    class="form-control form-select noborder me-1"
+                    [disabled]="!status"
+                    [style]="{ 'background-color': !status ? '#e9ecef' : null }"
+                    [(ngModel)]="timeZone"
+                    (change)="setTimeZone($event)"
+                >
+                    <option disabled selected style="color: #999" value="">Select Time Zone</option>
+                    @for (tz of timeZones; track tz) {
+                        <option value="{{ tz }}">{{ guidedService.showTimezoneAndOffset(tz) }}</option>
+                    }
+                </select>
+                <span class="position-relative" style="top: 1px; right: 0px">
+                    <fa-icon class="pe-1" style="color: #91a4bb" [icon]="faClock"></fa-icon>
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 position-relative mt-2">
+                <span class="w-25" title="Start Time">Start Time</span>
+                <input
+                    placeholder="Local Start Time"
+                    [disabled]="!status"
+                    class="form-control noborder"
+                    [(ngModel)]="startTime"
+                    id="startTime"
+                    [owlDateTimeTrigger]="grDtPicker"
+                    [owlDateTime]="grDtPicker"
+                    [max]="maxDateTime"
+                />
+                <owl-date-time
+                    pickerMode="dialog"
+                    #grDtPicker
+                    (afterPickerClosed)="selectedTime('startTime')"
+                    (yearSelected)="onYearSelected($event, 'startTime')"
+                ></owl-date-time>
+                <span class="position-relative" style="top: 1px; right: 0px">
+                    <fa-icon class="pe-1 ps-1" style="color: #91a4bb" [icon]="faClock"></fa-icon>
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 position-relative mt-2">
+                <span class="w-25" title="End Time">End Time</span>
+                <input
+                    placeholder="Local End Time"
+                    [disabled]="!status"
+                    class="form-control noborder"
+                    [(ngModel)]="endTime"
+                    id="endTime"
+                    [owlDateTimeTrigger]="grDtPicker2"
+                    [owlDateTime]="grDtPicker2"
+                    [min]="minDateTime"
+                />
+                <owl-date-time
+                    pickerMode="dialog"
+                    #grDtPicker2
+                    (afterPickerClosed)="selectedTime('endTime')"
+                    (yearSelected)="onYearSelected($event, 'endTime')"
+                ></owl-date-time>
+                <span class="position-relative" style="top: 1px">
+                    <fa-icon class="pe-1 ps-1" style="color: #91a4bb" [icon]="faClock"></fa-icon>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

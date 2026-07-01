@@ -1,0 +1,56 @@
+<div>
+    <div class="modal-header d-flex justify-content-start align-items-start pb-0">
+        <div id="sdo-tab" [ngClass]="{ 'object-active': activeTab === 'sdo' }" (click)="changeTab('sdo')" class="object-tab object-active">
+            Domain
+        </div>
+        <div id="sco-tab" [ngClass]="{ 'object-active': activeTab === 'sco' }" (click)="changeTab('sco')" class="object-tab">Cyber Observables</div>
+        <div id="sro-tab" [ngClass]="{ 'object-active': activeTab === 'sro' }" (click)="changeTab('sro')" class="object-tab">Relationship</div>
+        <div id="smo-tab" [ngClass]="{ 'object-active': activeTab === 'smo' }" (click)="changeTab('smo')" class="object-tab">Meta</div>
+        <div id="ico-tab" [ngClass]="{ 'object-active': activeTab === 'ico' }" (click)="changeTab('ico')" class="object-tab">Incident</div>
+        <div id="mbo-tab" [ngClass]="{ 'object-active': activeTab === 'mbo' }" (click)="changeTab('mbo')" class="object-tab">Malware Behavior</div>
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                @for (stixObject of stixObjects; track stixObject; let i = $index) {
+                    @for (object of stixObject.objects; track object) {
+                        @if (object.objectType === activeTab) {
+                            <div class="col-3">
+                                @if (object.objectType !== 'ico' && object.objectType !== 'mbo') {
+                                    <div
+                                        id="{{ object.displayName }}-btn"
+                                        (click)="close()"
+                                        routerLink="/add-component/{{ object.routeName }}"
+                                        class="object-item cursor-pointer"
+                                    >
+                                        {{ object.displayName }}
+                                    </div>
+                                }
+                                @if (object.objectType === 'ico') {
+                                    <div
+                                        id="{{ object.displayName }}-btn"
+                                        (click)="close(object.type)"
+                                        routerLink="/incident-obj"
+                                        class="object-item cursor-pointer"
+                                    >
+                                        {{ object.displayName }}
+                                    </div>
+                                }
+                                @if (object.objectType === 'mbo') {
+                                    <div
+                                        id="{{ object.displayName }}-btn"
+                                        (click)="close(object.type)"
+                                        routerLink="/malware-obj"
+                                        class="object-item cursor-pointer"
+                                    >
+                                        {{ object.displayName }}
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+.card {
+    margin-bottom: auto;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    padding: 20px;
+    box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    text-align: center;
+    width: 200px;
+    height: 200px;
+    border-radius: 20px;
+    font-size: 1.3rem;
+}
+
+.card:hover {
+    box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.object-type-wrapper {
+    border: 1px solid #91a4bb;
+    margin-bottom: auto;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    padding: 20px;
+    box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    text-align: center;
+    width: 330px;
+    height: 330px;
+    border-radius: 20px;
+    font-size: 1.5rem;
+}
+
+.dialog {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.dialog .modal-body {
+    padding: 1rem 1rem;
+}
+
+.dialog .modal-header {
+    padding: 1rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dialog .modal-footer {
+    padding: 1rem 1rem;
+    border-top: 1px solid #dee2e6;
+}

@@ -1,0 +1,145 @@
+<div class="container-flud">
+    <div class="row dashboard-card main-card" [ngClass]="{ 'cursor-spin': isLoading }">
+        <div class="col d-flex flex-column ps-4 pe-4">
+            <div class="card-title card-header pt-3 pb-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <div>MISP Submissions</div>
+                    @if (!userOverride) {
+                        <div>
+                            <select class="form-control form-select" (change)="onUserChange()" [(ngModel)]="currentSelection">
+                                <option [value]="null" selected disabled></option>
+                                <option *ngFor="let option of selectionOptions; let i = index" [value]="option">{{ option }}</option>
+                            </select>
+                        </div>
+                    } @else {
+                        <div>
+                            <fa-icon
+                                [icon]="faUndo"
+                                (click)="onUserChange()"
+                                [ngClass]="{ 'cursor-spin': isLoading }"
+                                class="bundle-icon cursor-pointer"
+                            ></fa-icon>
+                        </div>
+                    }
+                </div>
+            </div>
+            @if (isLoading && mispTable.length == 0) {
+                <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                </div>
+            }
+            @if (!isLoading && mispTable.length == 0) {
+                <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                    <span class="main-text">No submissions found for user {{ currentSelection }}</span>
+                </div>
+            }
+            @if (mispTable.length > 0) {
+                <table class="table justify-self-center table-striped table-hover text-break">
+                    <thead>
+                        <th scope="col" class="pt-3 pb-3">
+                            <span style="cursor: pointer" (click)="sort('userId')">
+                                User ID
+                                <fa-icon *ngIf="sortKey === 'userId-des'" [icon]="faAngleDown"> </fa-icon>
+                                <fa-icon *ngIf="sortKey === 'userId-asc'" [icon]="faAngleUp"> </fa-icon>
+                            </span>
+                        </th>
+                        <th scope="col" class="pt-3 pb-3">
+                            <span style="cursor: pointer" (click)="sort('docName')">
+                                Report Title
+                                <fa-icon *ngIf="sortKey === 'docName-des'" [icon]="faAngleDown"> </fa-icon>
+                                <fa-icon *ngIf="sortKey === 'docName-asc'" [icon]="faAngleUp"> </fa-icon>
+                            </span>
+                        </th>
+                        <th scope="col" class="pt-3 pb-3">
+                            <span style="cursor: pointer" (click)="sort('status')">
+                                Status
+                                <fa-icon *ngIf="sortKey === 'status-des'" [icon]="faAngleDown"> </fa-icon>
+                                <fa-icon *ngIf="sortKey === 'status-asc'" [icon]="faAngleUp"> </fa-icon>
+                            </span>
+                        </th>
+                        <th scope="col" class="pt-3 pb-3">
+                            <span style="cursor: pointer" (click)="sort('submission')">
+                                Submission Date
+                                <fa-icon *ngIf="sortKey === 'submission-des'" [icon]="faAngleDown"> </fa-icon>
+                                <fa-icon *ngIf="sortKey === 'submission-asc'" [icon]="faAngleUp"> </fa-icon>
+                            </span>
+                        </th>
+                        <th scope="col" class="pt-3 pb-3">
+                            <span style="cursor: pointer" (click)="sort('update')">
+                                Last Updated
+                                <fa-icon *ngIf="sortKey === 'update-des'" [icon]="faAngleDown"> </fa-icon>
+                                <fa-icon *ngIf="sortKey === 'update-asc'" [icon]="faAngleUp"> </fa-icon>
+                            </span>
+                        </th>
+                        <th scope="col" class="pt-3 pb-3">
+                            <span style="cursor: pointer" (click)="sort('url')">
+                                MISP URL
+                                <fa-icon *ngIf="sortKey === 'url-des'" [icon]="faAngleDown"> </fa-icon>
+                                <fa-icon *ngIf="sortKey === 'url-asc'" [icon]="faAngleUp"> </fa-icon>
+                            </span>
+                        </th>
+                        <th scope="col" class="pt-3 pb-3">Event</th>
+                        <th scope="col" class="pt-3 pb-3">Actions</th>
+                    </thead>
+                    <tbody>
+                        @for (misp of mispTable; track misp; let i = $index) {
+                            <tr class="cursor-pointer" (click)="openJson($event, misp.misp, misp.docName)">
+                                <td class="pt-3 pb-3 docname">
+                                    {{ misp.user }}
+                                </td>
+                                <td class="pt-3 pb-3">
+                                    {{ misp.docName }}
+                                </td>
+                                <td class="pt-3 pb-3">
+                                    @if (misp.status == 'Success') {
+                                        <fa-icon [icon]="faCheck" class="color-green"></fa-icon>
+                                        Success
+                                    }
+                                    @if (misp.status == 'Pending') {
+                                        <fa-icon [icon]="faClock" class="color-yellow"></fa-icon>
+                                        Pending
+                                    }
+                                    @if (misp.status == 'Duplicate') {
+                                        <fa-icon [icon]="faStop" class="color-yellow"></fa-icon>
+                                        Duplicate
+                                    }
+                                    @if (misp.status == 'Fail') {
+                                        <fa-icon [icon]="faClock" class="color-red"></fa-icon>
+                                        Pending
+                                    }
+                                    @if (!misp.status) {
+                                        <fa-icon [icon]="faStop" class="color-red"></fa-icon>
+                                        Unavailable
+                                    }
+                                </td>
+                                <td class="pt-3 pb-3">
+                                    {{ getDate(misp['@created_timestamp']) }}
+                                </td>
+                                <td class="pt-3 pb-3">
+                                    {{ misp['@updated_timestamp'] ? getDate(misp['@updated_timestamp']) : '' }}
+                                </td>
+                                <td class="pt-3 pb-3">
+                                    {{ misp.url }}
+                                </td>
+                                <td class="pt-3 pb-3 cursor-pointer" (click)="openMispLink($event, misp.url, misp.eventId)">
+                                    <fa-icon [icon]="faExternalLink"></fa-icon>
+                                </td>
+                                <td class="pt-3 pb-3">
+                                    <span
+                                        class="cursor-pointer badge rounded-pill action-btn text-bg-success me-2"
+                                        [ngClass]="{ 'cursor-spin': isLoading }"
+                                        (click)="downloadMisp($event, misp.misp, misp.docName)"
+                                        >Download</span
+                                    >
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            @if (mispHasMore) {
+                <div class="d-flex justify-content-center cursor-pointer" style="font-size: 14px; color: #3c3d40" (click)="getMisp()">Load More</div>
+            }
+        </div>
+    </div>
+</div>

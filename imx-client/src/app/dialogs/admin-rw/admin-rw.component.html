@@ -1,0 +1,133 @@
+<div class="body">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-title">Collection Permission</h4>
+        <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal" (click)="close()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="d-flex flex-column modal-body extensions-modal-body">
+        <label class="item-label">
+            <div class="item-label-title">Title</div>
+            <div class="d-flex item-label-content">
+                @if (newRW) {
+                    <select
+                        class="form-control form-select dropdown input-sm pt-1"
+                        [disabled]="!newRW"
+                        [(ngModel)]="collectionTitle"
+                        (change)="collectionTitleChange($event)"
+                    >
+                        <option value="" selected></option>
+                        @for (c of collectionsList(); track c) {
+                            <option [value]="c['title']">
+                                {{ c['title'] }}
+                            </option>
+                        }
+                    </select>
+                }
+                <input
+                    class="form-control input-sm"
+                    [disabled]="!newRW"
+                    [(ngModel)]="collectionTitle"
+                    type="text"
+                    (change)="collectionTitleChange($event)"
+                />
+            </div>
+        </label>
+
+        <label class="item-label mt-2">
+            <div class="item-label-title">CID</div>
+            <div class="d-flex item-label-content">
+                <input type="text" disabled class="form-control input-sm" [(ngModel)]="rw.cId" />
+            </div>
+        </label>
+
+        <label class="item-label mt-1">
+            <div class="item-label-title">Readable Groups</div>
+            <div class="d-flex mt-2 item-label-content">
+                <select
+                    class="form-control form-select input-sm pt-1"
+                    id="APIRoots"
+                    name="APIRoots"
+                    (change)="selectRole($event, 'reader')"
+                    [(ngModel)]="reader"
+                    [disabled]="disableRW('reader')"
+                >
+                    <option value="undefined" disabled selected>Select Group</option>
+                    @for (role of existingReaderRoles; track role; let i = $index) {
+                        <option [value]="role" title="role">{{ role }}</option>
+                    }
+                </select>
+                <button type="button" class="btn btn-fa-sm btn-primary ms-2" title="Click to add" (click)="addReader()" [disabled]="!reader">
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                </button>
+            </div>
+        </label>
+
+        <div class="left-col">
+            <div class="item-label-title empty-space"></div>
+            <div class="item-list-wrapper">
+                @for (reader of rw?.readers; track reader; let i = $index) {
+                    <div class="media-list-item-wrapper">
+                        <div class="media-list-item-type">{{ reader }}</div>
+                        <fa-icon
+                            title="Click to remove."
+                            class="btn btn-fa-sm btn-danger me-1 fa-trash"
+                            (click)="removeReader(i)"
+                            [icon]="faTrash"
+                        ></fa-icon>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <label class="item-label">
+            <div class="item-label-title">Writable Groups</div>
+            <div class="d-flex mt-2 item-label-content">
+                <select
+                    class="form-control form-select input-sm pt-1"
+                    id="APIRoots"
+                    name="APIRoots"
+                    (change)="selectRole($event, 'writer')"
+                    [(ngModel)]="writer"
+                    [disabled]="disableRW('writer')"
+                >
+                    <option value="undefined" disabled selected>Select Group</option>
+                    @for (role of existingWriterRoles; track role; let i = $index) {
+                        <option [value]="role" title="role">{{ role }}</option>
+                    }
+                </select>
+                <button type="button" class="btn btn-fa-sm btn-primary ms-2" title="Click to add" (click)="addWriter()" [disabled]="!writer">
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                </button>
+            </div>
+        </label>
+
+        <div class="left-col">
+            <div class="item-label-title"></div>
+            <div class="item-list-wrapper">
+                @for (writer of rw?.writers; track writer; let i = $index) {
+                    <div class="media-list-item-wrapper">
+                        <div class="media-list-item-type">{{ writer }}</div>
+                        <fa-icon
+                            title="Click to remove."
+                            class="btn btn-fa-sm btn-danger me-1 fa-trash"
+                            (click)="removeWriter(i)"
+                            [icon]="faTrash"
+                        ></fa-icon>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="item-action">
+            <button type="button" class="btn btn-sm btn-secondary me-3" (click)="close()">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button type="button" class="btn btn-sm btn-success" [disabled]="newRW && !collectionTitle" (click)="add()">
+                <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                Add
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,284 @@
+pre {
+    padding-left: 20px;
+    padding-top: 10px;
+    white-space: pre-wrap;
+}
+
+input[readonly] {
+    background-color: #e9ecef !important;
+    opacity: 1 !important;
+    color: #495057 !important;
+}
+
+.select-all {
+    height: 13px;
+}
+
+.nav-button {
+    border: none;
+    background-color: white;
+    color: #0d6efd;
+    cursor: pointer;
+    margin-top: 10px;
+    text-align: start;
+}
+
+.fa-double {
+    padding-left: 12px !important;
+}
+
+.fa-cog {
+    padding-top: 5.5px !important;
+    padding-left: 8.5px !important;
+}
+
+.preview-json-window {
+    max-width: 1100px;
+    overflow-y: auto;
+}
+
+.imx-server-url-block {
+    max-height: 50px;
+}
+
+.loading-logo {
+    margin-right: 35px;
+}
+
+.btn {
+    margin-right: 10px;
+}
+
+.filter-button {
+    min-width: 100px;
+    height: 35px;
+    font-weight: bold;
+}
+
+.next-button {
+    min-width: 100px;
+    height: 35px;
+    font-weight: bold;
+    float: right;
+}
+
+.clear-button {
+    min-width: 100px;
+    height: 35px;
+    font-weight: bold;
+}
+
+.query-loading-icon {
+    width: 15px;
+    height: 15px;
+}
+
+label {
+    display: block;
+    margin: 0.5em 0;
+    font-weight: bold;
+}
+
+.latency {
+    padding-left: 6vw;
+    padding-top: 6vh;
+}
+
+.latency_th {
+    border: 1px solid black;
+    position: sticky;
+    left: 0;
+    padding-right: 8vw;
+    padding-left: 7px;
+}
+.latency_tr {
+    border: 1px solid black;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+.latency_td {
+    padding-left: 7px;
+    border: 1px solid black;
+    overflow: inherit;
+    text-overflow: ellipsis;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+    padding-bottom: 5vh;
+    overflow-y: scroll;
+}
+
+.sticky-top {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.active {
+    text-decoration: underline;
+}
+
+.disabled {
+    color: darkgray;
+}
+
+.form-group {
+    margin-bottom: 0.7rem;
+}
+
+.omitrevokedlabel {
+    text-align: center;
+}
+
+.omitrevoked {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.row-name {
+    max-width: 300px;
+    word-wrap: normal;
+    overflow-y: auto;
+}
+
+.collapse-button {
+    width: 100px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.connect-button {
+    position: absolute;
+    bottom: 0;
+    min-width: 80px;
+    min-height: 35px;
+}
+
+@media (max-width: 767px) {
+    .connect-button {
+        bottom: -50px;
+    }
+}
+
+.warning-message {
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: #dc3545;
+}
+
+.analyst1-view {
+    margin-left: 0px !important;
+    max-width: 100%;
+}
+
+.move-out {
+    position: absolute;
+    left: 13000px;
+}
+
+.nav-menu {
+    overflow: auto;
+    height: calc(100vh - 40px);
+}
+
+.btn-status {
+    margin-top: 1px;
+}
+
+.buttons-footer {
+    float: right;
+    margin-right: 0.75rem !important;
+}
+
+.color-green {
+    color: rgb(40, 167, 69);
+}
+
+.color-red {
+    color: #dc3545;
+}
+
+.color-yellow {
+    color: #ffc000;
+}
+
+.footer {
+    border-top: solid #dee2e6 2px;
+    border-bottom: solid #dee2e6 1px;
+    height: 36px;
+}
+
+.footer-no-bottom {
+    border-bottom: none;
+}
+
+.span-footer {
+    margin-top: 4px !important;
+    margin-left: 0.75rem !important;
+    width: fit-content;
+}
+
+.status-table {
+    margin-top: 2.5rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: auto;
+}
+
+.tooltipright {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: -5px !important;
+}
+
+.tooltipright .toolttext {
+    visibility: hidden;
+
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 0.875em;
+    font-weight: 400;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -50%;
+    margin-left: 12px;
+    left: 100%;
+}
+
+.tooltipright:hover .toolttext {
+    visibility: visible;
+}
+
+.tooltipright:empty .toolttext {
+    visibility: hidden;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper {
+    padding: 30px;
+}
+
+.tooltip-wrapper {
+    padding: 30px;
+}
+
+.disable-nav {
+    cursor: not-allowed !important;
+    color: rgba(40, 40, 40, 0.1);
+}

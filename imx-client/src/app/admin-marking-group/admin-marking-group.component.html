@@ -1,0 +1,385 @@
+<div class="d-flex flex-column mt-3">
+    @if (page == 1) {
+        <div class="row dashboard-card">
+            <div class="col d-flex flex-column ps-4 pe-4">
+                <div class="pt-3 pb-3 card-title no-title-border">
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-center">
+                            @if (!enabled) {
+                                <fa-icon [icon]="faExclamationTriangle" class="warning-sign"></fa-icon>
+                            } @else {
+                                <fa-icon [icon]="faCheck" class="success-sign"></fa-icon>
+                            }
+                        </div>
+                        @if (!enabled) {
+                            <div class="col-12 d-flex justify-content-center mt-3 text-center">
+                                <span class="main-text">
+                                    API Root and Collection has not been set yet. Please assign API Root and Collection to publish all future CUI
+                                    objects to.
+                                </span>
+                            </div>
+                        } @else {
+                            <div class="col-12 d-flex justify-content-center mt-3 text-center">
+                                <span class="main-text">
+                                    All published CUI Marking Definition objects will also be published to the following API Root and Collection.
+                                </span>
+                            </div>
+                        }
+                        <div class="col-12 mt-5">
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-4 me-3">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="input-header mb-2">API Root</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <select
+                                                [disabled]="loading"
+                                                class="form-control form-select"
+                                                id="APIRoots"
+                                                name="APIRoots"
+                                                (change)="setApiRoot($event)"
+                                                [(ngModel)]="api"
+                                            >
+                                                <option [value]="''" disabled>Select API Root</option>
+                                                <option *ngFor="let apiRoot of apiRoots; let i = index" [value]="apiRoot" title="{{ apiRoot }}">
+                                                    {{ apiRoot }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 ms-3">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="input-header mb-2">Collection</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <select
+                                                [disabled]="!api || loading"
+                                                class="form-control form-select"
+                                                id="collections"
+                                                name="collections"
+                                                [(ngModel)]="collection"
+                                            >
+                                                <option [value]="''" disabled>Select Collection</option>
+                                                <option
+                                                    *ngFor="let collection of collections.get(api); let i = index"
+                                                    [ngValue]="collection"
+                                                    title="{{ collection.title }}"
+                                                >
+                                                    {{ collection.title }} ({{ collection.id }})
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-5">
+                                <div class="col d-flex justify-content-center">
+                                    <button
+                                        (click)="setApiCollectionDestination()"
+                                        [disabled]="!api || !collection || loading"
+                                        class="btn btn-lg btn-outline-secondary component-button text"
+                                    >
+                                        @if (!saving) {
+                                            Save
+                                        } @else {
+                                            Saving...
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (enabled) {
+            <div class="row dashboard-card">
+                <div class="col d-flex flex-column ps-4 pe-4">
+                    <div class="pt-3 pb-3 card-title title-border">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>Groups</div>
+                            <div class="d-flex align-items-center gap-2">
+                                <fa-icon [icon]="faPlus" (click)="nextPage()" class="bundle-icon cursor-pointer"></fa-icon>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (groups.length == 0) {
+                        <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                            <span class="main-text"> No Groups found </span>
+                        </div>
+                    } @else {
+                        <table class="table justify-self-center table-striped table-hover">
+                            <tbody>
+                                @for (group of groups; track group; let ind = $index) {
+                                    <tr>
+                                        <td class="docname cursor-pointer" (click)="nextPage(true, ind)">
+                                            {{ group.name }}
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        }
+    }
+    @if (page == 2) {
+        <div class="row dashboard-card">
+            <div class="col d-flex flex-column ps-4 pe-4">
+                <div class="pt-3 pb-3 card-title title-border">
+                    <div class="d-flex justify-content-between align-items-center">
+                        @if (editing) {
+                            <div>Edit Group {{ editingGroup.name }}</div>
+                        } @else {
+                            <div>Create New Group</div>
+                        }
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col mb-2">
+                                <span class="input-header">Group Name</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <input [disabled]="editing" class="form-control" [(ngModel)]="editingGroup.name" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col mb-2">
+                                <span class="input-header mb-2">Users</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <div class="outer-box">
+                                            <div class="list-group select-box">
+                                                @for (user of unaddedUsers; track user; let ind = $index) {
+                                                    <button
+                                                        type="button"
+                                                        [value]="user"
+                                                        (click)="selectUnaddedUser(user)"
+                                                        [ngClass]="{ active: selectedUsers.includes(user) }"
+                                                        class="list-group-item list-group-item-action"
+                                                    >
+                                                        {{ getDisplayUser(user) }}
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2 d-flex justify-content-center flex-column">
+                                <div class="row mb-3">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="addAllUsers()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Add All
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="addUsers()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="removeAllUsers()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Remove All
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="removeUsers()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="outer-box">
+                                            <div class="list-group select-box">
+                                                @for (user of editingGroup.users; track user; let ind = $index) {
+                                                    <button
+                                                        type="button"
+                                                        [value]="user"
+                                                        (click)="selectAddedUser(user)"
+                                                        [ngClass]="{ active: selectedAddedUsers.includes(user) }"
+                                                        class="list-group-item list-group-item-action"
+                                                    >
+                                                        {{ getDisplayUser(user) }}
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col mb-2">
+                                <span class="input-header mb-2">Marking Definitions</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="outer-box">
+                                            <div class="list-group select-box">
+                                                @for (markingDef of unaddedMarkingDefs; track markingDef; let ind = $index) {
+                                                    <button
+                                                        type="button"
+                                                        [value]="markingDef"
+                                                        (click)="selectUnaddedMarkingDef(markingDef)"
+                                                        [ngClass]="{ active: selectedMarkingDefs.includes(markingDef) }"
+                                                        class="list-group-item list-group-item-action"
+                                                    >
+                                                        {{ getDisplayCui(markingDef) }}
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (nextMarkingDef) {
+                                    <div class="row mt-2">
+                                        <div class="col d-flex justify-content-center">
+                                            <button (click)="getNextMarkingDef()" class="btn btn-lg btn-outline-secondary component-button text">
+                                                Load More
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-2 d-flex justify-content-center flex-column">
+                                <div class="row mb-3">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="addAllMarkingDefs()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Add All
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="addMarkingDefs()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="removeAllMarkingDefs()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Remove All
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            (click)="removeMarkingDefs()"
+                                            class="btn btn-md btn-outline-secondary component-button text list-action-btn"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="outer-box">
+                                            <div class="list-group select-box">
+                                                @for (markingDef of editingGroup.markings; track markingDef; let ind = $index) {
+                                                    <button
+                                                        type="button"
+                                                        [value]="markingDef"
+                                                        (click)="selectAddedMarkingDef(markingDef)"
+                                                        [ngClass]="{ active: selectedAddedMarkingDefs.includes(markingDef) }"
+                                                        class="list-group-item list-group-item-action"
+                                                    >
+                                                        {{ getDisplayCui(markingDef) }}
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col d-flex justify-content-between align-items-center">
+                        <button (click)="prevPage()" class="btn btn-lg btn-outline-secondary component-button text">Previous</button>
+                        <div>
+                            @if (editing) {
+                                <button class="btn btn-lg btn-outline-danger component-button text me-3" (click)="deleteGroup()">Delete</button>
+                            }
+                            <button [disabled]="!enableSave()" (click)="saveGroup()" class="btn btn-lg btn-outline-secondary component-button text">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

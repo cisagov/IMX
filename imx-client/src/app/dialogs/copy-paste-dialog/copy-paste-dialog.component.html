@@ -1,0 +1,159 @@
+<div style="height: 85vh" class="d-flex flex-column">
+    <div class="modal-header justify-content-between">
+        <h4 class="modal-title" id="publish-modal-title">
+            @if (!isParsed) {
+                <span>Raw Data Import</span>
+            }
+            @if (isParsed) {
+                <span>IOC's Identified</span>
+            }
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        @if (!isParsed) {
+            <ul class="nav nav-underline">
+                <li class="nav-item" (click)="setTab('copy-paste')">
+                    <a class="nav-link pointer" [ngClass]="{ active: tab === 'copy-paste' }">Copy/Paste Text</a>
+                </li>
+                <li class="nav-item" (click)="setTab('upload-file')">
+                    <a class="nav-link pointer" [ngClass]="{ active: tab === 'upload-file' }">Upload File</a>
+                </li>
+                <li class="nav-item" (click)="setTab('misp-stix')">
+                    <a class="nav-link pointer" [ngClass]="{ active: tab === 'misp-stix' }">MISP -> STIX</a>
+                </li>
+            </ul>
+        }
+        @if (!isParsed && tab === 'copy-paste') {
+            <div class="form-group pt-3">
+                <label class="field-label">Text to be Parsed</label>
+                <textarea class="form-control" rows="20" wrap="soft" [(ngModel)]="textBody" (input)="textBodyChange()"></textarea>
+            </div>
+        }
+        @if (!isParsed && tab === 'upload-file') {
+            <div class="form-group pt-3">
+                <label class="field-label">File to be Parsed</label>
+                <label for="file1" class="field-sublabel">Select File to Upload Below</label>
+                <input
+                    type="file"
+                    [(ngModel)]="selectedFile"
+                    class="w-100 form-control"
+                    accept="{{ acceptFileString }}"
+                    id="file1"
+                    name="parseUpload"
+                    (change)="onFileChanged($event)"
+                />
+            </div>
+        }
+        @if (!isParsed && tab === 'misp-stix') {
+            <div class="form-group pt-3">
+                <label class="field-label">MISP Object</label>
+                <textarea class="form-control" rows="20" wrap="soft" [(ngModel)]="mispBody" (input)="textBodyChange()"></textarea>
+            </div>
+        }
+        @if (isParsed && !isConfirm) {
+            <div class="pt-2">
+                <div class="select-all-section">
+                    <input type="checkbox" [ngModel]="selectAll" (change)="updateSelectAll()" />
+                    <span>Select All</span>
+                </div>
+                @for (map of objects2DArray; track map[0]) {
+                    @if (parsedObjects[map[0]]) {
+                        <div class="stix-category-card">
+                            <div class="stix-category-header" (click)="toggleCategory(map[0])">
+                                <span class="stix-category-name">{{ map[1] }}</span>
+                                <span class="stix-count-badge">{{ parsedObjects[map[0]].length }}</span>
+                                <span class="stix-chevron" [class.collapsed]="isCategoryCollapsed(map[0])">
+                                    <fa-icon [icon]="faAngleUp"></fa-icon>
+                                </span>
+                            </div>
+                            @if (!isCategoryCollapsed(map[0])) {
+                                <div class="stix-items-list">
+                                    @for (object of parsedObjects[map[0]]; track object.id; let i = $index) {
+                                        <div class="stix-item" [class.odd]="i % 2 === 1">
+                                            <div class="stix-item-row">
+                                                <input
+                                                    type="checkbox"
+                                                    class="stix-checkbox"
+                                                    [checked]="getSelected(object.id)"
+                                                    (change)="updateSelectedObjects(object.id)"
+                                                />
+                                                <a class="stix-object-link" (click)="changeShow(object.id)">
+                                                    {{ getComponentDisplay(object) }}
+                                                </a>
+                                            </div>
+                                            @if (showId == object.id) {
+                                                <div class="stix-json-panel">
+                                                    <pre>{{ object | json }}</pre>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        }
+        @if (isConfirm) {
+            <div class="pt-2">
+                <div class="preview-header">Temp Bundle</div>
+                <ul class="nav nav-underline">
+                    <li class="nav-item" (click)="activeTab = 'jsonViewer'">
+                        <a class="nav-link pointer" [ngClass]="{ active: activeTab === 'jsonViewer' }">JSON</a>
+                    </li>
+                    <li class="nav-item" (click)="activeTab = 'visualViewer'">
+                        <a class="nav-link pointer" [ngClass]="{ active: activeTab === 'visualViewer' }">Visual</a>
+                    </li>
+                </ul>
+                @if (activeTab === 'jsonViewer') {
+                    <pre class="preview-bundle">{{ getStixPreview() | json }}</pre>
+                }
+                @if (activeTab === 'visualViewer') {
+                    <app-stix-viewer [bundle]="getStixPreview()"></app-stix-viewer>
+                }
+            </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-outline-secondary query-button" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        @if (isParsed) {
+            <button type="button" class="btn btn-sm btn-outline-secondary ms-2 query-button" (click)="onBack()">
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Back
+            </button>
+        }
+        @if (!isParsed) {
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-primary ms-2 query-button"
+                [disabled]="disableParse === true || isLoading"
+                (click)="onParse()"
+            >
+                <fa-icon [icon]="faPlay" class="pe-1"></fa-icon>
+                Parse
+                @if (isLoading) {
+                    <span class="spinner-grow spinner-grow-sm ms-1" role="status" aria-hidden="true"></span>
+                }
+            </button>
+        }
+        @if (isParsed && !isConfirm) {
+            <button type="button" class="btn btn-sm btn-outline-primary ms-2 query-button" (click)="onConfirm()">
+                <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                Confirm
+            </button>
+        }
+        @if (isConfirm) {
+            <button type="button" class="btn btn-sm btn-outline-primary ms-2 query-button" (click)="onAddToBundle()">
+                <fa-icon [icon]="faFileImport" class="pe-1"></fa-icon>
+                Add to Bundle
+            </button>
+        }
+    </div>
+</div>

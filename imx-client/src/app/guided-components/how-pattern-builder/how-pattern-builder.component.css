@@ -1,0 +1,98 @@
+.bottom-absolute {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.hint-box {
+    padding: 2px;
+    background-color: lightgray;
+    border-radius: 5px;
+}
+
+.hint {
+    font-size: small;
+}
+
+.sides {
+    width: 16.2%;
+}
+
+.time {
+    margin-bottom: 3.6rem !important;
+}
+
+.top-absolute {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.pattern-box-disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+.pattern-box-disabled:hover {
+    cursor: pointer;
+}
+
+.patternEditor:hover {
+    cursor: pointer;
+}
+
+.pattern-editor-can-edit:hover {
+    cursor: pointer;
+}
+
+.pattern-editor-can-edit {
+    color: rgb(159, 159, 159);
+}
+
+.clear-button {
+    border: none;
+    background-color: inherit;
+    color: gray;
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    z-index: 1;
+}
+
+.clear-button:hover {
+    color: darkgray;
+}
+
+.clear-button-text {
+    margin-top: 5px;
+}
+
+/* Select Time Zone */
+.timezone-input-container {
+    position: relative;
+}
+
+.timezone-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    max-height: 280px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    padding: 5px 0;
+}
+
+.timezone-option {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.timezone-option:hover {
+    background: #f3f4f6;
+}
+/* End Select Time Zone */

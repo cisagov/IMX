@@ -1,0 +1,53 @@
+.modal-body {
+    height: 65vh !important;
+    overflow: auto;
+}
+
+.object-item {
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    margin: 7.5px 7.5px;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    color: #05316a;
+    border: 1px solid #f1f1f1;
+    border-bottom: 1px solid #f1f1f1;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.object-item:hover {
+    background: #fdfdff;
+    color: #05316a;
+    box-shadow: 3px 3px 10px #f7f1f1;
+}
+
+.object-item text {
+    color: #05316a;
+    text-align: center;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.object-tab {
+    cursor: pointer;
+    padding: 15px 20px;
+    color: #3c3d40;
+    border-width: 0px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.object-active {
+    border-width: 0;
+    background-color: transparent;
+    color: #05316a;
+    border-bottom: 2px solid #05316a;
+    border-radius: 0px;
+}
+
+.modal-header {
+    border-color: #e9ecef;
+}

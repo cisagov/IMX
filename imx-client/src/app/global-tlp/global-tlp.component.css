@@ -1,0 +1,778 @@
+.cisa-publication-logo {
+    height: 100px;
+}
+
+.main-wrapper {
+    width: 100%;
+    margin-top: 20px;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrapper {
+    min-height: 500px;
+    top: -100px;
+}
+
+.content-wrapper-short {
+    min-height: 400px;
+    margin-bottom: 2vh;
+    top: -100px;
+}
+
+.content-wrapper-long {
+    min-height: 580px;
+    margin-bottom: 2vh;
+}
+
+.card {
+    margin-top: 55px;
+    margin-bottom: auto;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    padding: 20px;
+    box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    text-align: center;
+    width: 200px;
+    height: 200px;
+    border-radius: 20px;
+    font-size: 1.3rem;
+}
+
+.card:hover {
+    box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.card-tlp {
+    width: 160px;
+    height: 160px;
+}
+
+.TLP-CLEAR {
+    border: 2px solid #91a4bb;
+    background-color: #ffffff;
+}
+
+.TLP-WHITE {
+    border: 2px solid #91a4bb;
+    background-color: #ffffff;
+}
+
+.TLP-GREEN {
+    background-color: #33ff00;
+    color: whitesmoke;
+}
+
+.TLP-AMBER {
+    background-color: #ffc000;
+    color: whitesmoke;
+}
+
+.TLP-RED {
+    background-color: #ff0033;
+    color: whitesmoke;
+}
+
+.card-blue {
+    background-color: #007bff;
+    color: whitesmoke;
+}
+
+.tlp-build {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.tlp-select {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #91a4bb;
+    font-style: italic;
+}
+
+.question-circle {
+    font-size: 3rem;
+    color: rgba(0, 0, 0, 0.5);
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.bottom-wrapper {
+    margin-right: 10%;
+    margin-left: 10%;
+    margin-bottom: 50px;
+    width: 89%;
+}
+
+.assist-wrapper {
+    border-bottom: 2px solid #91a4bb;
+    padding-bottom: 15px;
+}
+
+.assist-text {
+    font-style: italic;
+
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.placeholder-hidden {
+    visibility: hidden;
+    display: block;
+}
+
+.item-selected {
+    border: 5px solid #004186 !important;
+}
+
+.tab-objects-wrapper {
+    width: 1000px;
+}
+
+.search-input {
+    width: 300px;
+}
+
+.object-properties-wrapper {
+    margin-left: 100px;
+}
+
+.object-property-wrapper {
+    width: 500px;
+}
+
+.object-property-name {
+    border: none;
+    border-right: 1px solid #91a4bb;
+}
+
+.object-property-name-divider {
+    border: none;
+    border-bottom: 1px solid #91a4bb;
+}
+
+.success {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #37d75d;
+}
+
+.check-circle {
+    font-size: 12rem;
+    color: #37d75d;
+}
+
+.warn {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #d7cc31;
+}
+
+.warn-circle {
+    font-size: 12rem;
+    color: #d7cc31;
+}
+
+.error {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ed3535;
+}
+
+.error-circle {
+    font-size: 12rem;
+    color: #ed3535;
+}
+
+.relationship-property-name-wrapper {
+    width: 300px;
+}
+
+.relationship-property-input-wrapper {
+    width: 250px;
+    margin-left: 30px;
+}
+
+.relationship-properties-wrapper {
+    height: 50px;
+    align-items: center;
+}
+
+.relationship-property-name {
+    border: none;
+    border-right: 1px solid #91a4bb;
+    text-align: right;
+    padding-right: 20px;
+    font-size: 1.4rem;
+}
+
+.check-circle-another-object {
+    font-size: 6rem;
+    color: #007bff;
+}
+
+.publish-review-data-wrapper {
+    width: 500px;
+    margin-left: 30px;
+}
+
+.publish-review-data {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #91a4bb;
+}
+
+.server-detail-dropdown {
+    width: 250px;
+}
+
+.body .error-message {
+    position: absolute;
+    top: 6%;
+    left: 25%;
+    width: 50%;
+}
+
+.guided-add-component {
+    width: 900px;
+}
+
+.btn-match {
+    background: yellow !important;
+}
+
+.btn-match-selected {
+    border: 3px solid rgb(136, 136, 136);
+}
+
+.clear-button {
+    border: none;
+    background-color: inherit;
+    color: gray;
+}
+
+.clear-button:hover {
+    color: darkgray;
+}
+
+.clear-button-text {
+    margin-top: 5px;
+}
+
+.search-bar {
+    height: 38px;
+    width: 280px;
+    border: thin solid gray;
+    border-radius: 5px;
+    position: relative;
+}
+
+.search-results {
+    color: gray;
+    font-size: 13px;
+    margin-top: 8px;
+    padding-right: 2px;
+}
+
+input.form-control {
+    float: left;
+    padding: 4px 8px;
+    font-size: 14px;
+    height: 35px;
+    border: none;
+}
+
+.search-control {
+    position: relative;
+    top: -35px;
+    z-index: 9999;
+}
+
+.build-review-bundle-wrapper {
+    width: 100%;
+
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+input[type='file'] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.object-type-wrapper {
+    border: 1px solid #91a4bb;
+    margin-top: 75px;
+    margin-bottom: auto;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    padding: 20px;
+    box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    text-align: center;
+    width: 330px;
+    height: 330px;
+    border-radius: 20px;
+    font-size: 1.5rem;
+}
+
+.input-border {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    width: 500px;
+}
+
+.advanced-detail {
+    position: relative;
+    top: 70px;
+    margin-left: 10%;
+}
+
+.publish-item {
+    width: 100%;
+}
+
+.publish-items-wrapper {
+    position: absolute;
+    max-height: 250px;
+    width: 400px;
+    overflow: auto;
+    z-index: 1000;
+    background-color: white;
+    top: 50px;
+    max-width: 400px;
+}
+
+.let-us-help-partial-success {
+    color: #d7cc31;
+}
+
+.let-us-help-failure {
+    color: #ed3535;
+}
+
+.publish-status-wrapper {
+    max-height: 58%;
+}
+
+/* Start Analyst 1 */
+
+.active {
+    text-decoration: underline;
+}
+
+.border-bottoms {
+    border-bottom: 1px solid #000;
+}
+
+.border-tops {
+    border-top: 1px solid #000;
+}
+
+.btn-collapse {
+    width: 135px;
+    height: 26px;
+}
+
+.bundle-button {
+    font-size: 15px;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    border-collapse: collapse;
+}
+
+.bundle-wrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 45vh;
+}
+
+.card-header {
+    padding: 0px !important;
+}
+
+.draft-stix-title {
+    color: #000;
+    text-align: center;
+    margin: 20px 0px;
+}
+
+input.form-control {
+    float: left;
+    padding: 4px 8px;
+    font-size: 14px;
+    height: 35px;
+    border: none;
+}
+
+.search-button {
+    height: 35px;
+    min-width: 73px;
+}
+
+.search-bar {
+    height: 38px;
+
+    border: thin solid gray;
+    border-radius: 5px;
+}
+
+.search-input {
+    height: inherit;
+}
+
+.search-results {
+    color: gray;
+    font-size: 13px;
+    margin-top: 8px;
+    padding-right: 2px;
+}
+
+.clear-button {
+    border: none;
+    background-color: inherit;
+    color: gray;
+}
+
+.clear-button:hover {
+    color: darkgray;
+}
+
+.clear-button-text {
+    margin-top: 5px;
+}
+
+.highlight {
+    background-color: rgb(255, 255, 49);
+}
+
+.form-control:focus {
+    box-shadow: none;
+}
+
+accordion-group::ng-deep .highlight-panel > a {
+    background-color: yellow !important;
+}
+
+.preview-bundle {
+    max-height: 600px;
+    overflow-x: auto;
+
+    margin: 5px;
+}
+
+.status-message {
+    max-height: 42vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-left: -10vh;
+    margin-top: 8vh;
+}
+
+.query-button {
+    width: 225px;
+}
+
+.query-loading-icon {
+    width: 15px;
+    height: 15px;
+}
+
+.sdo-badge {
+    font-size: 0.65em;
+    vertical-align: middle;
+    color: #fff;
+}
+
+.sdo-object-button {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    background-color: rgb(48, 46, 46);
+    border-color: rgb(255, 255, 255);
+    font-size: 14px;
+}
+
+.sdo-object-button:hover {
+    color: rgb(6, 103, 194);
+    background-color: black;
+
+    border-color: rgb(6, 103, 194);
+}
+
+@media (max-width: 1350px) {
+    .test {
+        width: 600px;
+    }
+}
+
+.btn-warning {
+    color: white;
+    background-color: red;
+
+    border-color: red;
+}
+
+.section-title {
+    font-size: 28px;
+    padding-left: 15px;
+    font-weight: 500;
+}
+
+.show {
+    font-size: 13px;
+}
+
+.stix-preview-message {
+    font-size: 16px;
+}
+
+@media (max-width: 767px) {
+    .bundle-button {
+        margin-top: 10px;
+        width: 80%;
+    }
+}
+
+.bottom-bump {
+    padding-bottom: 6px;
+}
+
+.big-bottom-bump {
+    padding-bottom: 50px;
+}
+
+.left-padding {
+    padding-left: 15px;
+}
+
+.button-row-padding {
+    padding-top: 13px;
+    padding-bottom: 13px;
+    padding-left: 13px;
+}
+
+.tooltipmenu {
+    cursor: pointer;
+}
+
+.tooltipmenu .toolttext {
+    visibility: hidden;
+    position: absolute;
+    white-space: nowrap;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 10;
+    top: 0;
+    margin-right: 12px;
+    right: 90%;
+    font-weight: 400;
+    pointer-events: none;
+}
+
+.tooltipmenu:hover .toolttext {
+    visibility: visible;
+}
+
+.tooltipmenu:empty .toolttext {
+    visibility: hidden;
+}
+
+.tooltipmenu .toolttextToRight {
+    visibility: hidden;
+    position: absolute;
+    white-space: nowrap;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 10;
+    top: 0;
+    margin-left: 12px;
+    left: 90%;
+    font-weight: 400;
+    pointer-events: none;
+}
+
+.tooltipmenu:hover .toolttextToRight {
+    visibility: visible;
+}
+
+.tooltipmenu:empty .toolttextToRight {
+    visibility: hidden;
+}
+
+.overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pre-overflow {
+    margin-left: 16px;
+    margin-right: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+::ng-deep .publish-modal .modal-dialog {
+    max-width: 70%;
+}
+
+table tbody {
+    overflow: auto;
+}
+
+table th {
+    border-top: white;
+    border-bottom: white;
+    position: sticky;
+    left: 0;
+}
+
+table th {
+    border: 1px solid white;
+}
+
+table td {
+    max-width: 95%;
+    overflow: inherit;
+    text-overflow: ellipsis;
+}
+
+thead,
+tbody {
+    display: block;
+}
+
+.view-evidence-button {
+    border: 1px solid black;
+    padding: 8px;
+    border-radius: 3px;
+}
+
+app-stix-viewer.full-width.nav-link {
+    position: relative;
+    left: 20px;
+    width: 99%;
+}
+
+app-stix-viewer.full-width.nav-link.full-screen-guided {
+    position: relative;
+    left: 0px;
+    width: 125%;
+}
+
+app-stix-viewer.full-width.nav-link .stix-graph {
+    width: 55%;
+}
+
+.move-out-of-view {
+    position: absolute;
+    left: 15000px;
+}
+
+.analyst1-objects-wrapper {
+    height: 400px;
+    overflow: auto;
+}
+
+.tooltipright {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    top: -33px;
+    left: 185px;
+}
+
+.tooltipright .toolttext {
+    visibility: hidden;
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -50%;
+    margin-left: 12px;
+    left: 100%;
+}
+
+.tooltipright:hover .toolttext {
+    visibility: visible;
+}
+
+.tooltipright:empty .toolttext {
+    visibility: hidden;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper {
+    padding: 30px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper .tooltip-content {
+    margin-top: 15px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.alert-danger {
+    color: red;
+}
+
+@media (max-width: 1200px) {
+    .card-tlp {
+        height: 130px;
+        width: 130px;
+    }
+
+    .card {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .tlp-list {
+        flex-direction: column;
+    }
+
+    .card-tlp {
+        width: auto;
+        height: 80px;
+    }
+
+    .card {
+        margin-top: 25px;
+    }
+}

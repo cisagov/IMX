@@ -1,0 +1,55 @@
+<div>
+    <div>
+        <button class="btn btn-sm btn-primary float-right" (click)="addDisabledTaxiiServer()">
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+        </button>
+    </div>
+    @if (loading === true) {
+        <div class="text-center justify-content-center">
+            <div class="row-name ps-3 pt-3">
+                Loading...
+                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+            </div>
+        </div>
+    }
+    @if (loading === false) {
+        <div class="justify-content-center">
+            @if (disabledTaxiiList.length !== 0) {
+                <table style="font-size: 0.875rem" class="table col-12 mb-0 justify-content-center">
+                    <thead style="border-bottom: 2px solid lightgray">
+                        <tr>
+                            <th scope="col" class="text-center" style="width: 25%">
+                                <span> URL </span>
+                            </th>
+                            <th scope="col" class="text-center" style="width: 25%">
+                                <span> Actions </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (server of disabledTaxiiList; track server) {
+                            <tr>
+                                <td class="text-center">
+                                    {{ server._source.url }}
+                                </td>
+                                <td class="text-center">
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-danger ms-1"
+                                        (click)="deleteDisabledTaxiiServer(server)"
+                                        title="Click to delete the bundle"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            @if (disabledTaxiiList.length === 0) {
+                <div class="justify-content-center text-center">No disabled TAXII Servers found.</div>
+            }
+        </div>
+    }
+</div>

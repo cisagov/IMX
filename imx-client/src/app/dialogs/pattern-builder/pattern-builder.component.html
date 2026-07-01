@@ -1,0 +1,611 @@
+<div class="dialog">
+    <div class="modal-header">
+        <div class="col align-items-start">
+            <h4 class="modal-title" id="pattern-builder-modal-title">STIX Pattern Builder</h4>
+        </div>
+
+        <div class="col d-flex justify-content-center pt-3">
+            @if (page === 1) {
+                <h4 class="stix-pattern-builder-steps">Step 1: Create Comparison Expressions</h4>
+            }
+            @if (page === 2) {
+                <h4 class="stix-pattern-builder-steps">Step 2: Create Observation Expressions</h4>
+            }
+            @if (page === 3) {
+                <h4 class="stix-pattern-builder-steps">Step 3: Combine Observation Expressions</h4>
+            }
+            @if (page === 4) {
+                <h4 class="stix-pattern-builder-steps">(FINAL) Step 4: Create STIX Pattern</h4>
+            }
+        </div>
+        <div class="col">
+            <button type="button" class="btn-close float-right" aria-label="Close" (click)="cancelModal()">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <!-- Comparison Expression Builder -->
+        @if (page === 1) {
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    @if (observedDataObjects?.length > 0) {
+                        <div class="d-flex">
+                            <span class="input-group-text">
+                                <b>Observed Data</b>
+                            </span>
+                            <select
+                                type="text"
+                                class="form-control form-select"
+                                (change)="setObservedDataObj($event)"
+                                [(ngModel)]="observedDataObjectSelected"
+                                name="observeddata"
+                                id="observeddata"
+                            >
+                                <option value="undefined" selected></option>
+                                @for (obsvObj of observedDataObjects; track obsvObj) {
+                                    <option [ngValue]="obsvObj">{{ obsvObj.id }}</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    @if (observedDataObjects?.length > 0) {
+                        <hr />
+                    }
+                    <div class="d-flex">
+                        <span class="input-group-text">
+                            <b>Cyber Observables</b>
+                        </span>
+                        <select
+                            type="text"
+                            class="form-control form-select"
+                            (change)="mapBundleObjToSCOObj($event)"
+                            [(ngModel)]="selectedCyberObservableObject"
+                            name="objtype"
+                            id="objtype"
+                        >
+                            <option value="undefined" selected></option>
+                            @for (obj of scoBundleObjects; track obj) {
+                                <option [ngValue]="obj">{{ obj.displayName }}</option>
+                            }
+                        </select>
+                    </div>
+                    <hr />
+                    @if (currObjectPath && typeInBundle()) {
+                        <div style="height: 320px; overflow-y: auto">
+                            <accordion class="mb-3">
+                                @for (component of filteredBundleObj; track component) {
+                                    <accordion-group
+                                        [heading]="stixService.getComponentDisplay(component)"
+                                        (isOpenChange)="updateExpressionConstant($event, component)"
+                                    >
+                                        <div class="row ms-3">
+                                            <pre>{{ stixService.getJsonDisplayForComponent(component) | json }}</pre>
+                                        </div>
+                                    </accordion-group>
+                                }
+                            </accordion>
+                        </div>
+                    }
+
+                    @if (currObjectPath && !typeInBundle()) {
+                        <div>
+                            Please create expression with type <strong>{{ currObjectPath?.displayName }}</strong
+                            >. This object type doesn't exist in current bundle.
+                        </div>
+                    }
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <h4>Create Comparison Expression</h4>
+                    <hr />
+                    @if (!currObjectPath) {
+                        <div class="comparison-expression-builder">
+                            <div class="col-6 offset-3">Select a Cyber Observable Object to begin creating a comparison expression</div>
+                        </div>
+                    }
+                    @if (currObjectPath) {
+                        <div>
+                            <div class="row">
+                                @if (selectedComparisonOperator !== 'EXISTS') {
+                                    <div class="col-lg-4 col-md-4 col-12">
+                                        <div>Object Path</div>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            disabled
+                                            value="{{ currObjectPath.type }}{{ currPropertyName ? ':' + currPropertyName : '' }}"
+                                        />
+                                        <div>Property Name</div>
+                                        @if (typeInBundle()) {
+                                            <select
+                                                class="form-control dropdown form-select"
+                                                [(ngModel)]="currPropertyName"
+                                                (change)="updateExpressionConstant($event)"
+                                            >
+                                                @for (propertyName of propertyNames; track propertyName) {
+                                                    <option [value]="propertyName">
+                                                        {{ propertyName }}
+                                                    </option>
+                                                }
+                                            </select>
+                                        }
+                                        @if (!typeInBundle()) {
+                                            <select
+                                                class="form-control dropdown form-select"
+                                                [(ngModel)]="currPropertyName"
+                                                (change)="updateExpressionConstant($event)"
+                                            >
+                                                <option hidden value></option>
+                                                @for (propertyName of propertyNames; track propertyName) {
+                                                    <option [value]="propertyName">
+                                                        {{ propertyName }}
+                                                    </option>
+                                                }
+                                            </select>
+                                        }
+                                    </div>
+                                }
+                                @if (selectedComparisonOperator === 'EXISTS') {
+                                    <div class="col-lg-4 col-md-4 col-12"></div>
+                                }
+                                <div class="col-lg-4 col-md-4 col-12">
+                                    <div>Comparison Operator</div>
+                                    <select class="form-control dropdown form-select" [(ngModel)]="selectedComparisonOperator">
+                                        @for (comparisonOperator of COMPARISON_OPERATORS; track comparisonOperator) {
+                                            <option [value]="comparisonOperator">
+                                                {{ comparisonOperator }}
+                                            </option>
+                                        }
+                                        @if (showSetOperator()) {
+                                            <option [value]="'ISSUBSET'">ISSUBSET</option>
+                                        }
+                                        @if (showSetOperator()) {
+                                            <option [value]="'ISSUPERSET'">ISSUPERSET</option>
+                                        }
+                                        <option [value]="'EXISTS'">EXISTS</option>
+                                    </select>
+                                </div>
+                                @if (selectedComparisonOperator === 'EXISTS') {
+                                    <div class="col-lg-4 col-md-4 col-12">
+                                        <div>Object Path</div>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            disabled
+                                            value="{{ currObjectPath.type }}{{ currPropertyName ? ':' + currPropertyName : '' }}"
+                                        />
+                                        <div>Property Name</div>
+                                        @if (typeInBundle()) {
+                                            <select class="form-control dropdown form-select" [(ngModel)]="currPropertyName">
+                                                @for (propertyName of propertyNames; track propertyName) {
+                                                    <option [value]="propertyName">
+                                                        {{ propertyName }}
+                                                    </option>
+                                                }
+                                            </select>
+                                        }
+                                        @if (!typeInBundle()) {
+                                            <select class="form-control dropdown form-select" [(ngModel)]="currPropertyName">
+                                                <option hidden value></option>
+                                                @for (propertyName of propertyNames; track propertyName) {
+                                                    <option [value]="propertyName">
+                                                        {{ propertyName }}
+                                                    </option>
+                                                }
+                                            </select>
+                                        }
+                                    </div>
+                                }
+                                @if (selectedComparisonOperator !== 'EXISTS') {
+                                    <div class="col-lg-4 col-md-4 col-12">
+                                        <div>Constant</div>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            [(ngModel)]="comparisonConstant"
+                                            placeholder="Enter your comparison value"
+                                        />
+                                    </div>
+                                }
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col text-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-primary"
+                                        [disabled]="
+                                            (selectedComparisonOperator !== 'EXISTS' && comparisonConstant === null) || currPropertyName === ''
+                                        "
+                                        (click)="addComparisonExpression()"
+                                    >
+                                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (comparisonExpressions.length > 0) {
+                    <div class="col-12 text-start mt-3">
+                        <h4>Your Comparison Expressions</h4>
+                        <hr />
+                        <div>
+                            <ul id="questions">
+                                @for (comparisonExpression of comparisonExpressions; track comparisonExpression; let compExpIndx = $index) {
+                                    <li>
+                                        {{ comparisonExpression.getDisplayForExpression() }}
+                                        <button type="button" class="btn btn-fa-xsm btn-danger ms-2" (click)="deleteExpression(compExpIndx)">
+                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Single Observation Expression Builder -->
+        @if (page === 2) {
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <h4>Select Comparison Expression(s)</h4>
+                            <hr />
+                            <div>
+                                <ul id="questions">
+                                    @for (comparisonExpression of comparisonExpressions; track comparisonExpression; let compExpIndx = $index) {
+                                        <li>
+                                            {{ comparisonExpression.getDisplayForExpression() }}
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-xsm btn-primary ms-2"
+                                                (click)="addComparisonExpressionToObservationExpression(comparisonExpression)"
+                                            >
+                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                            </button>
+                                            <button type="button" class="btn btn-fa-xsm btn-danger ms-1" (click)="deleteExpression(compExpIndx)">
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            @if (observationExpressions.length !== 0) {
+                                <h4 class="mt-4">Observation Expressions</h4>
+                            }
+                            <hr />
+                            <div>
+                                <ul id="questions">
+                                    @for (observationExpression of observationExpressions; track observationExpression; let observExpIndx = $index) {
+                                        <li>
+                                            {{ observationExpression.showEntireExpressionChain(true) }}
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-xsm btn-danger ms-2"
+                                                (click)="deleteExpression(null, observExpIndx)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <h4>Create Observation Expression</h4>
+                            <hr />
+                            @if (!observationExpressionBuilder) {
+                                <div class="comparison-expression-builder" style="padding-top: 55px">
+                                    <div class="col-6 offset-3">Click on a comparison expression to begin creating an observation expression</div>
+                                </div>
+                            }
+                            @if (observationExpressionBuilder) {
+                                <div>
+                                    <div class="mt-3">
+                                        <span class="me-2">[</span>
+                                        @for (
+                                            comparisonExpression of observationExpressionBuilder.getExpressionArray();
+                                            track comparisonExpression;
+                                            let i = $index
+                                        ) {
+                                            <div class="d-inline">
+                                                <span class="badge bg-secondary me-2 stix_pattern">
+                                                    {{ comparisonExpression.getDisplayForExpression() }}
+                                                </span>
+                                                @if (i + 1 < observationExpressionBuilder.getExpressionArray().length) {
+                                                    <div class="d-inline text-center me-2">
+                                                        <select
+                                                            class="form-control form-select dropdown d-inline comparison-operator-dropdown"
+                                                            [(ngModel)]="comparisonExpression.comparisonOperator"
+                                                        >
+                                                            @for (observationOperator of getComparisonOperator(i); track observationOperator) {
+                                                                <option [value]="observationOperator">
+                                                                    {{ observationOperator }}
+                                                                </option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        <span>]</span>
+                                    </div>
+                                    @if (this.observationExpressionError.length > 0) {
+                                        <div class="warning-message pt-2">{{ this.observationExpressionError }}</div>
+                                    }
+                                    <hr />
+                                    <div class="text-end">
+                                        <button
+                                            class="btn btn-sm btn-secondary me-3"
+                                            (click)="observationExpressionBuilder = null; comparisonExpressionObjectTypes = []"
+                                        >
+                                            <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                            Clear
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" (click)="addObservationExpression()">
+                                            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (page === 3) {
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-12">
+                            @if (observationExpressions.length !== 0) {
+                                <h4 class="mt-4">Select Observation Expressions</h4>
+                            }
+                            <hr />
+                            <div>
+                                <ul id="questions">
+                                    @for (observationExpression of observationExpressions; track observationExpression; let observExpIndx = $index) {
+                                        <li>
+                                            {{ observationExpression.showEntireExpressionChain(true) }}
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-xsm btn-primary ms-2"
+                                                (click)="addComparisonExpressionToObservationExpression(observationExpression)"
+                                            >
+                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-xsm btn-danger ms-1"
+                                                (click)="deleteExpression(null, observExpIndx)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            @if (patternExpressions?.length > 0) {
+                                <h4 class="mt-4">Pattern</h4>
+                            }
+                            <hr />
+                            <div>
+                                <ul id="questions">
+                                    @for (patternExpression of patternExpressions; track patternExpression; let patternExpIndx = $index) {
+                                        <li>
+                                            {{ patternExpression.showEntireExpressionChain(true) }}
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-xsm btn-danger ms-2"
+                                                (click)="deleteExpression(null, null, patternExpIndx)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <h4>Combine Observation Expressions</h4>
+                            <hr />
+                            @if (!observationExpressionBuilder) {
+                                <div class="comparison-expression-builder" style="padding-top: 55px">
+                                    <div class="col-6 offset-3">Click on an observation expression to begin combining observation expressions</div>
+                                </div>
+                            }
+                            @if (observationExpressionBuilder) {
+                                <div>
+                                    <div class="mt-3">
+                                        @for (
+                                            comparisonExpression of observationExpressionBuilder.getExpressionArray();
+                                            track comparisonExpression;
+                                            let i = $index
+                                        ) {
+                                            <div class="d-inline">
+                                                <span class="me-2">[</span>
+                                                <span class="badge bg-secondary me-2 stix_pattern">
+                                                    {{ comparisonExpression.getDisplayForExpression() }}
+                                                </span>
+                                                <span class="me-2">]</span>
+                                                @if (i + 1 < observationExpressionBuilder.getExpressionArray().length) {
+                                                    <div class="d-inline text-center me-2">
+                                                        <select
+                                                            class="form-control form-select dropdown d-inline comparison-operator-dropdown"
+                                                            [(ngModel)]="comparisonExpression.comparisonOperator"
+                                                        >
+                                                            @for (
+                                                                observationOperator of OBSERVATION_EXPRESSION_OPERATORS;
+                                                                track observationOperator
+                                                            ) {
+                                                                <option [value]="observationOperator">
+                                                                    {{ observationOperator }}
+                                                                </option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                    <hr />
+                                    <div class="text-end">
+                                        <button class="btn btn-sm btn-secondary me-3" (click)="observationExpressionBuilder = null">
+                                            <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                            Clear
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" (click)="addPatternExpression()">
+                                            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- STIX Pattern Builder -->
+        @if (page === 4) {
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <h4>Select a Pattern</h4>
+                            <hr />
+                            <div class="mt-3">
+                                <ul id="questions">
+                                    @for (patternExpression of patternExpressions; track patternExpression) {
+                                        <li>
+                                            {{ patternExpression.showEntireExpressionChain(true) }}
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-xsm btn-primary ms-2"
+                                                (click)="addObservationExpressionToStixPattern(patternExpression)"
+                                            >
+                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <h4>Add Qualifier</h4>
+                            <hr />
+                            @if (selectedStixPatternBuilder) {
+                                <div>
+                                    <div class="mt-3">
+                                        <div class="d-inline">
+                                            <span class="badge bg-secondary me-2 stix_pattern">
+                                                {{ selectedStixPatternBuilder.getDisplayForStixPatternBuilder() }}
+                                            </span>
+                                        </div>
+                                        <select
+                                            class="form-control form-select dropdown d-inline comparison-operator-dropdown"
+                                            [(ngModel)]="selectedStixPatternBuilder.qualifierForDropdown"
+                                        >
+                                            @for (qualifier of OBSERVATION_EXPRESSION_QUALIFIERS; track qualifier) {
+                                                <option>
+                                                    {{ qualifier }}
+                                                </option>
+                                            }
+                                        </select>
+                                        @if (selectedStixPatternBuilder.qualifierForDropdown === 'WITHIN') {
+                                            <div class="d-inline">
+                                                <input
+                                                    type="number"
+                                                    class="d-inline form-control ms-2 number-input"
+                                                    [(ngModel)]="observationQualifierData1"
+                                                />
+                                                @if (selectedStixPatternBuilder.qualifierForDropdown === 'WITHIN') {
+                                                    <span class="ms-1 qualifier-trailing-label"> SECONDS </span>
+                                                }
+                                            </div>
+                                        }
+                                        @if (selectedStixPatternBuilder.qualifierForDropdown == 'REPEATS') {
+                                            <div class="d-inline">
+                                                <input
+                                                    type="number"
+                                                    class="d-inline form-control ms-2 number-input"
+                                                    [(ngModel)]="observationQualifierData1"
+                                                />
+                                                @if (selectedStixPatternBuilder.qualifierForDropdown === 'REPEATS') {
+                                                    <span class="ms-1 qualifier-trailing-label"> TIMES </span>
+                                                }
+                                            </div>
+                                        }
+                                        @if (selectedStixPatternBuilder.qualifierForDropdown === 'START') {
+                                            <div class="d-inline">
+                                                <span class="qualifier-trailing-label ms-1">START</span>
+                                                <input
+                                                    class="form-control d-inline date-input ms-1 me-1"
+                                                    [(ngModel)]="observationQualifierData1"
+                                                    placeholder="START DATE"
+                                                    [owlDateTimeTrigger]="startDtPicker"
+                                                    [owlDateTime]="startDtPicker"
+                                                />
+                                                <owl-date-time #startDtPicker></owl-date-time>
+                                                <span class="qualifier-trailing-label ms-1 me-1">END</span>
+                                                <input
+                                                    class="form-control d-inline date-input"
+                                                    [(ngModel)]="observationQualifierData2"
+                                                    placeholder="END DATE"
+                                                    [owlDateTimeTrigger]="endDtPicker"
+                                                    [owlDateTime]="endDtPicker"
+                                                />
+                                                <owl-date-time #endDtPicker></owl-date-time>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            @if (!selectedStixPatternBuilder) {
+                                <div class="comparison-expression-builder" style="padding-top: 55px">
+                                    <div class="col-6 offset-3">Click on an observation expression to finish your STIX Pattern</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary me-2" aria-label="Close" (click)="cancelModal()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        @if (page != 1) {
+            <button class="btn btn-sm btn-secondary me-2" type="button" (click)="page = page - 1; this.observationExpressionBuilder = null">
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Previous
+            </button>
+        }
+        @if (page != pageSize) {
+            <button
+                class="btn btn-sm btn-primary"
+                type="button"
+                (click)="page = page + 1; this.observationExpressionBuilder = null; clickContinue()"
+                [disabled]="disableContinue()"
+            >
+                <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                Next
+            </button>
+        }
+        @if (page == pageSize) {
+            <button class="btn btn-sm btn-success" [disabled]="disableSaveStixPattern()" type="button" (click)="saveStixPattern()">
+                <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                STIX Pattern
+            </button>
+        }
+    </div>
+</div>

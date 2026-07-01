@@ -1,0 +1,369 @@
+<div>
+    @for (found of results; track found; let ind = $index) {
+        <div id="{{ found.eventId }}-card" class="dashboard-card main-card mb-3">
+            <div class="d-flex flex-column ps-4 pe-4 pb-3">
+                <div class="p-3 card-title card-header">
+                    <div (click)="toggleExpansion(found)" class="d-flex justify-content-between cursor-pointer align-items-center">
+                        <div class="ms-2 d-flex align-items-center">
+                            <div class="d-flex flex-column align-items-center me-3" (click)="$event.stopPropagation()">
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    id="{{ found.eventId }}-include"
+                                    style="margin-top: 0; margin-right: 0"
+                                    [checked]="found.checked"
+                                    (change)="toggleChecked(found)"
+                                    title="Include in STIX objects"
+                                />
+                            </div>
+                            <div>
+                                <span class="badge bg-primary me-2">
+                                    {{ found.type.toUpperCase() }}
+                                </span>
+                                <span class="badge bg-success me-3">{{ found.value }}</span>
+                                <span class="hash-text">{{ found.misp.info }}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center me-3 file-metadata">
+                                <div class="metadata-column">
+                                    <div class="metadata-label">Attributes</div>
+                                    <div class="metadata-value">
+                                        {{ found.misp.attribute_count }}
+                                    </div>
+                                </div>
+                                <div class="metadata-column">
+                                    <div class="metadata-label">Threat Level</div>
+                                    <div class="metadata-value">
+                                        {{ getThreatLevel(found.misp) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="vr mx-3"></div>
+                            <div class="d-flex flex-column align-items-center me-3" (click)="$event.stopPropagation()">
+                                <button class="btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download" title="Download">
+                                    <fa-icon [icon]="faDownload" class="sidebar-icon"></fa-icon>
+                                    <fa-icon [icon]="faCaretDown" class="ms-1" style="font-size: 0.65em; color: #8d9498"></fa-icon>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item pointer" (click)="downloadMisp(found)" style="color: #212529; font-size: 14px"
+                                            >MISP JSON</a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item pointer" (click)="downloadStix(found)" style="color: #212529; font-size: 14px"
+                                            >STIX</a
+                                        >
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <button type="button" class="btn" [ngClass]="{ rotate: !found.expanded, 'rotate-back': found.expanded }">
+                                <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                @if (found.expanded) {
+                    <ul class="nav nav-underline ms-3 ip-result-tabs">
+                        <li class="nav-item">
+                            <a
+                                class="nav-link pointer"
+                                id="{{ found.eventId }}-misp-tab"
+                                [ngClass]="{ active: found.tab === 'misp' }"
+                                (click)="setTab(found, 'misp')"
+                                >MISP</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link pointer"
+                                id="{{ found.eventId }}-stix-tab"
+                                [ngClass]="{ active: found.tab === 'stix' }"
+                                (click)="setTab(found, 'stix')"
+                                >STIX</a
+                            >
+                        </li>
+                    </ul>
+
+                    <div class="card-body pt-2">
+                        @if (found.tab === 'misp') {
+                            <div class="misp-section mb-4">
+                                <h5 class="misp-section-header mb-3">Search Values</h5>
+                                <div class="misp-properties section-content">
+                                    <div class="misp-property-row">
+                                        <div class="misp-property-label" id="{{ found.eventId }}-search-value">
+                                            <span class="badge bg-primary" style="font-size: 14px">
+                                                {{ found.type.toUpperCase() }}
+                                            </span>
+                                        </div>
+                                        <div class="misp-property-value">
+                                            <span class="badge bg-success" style="font-size: 14px">
+                                                {{ found.value }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    @for (value of found.additionalValues; track value.value; let ind = $index) {
+                                        <div class="misp-property-row" id="{{ found.eventId }}-additional-{{ ind }}">
+                                            <div class="misp-property-label">
+                                                <span class="badge bg-primary" style="font-size: 14px">
+                                                    {{ value.type.toUpperCase() }}
+                                                </span>
+                                            </div>
+                                            <div class="misp-property-value">
+                                                <span class="badge bg-success" style="font-size: 14px">
+                                                    {{ value.value }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="misp-section mb-4">
+                                <h5 class="misp-section-header mb-3">Metadata</h5>
+                                <div class="misp-properties section-content">
+                                    <div class="misp-property-row">
+                                        <span class="misp-property-label"> Event ID: </span>
+                                        <span
+                                            id="{{ found.eventId }}-id"
+                                            (click)="openWindow('event', found.eventId)"
+                                            class="misp-property-value cursor-pointer"
+                                        >
+                                            {{ found.eventId }} <fa-icon class="ms-1" style="font-size: 12px" [icon]="faExternalLinkAlt"></fa-icon>
+                                        </span>
+                                    </div>
+                                    <div class="misp-property-row">
+                                        <span class="misp-property-label"> UUID: </span>
+                                        <span id="{{ found.eventId }}-uuid" class="misp-property-value">
+                                            {{ found.misp.uuid }}
+                                        </span>
+                                    </div>
+                                    <div class="misp-property-row">
+                                        <span class="misp-property-label"> Date: </span>
+                                        <span id="{{ found.eventId }}-date" class="misp-property-value">
+                                            {{ found.misp.date }}
+                                        </span>
+                                    </div>
+                                    <div class="misp-property-row">
+                                        <span class="misp-property-label"> Creator Organization: </span>
+                                        <span id="{{ found.eventId }}-org-creator" class="misp-property-value">
+                                            {{ found.misp.Orgc.name }}
+                                        </span>
+                                    </div>
+                                    <div class="misp-property-row">
+                                        <span class="misp-property-label"> Owner Organization: </span>
+                                        <span id="{{ found.eventId }}-org-name" class="misp-property-value">
+                                            {{ found.misp.Org.name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="misp-section mb-4">
+                                <h5 class="misp-section-header mb-3">Tags</h5>
+                                <div class="misp-properties misp-scrollable p-2">
+                                    <div class="row g-1">
+                                        @for (tag of getTags(found); track tag.id; let tagInd = $index) {
+                                            <div class="col-md-6">
+                                                <div class="misp-property-row">
+                                                    <span
+                                                        id="{{ found.eventId }}-tag-{{ tagInd }}"
+                                                        (click)="openWindow('tag', tag.id)"
+                                                        class="badge cursor-pointer"
+                                                        [style.background-color]="tag.colour"
+                                                        [style.color]="tag.font"
+                                                    >
+                                                        {{ tag.name }}
+                                                        <fa-icon class="ms-1" style="font-size: 12px" [icon]="faExternalLinkAlt"></fa-icon>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            @if (found.misp.Galaxy.length > 0) {
+                                <div class="misp-section mb-4">
+                                    <h5 class="misp-section-header mb-3">Galaxies</h5>
+                                    <div class="misp-properties misp-scrollable">
+                                        <div class="row g-1">
+                                            @for (galaxy of found.misp.Galaxy; track galaxy.uuid) {
+                                                <div class="col-md-6">
+                                                    <div class="mb-2">
+                                                        <div class="misp-property-row ms-2">
+                                                            <span class="misp-property-value">
+                                                                <b>{{ galaxy.name }}</b>
+                                                            </span>
+                                                        </div>
+                                                        <div class="ms-4">
+                                                            @for (cluster of galaxy.GalaxyCluster; track cluster.id) {
+                                                                <div class="misp-property-row">
+                                                                    <span
+                                                                        id="{{ found.eventId }}-galaxy-{{ cluster.id }}"
+                                                                        (click)="openWindow('galaxy', cluster.id)"
+                                                                        class="misp-property-value cursor-pointer"
+                                                                    >
+                                                                        &nbsp;&nbsp; {{ cluster.value }}
+                                                                        <fa-icon
+                                                                            class="ms-1"
+                                                                            style="font-size: 12px"
+                                                                            [icon]="faExternalLinkAlt"
+                                                                        ></fa-icon>
+                                                                    </span>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="misp-section mb-4">
+                                <h5 class="misp-section-header mb-3">Attributes ({{ getTagCount(found) }})</h5>
+                                @if (getTagCount(found) > 0) {
+                                    <div class="scrollable-table-container">
+                                        <table class="misp-table misp-rules-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Category</th>
+                                                    <th>ID</th>
+                                                    <th>Type</th>
+                                                    <th>Value</th>
+                                                    <th>Comment</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (attribute of found.misp.Attribute; track attribute.id) {
+                                                    <tr class="misp-row" id="{{ found.eventId }}-attribute-{{ attribute.id }}">
+                                                        <td>
+                                                            {{ attribute.category }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.id }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.type }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.value }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.comment }}
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @for (attribute of getObjectAttributes(found); track attribute.id) {
+                                                    <tr class="misp-row" id="{{ found.eventId }}-attribute-{{ attribute.id }}">
+                                                        <td>
+                                                            {{ attribute.category }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.id }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.type }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.value }}
+                                                        </td>
+                                                        <td>
+                                                            {{ attribute.comment }}
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                } @else {
+                                    <div class="misp-properties section-content">
+                                        <div class="misp-property-row">
+                                            <b> No Attributes Found </b>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        } @else if (found.tab === 'stix') {
+                            <div class="pt-2">
+                                <div class="select-all-section">
+                                    <input
+                                        id="{{ found.eventId }}-select-all"
+                                        type="checkbox"
+                                        [ngModel]="found.selectAll"
+                                        (change)="selectAll(found, $event.target.checked)"
+                                    />
+                                    <span>Select All</span>
+                                </div>
+                                @for (objCategory of eventToStixMap.get(found.eventId).objects; track objCategory.type) {
+                                    <div class="stix-category-card">
+                                        <div
+                                            id="{{ found.eventId }}-objCategory.type"
+                                            class="stix-category-header"
+                                            (click)="toggleTypeCollapse(found.eventId, objCategory)"
+                                        >
+                                            <span class="stix-category-name">{{ capitalize(objCategory.type) }}</span>
+                                            <span class="stix-count-badge">{{ objCategory.objects.length }}</span>
+                                            <span
+                                                class="stix-chevron"
+                                                [class.collapsed]="eventToStixMap.get(found.eventId).collapsedTypes.has(objCategory.type)"
+                                            >
+                                                <i class="bi bi-chevron-up"></i>
+                                            </span>
+                                        </div>
+
+                                        @if (!eventToStixMap.get(found.eventId).collapsedTypes.has(objCategory.type)) {
+                                            <div class="stix-items-list">
+                                                @for (object of objCategory.objects; track object.id; let i = $index) {
+                                                    <div class="stix-item" [class.odd]="i % 2 === 1">
+                                                        <div class="stix-item-row">
+                                                            <input
+                                                                id="{{ found.eventId }}-object-checkbox-{{ object.id }}"
+                                                                type="checkbox"
+                                                                class="stix-checkbox"
+                                                                [ngModel]="found.checkedObjectsMap.get(object.id).checked"
+                                                                (change)="toggleObjectSelect(found, object.id, $event)"
+                                                            />
+                                                            <a
+                                                                class="stix-object-link"
+                                                                id="{{ found.eventId }}-object-expand-{{ object.id }}"
+                                                                (click)="toggleObjectCollapse(found.eventId, object.id)"
+                                                            >
+                                                                {{ getComponentDisplay(object) }}
+                                                            </a>
+                                                        </div>
+
+                                                        @if (!eventToStixMap.get(found.eventId).collapsedObjects.has(object.id)) {
+                                                            <ngx-monaco-editor
+                                                                class="json-editor pt-3 pb-3 pe-2 ps-2"
+                                                                style="width: 100%; display: block; height: 350px !important"
+                                                                readonly
+                                                                [options]="editorOptions"
+                                                                [ngModel]="returnJson(object)"
+                                                            ></ngx-monaco-editor>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    @if (!results || results.length == 0) {
+        <div style="height: 500px" class="d-flex flex-column justify-content-center align-items-center">
+            <fa-icon [icon]="faStop" style="color: #ffc107; font-size: 150px"></fa-icon>
+
+            <span> No Events Were Found Associated With The Search Value(s) </span>
+        </div>
+    }
+</div>

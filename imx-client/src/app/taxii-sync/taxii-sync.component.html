@@ -1,0 +1,367 @@
+<div class="d-flex flex-column mt-3">
+    @if (page === 1) {
+        <div class="row dashboard-card">
+            <div class="col d-flex flex-column ps-4 pe-4">
+                <div class="pt-3 pb-3 card-title card-header">
+                    <div class="d-flex justify-content-between">
+                        <div>Jobs</div>
+                        <div>
+                            <fa-icon [icon]="faPlus" (click)="setPage(2)" class="bundle-icon cursor-pointer"></fa-icon>
+                        </div>
+                    </div>
+                </div>
+
+                @if (loading) {
+                    <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    </div>
+                }
+
+                @if (!loading && jobs.length === 0) {
+                    <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                        <span class="main-text">No synchronization jobs are configured for the TAXII Server</span>
+                    </div>
+                }
+
+                @if (!loading && jobs.length > 0) {
+                    <table class="table justify-self-center table-striped table-hover">
+                        <thead>
+                            <th scope="col" class="pt-3 pb-3">Job ID</th>
+                            <th scope="col" class="pt-3 pb-3">API Root</th>
+                            <th scope="col" class="pt-3 pb-3">Collection</th>
+                        </thead>
+                        <tbody>
+                            @for (job of jobs; track job) {
+                                <tr class="cursor-pointer" (click)="viewJob(job)">
+                                    <td class="pt-3 pb-3 docname">
+                                        {{ job.configuration.remote.uuid }}
+                                    </td>
+                                    <td class="pt-3 pb-3">
+                                        {{ job.configuration.fragment }}
+                                    </td>
+                                    <td class="pt-3 pb-3">
+                                        {{ job.configuration.cId }}
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    }
+    @if (page === 2) {
+        <div class="d-flex flex-column">
+            <div class="mb-4">
+                @if (viewingJob) {
+                    <h3>View Job</h3>
+                }
+                @if (!viewingJob) {
+                    <h3>Create a Job</h3>
+                }
+            </div>
+            <div class="container">
+                <form>
+                    <!-- Destination -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="mb-2" for="job-id"> Job ID </label>
+                                <input disabled class="form-control" id="job-id" [(ngModel)]="config.remote.uuid" name="uuid" type="text" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="mb-2" for="destination-id"> Destination TAXII ID </label>
+                                <input
+                                    disabled
+                                    class="form-control"
+                                    id="destination-id"
+                                    name="destinationUrl"
+                                    [(ngModel)]="destinationUrl"
+                                    placeholder="Destination URL"
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="mb-2" for="until"> Until </label>
+                                <input
+                                    [disabled]="viewingJob"
+                                    class="form-control"
+                                    id="until"
+                                    name="until"
+                                    [(ngModel)]="until"
+                                    placeholder="Until Time"
+                                    [owlDateTimeTrigger]="dtPickerCustom"
+                                    [owlDateTime]="dtPickerCustom"
+                                />
+                                <owl-date-time #dtPickerCustom></owl-date-time>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!viewingJob) {
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="api-root"> Destination API Root </label>
+                                    <select
+                                        class="form-select"
+                                        id="api-root"
+                                        [(ngModel)]="destinationSelectedApiRoot"
+                                        name="apiRoot"
+                                        (ngModelChange)="getDestinationCollections()"
+                                    >
+                                        <option selected [ngValue]="null">API Root</option>
+                                        @for (apiRoot of destinationApiRoots; track apiRoot) {
+                                            <option [value]="apiRoot.title">
+                                                {{ apiRoot.title }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="collection"> Destination Collection </label>
+                                    <select
+                                        [disabled]="!destinationSelectedApiRoot"
+                                        id="collection"
+                                        class="form-select"
+                                        [(ngModel)]="destinationSelectedCollection"
+                                        name="collection"
+                                    >
+                                        <option selected [ngValue]="null">Collection</option>
+                                        @for (collection of destinationCollections; track collection) {
+                                            <option [value]="collection.id">
+                                                {{ collection.title }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (viewingJob) {
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="api-root2"> Destination API Root </label>
+                                    <input
+                                        disabled
+                                        class="form-control"
+                                        id="api-root2"
+                                        [(ngModel)]="destinationSelectedApiRoot"
+                                        name="apiRoot2"
+                                        type="text"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="collection2"> Destination Collection </label>
+                                    <input
+                                        disabled
+                                        class="form-control"
+                                        id="collection2"
+                                        [(ngModel)]="destinationSelectedCollection"
+                                        name="collection2"
+                                        type="text"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Source -->
+                    <div class="row mb-4 mt-5">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="mb-2" for="source-url"> Source TAXII URL </label>
+                                <input
+                                    [disabled]="viewingJob"
+                                    class="form-control"
+                                    id="source-url"
+                                    [(ngModel)]="sourceUrl"
+                                    name="sourceUrl"
+                                    placeholder="Source TAXII URL"
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="mb-2" for="source-username"> Source TAXII Username </label>
+                                <input
+                                    [disabled]="viewingJob"
+                                    class="form-control"
+                                    id="source-username"
+                                    [(ngModel)]="sourceUsername"
+                                    name="sourceUsername"
+                                    placeholder="Source TAXII Username"
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="mb-2" for="source-password"> Source TAXII Password </label>
+                                <input
+                                    [disabled]="viewingJob"
+                                    class="form-control"
+                                    id="source-password"
+                                    [(ngModel)]="sourcePassword"
+                                    name="sourcePassword"
+                                    placeholder="Source TAXII Password"
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (taxiiConnected && !viewingJob) {
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="source-apiRoot"> Source API Root </label>
+                                    <select class="form-select" id="source-apiRoot" [(ngModel)]="sourceSelectedApiRoot" name="apiRoot">
+                                        <option selected [ngValue]="null">API Root</option>
+                                        @for (apiRoot of sourceApiRoots; track apiRoot) {
+                                            <option [value]="apiRoot">
+                                                {{ apiRoot }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="source-collection"> Source Collection </label>
+                                    <select
+                                        [disabled]="!sourceSelectedApiRoot"
+                                        id="source-collection"
+                                        class="form-select"
+                                        [(ngModel)]="sourceSelectedCollection"
+                                        name="source-collection"
+                                    >
+                                        <option selected [ngValue]="null">Collection</option>
+                                        @for (collection of sourceCollections[sourceSelectedApiRoot]; track collection) {
+                                            <option [value]="collection.id">
+                                                {{ collection.title }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (viewingJob) {
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="source-apiRoot2"> Source API Root </label>
+                                    <input
+                                        disabled
+                                        class="form-control"
+                                        id="source-apiRoot2"
+                                        [(ngModel)]="sourceSelectedApiRoot"
+                                        name="source-apiRoot2"
+                                        type="text"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="mb-2" for="source-collection2"> Source Collection </label>
+                                    <input
+                                        disabled
+                                        class="form-control"
+                                        id="source-collection2"
+                                        [(ngModel)]="sourceSelectedCollection"
+                                        name="source-collection2"
+                                        type="text"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!viewingJob) {
+                        <div class="row mb-4">
+                            <div class="col d-flex justify-content-center">
+                                @if (!taxiiLoading) {
+                                    <button
+                                        type="button"
+                                        (click)="getSourceApiRoots()"
+                                        class="btn btn-lg btn-color component-button text me-2"
+                                        style="width: 175px !important"
+                                    >
+                                        Connect TAXII
+                                    </button>
+                                }
+
+                                @if (taxiiLoading) {
+                                    <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Add/Cancel -->
+                    <div class="row justify-content-end mt-5">
+                        <div class="col-6 d-flex justify-content-end">
+                            <button
+                                type="button"
+                                [disabled]="loadingJob"
+                                (click)="cancelJob()"
+                                class="btn btn-lg btn-outline-secondary component-button text me-2"
+                                style="width: 175px !important"
+                            >
+                                Cancel
+                            </button>
+                            @if (viewingJob) {
+                                <button
+                                    type="button"
+                                    [disabled]="loadingJob"
+                                    (click)="deleteJob()"
+                                    class="btn btn-lg btn-outline-danger component-button text"
+                                    style="width: 175px !important; will-change: transform, opacity"
+                                >
+                                    Remove Job
+                                </button>
+                            }
+                            @if (!viewingJob) {
+                                <button
+                                    type="button"
+                                    (click)="createJob()"
+                                    [disabled]="!validJob() || loadingJob"
+                                    class="btn btn-lg btn-outline-success component-button text"
+                                    style="width: 175px !important; will-change: transform, opacity"
+                                >
+                                    Add Job
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
+    @if (page === 3) {
+        <div>Edit Jobs</div>
+    }
+</div>

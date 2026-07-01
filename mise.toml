@@ -1,0 +1,19 @@
+[tools]
+prek = "latest"
+python = "latest"
+uv = "latest"
+node = "lts"
+npm = "latest"
+hadolint = "latest"
+
+[settings]
+python.uv_venv_auto = "create|source"
+
+[tasks.install]
+description = "Setup hooks and install all deps"
+run = """
+prek install
+uv sync --project imx-py
+cd imx-client && npm install
+cd ../imx-server && npm install
+"""

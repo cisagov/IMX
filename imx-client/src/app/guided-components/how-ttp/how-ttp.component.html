@@ -1,0 +1,227 @@
+<div class="main-container">
+    <!-- Header -->
+    <div class="guided-header">
+        <div class="guided-header-items">
+            <div class="guided-header-icon">
+                <fa-icon [icon]="faChess" style="font-size: 1.75rem"></fa-icon>
+                <div class="d-flex flex-column">
+                    <h3 class="guided-header-title component-title ps-2">HOW (TTP)</h3>
+                    <p class="guided-header-subtitle ps-2">What techniques were used?</p>
+                </div>
+            </div>
+
+            <app-total-guided-cart (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+        </div>
+        <div class="horizonal-rule-top" style="width: 100%"></div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container">
+        <!-- Form Body -->
+        <div class="guided-form">
+            <div class="guided-dual-container">
+                <!-- TTP Designation -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        TTP Designation
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('ttp_designation')"></span>
+                        </span>
+                        <!-- <a href="javascript:void(0)" (click)="triggerDecider.emit()" style="padding-left: 1rem; font-weight: 400">Decider Tool</a> -->
+                    </div>
+
+                    <input
+                        class="form-control form-control-guided w-100"
+                        placeholder="Enter a label or designation."
+                        [(ngModel)]="name"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(name) }"
+                    />
+                </div>
+
+                <!-- Tactic -->
+                <!-- Note: This should be redesigned to a dropdown input -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        Tactic<span class="text-danger ms-1">*</span>
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('ttp_tactic')"></span>
+                        </span>
+                    </div>
+
+                    <input
+                        class="form-control form-control-guided"
+                        placeholder="The MITRE ATT&CK Tactic"
+                        [(ngModel)]="tacticNumbers"
+                        (input)="disableContinue()"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(tacticNumbers) }"
+                    />
+                </div>
+            </div>
+
+            <!-- Technique -->
+            <div class="inner-row">
+                <div class="input-header">
+                    Technique<span class="text-danger ms-1">*</span>
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('ttp_technique')"></span>
+                    </span>
+                </div>
+                <input
+                    class="form-control form-control-guided"
+                    placeholder="The MITRE ATT&CK Technique #"
+                    [(ngModel)]="indexNumbers"
+                    (input)="disableContinue()"
+                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(indexNumbers) }"
+                />
+            </div>
+
+            <!-- Add Observables -->
+            <div class="inner-row">
+                <div class="input-header">
+                    Observables
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('add_observables')"></span>
+                    </span>
+                    @if (selectedSco.length > 0) {
+                        <span class="badge bg-secondary ms-2 omr-count-badge">{{ selectedSco.length }} selected</span>
+                    }
+                </div>
+
+                <!-- Multi-select dropdown -->
+                <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                    <select
+                        [(ngModel)]="currentSelectedSco"
+                        (ngModelChange)="checkSelectObs()"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentSelectedSco) }"
+                        class="form-control form-control-guided form-select"
+                        style="min-width: 220px"
+                    >
+                        <option [ngValue]="null" disabled selected>Select Observables</option>
+                        @for (option of availableObservableOptions; track option) {
+                            <option [value]="option.id">
+                                {{ option.type + ': ' + getDisplay(option) }}
+                            </option>
+                        }
+                    </select>
+
+                    <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="addObservable(currentSelectedSco)">
+                        <fa-icon [icon]="faPlus"></fa-icon>
+                        <span>Add</span>
+                    </button>
+                </div>
+
+                @if (selectedSco.length > 0) {
+                    <div class="other-refs-list">
+                        @for (observable of selectedSco; track observable; let i = $index) {
+                            <div
+                                id="other_list{{ i }}"
+                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                            >
+                                <span class="ref-name">{{ getScoDisplayName(observable) }}</span>
+                                <button
+                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                    style="display: flex"
+                                    type="button"
+                                    id="other_list{{ i }}_delete"
+                                    (click)="deleteObservable(observable)"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <div class="empty-refs-state">No Observables added yet.</div>
+                }
+            </div>
+
+            <!-- Detection String -->
+            <div class="inner-row">
+                <div class="input-header">
+                    Detection String
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('detection_string')"></span>
+                    </span>
+                    @if (selectedIndicator.length > 0) {
+                        <span class="badge bg-secondary ms-2 omr-count-badge">{{ selectedIndicator.length }} selected</span>
+                    }
+                </div>
+
+                <!-- Multi-select dropdown -->
+                <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                    <select
+                        [(ngModel)]="currentSelectedIndicator"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentSelectedIndicator) }"
+                        class="form-control form-control-guided form-select"
+                        style="min-width: 220px"
+                    >
+                        <option [ngValue]="null" disabled>Select Detection Strings</option>
+                        @for (option of availableIndicatorOptions; track option) {
+                            <option [value]="option.id">
+                                {{ option.pattern }}
+                            </option>
+                        }
+                    </select>
+
+                    <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="addIndicator(currentSelectedIndicator)">
+                        <fa-icon [icon]="faPlus"></fa-icon>
+                        <span>Add</span>
+                    </button>
+                </div>
+
+                @if (selectedIndicator.length > 0) {
+                    <div class="other-refs-list">
+                        @for (indicator of selectedIndicator; track indicator; let i = $index) {
+                            <div id="other_list{{ i }}" class="other-ref-item d-flex justify-content-between align-items-center">
+                                <span class="ref-name">{{ getIndicatorDisplayName(indicator) }}</span>
+                                <button
+                                    class="btn btn-fa-sm btn-color list-trash"
+                                    type="button"
+                                    id="other_list{{ i }}_delete"
+                                    (click)="deleteIndicator(indicator)"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <div class="empty-refs-state">No Detection Strings added yet.</div>
+                }
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="guided-information">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="d-flex flex-column justify-content-start gr-help-section">
+                <div class="gr-help-section-title">Adding TTPs</div>
+                <div class="gr-help-section-content">
+                    If you have a tactic #, you may enter it in the "Tactic #" field.
+                    <br /><br />
+                    You may also use CISA's Decider Tool to analyze adversary activity and help you arrive at the correct tactic, technique, or
+                    sub-technique.
+                    <br /><br />
+                    Click the Decider Tool button to go to CISA's Decider Tool. There you will be guided through the TTP Selection Process.
+                    <br /><br />
+                    Once you are done with the Decider Tool, the TTPs there will automatically populate the Tactic # field on this page and you may
+                    continue.
+                    <br /><br />
+                    You may add multiple TTPs to your cart.
+                    <br /><br />
+                    Observables: You may now add observables that you have previously created and pair them with an ATTACK TTP.
+                    <br /><br />
+                    Detection String: Choose a detection string to link to an ATTACK TTP.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

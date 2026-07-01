@@ -1,0 +1,56 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Apply TLP</h4>
+    <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal" (click)="close()">
+        <span aria-hidden="true"></span>
+    </button>
+</div>
+
+<div class="d-flex justify-content-center align-items-center content-wrapper">
+    <div class="d-flex flex-column justify-content-start align-items-center content-wrapper">
+        <div class="mt-2" style="width: 100%; text-align: center">
+            TLP selection will only be applied to objects that do not have a TLP assigned.<br />To apply to all objects in the Editor please select
+            'Apply To All Objects' checkbox.
+        </div>
+        <div class="d-flex tlp-list" style="margin-top: 20px">
+            @for (option of this.tlp_options; track option) {
+                <div
+                    class="d-flex justify-content-center align-items-center card card-tlp {{ option.css }}"
+                    [ngClass]="{ 'item-selected': checkSelectedTLP(option.key) }"
+                    (click)="selectTLP(option.key)"
+                >
+                    <div style="width: -webkit-fill-available">{{ option.key }}</div>
+                </div>
+            }
+        </div>
+        @if (onPageMsgs?.length > 0) {
+            <div class="row mt-5">
+                <div class="col">
+                    <div class="d-flex justify-content-center align-items-center flex-column">
+                        @for (msg of onPageMsgs; track msg; let i = $index) {
+                            <div>
+                                <span [ngClass]="{ 'alert-danger': i === 1 }">{{ msg }}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="d-flex align-items-center mt-2">
+            <input type="checkbox" class="me-2 pointer" [checked]="applyToAll" [(ngModel)]="applyToAll" />
+            <span class="pointer" (click)="applyToAll = !applyToAll">Apply To All Objects</span>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="item-action">
+        <button type="button" class="btn btn-sm btn-outline-secondary me-3" (click)="close()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-success" (click)="confirm()">
+            <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+            Confirm
+        </button>
+    </div>
+</div>
