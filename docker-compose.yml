@@ -1,0 +1,91 @@
+name: imx
+services:
+  imx-client:
+    container_name: imx-client
+    build:
+      context: ./imx-client
+      dockerfile: Dockerfile
+      args:
+        BUILD_ENV: "dev"
+    restart: unless-stopped
+    depends_on:
+      - imx-server
+    networks:
+      - imx
+    volumes:
+      - ./env.json:/usr/share/nginx/html/assets/env.json:ro
+    ports:
+      - 4200:8080
+
+  imx-server:
+    container_name: imx-server
+    build:
+      context: ./imx-server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - imx
+    env_file: .env
+    ports:
+      - 3000:3000
+    volumes:
+      - type: tmpfs
+        target: /imx-server/uploads
+        tmpfs:
+          size: 536870912
+          mode: 01777
+
+  imx-py:
+    container_name: imx-py
+    build:
+      context: ./imx-py
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - imx
+    # ports:
+    #   - 5000:5000
+
+  elasticsearch:
+    container_name: elasticsearch-imx
+    image: elasticsearch:8.19.16
+    restart: unless-stopped
+    mem_limit: 2g
+    networks:
+      - imx
+    environment:
+      - ELASTIC_PASSWORD=${DB_PASS}
+      - discovery.type=single-node
+      - path.repo=/opt/snapshots
+      - xpack.security.enabled=true
+    volumes:
+      - imx-data:/usr/share/elasticsearch/data
+      - ./snapshots:/opt/snapshots
+    # ports:
+    #   - 9200:9200
+    healthcheck:
+      test:
+        ["CMD", "curl", "--user", "elastic:${DB_PASS}", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  apache-tika:
+    container_name: tika
+    image: apache/tika:3.2.3.0
+    restart: unless-stopped
+    networks:
+      - imx
+
+networks:
+  imx:
+    name: imx
+
+volumes:
+  imx-data:
+    driver: local

@@ -1,0 +1,66 @@
+include:
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/gitleaks.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/trivy_fs.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/python_lint.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/python_test.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/build_image.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/semantic_release.yml
+
+variables:
+  UV_PYTHON: "3.11"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+stages:
+  - security
+  - lint
+  - test
+  - build
+  - release
+
+trivy-fs:
+  allow_failure: true
+
+lint:
+  allow_failure: true
+  extends: .python-lint
+  variables:
+    SERVICE: imx-py
+
+test:
+  extends: .python-test
+  variables:
+    SERVICE: imx-py
+
+build-client:
+  extends: .build-image
+  variables:
+    IMAGE_NAME: "client"
+    CONTEXT_DIR: "imx-client"
+    DOCKERFILE_PATH: "./imx-client/Dockerfile"
+
+build-server:
+  extends: .build-image
+  variables:
+    IMAGE_NAME: "server"
+    CONTEXT_DIR: "imx-server"
+    DOCKERFILE_PATH: "./imx-server/Dockerfile"
+
+build-py:
+  extends: .build-image
+  variables:
+    IMAGE_NAME: "py"
+    CONTEXT_DIR: "imx-py"
+    DOCKERFILE_PATH: "./imx-py/Dockerfile"

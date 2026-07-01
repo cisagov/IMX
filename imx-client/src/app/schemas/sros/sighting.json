@@ -1,0 +1,120 @@
+{
+  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sros/sighting.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "sighting",
+  "description": "A Sighting denotes the belief that something in CTI (e.g., an indicator, malware, tool, threat actor, etc.) was seen.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../common/core.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The type of this object, which MUST be the literal `sighting`.",
+          "enum": [
+            "sighting"
+          ]
+        },
+        "id": {
+          "title": "id",
+          "pattern": "^sighting[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        },
+        "description": {
+          "type": "string",
+          "description": "A description that provides more details and context about the Sighting."
+        },
+        "first_seen": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?Z$",
+          "description": "The beginning of the time window during which the SDO referenced by the sighting_of_ref property was sighted."
+        },
+        "last_seen": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?Z$",
+          "description": "The end of the time window during which the SDO referenced by the sighting_of_ref property was sighted."
+        },
+        "count": {
+          "type": "integer",
+          "description": "This is an integer between 0 and 999,999,999 inclusive and represents the number of times the object was sighted.",
+          "minimum": 0,
+          "maximum": 999999999
+        },
+        "sighting_of_ref": {
+          "allOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]+[a-z0-9]--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            },
+            {
+              "not": {
+                "pattern": "^sighting[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "^relationship[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "^bundle[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "^marking-definition[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "^language-content[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              }
+            }
+          ],
+          "description": "An ID reference to the object that has been sighted."
+        },
+        "observed_data_refs": {
+          "type": "array",
+          "description": "A list of ID references to the Observed Data objects that contain the raw cyber data for this Sighting.",
+          "items": {
+            "allOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]+[a-z0-9]--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "pattern": "^observed-data[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "where_sighted_refs": {
+          "type": "array",
+          "description": "A list of ID references to the Identity or Location objects describing the entities or types of entities that saw the sighting.",
+          "items": {
+            "allOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]+[a-z0-9]--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "pattern": "^(identity|location)[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "summary": {
+          "type": "boolean",
+          "description": "The summary property indicates whether the Sighting should be considered summary data. "
+        }
+      }
+    }
+  ],
+  "required": [
+    "sighting_of_ref"
+  ]
+}

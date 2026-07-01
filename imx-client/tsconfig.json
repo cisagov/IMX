@@ -1,0 +1,39 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "chart.js/dist/types/utils": ["node_modules/chart.js/dist/types/utils.d.ts"]
+        },
+        "outDir": "./dist/out-tsc",
+        "forceConsistentCasingInFileNames": true,
+        "strict": false,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "declaration": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "bundler",
+        "importHelpers": true,
+        "target": "ES2022",
+        "module": "es2020",
+        "lib": ["ES2020", "es2018", "dom"],
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "typeRoots": ["node_modules/@types", "node_modules/@types/node"],
+        "useDefineForClassFields": false
+    },
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "fullTemplateTypeCheck": true,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    },
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs"
+        }
+    }
+}

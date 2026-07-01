@@ -1,0 +1,197 @@
+<div class="main-container">
+    <!-- Header -->
+    <div class="guided-header">
+        <div class="guided-header-items">
+            <div class="guided-header-icon">
+                <fa-icon [icon]="faExclamationTriangle" style="font-size: 1.75rem"></fa-icon>
+                <div class="d-flex flex-column">
+                    <h3 class="guided-header-title component-title ps-2">HOW (CWE)</h3>
+                    <p class="guided-header-subtitle ps-2">What weaknesses were exploited?</p>
+                </div>
+            </div>
+
+            <app-total-guided-cart (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+        </div>
+        <div class="horizonal-rule-top" style="width: 100%"></div>
+    </div>
+
+    <div class="form-container">
+        <!-- Form Body -->
+        <div class="guided-form">
+            <!-- Common Controls & TTP Designation -->
+            <div class="guided-dual-container">
+                <!-- Common Controls -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        Common Controls<span class="text-danger ms-1">*</span>
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('common_controls')"></span>
+                        </span>
+                        @if (currentControl.length > 0) {
+                            <span class="badge bg-secondary ms-2 omr-count-badge">{{ currentControl.length }} selected</span>
+                        }
+                    </div>
+
+                    <!-- Multi-select dropdown -->
+                    <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                        <select
+                            [(ngModel)]="selectedControlOption"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(selectedControlOption) }"
+                            class="form-control form-control-guided form-select"
+                            style="min-width: 220px"
+                        >
+                            <option [ngValue]="null" disabled>Select a Common Control</option>
+
+                            @for (option of availableControlOptions; track option) {
+                                <option [value]="option">
+                                    {{ option }}
+                                </option>
+                            }
+                        </select>
+
+                        <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="addCommonControl(selectedControlOption)">
+                            <fa-icon [icon]="faPlus"></fa-icon>
+                            <span>Add</span>
+                        </button>
+                    </div>
+
+                    @if (currentControl.length > 0) {
+                        <div class="other-refs-list">
+                            @for (control of currentControl; track control; let i = $index) {
+                                <div
+                                    id="other_list{{ i }}"
+                                    class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                >
+                                    <span class="ref-name">{{ control }}</span>
+                                    <button
+                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                        style="display: flex"
+                                        type="button"
+                                        id="other_list{{ i }}_delete"
+                                        (click)="deleteCommonControl(control)"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    } @else {
+                        <div class="empty-refs-state">No Common Controls added yet.</div>
+                    }
+                </div>
+
+                <!-- TTP Designation -->
+                <div class="inner-row">
+                    <div class="input-header">TTP Designation</div>
+                    <select
+                        class="form-control form-control-guided"
+                        type="text"
+                        [(ngModel)]="currentTtp"
+                        (change)="checkCart()"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentTtp) }"
+                    >
+                        <option value="">None</option>
+                        @for (option of getTtps(); track option) {
+                            <option [value]="option.id">{{ option.name }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Common Weakness -->
+            <div class="inner-row">
+                <div class="input-header">
+                    Common Weakness<span class="text-danger ms-1">*</span>
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('common_weakness')"></span>
+                    </span>
+                    <a href="https://cwe.mitre.org/data/definitions/1003.html" style="padding-left: 1rem; font-weight: 400" target="_blank"
+                        >Common Weakness Enumeration Reference</a
+                    >
+                </div>
+                <select
+                    class="form-control form-control-guided form-select"
+                    type="text"
+                    [(ngModel)]="currentWeakness"
+                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentWeakness) }"
+                    (change)="checkCart()"
+                >
+                    <option [ngValue]="null" selected disabled>Select a Common Weakness</option>
+                    @for (option of weaknessOptions; track option) {
+                        <option [value]="option.key">{{ option.value }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Common Vulnerability -->
+            @if (angleDownVul) {
+                <div class="inner-row">
+                    <div class="input-header">
+                        Common Vulnerability<span class="text-danger ms-1">*</span>
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('common_vulnerability')"></span>
+                        </span>
+                        <a
+                            href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+                            style="padding-left: 1rem; font-weight: 400"
+                            target="_blank"
+                            >Known Exploited Vulnerabilities Catalog</a
+                        >
+                    </div>
+                    <input
+                        class="form-control form-control-guided"
+                        type="text"
+                        [(ngModel)]="currentCveId"
+                        (ngModelChange)="onCveInputChange()"
+                        style="text-transform: uppercase"
+                        placeholder="CVE-[4 digit year]-[4 or 5 digit ID]"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentCveId) }"
+                    />
+                    @if (isValidating) {
+                        <div>
+                            <span class="spinner-grow spinner-grow-sm me-1" role="status" aria-hidden="true" style="color: #007bff"></span>
+                            <span style="font-size: 14px">Validating CVE...</span>
+                        </div>
+                    }
+                    @if (!isValidating && message) {
+                        <div class="success-message">{{ message }}&nbsp;&check;</div>
+                    }
+                    @if (!isValidating && errorMessage) {
+                        <div class="warning-message">{{ errorMessage }}</div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Help Section -->
+        <div class="guided-information">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="d-flex flex-column justify-content-start gr-help-section">
+                <div class="gr-help-section-title">Adding Weaknesses</div>
+                <div class="gr-help-section-content">
+                    <p>
+                        <b>Common Controls</b>: A shared safety measure or security practice that is used across different systems, departments, or
+                        organizations to protect against threats.
+                    </p>
+                    <p>
+                        <b>Common Weaknesses</b>:  A “weakness” is a condition in software, firmware, or hardware that, under certain circumstances,
+                        could contribute to a vulnerability within a system.
+                    </p>
+                    <p>
+                        <b>Common Vulnerabilities</b>: Weak spots or flaws found in software or systems that make them easy targets for hackers or
+                        malicious software.
+                    </p>
+                    <p>Was there a weak control measure that may have resulted in a vulnerability?</p>
+                    <p>Select a common weakness if one was identified.</p>
+                    <p>If a vulnerability was exploited, enter the CVE# or use the link to find one then enter it.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

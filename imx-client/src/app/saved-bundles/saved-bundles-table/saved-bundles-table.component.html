@@ -1,0 +1,972 @@
+<div style="font-size: 0.875rem" class="ps-3 pb-3 pt-3 d-flex justify-content-between align-items-center tab-header">
+    @if (mode !== 'saving') {
+        <div class="tab-buttons">
+            <button
+                class="btn btn-sm btn-tab me-2"
+                [ngClass]="{ 'btn-primary': activeTable == 'profile', 'btn-outline-primary': activeTable != 'profile' }"
+                [disabled]="activeTable == 'profile'"
+                (click)="changeActiveTable('profile')"
+            >
+                <fa-icon [icon]="faCloud" class="pe-2"></fa-icon>
+                <span>My Profile</span>
+            </button>
+            <button
+                class="btn btn-sm btn-tab"
+                [ngClass]="{ 'btn-primary': activeTable == 'local', 'btn-outline-primary': activeTable != 'local' }"
+                [disabled]="activeTable == 'local'"
+                (click)="changeActiveTable('local')"
+            >
+                <fa-icon [icon]="faHdd" class="pe-2"></fa-icon>
+                <span>Local</span>
+            </button>
+        </div>
+    }
+    @if (mode === 'saving') {
+        <div class="tab-placeholder"></div>
+    }
+    @if (!currentSelection.includes('group')) {
+        <div class="search-wrapper">
+            <select class="search-type-select" [(ngModel)]="searchType" (change)="setSearchType($event)">
+                <option value="name">Name</option>
+                <option value="report">Report #</option>
+            </select>
+            <div class="search-input-wrapper">
+                <fa-icon [icon]="faSearch" class="search-icon"></fa-icon>
+                <input
+                    type="text"
+                    class="dashboard-search"
+                    [placeholder]="searchType === 'name' ? 'Search by name...' : 'Search by report #...'"
+                    [(ngModel)]="searchText"
+                    name="searchText"
+                    (input)="onSearchInput()"
+                    aria-label="Search saved bundles"
+                />
+                @if (searchText) {
+                    <fa-icon [icon]="faTimes" class="search-clear" (click)="clearSearchCompletely()"></fa-icon>
+                }
+            </div>
+        </div>
+    }
+</div>
+@if (!isLoading && isSaving && nameCheck && newBundle.name != '') {
+    <div style="font-size: 0.875rem" class="col-12 text-center">
+        <p class="text-danger">**Name must be unique**</p>
+    </div>
+}
+@if (!isLoading && activeTable == 'profile' && stixService.imxServerConnectionError != '' && !stixService.imxServerConnectionError.includes('404')) {
+    <div style="font-size: 0.875rem" class="col-12 text-center">
+        <p class="text-danger">**{{ stixService.imxServerConnectionError }}**</p>
+    </div>
+}
+
+@if (
+    activeTable == 'profile' &&
+    (stixService.imxServerConnectionError == '' || stixService.imxServerConnectionError.includes('404')) &&
+    mode === 'basic'
+) {
+    <div class="w-20 mt-2 mb-2 ms-2">
+        <ng-container>
+            <select style="font-size: 0.875rem" class="form-control form-select" (change)="onUserChange($event)" [(ngModel)]="currentSelection">
+                <option [value]="null" selected disabled></option>
+                @for (option of selectionOptions; track option; let i = $index) {
+                    <option [value]="option">{{ option }}</option>
+                }
+            </select>
+        </ng-container>
+    </div>
+}
+
+@if (
+    activeTable == 'local' ||
+    (activeTable == 'profile' && (stixService.imxServerConnectionError == '' || stixService.imxServerConnectionError.includes('404')))
+) {
+    <div class="overflow-auto" style="max-height: 50vh">
+        <table style="font-size: 0.875rem" class="table col-12 mb-0">
+            <thead style="border-bottom: 2px solid lightgray">
+                <tr>
+                    <th scope="col" class="text-center" style="width: 15%">
+                        <span style="cursor: pointer" (click)="sortTable('name')"> Name </span>
+                        @if (sortKey === 'name-desc') {
+                            <fa-icon [icon]="faAngleDown"> </fa-icon>
+                        }
+                        @if (sortKey === 'name-asc') {
+                            <fa-icon [icon]="faAngleUp"> </fa-icon>
+                        }
+                    </th>
+                    @if (activeTable == 'profile') {
+                        <th scope="col" class="text-center nowrap" style="width: 7.5%">
+                            <span style="cursor: pointer" (click)="sortTable('user')"> User </span>
+                            @if (sortKey === 'user-desc') {
+                                <fa-icon [icon]="faAngleDown"> </fa-icon>
+                            }
+                            @if (sortKey === 'user-asc') {
+                                <fa-icon [icon]="faAngleUp"> </fa-icon>
+                            }
+                        </th>
+                    }
+                    <th scope="col" class="text-center nowrap" style="width: 7.5%">
+                        <span style="cursor: pointer" (click)="sortTable('reportNo')"> Report # </span>
+                        @if (sortKey === 'reportNo-desc') {
+                            <fa-icon [icon]="faAngleDown"> </fa-icon>
+                        }
+                        @if (sortKey === 'reportNo-asc') {
+                            <fa-icon [icon]="faAngleUp"> </fa-icon>
+                        }
+                    </th>
+                    @if (mode == 'basic') {
+                        <th scope="col" class="text-center" style="width: 7.5%">
+                            <span> TLP Color </span>
+                        </th>
+                    }
+                    <th scope="col" class="text-center" style="width: 16%">
+                        <span style="cursor: pointer" (click)="sortTable('created')"> Created </span>
+                        @if (sortKey === 'created-desc') {
+                            <fa-icon [icon]="faAngleDown"> </fa-icon>
+                        }
+                        @if (sortKey === 'created-asc') {
+                            <fa-icon [icon]="faAngleUp"> </fa-icon>
+                        }
+                    </th>
+                    <th scope="col" class="text-center" style="width: 16%">
+                        <span style="cursor: pointer" (click)="sortTable('modified')"> Modified </span>
+                        @if (sortKey === 'modified-desc') {
+                            <fa-icon [icon]="faAngleDown"> </fa-icon>
+                        }
+                        @if (sortKey === 'modified-asc') {
+                            <fa-icon [icon]="faAngleUp"> </fa-icon>
+                        }
+                    </th>
+                    @if (mode == 'basic') {
+                        <th scope="col" class="text-center" style="width: 10%">
+                            <span> Publication Status </span>
+                        </th>
+                    }
+                    <th scope="col" class="text-center" (click)="sortTable('internal_status')" style="width: 10%">
+                        <span style="cursor: pointer"> Internal Status </span>
+                        @if (sortKey === 'internal_status-desc') {
+                            <fa-icon [icon]="faAngleDown"> </fa-icon>
+                        }
+                        @if (sortKey === 'internal_status-asc') {
+                            <fa-icon [icon]="faAngleUp"> </fa-icon>
+                        }
+                    </th>
+                    <th scope="col" class="text-center" style="width: 10%">
+                        <span> Actions </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (isLoading) {
+                    <tr class="expanded-panel">
+                        <td [attr.colspan]="colspan" class="text-center py-4">
+                            <div class="d-flex flex-column align-items-center gap-2">
+                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                <span style="font-size: 0.875rem; color: #6c757d">Loading bundles...</span>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!isLoading && isSaving) {
+                    <tr class="expanded-panel">
+                        <td class="row-name text-center">
+                            <input class="form-control name" (input)="newBundleNameChange($event)" [(ngModel)]="newBundle.name" />
+                        </td>
+                        <td class="row-name text-center">
+                            {{ newBundle.reportNo }}
+                        </td>
+                        @if (mode == 'basic') {
+                            <td class="row-name text-center">
+                                {{ newBundle.tlp }}
+                            </td>
+                        }
+                        <td class="row-name text-center">
+                            {{ newBundle.created }}
+                        </td>
+                        <td class="row-name text-center">
+                            {{ newBundle.modified }}
+                        </td>
+                        <td class="row-name text-center">
+                            <select class="form-control form-select" (change)="changeNewBundle($event)" [ngModel]="newBundle.internal_status">
+                                <option value="">TBD</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Blocked">Blocked</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </td>
+                        <td class="row-name text-center">
+                            <!-- Button For Save Modal -->
+                            @if (mode == 'saving') {
+                                <button
+                                    type="button"
+                                    class="btn btn-fa btn-success"
+                                    (click)="saveBundle(newBundle, true)"
+                                    title="Click to save new bundle"
+                                    [disabled]="nameCheck"
+                                >
+                                    <fa-icon [icon]="faSave"></fa-icon>
+                                </button>
+                            }
+                            @if (mode == 'saving') {
+                                <button
+                                    type="button"
+                                    class="btn btn-fa btn-secondary ms-1"
+                                    (click)="activateSave('hide')"
+                                    title="Click to cancel saving new bundle"
+                                >
+                                    <fa-icon [icon]="faBan"></fa-icon>
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+                <!-- Active table is Profile and not searching -->
+                @if (!isSearching && activeTable == 'profile' && stixService.serverSavedBundles.length != 0 && !isLoading) {
+                    @for (obj of stixService.serverSavedBundles; track obj; let i = $index) {
+                        <tr [ngClass]="{ 'selected-bundle': obj._source.name == currentSelectedBundleName, 'even-row': i % 2 !== 0 }">
+                            <td
+                                class="row-name row-name-link text-center"
+                                (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)"
+                            >
+                                @if (!editingName || (editingName && editingIndex !== i)) {
+                                    <div class="d-inline-flex align-items-center">
+                                        <span>{{ obj._source.name }}</span>
+                                        @if (obj._source.user === envService.keycloakUser.preferred_username) {
+                                            <fa-icon
+                                                [icon]="faEdit"
+                                                (click)="editBundleName($event, i, obj._source.name)"
+                                                class="bundle-edit ms-2"
+                                                style="color: #dee2e6"
+                                            ></fa-icon>
+                                        }
+                                    </div>
+                                }
+                                @if (editingIndex === i && editingName) {
+                                    <span class="d-inline-flex align-items-center">
+                                        <input
+                                            class="form-control name me-2"
+                                            (click)="$event.stopPropagation()"
+                                            style="width: 200px"
+                                            type="text"
+                                            [(ngModel)]="editingNameText"
+                                        />
+                                        <button
+                                            class="me-1 btn btn-outline-success"
+                                            (click)="renameBundle($event, obj, renameErrorModal)"
+                                            title="Rename bundle"
+                                        >
+                                            <fa-icon [icon]="faSave"></fa-icon>
+                                        </button>
+                                        <button class="btn btn-outline-danger" (click)="cancelBundleNameEdit($event)" title="Cancel bundle rename">
+                                            <span style="font-weight: bold">X</span>
+                                        </button>
+                                    </span>
+                                }
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.user }}
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.reportNo }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj._source.tlp }}
+                                </td>
+                            }
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.created }}
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.modified }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj._source.publicationServer }}<br />
+                                    {{ obj._source.publicationRoot }}<br />
+                                    {{ obj._source.publicationStatus }}
+                                </td>
+                            }
+                            <td class="row-name text-center">
+                                <select
+                                    class="form-control form-select"
+                                    (change)="internalStatusChange($event, obj)"
+                                    [ngModel]="obj._source.internal_status"
+                                >
+                                    <option value="TBD">TBD</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Blocked">Blocked</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </td>
+                            <td class="row-name text-center action-buttons">
+                                @if (mode == 'saving' && bundleRowNumber !== i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to preview the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        <fa-icon [icon]="faSearch"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'saving' && bundleRowNumber == i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to close the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        X
+                                    </button>
+                                }
+                                <!-- Actions for My Profile Page -->
+                                @if ((mode == 'basic' || mode == 'loading') && obj._source.user === envService.keycloakUser.preferred_username) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-primary"
+                                        (click)="editBundle(obj)"
+                                        title="Click to load and edit the bundle"
+                                    >
+                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                    </button>
+                                }
+                                @if ((mode == 'basic' || mode == 'loading') && obj._source.user === envService.keycloakUser.preferred_username) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-danger ms-1"
+                                        (click)="deleteBundle(obj)"
+                                        title="Click to delete the bundle"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                }
+                                @if ((mode == 'basic' || mode == 'loading') && obj._source.user !== envService.keycloakUser.preferred_username) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-secondary ms-1"
+                                        (click)="copyBundle(obj)"
+                                        title="Click to copy bundle for your user"
+                                    >
+                                        <fa-icon [icon]="faCopy"></fa-icon>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                        @if (bundleRowNumber == i) {
+                            <tr class="expanded-panel">
+                                <td [attr.colspan]="colspan">
+                                    <pre class="preview-json-window save-json">{{ savedBundleResults | json }}</pre>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                <!-- Active table is Local and not searching -->
+                @if (!isSearching && activeTable == 'local' && localPagination.length != 0 && !isLoading) {
+                    @for (obj of localPagination; track obj; let i = $index) {
+                        <tr [ngClass]="{ 'selected-bundle': obj.name == currentSelectedBundleName, 'even-row': i % 2 !== 0 }">
+                            <td
+                                class="row-name row-name-link text-center"
+                                (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)"
+                            >
+                                @if (!editingName || (editingName && editingIndex !== i)) {
+                                    <div class="d-inline-flex align-items-center">
+                                        <span>{{ obj.name }}</span>
+                                        <fa-icon
+                                            [icon]="faEdit"
+                                            (click)="editBundleName($event, i, obj.name)"
+                                            class="bundle-edit ms-2"
+                                            style="color: #dee2e6"
+                                        ></fa-icon>
+                                    </div>
+                                }
+                                @if (editingIndex === i && editingName) {
+                                    <span class="d-inline-flex align-items-center">
+                                        <input
+                                            class="form-control name me-2"
+                                            (click)="$event.stopPropagation()"
+                                            style="width: 200px"
+                                            type="text"
+                                            [(ngModel)]="editingNameText"
+                                        />
+                                        <button
+                                            class="me-1 btn btn-outline-success"
+                                            (click)="renameBundle($event, obj, renameErrorModal)"
+                                            title="Rename bundle"
+                                        >
+                                            <fa-icon [icon]="faSave"></fa-icon>
+                                        </button>
+                                        <button class="btn btn-outline-danger" (click)="cancelBundleNameEdit($event)" title="Cancel bundle rename">
+                                            <span style="font-weight: bold">X</span>
+                                        </button>
+                                    </span>
+                                }
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj.reportNo }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj.tlp }}
+                                </td>
+                            }
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj.created }}
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj.modified }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj.publicationServer }}<br />
+                                    {{ obj.publicationRoot }}<br />
+                                    {{ obj.publicationStatus }}
+                                </td>
+                            }
+                            <td class="row-name text-center">
+                                <select
+                                    style="font-size: 0.875rem"
+                                    class="form-control form-select"
+                                    (change)="internalStatusChange($event, obj)"
+                                    [ngModel]="obj.internal_status"
+                                >
+                                    <option value="TBD">TBD</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Blocked">Blocked</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </td>
+                            <td class="row-name text-center action-buttons">
+                                @if (mode == 'saving' && bundleRowNumber !== i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to preview the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        <fa-icon [icon]="faSearch"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'saving' && bundleRowNumber == i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to close the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        X
+                                    </button>
+                                }
+                                <!-- Actions for My Profile Page -->
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-primary"
+                                        (click)="editBundle(obj)"
+                                        title="Click to load and edit the bundle"
+                                    >
+                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-danger ms-1"
+                                        (click)="deleteBundle(obj)"
+                                        title="Click to delete the bundle"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-success ms-1"
+                                        (click)="transferBundle(obj)"
+                                        title="Click to transfer the bundle to your profile"
+                                    >
+                                        <fa-icon [icon]="faArrowCircleRight"></fa-icon>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                        @if (bundleRowNumber == i) {
+                            <tr class="expanded-panel">
+                                <td [attr.colspan]="colspan">
+                                    <pre class="preview-json-window save-json">{{ savedBundleResults | json }}</pre>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                @if (
+                    !isLoading &&
+                    ((activeTable == 'local' && localPagination.length == 0) ||
+                        (activeTable == 'profile' && stixService.serverSavedBundles.length == 0))
+                ) {
+                    <tr class="expanded-panel empty-state-row">
+                        <td [attr.colspan]="colspan" class="text-center py-5">
+                            <fa-icon
+                                [icon]="activeTable === 'local' ? faHdd : faCloud"
+                                class="empty-icon mb-3"
+                                style="font-size: 3rem; color: #dee2e6"
+                            ></fa-icon>
+                            <p style="font-weight: 600; font-size: 1rem; color: #6c757d; margin: 0">No Bundles Saved</p>
+                            <p style="font-size: 0.875rem; color: #adb5bd; margin-top: 8px">
+                                {{
+                                    activeTable === 'local'
+                                        ? 'Save your first bundle locally to see it listed here'
+                                        : 'No bundles found in your profile'
+                                }}
+                            </p>
+                        </td>
+                    </tr>
+                }
+                <!-- Active table is Profile and is searching -->
+                @if (isSearching && activeTable == 'profile' && searchResultsProfile.length != 0 && !isLoading) {
+                    @for (obj of searchResultsProfile; track obj; let i = $index) {
+                        <tr [ngClass]="{ 'selected-bundle': obj._source.name == currentSelectedBundleName, 'even-row': i % 2 !== 0 }">
+                            <td
+                                class="row-name row-name-link text-center"
+                                (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)"
+                            >
+                                @if (!editingName || (editingName && editingIndex !== i)) {
+                                    <div class="d-inline-flex align-items-center">
+                                        <span>{{ obj._source.name }}</span>
+                                        <fa-icon
+                                            [icon]="faEdit"
+                                            (click)="editBundleName($event, i, obj._source.name)"
+                                            class="bundle-edit ms-2"
+                                            style="color: #dee2e6"
+                                        ></fa-icon>
+                                    </div>
+                                }
+                                @if (editingIndex === i && editingName) {
+                                    <span class="d-inline-flex align-items-center">
+                                        <input
+                                            class="form-control name me-2"
+                                            (click)="$event.stopPropagation()"
+                                            style="width: 200px"
+                                            type="text"
+                                            [(ngModel)]="editingNameText"
+                                        />
+                                        <button
+                                            class="me-1 btn btn-outline-success"
+                                            (click)="renameBundle($event, obj, renameErrorModal)"
+                                            title="Rename bundle"
+                                        >
+                                            <fa-icon [icon]="faSave"></fa-icon>
+                                        </button>
+                                        <button class="btn btn-outline-danger" (click)="cancelBundleNameEdit($event)" title="Cancel bundle rename">
+                                            <span style="font-weight: bold">X</span>
+                                        </button>
+                                    </span>
+                                }
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.user }}
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.reportNo }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj._source.tlp }}
+                                </td>
+                            }
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.created }}
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj._source.modified }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj._source.publicationServer }}<br />
+                                    {{ obj._source.publicationRoot }}<br />
+                                    {{ obj._source.publicationStatus }}
+                                </td>
+                            }
+                            <td class="row-name text-center">
+                                <select
+                                    class="form-control form-select"
+                                    (change)="internalStatusChange($event, obj)"
+                                    [ngModel]="obj._source.internal_status"
+                                >
+                                    <option value="TBD">TBD</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Blocked">Blocked</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </td>
+                            <td class="row-name text-center action-buttons">
+                                @if (mode == 'saving' && bundleRowNumber !== i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to preview the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        <fa-icon [icon]="faSearch"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'saving' && bundleRowNumber == i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to close the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        X
+                                    </button>
+                                }
+                                <!-- Actions for My Profile Page -->
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-primary"
+                                        (click)="editBundle(obj)"
+                                        title="Click to load and edit the bundle"
+                                    >
+                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-danger ms-1"
+                                        (click)="deleteBundle(obj)"
+                                        title="Click to delete the bundle"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                        @if (bundleRowNumber == i) {
+                            <tr class="expanded-panel">
+                                <td [attr.colspan]="colspan">
+                                    <pre class="preview-json-window save-json">{{ savedBundleResults | json }}</pre>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                <!-- Active table is Local and is Searching -->
+                @if (isSearching && activeTable == 'local' && searchResultsLocal.length != 0 && !isLoading) {
+                    @for (obj of searchResultsLocal; track obj; let i = $index) {
+                        <tr [ngClass]="{ 'selected-bundle': obj.name == currentSelectedBundleName, 'even-row': i % 2 !== 0 }">
+                            <td
+                                class="row-name row-name-link text-center"
+                                (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)"
+                            >
+                                @if (!editingName || (editingName && editingIndex !== i)) {
+                                    <div class="d-inline-flex align-items-center">
+                                        <span>{{ obj.name }}</span>
+                                        <fa-icon
+                                            [icon]="faEdit"
+                                            (click)="editBundleName($event, i, obj.name)"
+                                            class="bundle-edit ms-2"
+                                            style="color: #dee2e6"
+                                        ></fa-icon>
+                                    </div>
+                                }
+                                @if (editingIndex === i && editingName) {
+                                    <span class="d-inline-flex align-items-center">
+                                        <input
+                                            class="form-control name me-2"
+                                            (click)="$event.stopPropagation()"
+                                            style="width: 200px"
+                                            type="text"
+                                            [(ngModel)]="editingNameText"
+                                        />
+                                        <button
+                                            class="me-1 btn btn-outline-success"
+                                            (click)="renameBundle($event, obj, renameErrorModal)"
+                                            title="Rename bundle"
+                                        >
+                                            <fa-icon [icon]="faSave"></fa-icon>
+                                        </button>
+                                        <button class="btn btn-outline-danger" (click)="cancelBundleNameEdit($event)" title="Cancel bundle rename">
+                                            <span style="font-weight: bold">X</span>
+                                        </button>
+                                    </span>
+                                }
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj.reportNo }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj.tlp }}
+                                </td>
+                            }
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj.created }}
+                            </td>
+                            <td class="row-name text-center" (click)="mode == 'saving' ? selectCurrentBundle(obj) : changeShowSavedBundles(i)">
+                                {{ obj.modified }}
+                            </td>
+                            @if (mode == 'basic') {
+                                <td class="row-name text-center" (click)="changeShowSavedBundles(i)">
+                                    {{ obj.publicationServer }}<br />
+                                    {{ obj.publicationRoot }}<br />
+                                    {{ obj.publicationStatus }}
+                                </td>
+                            }
+                            <td class="row-name text-center">
+                                <select class="form-control form-select" (change)="internalStatusChange($event, obj)" [ngModel]="obj.internal_status">
+                                    <option value="TBD">TBD</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Blocked">Blocked</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </td>
+                            <td class="row-name text-center action-buttons">
+                                @if (mode == 'saving' && bundleRowNumber !== i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to preview the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        <fa-icon [icon]="faSearch"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'saving' && bundleRowNumber == i) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-search-subtle me-1"
+                                        title="Click to close the contents of the bundle"
+                                        (click)="changeShowSavedBundles(i)"
+                                    >
+                                        X
+                                    </button>
+                                }
+                                <!-- Actions for My Profile Page -->
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-primary"
+                                        (click)="editBundle(obj)"
+                                        title="Click to load and edit the bundle"
+                                    >
+                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-danger ms-1"
+                                        (click)="deleteBundle(obj)"
+                                        title="Click to delete the bundle"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                }
+                                @if (mode == 'basic') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-outline-success ms-1"
+                                        (click)="transferBundle(obj)"
+                                        title="Click to transfer the bundle to your profile"
+                                    >
+                                        <fa-icon [icon]="faArrowCircleRight"></fa-icon>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                        @if (bundleRowNumber == i) {
+                            <tr class="expanded-panel">
+                                <td [attr.colspan]="colspan">
+                                    <pre class="preview-json-window save-json">{{ savedBundleResults | json }}</pre>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                <!-- If no search result and is searching -->
+                @if (
+                    isSearching &&
+                    ((activeTable == 'local' && searchResultsLocal.length == 0) || (activeTable == 'profile' && searchResultsProfile.length == 0))
+                ) {
+                    <tr class="expanded-panel empty-state-row">
+                        <td [attr.colspan]="colspan" class="text-center py-5">
+                            <fa-icon [icon]="faSearch" class="empty-icon mb-3" style="font-size: 3rem; color: #dee2e6"></fa-icon>
+                            <p style="font-weight: 600; font-size: 1rem; color: #6c757d; margin: 0">No Results Found</p>
+                            <p style="font-size: 0.875rem; color: #adb5bd; margin-top: 8px">
+                                No bundles match your search criteria. Try a different search term.
+                            </p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (mode == 'saving') {
+    <div style="font-size: 0.875rem" class="footer d-flex pb-2 pt-2 pe-3 ps-3 align-items-center justify-content-between save-bar">
+        <span class=""> Bundle Name: </span>
+        <input
+            type="text"
+            style="font-size: 14px"
+            class="form-control me-1 ms-2"
+            placeholder="Enter name of the bundle..."
+            [(ngModel)]="currentSelectedBundleName"
+            (ngModelChange)="trimBundleName()"
+            name="saveText"
+        />
+        <button
+            style="height: 38px"
+            class="btn btn-sm btn-outline-success ms-1"
+            (click)="searchBundleName(errorModal)"
+            [disabled]="isLoading || isFindingBundle || !currentSelectedBundleName"
+        >
+            @if (!isFindingBundle) {
+                <span>
+                    <fa-icon [icon]="faSave" class="me-1"></fa-icon>
+                    Save
+                </span>
+            }
+            @if (isFindingBundle) {
+                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+            }
+        </button>
+    </div>
+}
+
+@if (!isSearching && serverTotalPages !== 0 && activeTable == 'profile' && stixService.imxServerConnectionError == '') {
+    <div style="font-size: 0.875rem" class="footer mt-1 mb-1 d-flex justify-content-center" [ngClass]="{ 'footer-no-bottom': serverTotalPages == 1 }">
+        <div class="d-inline-flex ms-3">
+            @if (serverTotalPages !== 1) {
+                <div class="span-footer float-start">
+                    <span>Page: {{ currentPage }}/{{ serverTotalPages }}</span>
+                </div>
+            }
+            <div class="buttons-footer">
+                @if (currentPage > 1) {
+                    <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('left')">
+                        <fa-icon [icon]="faArrowLeft"></fa-icon>
+                    </button>
+                }
+                @if (currentPage < serverTotalPages) {
+                    <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('right')">
+                        <fa-icon [icon]="faArrowRight"></fa-icon>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}
+@if (!isSearching && localTotalPages !== 0 && activeTable == 'local') {
+    <div
+        style="font-size: 0.875rem"
+        class="footer ms-4 mt-1 mb-1 d-flex justify-content-center"
+        [ngClass]="{ 'footer-no-bottom': localTotalPages == 1 }"
+    >
+        @if (localTotalPages !== 1) {
+            <div class="span-footer float-start">
+                <span>Page: {{ currentPage }}/{{ localTotalPages }}</span>
+            </div>
+        }
+        <div class="buttons-footer">
+            @if (currentPage > 1) {
+                <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('left')">
+                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                </button>
+            }
+            @if (currentPage < localTotalPages) {
+                <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('right')">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                </button>
+            }
+        </div>
+    </div>
+}
+
+@if (isSearching && totalProfileSearchBundles !== 0 && activeTable == 'profile' && stixService.imxServerConnectionError == '') {
+    <div
+        style="font-size: 0.875rem"
+        class="footer mt-1 mb-1 d-flex justify-content-center"
+        [ngClass]="{ 'footer-no-bottom': totalProfileSearchBundles == 1 }"
+    >
+        @if (totalProfileSearchBundles !== 1) {
+            <div class="span-footer float-start">
+                <span>Page: {{ currentSearchPage }}/{{ totalProfileSearchBundles }}</span>
+            </div>
+        }
+        <div class="buttons-footer">
+            @if (currentSearchPage > 1) {
+                <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('left')">
+                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                </button>
+            }
+            @if (currentSearchPage < totalProfileSearchBundles) {
+                <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('right')">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                </button>
+            }
+        </div>
+    </div>
+}
+@if (isSearching && totalLocalSearchBundles !== 0 && activeTable == 'local') {
+    <div
+        style="font-size: 0.875rem"
+        class="footer ms-4 mt-1 mb-1 d-flex justify-content-center"
+        [ngClass]="{ 'footer-no-bottom': localTotalPages == 1 }"
+    >
+        @if (totalLocalSearchBundles !== 1) {
+            <div class="span-footer float-start">
+                <span>Page: {{ currentSearchPage }}/{{ totalLocalSearchBundles }}</span>
+            </div>
+        }
+        <div class="buttons-footer">
+            @if (currentSearchPage > 1) {
+                <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('left')">
+                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                </button>
+            }
+            @if (currentSearchPage < totalLocalSearchBundles) {
+                <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('right')">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                </button>
+            }
+        </div>
+    </div>
+}
+
+<ng-template #renameErrorModal let-modal>
+    <div style="font-size: 0.875rem" class="modal-header">
+        <h4 class="modal-title" id="error-modal-title">A bundle with the same name already exists</h4>
+    </div>
+
+    <div style="font-size: 0.875rem" class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" aria-label="Cancel" (click)="continueOverwrite(false)">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #errorModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="error-modal-title">Overwrite bundle?</h4>
+    </div>
+
+    <div class="modal-body pb-0">
+        <p>A bundle with the same name has been found.</p>
+        <p>Confirm that you would like to overwrite the bundle, or cancel.</p>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-outline-success" aria-label="Confirm" (click)="continueOverwrite(true)">
+            <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+            Confirm
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" aria-label="Cancel" (click)="continueOverwrite(false)">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+    </div>
+</ng-template>

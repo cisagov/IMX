@@ -1,0 +1,33 @@
+.bottom {
+    height: 3.25rem;
+    width: 100%;
+}
+
+.bottom-absolute {
+    position: absolute;
+    bottom: 0;
+}
+
+.hint-box {
+    padding: 2px;
+    background-color: lightgray;
+    border-radius: 5px;
+}
+
+.sides {
+    width: 16.2%;
+}
+
+p {
+    font-size: small;
+}
+
+select option:hover {
+    background-color: #999;
+    color: #fff;
+}
+
+select option:checked {
+    background-color: #999;
+    color: #fff;
+}

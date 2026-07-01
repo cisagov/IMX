@@ -1,0 +1,3013 @@
+<div
+    class="d-flex align-items-center justify-content-between"
+    [ngClass]="{ 'col-12 mt-1': stixService.guidedUI, 'col-12 pe-5': !stixService.guidedUI }"
+>
+    <div class="col-4">
+        <p class="stix-title input-header" [title]="tooltip">Extensions</p>
+    </div>
+    <div class="ms-3" [ngClass]="{ 'pe-0': !stixService.guidedUI }">
+        <div class="float-end">
+            @if (!isAddingExtensions) {
+                <button id="extensions_add" class="btn btn-fa-sm btn-color mt-1" type="button" (click)="openDialog(extensionBuilder)">
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@if (!isAddingExtensions && this.stixService.extensions.length > 0) {
+    <div class="form-group mt-2" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
+        <accordion>
+            @for (extension of this.stixService.extensions; track extension; let i = $index) {
+                <accordion-group
+                    tabindex="0"
+                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
+                    [isDisabled]="propType(extension) == 'toplevel'"
+                >
+                    <div id="extensions_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                        <div class="col d-flex justify-content-between align-items-center">
+                            <div class="btn btn-link btn-deco">
+                                {{ getHeading(extension) }}
+                            </div>
+                            @if (propType(extension) != 'toplevel') {
+                                @if (notObj(extension)) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa-sm btn-color me-2 list-trash"
+                                        (click)="setEditIndex(i); editExtensions(extension, extensionBuilder)"
+                                        id="extensions_list{{ i }}_edit"
+                                    >
+                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                    </button>
+                                }
+                            }
+                            <button
+                                class="btn btn-fa-sm btn-color list-trash"
+                                type="button"
+                                id="extensions_list{{ i }}_delete"
+                                (click)="deleteExtensions(extension)"
+                            >
+                                <fa-icon [icon]="faTrash"></fa-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    @if (propType(extension) == 'prop') {
+                        <div class="extension-properties-container">
+                            @for (prop of getProps(extension); track prop) {
+                                <div class="row mb-1">
+                                    <div class="col-12">
+                                        <div class="d-flex">
+                                            @if (!isObject(prop[1])) {
+                                                @if (('' + prop[1]).length < 200) {
+                                                    <div class="extension-property" id="{{ prop[0] }}">
+                                                        <span class="extension-property-label">{{ prop[0] }}:</span>
+                                                        <span class="extension-property-value">{{ prop[1] }}</span>
+                                                    </div>
+                                                } @else {
+                                                    <div class="extension-property">
+                                                        <div class="extension-property-label">{{ prop[0] }}:</div>
+                                                        <div class="extension-property-value mt-1">{{ prop[1] }}</div>
+                                                    </div>
+                                                }
+                                            } @else {
+                                                <div class="extension-object-property">
+                                                    <div class="extension-property-label">{{ prop[0] }}:</div>
+                                                    <div class="extension-object-content">{{ prop[1] | json }}</div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    @if (propType(extension) == 'pre') {
+                        <div *ngFor="let item of extension | keyvalue">
+                            <div class="inner" *ngFor="let inner of item.value | keyvalue">
+                                <p>{{ formatExtensionKey(inner.key) }}: {{ inner.value }}</p>
+                            </div>
+                        </div>
+                    }
+                </accordion-group>
+            }
+        </accordion>
+    </div>
+}
+
+@if (isAddingExtensions) {
+    <div class="form-group mt-2">
+        <div class="row">
+            <div class="col">
+                <div class="input-group mb-2 float-end">
+                    <span class="input-group-text">
+                        <div class="tooltipright">
+                            <b>Extension ID</b>
+                            <span class="toolttext"
+                                >Select the ID of the extension or predefined extension (if available).<br />Each ID may only be used ONCE.<br />Definitions
+                                with no Property Extensions are excluded</span
+                            >
+                        </div>
+                    </span>
+                    <select
+                        type="text"
+                        class="form-control form-select"
+                        [(ngModel)]="this.currentExtension.extension_id"
+                        name="extension_id"
+                        id="extension_id"
+                        (change)="getTypes()"
+                    >
+                        <option value=""></option>
+                        @for (obj of stixService.bundle.objects; track obj) {
+                            @if (obj.id.includes('extension-definition--') && this.hasProperties(obj)) {
+                                <option [value]="obj['id']">{{ obj.name }} ({{ obj.id }})</option>
+                            }
+                        }
+                        @if (stixService.currentType == 'file') {
+                            <option value="archive-ext">Archive File Extension (archive-ext)</option>
+                        }
+                        @if (stixService.currentType == 'file') {
+                            <option value="pdf-ext">PDF File Extension (pdf-ext)</option>
+                        }
+                        @if (stixService.currentType == 'file') {
+                            <option value="ntfs-ext">NTFS File Extension (ntfs-ext)</option>
+                        }
+                        @if (stixService.currentType == 'file') {
+                            <option value="raster-image-ext">Raster Image File Extension (raster-image-ext)</option>
+                        }
+                        @if (stixService.currentType == 'file') {
+                            <option value="windows-pebinary-ext">Windows PE Binary File Extension (windows-pebinary-ext)</option>
+                        }
+                        @if (stixService.currentType == 'network-traffic') {
+                            <option value="http-request-ext">HTTP Request Extension (http-request-ext)</option>
+                        }
+                        @if (stixService.currentType == 'network-traffic') {
+                            <option value="icmp-ext">ICMP Extension (icmp-ext)</option>
+                        }
+                        @if (stixService.currentType == 'network-traffic') {
+                            <option value="socket-ext">Network Socket Extension (socket-ext)</option>
+                        }
+                        @if (stixService.currentType == 'network-traffic') {
+                            <option value="tcp-ext">TCP Extension (tcp-ext)</option>
+                        }
+                        @if (stixService.currentType == 'process') {
+                            <option value="windows-process-ext">Windows Process Extension (windows-process-ext)</option>
+                        }
+                        @if (stixService.currentType == 'process') {
+                            <option value="windows-service-ext">Windows Service Extension (windows-service-ext)</option>
+                        }
+                        @if (stixService.currentType == 'user-account') {
+                            <option value="unix-account-ext">Unix Account Extension (unix-account-ext)</option>
+                        }
+                        @if (stixService.currentType == 'x509-certificate') {
+                            <option value="x509_v3_extensions">X.509 V3 Extensions (x509_v3_extensions)</option>
+                        }
+                        @if (stixService.currentType == 'impact') {
+                            <option value="availability-ext">Availability Extension (availability-ext)</option>
+                        }
+                        @if (stixService.currentType == 'impact') {
+                            <option value="confidentiality-ext">Confidentiality Extension (confidentiality-ext)</option>
+                        }
+                        @if (stixService.currentType == 'impact') {
+                            <option value="external-ext">External Extension (external-ext)</option>
+                        }
+                        @if (stixService.currentType == 'impact') {
+                            <option value="integrity-ext">Integrity Extension (integrity-ext)</option>
+                        }
+                        @if (stixService.currentType == 'impact') {
+                            <option value="monetary-ext">Monetary Extension (monetary-ext)</option>
+                        }
+                        @if (stixService.currentType == 'impact') {
+                            <option value="physical-ext">Physical Extension (physical-ext)</option>
+                        }
+                        @if (stixService.currentType == 'impact') {
+                            <option value="traceability-ext">Traceability Extension (traceability-ext)</option>
+                        }
+                    </select>
+                    <button
+                        class="btn btn-fa-sm btn-primary config-button"
+                        type="button"
+                        (click)="extensionModal(extensionBuilder)"
+                        [disabled]="
+                            !validID() || this.currentExtension.extension_id == '' || (!predefined && this.currentExtension.extension_type == '')
+                        "
+                    >
+                        <fa-icon [icon]="faPlus"></fa-icon>
+                        <!-- Configure  -->
+                    </button>
+                </div>
+                {{ this.errorMessage }}
+                @if (!predefined && this.errorMessage == '') {
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">
+                            <div class="tooltipright">
+                                <b>Extension Type</b>
+                                <span class="toolttext">Extension types can currently only be configured one at a time.</span>
+                            </div>
+                        </span>
+                        <select
+                            type="text"
+                            class="form-control form-select"
+                            [(ngModel)]="this.currentExtension.extension_type"
+                            name="extension_type"
+                            id="extension_type"
+                        >
+                            @for (opt of type_options; track opt) {
+                                <option [value]="opt">
+                                    {{ opt }}
+                                </option>
+                            }
+                        </select>
+                    </div>
+                }
+            </div>
+            <div></div>
+        </div>
+    </div>
+}
+
+<ng-template #extensionBuilder let-modal id="extensionBuilder" class="test">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-title">{{ this.currentExtension.extension_type }}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body extensions-modal-body">
+        @if (!predefined) {
+            <div class="col-md-12">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <p class="input-header">Define custom properties for this extension. Properties will be added in the order specified.</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <p class="input-header mb-1">Property Name</p>
+                            @if (this.currentExtension.extension_type == 'Property Extension') {
+                                <input
+                                    id="tpe_name"
+                                    class="form-control"
+                                    [ngClass]="{ 'is-invalid': customProp['name'] != '' && !validPropertyName() }"
+                                    [(ngModel)]="customProp['name']"
+                                    type="text"
+                                    placeholder="Enter property name"
+                                />
+                                @if (customProp['name'] != '' && !validPropertyName()) {
+                                    <span class="invalid-feedback">
+                                        {{ nameError }}
+                                    </span>
+                                }
+                            } @else {
+                                <select
+                                    id="tpe_name_select"
+                                    class="form-control form-select mt-2"
+                                    [ngClass]="{ 'is-invalid': customProp['name'] != '' && !validPropertyName() }"
+                                    [(ngModel)]="customProp['name']"
+                                    type="text"
+                                >
+                                    @for (prop of toplevel_props; track prop) {
+                                        <option [value]="prop">{{ prop }}</option>
+                                    }
+                                </select>
+                                @if (customProp['name'] != '' && !validPropertyName()) {
+                                    <span class="invalid-feedback">
+                                        {{ nameError }}
+                                    </span>
+                                }
+                            }
+                            @if (this.currentExtension['name'] != '' && this.modalError.get('customName')) {
+                                <div class="mt-1">
+                                    <span class="text-danger small">
+                                        {{ this.modalError.get('customName') }}
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-6">
+                            <p class="input-header mb-1">Property Type</p>
+                            <div class="d-flex gap-2 mt-2">
+                                <div style="flex: 1">
+                                    <select
+                                        id="tpe_type"
+                                        type="text"
+                                        class="form-control form-select"
+                                        [(ngModel)]="customProp['type']"
+                                        (ngModelChange)="onPropertyTypeChange($event)"
+                                    >
+                                        <option value=""></option>
+                                        <option value="text">Text</option>
+                                        <option value="boolean">Boolean</option>
+                                        <option value="integer">Integer</option>
+                                        <option value="datetime">Datetime</option>
+                                        <option value="array">Array</option>
+                                        <option value="dict">Dictionary</option>
+                                    </select>
+                                </div>
+                                <button
+                                    id="tpe_type_add"
+                                    class="btn btn-fa-sm btn-color d-inline-flex align-items-center"
+                                    type="button"
+                                    style="flex-shrink: 0"
+                                    (click)="createProperty()"
+                                    [disabled]="
+                                        customProp['type'] == '' ||
+                                        customProp['name'] == '' ||
+                                        customProp['type'] == 'array' ||
+                                        customProp['type'] == 'dict' ||
+                                        (customProp['type'] == 'text' && customProp['text'] == '') ||
+                                        (customProp['type'] == 'boolean' && customProp['boolean'] == '') ||
+                                        (customProp['type'] == 'integer' && customProp['integer'] == '') ||
+                                        (customProp['type'] == 'datetime' && customProp['datetime'] == '')
+                                    "
+                                >
+                                    <fa-icon [icon]="customProp['isEditing'] ? faSave : faPlus"></fa-icon>
+                                    @if (customProp['isEditing']) {
+                                        <span class="ms-1"></span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @switch (this.customProp['type']) {
+                        @case ('text') {
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="row mb-2">
+                                        <div class="col-12 mb-2">
+                                            <p class="input-header mb-1">Text Value</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <input
+                                                id="tpe_value"
+                                                class="form-control"
+                                                [(ngModel)]="customProp['text']"
+                                                type="text"
+                                                placeholder="Enter text value"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @case ('boolean') {
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="row mb-2">
+                                        <div class="col-12 mb-2">
+                                            <p class="input-header mb-1">Boolean Value</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <select id="tpe_value" class="form-control form-select dropdown" [(ngModel)]="customProp['boolean']">
+                                                <option value="" selected></option>
+                                                <option value="true">True</option>
+                                                <option value="false">False</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @case ('integer') {
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="row mb-2">
+                                        <div class="col-12 mb-2">
+                                            <p class="input-header mb-1">Integer Value</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <input
+                                                id="tpe_value"
+                                                class="form-control"
+                                                [(ngModel)]="customProp['integer']"
+                                                type="number"
+                                                placeholder="Enter integer value"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @case ('datetime') {
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="row mb-2">
+                                        <div class="col-12 mb-2">
+                                            <p class="input-header mb-1">Datetime Value</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <input
+                                                id="tpe_value"
+                                                class="form-control"
+                                                [(ngModel)]="customProp['datetime']"
+                                                [owlDateTimeTrigger]="dtPickerCustom"
+                                                [owlDateTime]="dtPickerCustom"
+                                                placeholder="Select date and time"
+                                            />
+                                            <owl-date-time #dtPickerCustom></owl-date-time>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @case ('array') {
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="row mb-2">
+                                        <div class="col-12 mb-2">
+                                            <p class="input-header mb-1">Array Items</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex gap-2">
+                                                <div style="flex: 1">
+                                                    <input
+                                                        id="tpe_array_item"
+                                                        class="form-control"
+                                                        [(ngModel)]="customProp['value']"
+                                                        type="text"
+                                                        placeholder="Enter array item"
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-sm btn-color"
+                                                    style="flex-shrink: 0"
+                                                    (click)="addSubModalString(customProp['value'], 'customArray')"
+                                                    [disabled]="!customProp['value']"
+                                                >
+                                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (customProp.get('customArray') && customProp.get('customArray').length > 0) {
+                                        <div class="mb-3">
+                                            @for (item of customProp.get('customArray'); track item) {
+                                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded bg-light">
+                                                    <span class="dict-array-entry">{{ item }}</span>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-fa-sm btn-color"
+                                                        (click)="deleteSubModalString(item, 'customArray')"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    @if (customProp.get('customArray') && customProp.get('customArray').length > 0) {
+                                        <div class="row mt-3">
+                                            <div class="col-12 d-flex justify-content-end">
+                                                <div
+                                                    [ngbTooltip]="
+                                                        customProp['name'] == '' || !validPropertyName()
+                                                            ? 'Please enter a valid property name to add this array'
+                                                            : ''
+                                                    "
+                                                    placement="top"
+                                                    [openDelay]="0"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-success btn-nowrap"
+                                                        (click)="createProperty()"
+                                                        [disabled]="customProp['name'] == '' || !validPropertyName()"
+                                                    >
+                                                        <fa-icon [icon]="customProp['isEditing'] ? faSave : faPlus" class="pe-1"></fa-icon>
+                                                        {{ customProp['isEditing'] ? 'Update Array' : 'Add Array' }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        @case ('dict') {
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="row mb-2">
+                                        <div class="col-12 mb-2">
+                                            <p class="input-header mb-1">Dictionary Entries</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex gap-2">
+                                                <div style="flex: 0 0 45%">
+                                                    <input
+                                                        id="tpe_dict_key"
+                                                        class="form-control"
+                                                        [(ngModel)]="customProp['key']"
+                                                        type="text"
+                                                        placeholder="Key"
+                                                    />
+                                                </div>
+                                                <div style="flex: 1">
+                                                    <input
+                                                        id="tpe_dict_value"
+                                                        class="form-control"
+                                                        [(ngModel)]="customProp['value']"
+                                                        type="text"
+                                                        placeholder="Value"
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-sm btn-color"
+                                                    style="flex-shrink: 0"
+                                                    (click)="addSubModalDictString(customProp['key'], customProp['value'], 'customDict')"
+                                                    [disabled]="!customProp['key'] || !customProp['value']"
+                                                >
+                                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (customProp.get('customDict') && customProp.get('customDict').size > 0) {
+                                        <div class="mb-3">
+                                            @for (key of customProp.get('customDict').keys(); track key) {
+                                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded bg-light">
+                                                    <span class="dict-array-entry"
+                                                        ><strong>{{ key }}:</strong> {{ customProp.get('customDict').get(key) }}</span
+                                                    >
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-fa-sm btn-color"
+                                                        (click)="deleteSubModalString(key, 'customDict')"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    @if (customProp.get('customDict') && customProp.get('customDict').size > 0) {
+                                        <div class="row mt-3">
+                                            <div class="col-12 d-flex justify-content-end">
+                                                <div
+                                                    [ngbTooltip]="
+                                                        customProp['name'] == '' || !validPropertyName()
+                                                            ? 'Please enter a valid property name to add this dictionary'
+                                                            : ''
+                                                    "
+                                                    placement="top"
+                                                    [openDelay]="0"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-success btn-nowrap"
+                                                        (click)="createProperty()"
+                                                        [disabled]="customProp['name'] == '' || !validPropertyName()"
+                                                    >
+                                                        <fa-icon [icon]="customProp['isEditing'] ? faSave : faPlus" class="pe-1"></fa-icon>
+                                                        {{ customProp['isEditing'] ? 'Update Dictionary' : 'Add Dictionary' }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                    @if (toplevel && toplevel_props.length == 0) {
+                        ERROR: There are no Extension Properties associated with this Extension Definition
+                    }
+                    <!-- Custom Properties List -->
+                    @if (
+                        !(
+                            (!this.customStringPropKeys || this.customStringPropKeys.length == 0) &&
+                            (!this.customArrPropKeys || this.customArrPropKeys.length == 0)
+                        )
+                    ) {
+                        <div class="row mb-3">
+                            <div class="col-12 input-header mb-2">
+                                <p>Custom Properties</p>
+                            </div>
+                            <div class="col-12">
+                                @if (this.customStringPropKeys && this.customStringPropKeys.length > 0) {
+                                    <accordion>
+                                        @for (key of this.customStringPropKeys; track key; let i = $index) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                                                <div class="row justify-content-between d-flex pt-0 pb-0" accordion-heading>
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">{{ key }}: {{ this.currentExtension[key] }}</div>
+                                                        <div class="d-flex gap-1">
+                                                            <button
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                type="button"
+                                                                (click)="editStringProperty(key)"
+                                                            >
+                                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                                            </button>
+                                                            <button
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                type="button"
+                                                                (click)="deleteExtensionProperty(key)"
+                                                            >
+                                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                }
+                                @if (this.customArrPropKeys && this.customArrPropKeys.length > 0) {
+                                    <accordion>
+                                        @for (x of this.customArrPropKeys; track x) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'">
+                                                <div class="row justify-content-between d-flex pt-0 pb-0" accordion-heading>
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">{{ x }}</div>
+                                                        <div class="d-flex gap-1">
+                                                            <button
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                type="button"
+                                                                (click)="editArrayDictProperty(x); $event.stopPropagation()"
+                                                            >
+                                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                                            </button>
+                                                            <button
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                type="button"
+                                                                (click)="deleteExtensionProperty(x); $event.stopPropagation()"
+                                                            >
+                                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <pre class="json-text">{{ this.currentExtension[x] | json }}</pre>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        } @else {
+            @switch (this.currentExtension.extension_id) {
+                <!-- Archive File Extension -->
+                @case ('archive-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Comment</label>
+                                <textarea
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.comment"
+                                    rows="3"
+                                    placeholder="Enter comment"
+                                ></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Contains Refs*</label>
+                                <div class="d-flex gap-2">
+                                    <select
+                                        [ngClass]="{
+                                            'is-invalid':
+                                                this.currentArrString['ext_contains_refs'] != '' && this.validationError.get('ext_contains_refs'),
+                                        }"
+                                        class="form-control form-select"
+                                        style="max-width: 250px"
+                                        [(ngModel)]="this.currentArrString['ext_contains_refs']"
+                                    >
+                                        <option value="" selected>Select reference...</option>
+                                        @for (opt of this.stixService.bundle.objects; track opt) {
+                                            @if (opt.id.match(objectRegex)) {
+                                                @if (['file', 'directory'].indexOf(opt.id.match(objectRegex)[1]) != -1) {
+                                                    <option [value]="opt['id']">
+                                                        {{ opt.id }}
+                                                    </option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <input
+                                        [ngClass]="{
+                                            'is-invalid':
+                                                this.currentArrString['ext_contains_refs'] != '' && this.validationError.get('ext_contains_refs'),
+                                        }"
+                                        class="form-control flex-grow-1"
+                                        [(ngModel)]="this.currentArrString['ext_contains_refs']"
+                                        type="text"
+                                        placeholder="Or enter reference ID"
+                                    />
+                                    <button
+                                        class="btn btn-primary btn-fa-sm"
+                                        type="button"
+                                        (click)="addString(this.currentArrString['ext_contains_refs'], 'ext_contains_refs')"
+                                        [disabled]="
+                                            this.currentArrString['ext_contains_refs'] == undefined ||
+                                            this.currentArrString['ext_contains_refs'] == '' ||
+                                            !validType(['file', 'directory'], this.currentArrString['ext_contains_refs'], 'ext_contains_refs')
+                                        "
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                                @if (this.currentArrString['ext_contains_refs'] != '' && this.validationError.get('ext_contains_refs')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('ext_contains_refs') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('ext_contains_refs')?.length > 0) {
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3">
+                                        @for (x of this.stixService.stringArrays.get('ext_contains_refs'); track x) {
+                                            <li class="mb-1">
+                                                <span class="me-2">{{ x }}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-danger trash-can"
+                                                    (click)="deleteString(x, 'ext_contains_refs')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- NTFS File Extension -->
+                @case ('ntfs-ext') {
+                    <div class="col-md-12">
+                        @if (this.page == 'base') {
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Security ID</label>
+                                    <input class="form-control" [(ngModel)]="this.currentExtension.sid" type="text" placeholder="Enter security ID" />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Alternate Data Streams</label>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <input
+                                            class="form-control"
+                                            value="Use the button on the right to create an Alternate Data Stream"
+                                            type="text"
+                                            readonly
+                                        />
+                                        <button
+                                            class="btn btn-primary flex-shrink-0"
+                                            type="button"
+                                            (click)="creatingSubObject('alternate_data_streams')"
+                                        >
+                                            <fa-icon [icon]="faPlusCircle" class="pe-1"></fa-icon>Create
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (this.currentExtension.alternate_data_streams?.length > 0) {
+                                <div class="form-group">
+                                    <accordion>
+                                        @for (x of this.currentExtension.alternate_data_streams; track x) {
+                                            <accordion-group [panelClass]="'accordion-panel-class'">
+                                                <div class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">{{ x['name'] }}</div>
+                                                        <div class="d-flex gap-1">
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                (click)="this.editSubObject(x, 'alternate_data_streams'); $event.stopPropagation()"
+                                                            >
+                                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                (click)="deleteSubObject(x, 'alternate_data_streams'); $event.stopPropagation()"
+                                                            >
+                                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <pre>{{ x | json }}</pre>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                </div>
+                            }
+                        }
+                        @if (this.page == 'creatingStream') {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Name*</label>
+                                    <input class="form-control" [(ngModel)]="this.subObject['name']" type="text" placeholder="Enter stream name" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size']"
+                                        type="number"
+                                        placeholder="Enter size"
+                                        (change)="positive(this.subObject['size'], 'size')"
+                                    />
+                                    @if (this.subObject['size'] != '' && this.validationError.get('size')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Hash</label>
+                                    <div class="d-flex gap-2">
+                                        <select
+                                            class="form-control form-select"
+                                            style="max-width: 200px"
+                                            [(ngModel)]="this.currentArrString['hash_type']"
+                                        >
+                                            @for (item of hashOptions; track item) {
+                                                <option [value]="item.value">{{ item.value }}</option>
+                                            }
+                                        </select>
+                                        <input
+                                            class="form-control flex-grow-1"
+                                            [(ngModel)]="this.currentArrString['hash_value']"
+                                            type="text"
+                                            placeholder="Enter hash value"
+                                        />
+                                        <button
+                                            class="btn btn-primary btn-fa-sm"
+                                            type="button"
+                                            (click)="addHash(this.currentArrString['hash_type'], this.currentArrString['hash_value'])"
+                                            [disabled]="this.currentArrString['hash_value'] == undefined || this.currentArrString['hash_value'] == ''"
+                                        >
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                        </button>
+                                    </div>
+                                    @if (
+                                        this.currentArrString['hash_type'] != '' &&
+                                        this.currentArrString['hash_value'] != '' &&
+                                        this.validationError.get('hashes')
+                                    ) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('hashes') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            @if (this.hashes?.size > 0) {
+                                <div class="row">
+                                    <div class="col-12">
+                                        <ul class="list-unstyled ms-3">
+                                            @for (x of this.hashes.keys(); track x) {
+                                                <li class="mb-1">
+                                                    <span class="me-2">{{ x }}: {{ this.hashes.get(x) }}</span>
+                                                    <button type="button" class="btn btn-fa-xsm btn-danger trash-can" (click)="deleteHash(x)">
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+                <!-- PDF File Extension -->
+                @case ('pdf-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Version</label>
+                                <input class="form-control" [(ngModel)]="this.currentExtension.version" type="text" placeholder="Enter version" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Is Optimized</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.is_optimized">
+                                    <option value="" selected>Select...</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">First Document ID</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.pdfid0"
+                                    type="text"
+                                    placeholder="Enter first document ID"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Second Document ID</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.pdfid1"
+                                    type="text"
+                                    placeholder="Enter second document ID"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Document Info Dictionary</label>
+                                <div class="mb-2">
+                                    <input
+                                        class="form-control mb-2"
+                                        [(ngModel)]="this.currentArrString['document_info_dict_key']"
+                                        type="text"
+                                        placeholder="Enter key"
+                                    />
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <input
+                                        class="form-control flex-grow-1"
+                                        [(ngModel)]="this.currentArrString['document_info_dict_value']"
+                                        type="text"
+                                        placeholder="Enter value"
+                                    />
+                                    <button
+                                        class="btn btn-primary btn-fa-sm"
+                                        type="button"
+                                        (click)="addDict('document_info_dict')"
+                                        [disabled]="
+                                            this.currentArrString['document_info_dict_key'] == undefined ||
+                                            this.currentArrString['document_info_dict_value'] == undefined ||
+                                            this.currentArrString['document_info_dict_key'] == '' ||
+                                            this.currentArrString['document_info_dict_value'] == ''
+                                        "
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('document_info_dict')?.length > 0) {
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3">
+                                        @for (x of this.stixService.stringArrays.get('document_info_dict'); track x) {
+                                            <li class="mb-1">
+                                                <span class="me-2">{{ x }}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-danger trash-can"
+                                                    (click)="deleteString(x, 'document_info_dict')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- Raster Image File Extension -->
+                @case ('raster-image-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Image Height</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.image_height"
+                                    type="number"
+                                    placeholder="Enter image height"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Image Width</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.image_width"
+                                    type="number"
+                                    placeholder="Enter image width"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Bits Per Pixel</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.bits_per_pixel"
+                                    type="number"
+                                    placeholder="Enter bits per pixel"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">EXIF Tags</label>
+                                <div class="mb-2">
+                                    <input
+                                        class="form-control mb-2"
+                                        [(ngModel)]="this.currentArrString['exif_tags_key']"
+                                        type="text"
+                                        placeholder="Enter key"
+                                    />
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <input
+                                        class="form-control flex-grow-1"
+                                        [(ngModel)]="this.currentArrString['exif_tags_value']"
+                                        type="text"
+                                        placeholder="Enter value"
+                                    />
+                                    <button
+                                        class="btn btn-primary btn-fa-sm"
+                                        type="button"
+                                        (click)="addDict('exif_tags')"
+                                        [disabled]="
+                                            this.currentArrString['exif_tags_key'] == undefined ||
+                                            this.currentArrString['exif_tags_value'] == undefined ||
+                                            this.currentArrString['exif_tags_key'] == '' ||
+                                            this.currentArrString['exif_tags_value'] == ''
+                                        "
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('exif_tags')?.length > 0) {
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3">
+                                        @for (x of this.stixService.stringArrays.get('exif_tags'); track x) {
+                                            <li class="mb-1">
+                                                <span class="me-2">{{ x }}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-danger trash-can"
+                                                    (click)="deleteString(x, 'exif_tags')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- Windows PE Binary File Extension -->
+                @case ('windows-pebinary-ext') {
+                    <div class="col-md-12">
+                        @if (this.page == 'base') {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">PE Binary Type*</label>
+                                    <select class="form-control form-select" [(ngModel)]="this.currentExtension.pe_type">
+                                        <option value="" selected>Select PE type...</option>
+                                        <option value="dll">dll</option>
+                                        <option value="exe">exe</option>
+                                        <option value="sys">sys</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Special Import Hash</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.imphash"
+                                        type="text"
+                                        placeholder="Enter import hash"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Machine Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.machine_hex"
+                                        type="text"
+                                        (change)="isHex(this.currentExtension.machine_hex, 'machine_hex')"
+                                        placeholder="Enter machine hex"
+                                    />
+                                    @if (this.currentExtension.machine_hex != '' && this.validationError.get('machine_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('machine_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Number Of Sections</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.number_of_sections"
+                                        type="number"
+                                        (change)="positive(this.currentExtension.number_of_sections, 'number_of_sections')"
+                                        placeholder="Enter number of sections"
+                                    />
+                                    @if (this.currentExtension.number_of_sections != '' && this.validationError.get('number_of_sections')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('number_of_sections') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Time Date Stamp</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.time_date_stamp"
+                                        [owlDateTimeTrigger]="dtPicker1"
+                                        [owlDateTime]="dtPicker1"
+                                        placeholder="Select date and time"
+                                    />
+                                    <owl-date-time #dtPicker1></owl-date-time>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Pointer to Symbol Table Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.pointer_to_symbol_table_hex"
+                                        type="text"
+                                        (change)="isHex(this.currentExtension.pointer_to_symbol_table_hex, 'pointer_to_symbol_table_hex ')"
+                                        placeholder="Enter pointer hex"
+                                    />
+                                    @if (
+                                        this.currentExtension.pointer_to_symbol_table_hex != '' &&
+                                        this.validationError.get('pointer_to_symbol_table_hex ')
+                                    ) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('pointer_to_symbol_table_hex ') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Number of Symbols</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.number_of_symbols"
+                                        type="number"
+                                        (change)="positive(this.currentExtension.number_of_symbols, 'number_of_symbols')"
+                                        placeholder="Enter number of symbols"
+                                    />
+                                    @if (this.currentExtension.number_of_symbols != '' && this.validationError.get('number_of_symbols')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('number_of_symbols') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Optional Header</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.size_of_optional_header"
+                                        type="number"
+                                        (change)="positive(this.currentExtension.size_of_optional_header, 'size_of_optional_header')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.currentExtension.size_of_optional_header != '' && this.validationError.get('size_of_optional_header')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_optional_header') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Characteristics Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentExtension.characteristics_hex"
+                                        type="text"
+                                        (change)="isHex(this.currentExtension.characteristics_hex, 'characteristics_hex')"
+                                        placeholder="Enter characteristics hex"
+                                    />
+                                    @if (this.currentExtension.characteristics_hex != '' && this.validationError.get('characteristics_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('characteristics_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <!-- Hashes -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">File Header Hashes</label>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <select
+                                            type="text"
+                                            class="form-control form-select"
+                                            [(ngModel)]="this.currentArrString['file_header_hashes_hash_type']"
+                                        >
+                                            <option value="">Select hash type...</option>
+                                            @for (item of hashOptions; track item) {
+                                                <option [value]="item.value">{{ item.value }}</option>
+                                            }
+                                        </select>
+                                        <input
+                                            class="form-control"
+                                            [(ngModel)]="this.currentArrString['file_header_hashes_hash_value']"
+                                            type="text"
+                                            placeholder="Enter hash value"
+                                        />
+                                        <button
+                                            class="btn btn-primary flex-shrink-0"
+                                            type="button"
+                                            (click)="
+                                                addHash(
+                                                    this.currentArrString['file_header_hashes_hash_type'],
+                                                    this.currentArrString['file_header_hashes_hash_value'],
+                                                    'file_header_hashes'
+                                                )
+                                            "
+                                            [disabled]="
+                                                this.currentArrString['file_header_hashes_hash_value'] == undefined ||
+                                                this.currentArrString['file_header_hashes_hash_value'] == ''
+                                            "
+                                        >
+                                            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>Add
+                                        </button>
+                                    </div>
+                                    @if (
+                                        this.currentArrString['file_header_hashes_hash_type'] != '' &&
+                                        this.currentArrString['file_header_hashes_hash_value'] != '' &&
+                                        this.validationError.get('file_header_hashes')
+                                    ) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('file_header_hashes') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            @if (this.currentExtension.file_header_hashes.size > 0) {
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <ul class="list-unstyled ms-3" id="questions">
+                                            @for (x of this.currentExtension.file_header_hashes.keys(); track x) {
+                                                <li>
+                                                    {{ x }}: {{ this.currentExtension.file_header_hashes.get(x) }}
+                                                    <button type="button" class="btn btn-fa-xsm btn-red trash-can" (click)="deleteHash(x)">
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                            <!-- Optional Header -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Optional Header</label>
+                                    <div class="d-flex gap-2">
+                                        <input
+                                            class="form-control"
+                                            value="Use the button on the right to create an Optional Header"
+                                            type="text"
+                                            readonly
+                                        />
+                                        <button
+                                            class="btn btn-primary flex-shrink-0"
+                                            type="button"
+                                            (click)="creatingSubObject('optional_header')"
+                                            [disabled]="isError()"
+                                        >
+                                            <fa-icon [icon]="faPlusCircle" class="pe-1"></fa-icon>Create
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (this.currentExtension.optional_header != undefined) {
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <accordion>
+                                            <accordion-group [panelClass]="'accordion-panel-class'">
+                                                <div class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">Optional Header</div>
+                                                        <div class="d-flex gap-1">
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                (click)="
+                                                                    this.editSubObject(this.currentExtension.optional_header, 'optional_header');
+                                                                    $event.stopPropagation()
+                                                                "
+                                                            >
+                                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                (click)="
+                                                                    deleteSubObject(this.currentExtension.optional_header, 'optional_header');
+                                                                    $event.stopPropagation()
+                                                                "
+                                                            >
+                                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <pre>{{ this.currentExtension.optional_header | json }}</pre>
+                                            </accordion-group>
+                                        </accordion>
+                                    </div>
+                                </div>
+                            }
+                            <!-- Sections -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Sections</label>
+                                    <div class="d-flex gap-2">
+                                        <input class="form-control" value="Use the button on the right to create a Section" type="text" readonly />
+                                        <button
+                                            class="btn btn-primary flex-shrink-0"
+                                            type="button"
+                                            (click)="creatingSubObject('sections')"
+                                            [disabled]="isError()"
+                                        >
+                                            <fa-icon [icon]="faPlusCircle" class="pe-1"></fa-icon>Create
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (this.currentExtension.sections && this.currentExtension.sections.length > 0) {
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <accordion>
+                                            @for (x of this.currentExtension.sections; track x) {
+                                                <accordion-group [panelClass]="'accordion-panel-class'">
+                                                    <div class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                                                        <div class="col d-flex justify-content-between align-items-center">
+                                                            <div class="btn btn-link">{{ x['name'] }}</div>
+                                                            <div class="d-flex gap-1">
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-fa-sm btn-color list-trash"
+                                                                    (click)="this.editSubObject(x, 'sections'); $event.stopPropagation()"
+                                                                >
+                                                                    <fa-icon [icon]="faEdit"></fa-icon>
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-fa-sm btn-color list-trash"
+                                                                    (click)="deleteSubObject(x, 'sections'); $event.stopPropagation()"
+                                                                >
+                                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <pre>{{ x | json }}</pre>
+                                                </accordion-group>
+                                            }
+                                        </accordion>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        <!-- Creating Header -->
+                        @if (this.page == 'creatingHeader') {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Magic Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['magic_hex']"
+                                        type="text"
+                                        (change)="isHex(this.subObject['magic_hex'], 'magic_hex')"
+                                        placeholder="Enter magic hex"
+                                    />
+                                    @if (this.subObject['magic_hex'] != '' && this.validationError.get('magic_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('magic_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Major Linker Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['major_linker_version']"
+                                        type="number"
+                                        placeholder="Enter major version"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Minor Linker Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['minor_linker_version']"
+                                        type="number"
+                                        placeholder="Enter minor version"
+                                    />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Code</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_code']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_code'], 'size_of_code')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_code'] != '' && this.validationError.get('size_of_code')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_code') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Initialized Data</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_initialized_data']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_initialized_data'], 'size_of_initialized_data')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_initialized_data'] != '' && this.validationError.get('size_of_initialized_data')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_initialized_data') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Uninitialized Data</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_uninitialized_data']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_uninitialized_data'], 'size_of_uninitialized_data')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (
+                                        this.subObject['size_of_uninitialized_data'] != '' && this.validationError.get('size_of_uninitialized_data')
+                                    ) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_uninitialized_data') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Address of Entry Point</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['address_of_entry_point']"
+                                        type="number"
+                                        placeholder="Enter address"
+                                    />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Base of Code</label>
+                                    <input class="form-control" [(ngModel)]="this.subObject['base_of_code']" type="number" placeholder="Enter base" />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Base of Data</label>
+                                    <input class="form-control" [(ngModel)]="this.subObject['base_of_data']" type="number" placeholder="Enter base" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Image Base</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['image_base']"
+                                        type="number"
+                                        placeholder="Enter image base"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Section Alignment</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['section_alignment']"
+                                        type="number"
+                                        placeholder="Enter alignment"
+                                    />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">File Alignment</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['file_alignment']"
+                                        type="number"
+                                        placeholder="Enter alignment"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Major OS Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['major_os_version']"
+                                        type="number"
+                                        placeholder="Enter major OS version"
+                                    />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Minor OS Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['minor_os_version']"
+                                        type="number"
+                                        placeholder="Enter minor OS version"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Major Image Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['major_image_version']"
+                                        type="number"
+                                        placeholder="Enter major image version"
+                                    />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Minor Image Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['minor_image_version']"
+                                        type="number"
+                                        placeholder="Enter minor image version"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Major Subsystem Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['major_subsystem_version']"
+                                        type="number"
+                                        placeholder="Enter major subsystem version"
+                                    />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Minor Subsystem Version</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['minor_subsystem_version']"
+                                        type="number"
+                                        placeholder="Enter minor subsystem version"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Win32 Version Value Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['win32_version_value_hex']"
+                                        type="text"
+                                        (change)="isHex(this.subObject['win32_version_value_hex'], 'win32_version_value_hex')"
+                                        placeholder="Enter hex value"
+                                    />
+                                    @if (this.subObject['win32_version_value_hex'] != '' && this.validationError.get('win32_version_value_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('win32_version_value_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Image</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_image']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_image'], 'size_of_image')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_image'] != '' && this.validationError.get('size_of_image')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_image') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Headers</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_headers']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_headers'], 'size_of_headers')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_headers'] != '' && this.validationError.get('size_of_headers')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_headers') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Checksum Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['checksum_hex']"
+                                        type="text"
+                                        (change)="isHex(this.subObject['checksum_hex'], 'checksum_hex')"
+                                        placeholder="Enter checksum hex"
+                                    />
+                                    @if (this.subObject['checksum_hex'] != '' && this.validationError.get('checksum_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('checksum_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Subsystem Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['subsystem_hex']"
+                                        type="text"
+                                        (change)="isHex(this.subObject['subsystem_hex'], 'subsystem_hex')"
+                                        placeholder="Enter subsystem hex"
+                                    />
+                                    @if (this.subObject['subsystem_hex'] != '' && this.validationError.get('subsystem_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('subsystem_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">DLL Characteristics Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['dll_characteristics_hex']"
+                                        type="text"
+                                        (change)="isHex(this.subObject['dll_characteristics_hex'], 'dll_characteristics_hex')"
+                                        placeholder="Enter DLL characteristics hex"
+                                    />
+                                    @if (this.subObject['dll_characteristics_hex'] != '' && this.validationError.get('dll_characteristics_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('dll_characteristics_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Stack Reserve</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_stack_reserve']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_stack_reserve'], 'size_of_stack_reserve')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_stack_reserve'] != '' && this.validationError.get('size_of_stack_reserve')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_stack_reserve') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Stack Commit</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_stack_commit']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_stack_commit'], 'size_of_stack_commit')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_stack_commit'] != '' && this.validationError.get('size_of_stack_commit')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_stack_commit') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Heap Reserve</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_heap_reserve']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_heap_reserve'], 'size_of_heap_reserve')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_heap_reserve'] != '' && this.validationError.get('size_of_heap_reserve')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_heap_reserve') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size of Heap Commit</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size_of_heap_commit']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size_of_heap_commit'], 'size_of_heap_commit')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size_of_heap_commit'] != '' && this.validationError.get('size_of_heap_commit')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size_of_heap_commit') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Loader Flags Hex</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['loader_flags_hex']"
+                                        type="text"
+                                        (change)="isHex(this.subObject['loader_flags_hex'], 'loader_flags_hex')"
+                                        placeholder="Enter loader flags hex"
+                                    />
+                                    @if (this.subObject['loader_flags_hex'] != '' && this.validationError.get('loader_flags_hex')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('loader_flags_hex') }}
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Number of RVA and Sizes</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['number_of_rva_and_sizes']"
+                                        type="number"
+                                        placeholder="Enter number"
+                                    />
+                                </div>
+                            </div>
+                            <!-- Hashes -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Hashes</label>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <select type="text" class="form-control form-select" [(ngModel)]="this.currentArrString['hash_type']">
+                                            <option value="">Select hash type...</option>
+                                            @for (item of hashOptions; track item) {
+                                                <option [value]="item.value">{{ item.value }}</option>
+                                            }
+                                        </select>
+                                        <input
+                                            class="form-control"
+                                            [(ngModel)]="this.currentArrString['hash_value']"
+                                            type="text"
+                                            placeholder="Enter hash value"
+                                        />
+                                        <button
+                                            class="btn btn-primary flex-shrink-0"
+                                            type="button"
+                                            (click)="addHash(this.currentArrString['hash_type'], this.currentArrString['hash_value'])"
+                                            [disabled]="this.currentArrString['hash_value'] == undefined || this.currentArrString['hash_value'] == ''"
+                                        >
+                                            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>Add
+                                        </button>
+                                    </div>
+                                    @if (
+                                        this.currentArrString['hash_type'] != '' &&
+                                        this.currentArrString['hash_value'] != '' &&
+                                        this.validationError.get('hashes')
+                                    ) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('hashes') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            @if (this.hashes.size > 0) {
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <ul class="list-unstyled ms-3" id="questions">
+                                            @for (x of this.hashes.keys(); track x) {
+                                                <li>
+                                                    {{ x }}: {{ this.hashes.get(x) }}
+                                                    <button type="button" class="btn btn-fa-xsm btn-red trash-can" (click)="deleteHash(x)">
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        <!-- Creating Section -->
+                        @if (this.page == 'creatingSection') {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Name*</label>
+                                    <input class="form-control" [(ngModel)]="this.subObject['name']" type="text" placeholder="Enter section name" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Size</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['size']"
+                                        type="number"
+                                        (change)="positive(this.subObject['size'], 'size')"
+                                        placeholder="Enter size"
+                                    />
+                                    @if (this.subObject['size'] != '' && this.validationError.get('size')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('size') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Entropy</label>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.subObject['entropy']"
+                                        type="number"
+                                        (change)="entropy(this.subObject['entropy'], 'entropy')"
+                                        placeholder="Enter entropy value"
+                                    />
+                                    @if (this.subObject['entropy'] != '' && this.validationError.get('entropy')) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('entropy') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <!-- Hashes -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Hashes</label>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <select type="text" class="form-control form-select" [(ngModel)]="this.currentArrString['hash_type']">
+                                            <option value="">Select hash type...</option>
+                                            @for (item of hashOptions; track item) {
+                                                <option [value]="item.value">{{ item.value }}</option>
+                                            }
+                                        </select>
+                                        <input
+                                            class="form-control"
+                                            [(ngModel)]="this.currentArrString['hash_value']"
+                                            type="text"
+                                            placeholder="Enter hash value"
+                                        />
+                                        <button
+                                            class="btn btn-primary flex-shrink-0"
+                                            type="button"
+                                            (click)="addHash(this.currentArrString['hash_type'], this.currentArrString['hash_value'])"
+                                            [disabled]="this.currentArrString['hash_value'] == undefined || this.currentArrString['hash_value'] == ''"
+                                        >
+                                            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>Add
+                                        </button>
+                                    </div>
+                                    @if (
+                                        this.currentArrString['hash_type'] != '' &&
+                                        this.currentArrString['hash_value'] != '' &&
+                                        this.validationError.get('hashes')
+                                    ) {
+                                        <div class="invalid-feedback d-block">
+                                            {{ this.validationError.get('hashes') }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            @if (this.hashes.size > 0) {
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <ul class="list-unstyled ms-3" id="questions">
+                                            @for (x of this.hashes.keys(); track x) {
+                                                <li>
+                                                    {{ x }}: {{ this.hashes.get(x) }}
+                                                    <button type="button" class="btn btn-fa-xsm btn-red trash-can" (click)="deleteHash(x)">
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+                <!-- HTTP Request Extension (Network Traffic)-->
+                @case ('http-request-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Request Method*</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.request_method"
+                                    type="string"
+                                    placeholder="Enter request method"
+                                    (change)="isLower(this.currentExtension.request_method, 'request_method')"
+                                />
+                                @if (this.currentExtension.request_method != '' && this.validationError.get('request_method')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('request_method') }}
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Request Value*</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.request_value"
+                                    type="string"
+                                    placeholder="Enter request value"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Request Version</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.request_version"
+                                    type="string"
+                                    placeholder="Enter request version"
+                                    (change)="isLower(this.currentExtension.request_version, 'request_version')"
+                                />
+                                @if (this.currentExtension.request_version != '' && this.validationError.get('request_version')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('request_version') }}
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Message Body Length</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.message_body_length"
+                                    type="number"
+                                    placeholder="Enter message body length"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Message Body Data Ref</label>
+                                <div class="d-flex gap-2">
+                                    <select
+                                        class="form-control dropdown form-select"
+                                        style="max-width: 250px"
+                                        [(ngModel)]="this.currentExtension.message_body_data_ref"
+                                    >
+                                        <option value="" selected>Select artifact...</option>
+                                        @for (opt of this.stixService.bundle.objects; track opt) {
+                                            @if (opt.id.match(objectRegex)) {
+                                                @if (['artifact'].indexOf(opt.id.match(objectRegex)[1]) != -1) {
+                                                    <option [value]="opt['id']">
+                                                        {{ opt.id }}
+                                                    </option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <input
+                                        class="form-control flex-grow-1"
+                                        [(ngModel)]="this.currentExtension.message_body_data_ref"
+                                        type="string"
+                                        placeholder="Or enter artifact reference"
+                                        (change)="validType(['artifact'], this.currentExtension.message_body_data_ref, 'message_body_data_ref')"
+                                    />
+                                </div>
+                                @if (this.currentExtension.message_body_data_ref != '' && this.validationError.get('message_body_data_ref')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('message_body_data_ref') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Request Header</label>
+                                <div class="mb-2">
+                                    <input
+                                        class="form-control mb-2"
+                                        [(ngModel)]="this.currentArrString['request_header_key']"
+                                        type="text"
+                                        placeholder="Enter key"
+                                    />
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <input
+                                        class="form-control flex-grow-1"
+                                        [(ngModel)]="this.currentArrString['request_header_value']"
+                                        type="text"
+                                        placeholder="Enter value"
+                                    />
+                                    <button
+                                        class="btn btn-primary btn-fa-sm"
+                                        type="button"
+                                        (click)="addDict('request_header')"
+                                        [disabled]="
+                                            this.currentArrString['request_header_key'] == undefined ||
+                                            this.currentArrString['request_header_value'] == undefined ||
+                                            this.currentArrString['request_header_key'] == '' ||
+                                            this.currentArrString['request_header_value'] == ''
+                                        "
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('request_header')?.length > 0) {
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3">
+                                        @for (x of this.stixService.stringArrays.get('request_header'); track x) {
+                                            <li class="mb-1">
+                                                <span class="me-2">{{ x }}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-danger trash-can"
+                                                    (click)="deleteString(x, 'request_header')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- ICMP Extension (Network Traffic)-->
+                @case ('icmp-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">ICMP Type Hex*</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.icmp_type_hex"
+                                    type="text"
+                                    placeholder="Enter ICMP type hex value"
+                                    (change)="isHex(this.currentExtension.icmp_type_hex, 'icmp_type_hex')"
+                                />
+                                @if (this.currentExtension.icmp_type_hex != '' && this.validationError.get('icmp_type_hex')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('icmp_type_hex') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">ICMP Code Hex*</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.icmp_code_hex"
+                                    type="text"
+                                    placeholder="Enter ICMP code hex value"
+                                    (change)="isHex(this.currentExtension.icmp_code_hex, 'icmp_code_hex')"
+                                />
+                                @if (this.currentExtension.icmp_code_hex != '' && this.validationError.get('icmp_code_hex')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('icmp_code_hex') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Network Socket Extension (Network Traffic)-->
+                @case ('socket-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Address Family*</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.address_family">
+                                    <option value="" selected>Select address family...</option>
+                                    <option value="AF_UNSPEC">AF_UNSPEC</option>
+                                    <option value="AF_INET">AF_INET</option>
+                                    <option value="AF_IPX">AF_IPX</option>
+                                    <option value="AF_APPLETALK">AF_APPLETALK</option>
+                                    <option value="AF_NETBIOS">AF_NETBIOS</option>
+                                    <option value="AF_INET6">AF_INET6</option>
+                                    <option value="AF_IRDA">AF_IRDA</option>
+                                    <option value="AF_BTH">AF_BTH</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Socket Type</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.socket_type">
+                                    <option value="" selected>Select socket type...</option>
+                                    <option value="SOCK_STREAM">SOCK_STREAM</option>
+                                    <option value="SOCK_DGRAM">SOCK_DGRAM</option>
+                                    <option value="SOCK_RAW">SOCK_RAW</option>
+                                    <option value="SOCK_RDM">SOCK_RDM</option>
+                                    <option value="SOCK_SEQPACKET">SOCK_SEQPACKET</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Is Blocking</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.is_blocking">
+                                    <option value="" selected>Select...</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Is Listening</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.is_listening">
+                                    <option value="" selected>Select...</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Socket Descriptor</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.socket_descriptor"
+                                    type="number"
+                                    placeholder="Enter socket descriptor"
+                                    (change)="positive(this.currentExtension.socket_descriptor, 'socket_descriptor')"
+                                />
+                                @if (this.currentExtension.socket_descriptor != '' && this.validationError.get('socket_descriptor')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('socket_descriptor') }}
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Socket Handle</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.socket_handle"
+                                    type="number"
+                                    placeholder="Enter socket handle"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Options</label>
+                                <div class="mb-2">
+                                    <input
+                                        class="form-control mb-2"
+                                        [(ngModel)]="this.currentArrString['options_key']"
+                                        type="text"
+                                        placeholder="Enter key"
+                                    />
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <input
+                                        class="form-control flex-grow-1"
+                                        [(ngModel)]="this.currentArrString['options_value']"
+                                        type="number"
+                                        placeholder="Enter value"
+                                    />
+                                    <button
+                                        class="btn btn-primary btn-fa-sm"
+                                        type="button"
+                                        (click)="addDict('options')"
+                                        [disabled]="
+                                            this.currentArrString['options_value'] == undefined ||
+                                            this.currentArrString['options_value'] == '' ||
+                                            !positive(this.currentArrString['options_value'], 'options_value') ||
+                                            this.currentArrString['options_key'] == undefined ||
+                                            this.currentArrString['options_key'] == ''
+                                        "
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                                @if (this.currentArrString['options_value'] != '' && this.validationError.get('options_value')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('options_value') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('options')?.length > 0) {
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3">
+                                        @for (x of this.stixService.stringArrays.get('options'); track x) {
+                                            <li class="mb-1">
+                                                <span class="me-2">{{ x }}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-danger trash-can"
+                                                    (click)="deleteString(x, 'options')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- TCP Extension (Network Traffic)-->
+                @case ('tcp-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">SRC Flags Hex</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.src_flags_hex"
+                                    type="text"
+                                    placeholder="Enter source flags hex value"
+                                    (change)="isHex(this.currentExtension.src_flags_hex, 'src_flags_hex')"
+                                />
+                                @if (this.currentExtension.src_flags_hex != '' && this.validationError.get('src_flags_hex')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('src_flags_hex') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">DST Flags Hex</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.dst_flags_hex"
+                                    type="text"
+                                    placeholder="Enter destination flags hex value"
+                                    (change)="isHex(this.currentExtension.dst_flags_hex, 'dst_flags_hex')"
+                                />
+                                @if (this.currentExtension.dst_flags_hex != '' && this.validationError.get('dst_flags_hex')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('dst_flags_hex') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Windows Process Request Extension (Process)-->
+                @case ('windows-process-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">ASLR Enabled</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.aslr_enabled">
+                                    <option value="" selected>Select...</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">DEP Enabled</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.dep_enabled">
+                                    <option value="" selected>Select...</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Priority</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.priority"
+                                    type="text"
+                                    placeholder="Enter priority"
+                                    (change)="priority(this.currentExtension.priority, 'priority')"
+                                />
+                                @if (this.currentExtension.priority != '' && this.validationError.get('priority')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('priority') }}
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Owner SID</label>
+                                <input class="form-control" [(ngModel)]="this.currentExtension.owner_sid" type="text" placeholder="Enter owner SID" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Window Title</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.window_title"
+                                    type="text"
+                                    placeholder="Enter window title"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Integrity Level</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.integrity_level">
+                                    <option value="" selected>Select integrity level...</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="system">System</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Startup Info</label>
+                                <div class="mb-2">
+                                    <select
+                                        class="form-control form-select"
+                                        [(ngModel)]="this.currentArrString['startup_info_key']"
+                                        (change)="validateStartupValue()"
+                                    >
+                                        <option value="" selected>Select key...</option>
+                                        <option value="cb">cb</option>
+                                        <option value="lpDesktop">lpDesktop</option>
+                                        <option value="lpTitle">lpTitle</option>
+                                        <option value="dwX">dwX</option>
+                                        <option value="dwY">dwY</option>
+                                        <option value="dwXSize">dwXSize</option>
+                                        <option value="dwYSize">dwYSize</option>
+                                        <option value="dwxCountChars">dwxCountChars</option>
+                                        <option value="dwyCountChars">dwyCountChars</option>
+                                        <option value="dwFillAttribute">dwFillAttribute</option>
+                                        <option value="dwFlags">dwFlags</option>
+                                        <option value="wShowWindow">wShowWindow</option>
+                                        <option value="hStdInput">hStdInput</option>
+                                        <option value="hStdOutput">hStdOutput</option>
+                                        <option value="hStdError">hStdError</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <input
+                                        class="form-control flex-grow-1"
+                                        [(ngModel)]="this.currentArrString['startup_info_value']"
+                                        type="text"
+                                        placeholder="Enter value"
+                                        (change)="validateStartupValue()"
+                                    />
+                                    <button
+                                        class="btn btn-primary btn-fa-sm"
+                                        type="button"
+                                        (click)="addDict('startup_info')"
+                                        [disabled]="
+                                            this.currentArrString['startup_info_key'] == undefined ||
+                                            this.currentArrString['startup_info_value'] == undefined ||
+                                            this.currentArrString['startup_info_key'] == '' ||
+                                            this.currentArrString['startup_info_value'] == '' ||
+                                            errorMessage.length > 0
+                                        "
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                                @if (this.errorMessage) {
+                                    <div class="text-danger mt-1">
+                                        {{ this.errorMessage }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('startup_info')?.length > 0) {
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3">
+                                        @for (x of this.stixService.stringArrays.get('startup_info'); track x) {
+                                            <li class="mb-1">
+                                                <span class="me-2">{{ x }}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-danger trash-can"
+                                                    (click)="deleteString(x, 'startup_info')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- Windows Service Extension (Process)-->
+                @case ('windows-service-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Service Name</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.service_name"
+                                    type="text"
+                                    placeholder="Enter service name"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Display Name</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.display_name"
+                                    type="text"
+                                    placeholder="Enter display name"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Group Name</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.group_name"
+                                    type="text"
+                                    placeholder="Enter group name"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Start Type</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.start_type">
+                                    <option value="" selected>Select start type...</option>
+                                    <option value="SERVICE_AUTO_START">SERVICE_AUTO_START</option>
+                                    <option value="SERVICE_BOOT_START">SERVICE_BOOT_START</option>
+                                    <option value="SERVICE_DEMAND_START">SERVICE_DEMAND_START</option>
+                                    <option value="SERVICE_DISABLED">SERVICE_DISABLED</option>
+                                    <option value="SERVICE_SYSTEM_ALERT">SERVICE_SYSTEM_ALERT</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Service Type</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.service_type">
+                                    <option value="" selected>Select service type...</option>
+                                    <option value="SERVICE_KERNEL_DRIVER">SERVICE_KERNEL_DRIVER</option>
+                                    <option value="SERVICE_FILE_SYSTEM_DRIVER">SERVICE_FILE_SYSTEM_DRIVER</option>
+                                    <option value="SERVICE_WIN32_OWN_PROCESS">SERVICE_WIN32_OWN_PROCESS</option>
+                                    <option value="SERVICE_WIN32_SHARE_PROCESS">SERVICE_WIN32_SHARE_PROCESS</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Service Status</label>
+                                <select class="form-control form-select" [(ngModel)]="this.currentExtension.service_status">
+                                    <option value="" selected>Select service status...</option>
+                                    <option value="SERVICE_CONTINUE_PENDING">SERVICE_CONTINUE_PENDING</option>
+                                    <option value="SERVICE_PAUSE_PENDING">SERVICE_PAUSE_PENDING</option>
+                                    <option value="SERVICE_PAUSED">SERVICE_PAUSED</option>
+                                    <option value="SERVICE_RUNNING">SERVICE_RUNNING</option>
+                                    <option value="SERVICE_START_PENDING">SERVICE_START_PENDING</option>
+                                    <option value="SERVICE_STOP_PENDING">SERVICE_STOP_PENDING</option>
+                                    <option value="SERVICE_STOPPED">SERVICE_STOPPED</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Descriptions String Array -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Descriptions</label>
+                                <div class="d-flex gap-2">
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentArrString['descriptions']"
+                                        type="text"
+                                        placeholder="Enter description"
+                                    />
+                                    <button
+                                        class="btn btn-primary"
+                                        type="button"
+                                        style="white-space: nowrap"
+                                        (click)="addString(this.currentArrString['descriptions'], 'descriptions')"
+                                        [disabled]="this.currentArrString['descriptions'] == undefined || this.currentArrString['descriptions'] == ''"
+                                    >
+                                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('descriptions')?.length > 0) {
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3" id="questions">
+                                        @for (x of this.stixService.stringArrays.get('descriptions'); track x) {
+                                            <li>
+                                                {{ x }}
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-red trash-can"
+                                                    (click)="deleteString(x, 'descriptions')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                        <!-- Service DLL Reference Array - Type: File -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Service DLL Refs</label>
+                                <div class="d-flex gap-2 mb-2">
+                                    <select
+                                        class="form-control form-select"
+                                        [(ngModel)]="this.currentArrString['service_dll_refs']"
+                                        (change)="validType(['file'], this.currentArrString['service_dll_refs'], 'service_dll_refs')"
+                                    >
+                                        <option value="" selected>Select file object...</option>
+                                        @for (opt of this.stixService.bundle.objects; track opt) {
+                                            @if (opt.id.match(objectRegex)) {
+                                                @if (['file'].indexOf(opt.id.match(objectRegex)[1]) != -1) {
+                                                    <option [value]="opt['id']">
+                                                        {{ opt.id }}
+                                                    </option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentArrString['service_dll_refs']"
+                                        type="text"
+                                        placeholder="Or enter file ID"
+                                    />
+                                    <button
+                                        class="btn btn-primary flex-shrink-0"
+                                        type="button"
+                                        (click)="addString(this.currentArrString['service_dll_refs'], 'service_dll_refs')"
+                                        [disabled]="
+                                            this.currentArrString['service_dll_refs'] == undefined ||
+                                            this.currentArrString['service_dll_refs'] == '' ||
+                                            !validType(['file'], this.currentArrString['service_dll_refs'], 'service_dll_refs')
+                                        "
+                                    >
+                                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>Add
+                                    </button>
+                                </div>
+                                @if (this.currentArrString['service_dll_refs'] != '' && this.validationError.get('service_dll_refs')) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('service_dll_refs') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('service_dll_refs')?.length > 0) {
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3" id="questions">
+                                        @for (x of this.stixService.stringArrays.get('service_dll_refs'); track x) {
+                                            <li>
+                                                {{ x }}
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-xsm btn-red trash-can"
+                                                    (click)="deleteString(x, 'service_dll_refs')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- Unix Account Extension (User Account)-->
+                @case ('unix-account-ext') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Group ID</label>
+                                <input class="form-control" [(ngModel)]="this.currentExtension.gid" type="number" placeholder="Enter group ID" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Home Directory</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.home_dir"
+                                    type="text"
+                                    placeholder="Enter home directory"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Shell</label>
+                                <input class="form-control" [(ngModel)]="this.currentExtension.shell" type="text" placeholder="Enter shell path" />
+                            </div>
+                        </div>
+                        <!-- Groups String Array -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Groups</label>
+                                <div class="d-flex gap-2">
+                                    <input
+                                        class="form-control"
+                                        [(ngModel)]="this.currentArrString['groups']"
+                                        type="text"
+                                        placeholder="Enter group name"
+                                    />
+                                    <button
+                                        class="btn btn-primary"
+                                        type="button"
+                                        style="white-space: nowrap"
+                                        (click)="addString(this.currentArrString['groups'], 'groups')"
+                                        [disabled]="this.currentArrString['groups'] == undefined || this.currentArrString['groups'] == ''"
+                                    >
+                                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @if (this.stixService.stringArrays.get('groups')?.length > 0) {
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <ul class="list-unstyled ms-3" id="questions">
+                                        @for (x of this.stixService.stringArrays.get('groups'); track x) {
+                                            <li>
+                                                {{ x }}
+                                                <button type="button" class="btn btn-fa-xsm btn-red trash-can" (click)="deleteString(x, 'groups')">
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <!-- X.509 V3 Extensions (X.509 Certificate)-->
+                @case ('x509_v3_extensions') {
+                    <div class="col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Basic Constraints</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.basic_constraints"
+                                    type="text"
+                                    placeholder="Enter basic constraints"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Name Constraints</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.name_constraints"
+                                    type="text"
+                                    placeholder="Enter name constraints"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Policy Constraints</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.policy_constraints"
+                                    type="text"
+                                    placeholder="Enter policy constraints"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Key Usage</label>
+                                <input class="form-control" [(ngModel)]="this.currentExtension.key_usage" type="text" placeholder="Enter key usage" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Extended Key Usage</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.extended_key_usage"
+                                    type="text"
+                                    placeholder="Enter extended key usage"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Subject Key Identifier</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.subject_key_identifier"
+                                    type="text"
+                                    placeholder="Enter subject key identifier"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Authority Key Identifier</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.authority_key_identifier"
+                                    type="text"
+                                    placeholder="Enter authority key identifier"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Subject Alternative Name</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.subject_alternative_name"
+                                    type="text"
+                                    placeholder="Enter subject alternative name"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Issuer Alternative Name</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.issuer_alternative_name"
+                                    type="text"
+                                    placeholder="Enter issuer alternative name"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Subject Directory Attributes</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.subject_directory_attributes"
+                                    type="text"
+                                    placeholder="Enter subject directory attributes"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">CRL Distribution Points</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.crl_distribution_points"
+                                    type="text"
+                                    placeholder="Enter CRL distribution points"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Inhibit Any Policy</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.inhibit_any_policy"
+                                    type="text"
+                                    placeholder="Enter inhibit any policy"
+                                />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Private Key Usage Period Not Before</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.private_key_usage_period_not_before"
+                                    [owlDateTimeTrigger]="dtPicker1"
+                                    [owlDateTime]="dtPicker1"
+                                    placeholder="Select date and time"
+                                />
+                                <owl-date-time #dtPicker1></owl-date-time>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Private Key Usage Period Not After</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.private_key_usage_period_not_after"
+                                    [owlDateTimeTrigger]="dtPicker2"
+                                    [owlDateTime]="dtPicker2"
+                                    (change)="
+                                        isAfter(
+                                            this.currentExtension.private_key_usage_period_not_before,
+                                            this.currentExtension.private_key_usage_period_not_after,
+                                            'private_key_usage_period_not_after'
+                                        )
+                                    "
+                                    placeholder="Select date and time"
+                                />
+                                <owl-date-time #dtPicker2></owl-date-time>
+                                @if (
+                                    this.currentExtension.private_key_usage_period_not_after != '' &&
+                                    this.validationError.get('private_key_usage_period_not_after')
+                                ) {
+                                    <div class="invalid-feedback d-block">
+                                        {{ this.validationError.get('private_key_usage_period_not_after') }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Certificate Policies</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.certificate_policies"
+                                    type="text"
+                                    placeholder="Enter certificate policies"
+                                />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Policy Mappings</label>
+                                <input
+                                    class="form-control"
+                                    [(ngModel)]="this.currentExtension.policy_mappings"
+                                    type="text"
+                                    placeholder="Enter policy mappings"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+
+    <div class="modal-footer">
+        @if (this.page == 'base') {
+            <button id="extensions_cancel" type="button" class="btn btn-sm btn-secondary" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+
+            <button id="extensions_add_button" class="btn btn-sm btn-success" type="button" (click)="addExtension()" [disabled]="!isAddEnabled()">
+                <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                Add Extension
+            </button>
+        }
+        @if (this.page != 'base') {
+            <button id="extensions_back" type="button" class="btn btn-sm btn-secondary" (click)="creatingSubObject('base')">
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Back
+            </button>
+            <button
+                class="btn btn-wsm btn-success"
+                type="button"
+                (click)="addSubObject()"
+                [disabled]="
+                    ((!positive(this.subObject['size'], 'size') || !this.subObject['name'] || this.subObject['name'] == '') &&
+                        this.subObjectType != 'optional_header') ||
+                    (this.subObjectType == 'optional_header' && emptySubObject(['hashes']))
+                "
+            >
+                @switch (this.subObjectType) {
+                    @case ('alternate_data_streams') {
+                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                        Add Alternate Data Stream
+                    }
+                    @case ('optional_header') {
+                        <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                        Save Optional Header
+                    }
+                    @case ('sections') {
+                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                        Add Section
+                    }
+                }
+            </button>
+        }
+    </div>
+</ng-template>
+
+<ng-template #collection let-modal>
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Configure {{ this.customProp['name'] }}</h2>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body extensions-modal-body">
+        <div class="col-md-12">
+            <span class="tab"></span>
+
+            <!-- String Array -->
+            @if (this.customProp['type'] == 'array') {
+                <div class="row bump">
+                    <div class="p-0 col-12">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">
+                                <b>Value</b>
+                            </span>
+                            <input class="form-control" [(ngModel)]="this.customProp['value']" type="text" />
+                            <span class="tab"> </span>
+                            <div class="col-1">
+                                <button
+                                    class="btn btn-fa-sm btn-primary"
+                                    type="button"
+                                    (click)="addSubModalString(this.customProp['value'], 'customArray')"
+                                    [disabled]="this.customProp['value'] == ''"
+                                >
+                                    <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                    <!-- Add -->
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="questions">
+                    <span class="tab">
+                        <div class="form-group mt-2">
+                            @for (x of this.customProp.get('customArray'); track x) {
+                                <li>
+                                    {{ x }}
+                                    <button type="button" class="btn btn-fa-xsm btn-red trash-can" (click)="deleteSubModalString(x, 'customArray')">
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </li>
+                            }
+                        </div>
+                    </span>
+                </div>
+            }
+
+            <!-- String Dict -->
+            @if (this.customProp['type'] == 'dict') {
+                <div class="row">
+                    <div class="p-0 col-12">
+                        <div class="input-group mb-2 col-11">
+                            <span class="input-group-text">
+                                <b>Key</b>
+                            </span>
+                            <input class="form-control" [(ngModel)]="this.customProp['key']" type="text" />
+                            <span class="tab"></span>
+                        </div>
+                        <div class="input-group mb-2 col-12">
+                            <span class="input-group-text">
+                                <b>Value</b>
+                            </span>
+                            <input class="form-control" [(ngModel)]="this.customProp['value']" type="text" />
+                            <span class="tab"></span>
+                            <div class="col-1">
+                                <button
+                                    class="btn btn-fa-sm btn-primary"
+                                    type="button"
+                                    (click)="addSubModalDictString(this.customProp['key'], this.customProp['value'], 'customDict')"
+                                    [disabled]="this.customProp['key'] == '' || this.customProp['value'] == ''"
+                                >
+                                    <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                    <!-- Add -->
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="questions">
+                    <span class="tab">
+                        <div class="form-group mt-2">
+                            @for (x of this.customProp.get('customDict').keys(); track x) {
+                                <li>
+                                    {{ x }}: {{ this.customProp.get('customDict').get(x) }}
+                                    <button type="button" class="btn btn-fa-xsm btn-red trash-can" (click)="deleteSubModalString(x, 'customDict')">
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </li>
+                            }
+                        </div>
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-md btn-secondary" aria-label="Close" (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button
+            class="btn btn-md btn-success"
+            type="button"
+            (click)="createCollection()"
+            [disabled]="this.customProp.get('customArray').length == 0 && this.customProp.get('customDict').size == 0"
+        >
+            Create Property
+        </button>
+    </div>
+</ng-template>

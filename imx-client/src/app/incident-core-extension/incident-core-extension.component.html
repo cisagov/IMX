@@ -1,0 +1,634 @@
+@if (this.errorMessage && this.errorMessage.length > 0) {
+    <div class="row">
+        <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
+    </div>
+}
+
+<div class="form-group p-2 pt-0">
+    <div class="row">
+        <div class="col-12 pt-0 pb-3">
+            <div class="row">
+                <div id="left-col" class="col-6 ps-0 pb-0">
+                    <div #determinationRow id="determinationRow" class="row p-2 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_determination_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                    Determination*
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select
+                                        class="form-control dropdown"
+                                        id="ice_determination"
+                                        [ngClass]="{
+                                            'disabled-select': this.currentIncidentCoreExtension['determination'] === undefined,
+                                            'is-invalid': this.otherErrors['determination'] && this.otherErrors['determination'] != '',
+                                        }"
+                                        [(ngModel)]="this.currentIncidentCoreExtension['determination']"
+                                        (change)="isValid()"
+                                    >
+                                        <option [ngValue]="undefined" disabled selected>Select determination</option>
+                                        @for (opt of this.incidentDeterminationEnum; track opt) {
+                                            <option [value]="opt">
+                                                {{ this.stixService.toTitle(opt) }}
+                                            </option>
+                                        }
+                                    </select>
+
+                                    @if (this.otherErrors['determination'] && this.otherErrors['determination'] != '') {
+                                        <div id="ice_determination_error" class="invalid-feedback">
+                                            {{ this.otherErrors['determination'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div #criticalityRow id="criticalityRow" class="row p-2 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_criticality_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                    Criticality
+                                    <span class="tooltipright ms-2">
+                                        <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                        <div class="toolttext font-weight-normal">
+                                            Please reference Appendix B of the Incident Core Extension Docs to find the table/scoring guidelines most
+                                            appropriate for the situation
+                                        </div>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <input
+                                        class="form-control"
+                                        id="ice_criticality"
+                                        type="number"
+                                        placeholder="Criticality"
+                                        [ngClass]="{ 'is-invalid': this.otherErrors['criticality'] && this.otherErrors['criticality'] != '' }"
+                                        [(ngModel)]="this.currentIncidentCoreExtension['criticality']"
+                                        (change)="isValid()"
+                                    />
+                                    @if (this.otherErrors['criticality'] && this.otherErrors['criticality'] != '') {
+                                        <div id="ice_criticality_error" class="invalid-feedback">
+                                            {{ this.otherErrors['criticality'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div #detectionRow id="detectionRow" class="row p-2 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_detection_methods_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                    Detection Methods
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 d-flex">
+                                    <select
+                                        id="ice_detection_methods"
+                                        [ngClass]="{ 'disabled-select': detectionMethods === undefined }"
+                                        class="form-control dropdown add-left no-border-right"
+                                        [(ngModel)]="detectionMethods"
+                                    >
+                                        <option [ngValue]="undefined" disabled selected>Select detection method</option>
+                                        @for (opt of this.incidentDetectionMethodsEnum; track opt) {
+                                            <option [value]="opt">
+                                                {{ this.stixService.toTitle(opt) }}
+                                            </option>
+                                        }
+                                    </select>
+
+                                    <button
+                                        class="btn btn-fa-sm btn-color add-button add-right"
+                                        type="button"
+                                        id="ice_detection_methods_add"
+                                        (click)="addString('detection_methods')"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mb-2 mt-2">
+                                    <accordion>
+                                        @for (
+                                            currentString of this.currentIncidentCoreExtension['detection_methods'];
+                                            track currentString;
+                                            let i = $index
+                                        ) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                                                <div
+                                                    id="ice_detection_methods_list{{ i }}"
+                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                    accordion-heading
+                                                    type="button"
+                                                >
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">
+                                                            {{ currentString }}
+                                                        </div>
+                                                        <button
+                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                            type="button"
+                                                            (click)="deleteString(currentString, 'detection_methods')"
+                                                            id="ice_detection_methods_list{{ i }}_delete"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="right-col" class="col-6 ps-0 pe-3 pb-0">
+                    <div #investigationRow id="investigationRow" class="row p-2 pe-0 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_investigation_status_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                    Investigation Status*
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select
+                                        class="form-control dropdown"
+                                        id="ice_investigation_status"
+                                        [ngClass]="{
+                                            'disabled-select': this.currentIncidentCoreExtension['investigation_status'] === undefined,
+                                            'is-invalid': this.otherErrors['investigation_status'] && this.otherErrors['investigation_status'] != '',
+                                        }"
+                                        [(ngModel)]="this.currentIncidentCoreExtension['investigation_status']"
+                                        (change)="isValid()"
+                                    >
+                                        <option [ngValue]="undefined" disabled selected>Select investigation status</option>
+                                        @for (opt of this.incidentInvestigationOV; track opt) {
+                                            <option [value]="opt">
+                                                {{ this.stixService.toTitle(opt) }}
+                                            </option>
+                                        }
+                                    </select>
+
+                                    @if (this.otherErrors['investigation_status'] && this.otherErrors['investigation_status'] != '') {
+                                        <div id="ice_investigation_status_error" class="invalid-feedback">
+                                            {{ this.otherErrors['investigation_status'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div #recoverabilityRow id="recoverabilityRow" class="row p-2 pe-0 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_recoverability_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                    Recoverability
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select
+                                        id="ice_recoverability"
+                                        [ngClass]="{ 'disabled-select': this.currentIncidentCoreExtension['recoverability'] === undefined }"
+                                        class="form-control dropdown"
+                                        [(ngModel)]="this.currentIncidentCoreExtension['recoverability']"
+                                    >
+                                        <option [ngValue]="undefined" disabled selected>Select recoverability</option>
+                                        <option value=""></option>
+                                        @for (opt of this.recoverabilityEnum; track opt) {
+                                            <option [value]="opt">
+                                                {{ this.stixService.toTitle(opt) }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div #incidentRow id="incidentTypesRow" class="row pt-2 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_incident_types_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                    Incident Types
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 d-flex">
+                                    <select
+                                        id="ice_incident_types"
+                                        [ngClass]="{ 'disabled-select': incidentTypes === undefined }"
+                                        class="form-control dropdown add-left no-border-right"
+                                        [(ngModel)]="incidentTypes"
+                                    >
+                                        <option [ngValue]="undefined" disabled selected>Select incident type</option>
+                                        @for (opt of this.incidentEventTypeOV; track opt) {
+                                            <option [value]="opt">
+                                                {{ this.stixService.toTitle(opt) }}
+                                            </option>
+                                        }
+                                    </select>
+
+                                    <button
+                                        class="btn btn-fa-sm btn-color add-button add-right"
+                                        id="ice_incident_types_add"
+                                        type="button"
+                                        (click)="addString('incident_types')"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mb-2 mt-2">
+                                    <accordion>
+                                        @for (
+                                            currentString of this.currentIncidentCoreExtension['incident_types'];
+                                            track currentString;
+                                            let i = $index
+                                        ) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                                                <div
+                                                    id="incident_types_list{{ i }}"
+                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                    accordion-heading
+                                                    type="button"
+                                                >
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">
+                                                            {{ currentString }}
+                                                        </div>
+                                                        <button
+                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                            type="button"
+                                                            (click)="deleteString(currentString, 'incident_types')"
+                                                            id="incident_types_list{{ i }}_delete"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 ps-0">
+                    <div #impactRefsRow id="impactRefsRow" class="row pt-0 pe-0 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_impacted_refs_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">Impact Refs</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div
+                                        class="d-flex"
+                                        [ngClass]="{ 'is-invalid': this.otherErrors['impact_refs'] && this.otherErrors['impact_refs'] != '' }"
+                                    >
+                                        <input
+                                            type="text"
+                                            matInput
+                                            id="ice_impacted_refs"
+                                            placeholder="Select impact reference"
+                                            class="form-control add-left no-border-right"
+                                            [matAutocomplete]="impactRefAuto"
+                                            [(ngModel)]="impactRefs"
+                                            [ngClass]="{ 'is-invalid': this.otherErrors['impact_refs'] && this.otherErrors['impact_refs'] != '' }"
+                                            (ngModelChange)="filterImpactRefs()"
+                                        />
+                                        <mat-autocomplete #impactRefAuto="matAutocomplete" class="autocomplete">
+                                            @for (opt of this.filteredImpactRefsList; track opt) {
+                                                <mat-option [value]="opt.id">
+                                                    {{ opt['impact_category'] ? opt['impact_category'] + ' (' + opt['id'] + ')' : opt['id'] }}
+                                                </mat-option>
+                                            }
+                                        </mat-autocomplete>
+
+                                        <button
+                                            [ngClass]="{ 'invalid-input': this.otherErrors['impact_refs'] && this.otherErrors['impact_refs'] != '' }"
+                                            class="btn btn-fa-sm btn-color add-right"
+                                            type="button"
+                                            id="ice_impacted_refs_add"
+                                            (click)="addString('impact_refs')"
+                                        >
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                        </button>
+                                    </div>
+
+                                    @if (this.otherErrors['impact_refs'] && this.otherErrors['impact_refs'] != '') {
+                                        <div class="invalid-feedback">
+                                            {{ this.otherErrors['impact_refs'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mb-2 mt-2">
+                                    <accordion>
+                                        @for (
+                                            currentString of this.currentIncidentCoreExtension['impact_refs'];
+                                            track currentString;
+                                            let i = $index
+                                        ) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                                                <div
+                                                    id="impact_refs_list{{ i }}"
+                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                    accordion-heading
+                                                    type="button"
+                                                >
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">
+                                                            {{ getRef('impactRefsList', currentString) }}
+                                                        </div>
+                                                        <button
+                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                            type="button"
+                                                            (click)="deleteString(currentString, 'impact_refs')"
+                                                            id="impactRefs_list{{ i }}_delete"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div #eventRefsRow id="eventRefsRow" class="row pt-0 pe-0 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_event_refs_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">Event Refs</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div
+                                        class="d-flex"
+                                        [ngClass]="{ 'is-invalid': this.otherErrors['event_refs'] && this.otherErrors['event_refs'] != '' }"
+                                    >
+                                        <input
+                                            type="text"
+                                            matInput
+                                            id="ice_event_refs"
+                                            placeholder="Select event reference"
+                                            class="form-control add-left no-border-right"
+                                            [matAutocomplete]="eventRefAuto"
+                                            [(ngModel)]="eventRefs"
+                                            [ngClass]="{ 'is-invalid': this.otherErrors['event_refs'] && this.otherErrors['event_refs'] != '' }"
+                                            (ngModelChange)="filterEventRefs()"
+                                        />
+                                        <mat-autocomplete #eventRefAuto="matAutocomplete" class="autocomplete">
+                                            @for (opt of this.filteredEventRefsList; track opt) {
+                                                <mat-option [value]="opt.id">
+                                                    {{ opt['name'] ? opt['name'] + ' (' + opt['id'] + ')' : opt['id'] }}
+                                                </mat-option>
+                                            }
+                                        </mat-autocomplete>
+
+                                        <button
+                                            [ngClass]="{ 'invalid-input': this.otherErrors['event_refs'] && this.otherErrors['event_refs'] != '' }"
+                                            id="ice_event_refs_add"
+                                            class="btn btn-fa-sm btn-color add-right"
+                                            type="button"
+                                            (click)="addString('event_refs')"
+                                        >
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                        </button>
+                                    </div>
+
+                                    @if (this.otherErrors['event_refs'] && this.otherErrors['event_refs'] != '') {
+                                        <div id="ice_event_refs_error" class="invalid-feedback">
+                                            {{ this.otherErrors['event_refs'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mb-2 mt-2">
+                                    <accordion>
+                                        @for (currentString of this.currentIncidentCoreExtension['event_refs']; track currentString; let i = $index) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                                                <div
+                                                    id="event_refslist{{ i }}"
+                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                    accordion-heading
+                                                    type="button"
+                                                >
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">
+                                                            {{ getRef('eventRefsList', currentString) }}
+                                                        </div>
+                                                        <button
+                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                            type="button"
+                                                            (click)="deleteString(currentString, 'event_refs')"
+                                                            id="event_refslist{{ i }}_delete"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div #taskRefsRow id="taskRefsRow" class="row pt-0 pe-0 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_task_refs_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">Task Refs</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div
+                                        class="d-flex"
+                                        [ngClass]="{ 'is-invalid': this.otherErrors['task_refs'] && this.otherErrors['task_refs'] != '' }"
+                                    >
+                                        <input
+                                            type="text"
+                                            id="ice_task_refs"
+                                            placeholder="Select task reference"
+                                            matInput
+                                            [ngClass]="{ 'is-invalid': this.otherErrors['task_refs'] && this.otherErrors['task_refs'] != '' }"
+                                            class="form-control add-left no-border-right"
+                                            [matAutocomplete]="taskRefAuto"
+                                            [(ngModel)]="taskRefs"
+                                            (ngModelChange)="filterTaskRefs()"
+                                        />
+                                        <mat-autocomplete #taskRefAuto="matAutocomplete" class="autocomplete">
+                                            @for (opt of this.filteredTaskRefsList; track opt) {
+                                                <mat-option [value]="opt.id">
+                                                    {{ opt['name'] ? opt['name'] + ' (' + opt['id'] + ')' : opt['id'] }}
+                                                </mat-option>
+                                            }
+                                        </mat-autocomplete>
+
+                                        <button
+                                            id="ice_task_refs_add"
+                                            [ngClass]="{ 'invalid-input': this.otherErrors['task_refs'] && this.otherErrors['task_refs'] != '' }"
+                                            class="btn btn-fa-sm btn-color add-right"
+                                            type="button"
+                                            (click)="addString('task_refs')"
+                                        >
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                        </button>
+                                    </div>
+
+                                    @if (this.otherErrors['task_refs'] && this.otherErrors['task_refs'] != '') {
+                                        <div id="ice_task_refs_error" class="invalid-feedback">
+                                            {{ this.otherErrors['task_refs'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mb-2 mt-2">
+                                    <accordion>
+                                        @for (currentString of this.currentIncidentCoreExtension['task_refs']; track currentString; let i = $index) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                                                <div
+                                                    id="task_refs_list{{ i }}"
+                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                    accordion-heading
+                                                    type="button"
+                                                >
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">
+                                                            {{ getRef('taskRefsList', currentString) }}
+                                                        </div>
+                                                        <button
+                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                            type="button"
+                                                            (click)="deleteString(currentString, 'task_refs')"
+                                                            id="task_refs_list{{ i }}_delete"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div #scoreRow id="scoreRow" class="row pt-0 pe-0 ps-0 pb-3 row-item">
+                        <div class="col">
+                            <div class="row">
+                                <div id="ice_scores_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">Scores</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input
+                                                id="ice_scores_name"
+                                                class="form-control"
+                                                id="scores_name"
+                                                type="text"
+                                                placeholder="Name"
+                                                [(ngModel)]="scores_name"
+                                                [ngClass]="{ 'is-invalid': this.otherErrors['scores'] && this.otherErrors['scores'] != '' }"
+                                            />
+                                        </div>
+                                        <div class="col-6">
+                                            <input
+                                                id="ice_scores_value"
+                                                class="form-control"
+                                                id="scores_name"
+                                                type="number"
+                                                [(ngModel)]="scores_value"
+                                                placeholder="Value"
+                                                [ngClass]="{ 'is-invalid': this.otherErrors['scores'] && this.otherErrors['scores'] != '' }"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex" [ngClass]="{ 'is-invalid': this.otherErrors['scores'] && this.otherErrors['scores'] != '' }">
+                                        <input
+                                            id="ice_scores_description"
+                                            class="form-control add-left no-border-right"
+                                            id="scores_name"
+                                            type="text"
+                                            placeholder="Description"
+                                            [(ngModel)]="scores_description"
+                                            [ngClass]="{ 'invalid-input': this.otherErrors['scores'] && this.otherErrors['scores'] != '' }"
+                                        />
+                                        <button
+                                            id="ice_scores_add"
+                                            class="btn btn-fa-sm btn-color add-right"
+                                            type="button"
+                                            [ngClass]="{ 'invalid-input': this.otherErrors['scores'] && this.otherErrors['scores'] != '' }"
+                                            (click)="createScore()"
+                                        >
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                        </button>
+                                    </div>
+
+                                    @if (this.otherErrors['scores'] && this.otherErrors['scores'] != '') {
+                                        <div class="invalid-feedback">
+                                            {{ this.otherErrors['scores'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mb-2 mt-2">
+                                    <accordion>
+                                        @for (currentString of this.currentIncidentCoreExtension['scores']; track currentString; let i = $index) {
+                                            <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="false">
+                                                <div
+                                                    id="scores_refs_list{{ i }}"
+                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                    accordion-heading
+                                                    type="button"
+                                                >
+                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                        <div class="btn btn-link">
+                                                            {{ currentString['name'] }}
+                                                        </div>
+                                                        <button
+                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                            type="button"
+                                                            (click)="deleteScore(i)"
+                                                            id="scores_refs_list{{ i }}_delete"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <pre>{{ currentString | json }}</pre>
+                                            </accordion-group>
+                                        }
+                                    </accordion>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ this.fixThis() }}
+</div>

@@ -1,0 +1,192 @@
+<div class="main-container">
+    <div class="guided-header">
+        <div class="guided-header-items">
+            <div class="guided-header-icon">
+                <fa-icon [icon]="faTools" style="font-size: 1.75rem"></fa-icon>
+                <div class="d-flex flex-column">
+                    <h3 class="guided-header-title component-title ps-2">WHAT (Impact)</h3>
+                    <p class="guided-header-subtitle ps-2">What was the impact?</p>
+                </div>
+            </div>
+            <app-total-guided-cart (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+        </div>
+        <div class="horizonal-rule-top" style="width: 100%"></div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container">
+        <!-- Form Body -->
+        <div class="guided-form">
+            <!-- Impact Category -->
+            <div class="inner-row half-row">
+                <div class="input-header">Impact Category<span class="text-danger ms-1">*</span></div>
+
+                <select class="form-control form-control-guided form-select" type="text"
+                    [(ngModel)]="currentImpactCategory" (ngModelChange)="onImpactCategoryChange()"
+                    [ngClass]="{'select-placeholder-guided': guidedService.emptyDropdown(currentImpactCategory)}">
+                    <option disabled selected value="">Select Impact Category</option>
+                    @for (option of impactCategoryOptions; track option) {
+                        <option>{{ option }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Extention Input Fields (Depending on Impact Category) -->
+            @if(currentImpactCategory){
+                @for (field of impactCategoryFieldMap[currentImpactCategory]; track field) {
+                <div class="inner-row impact-category-inputs">
+                    <label class="input-header">{{field.label}}@if (field.required) {<span
+                            class="text-danger ms-1">*</span>}</label>
+                    @if (field.type === 'text') {
+                    <input type="text" class="form-control form-control-guided" placeholder="Enter {{field.label}}"
+                            [ngClass]="{'select-placeholder-guided': guidedService.emptyDropdown(impactCategoryFormData[field.model])}"
+                        [(ngModel)]="impactCategoryFormData[field.model]">
+                    }
+
+                    @if (field.type === 'number') {
+                    <input type="number" class="form-control form-control-guided" placeholder="Enter {{field.label}}"
+                        [ngClass]="{'select-placeholder-guided': guidedService.emptyDropdown(impactCategoryFormData[field.model])}"
+                        [(ngModel)]="impactCategoryFormData[field.model]">
+                    }
+
+                    @if (field.type === 'select') {
+                    <select class="form-control form-control-guided"
+                        [ngClass]="{'select-placeholder-guided': guidedService.emptyDropdown(impactCategoryFormData[field.model])}"
+                        [(ngModel)]="impactCategoryFormData[field.model]">
+                        <option [ngValue]="null" selected disabled>Select {{field.label}}</option>
+                        @for (opt of field.options; track opt) {
+                        <option [ngValue]="opt.value ?? opt.label">{{opt.label}}</option>
+                        }
+                    </select>
+                    }
+
+                    @if (field.type === 'datetime') {
+                    <input class="form-control form-control-guided" [owlDateTimeTrigger]="dtConversionTime" placeholder="Enter {{field.label}}"
+                        [ngClass]="{'select-placeholder-guided': guidedService.emptyDropdown(impactCategoryFormData[field.model])}"
+                        [owlDateTime]="dtConversionTime" [(ngModel)]="impactCategoryFormData[field.model]" />
+                    <owl-date-time #dtConversionTime></owl-date-time>
+                    }
+
+                    @if (errors[field.model]) {
+                        <div class="text-danger small mt-1">
+                            {{errors[field.model]}}
+                        </div>
+                    }
+                </div>
+                }
+            }
+
+            <!-- Impacted Refs and Recoverability -->
+            <div class="guided-dual-container">
+                <!-- Impacted Refs -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        Impacted Refs
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('impacted_refs')"></span>
+                        </span>
+                        @if (currentImpactedRefs.length > 0) {
+                            <span class="badge bg-secondary ms-2 omr-count-badge">{{ currentImpactedRefs.length }} selected</span>
+                        }
+                    </div>
+
+                    <!-- Multi-select dropdown -->
+                    <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                        <select
+                            [(ngModel)]="selectedImpactRef"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(selectedImpactRef) }"
+                            class="form-control form-control-guided form-select"
+                            style="min-width: 220px"
+                        >
+                            <option [ngValue]="null" disabled>Select Impacted Refs</option>
+
+                            @for (option of availableImpactRefs; track option) {
+                                <option [ngValue]="option">
+                                    {{ option.display_name }}
+                                </option>
+                            }
+                        </select>
+
+                        <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="addImpactedRef(selectedImpactRef)">
+                            <fa-icon [icon]="faPlus"></fa-icon>
+                            <span>Add</span>
+                        </button>
+                    </div>
+
+                    @if (currentImpactedRefs.length > 0) {
+                        <div class="other-refs-list">
+                            @for (ref of currentImpactedRefs; track ref; let i = $index) {
+                                <div
+                                    id="other_list{{ i }}"
+                                    class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                >
+                                    <span class="ref-name">{{ ref.display_name }}</span>
+                                    <button
+                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                        style="display: flex"
+                                        type="button"
+                                        id="other_list{{ i }}_delete"
+                                        (click)="deleteImpactedRef(ref)"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    } @else {
+                        <div class="empty-refs-state">No Impacted Refs added yet.</div>
+                    }
+                </div>
+
+                <!-- Recoverability -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        Recoverability
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('recoverability')"></span>
+                        </span>
+                    </div>
+
+                    <select
+                        class="form-control form-control-guided form-select"
+                        type="text"
+                        [(ngModel)]="currentRecoverability"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentRecoverability) }"
+                    >
+                        <option disabled selected value="">Select Recoverability</option>
+                        @for (option of recoverabilityOptions; track option) {
+                            <option>{{ option }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="guided-information">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="d-flex flex-column justify-content-start gr-help-section">
+                <div class="gr-help-section-title">Impact on the Target</div>
+                <div class="gr-help-section-content">
+                    <p>
+                        <b>Impact Category</b>: The type or domain of impact caused by an action or event. This categorizes how the impact affects an
+                        organization or system.
+                    </p>
+                    <p>
+                        <b>Impacted Refs</b>:  A list of STIX objects that were affected by the impact (such as assets, systems, data, or entities).
+                        These references identify what the impact directly influenced or damaged.
+                    </p>
+                    <p>
+                        <b>Recoverability</b>: An assessment of how difficult or resource-intensive it is to restore affected assets or return
+                        operations to normal after the impact.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+{
+  "Instructions": "This is not a used property; template serves as a template for creating a changelog update. JSON is comma deliminated, so just add a comma after the last property and copy/paste the template",
+  "template": {
+    "date": "[date]",
+    "description": "[description]",
+    "changes": [
+      "change1",
+      "change2"
+    ],
+    "userimpact": "[User Impact]"
+  },
+  "1.0.0": {
+    "date": "[date]",
+    "description": "First Release!",
+    "changes": ["one"],
+    "userimpact": "[User Impact]"
+  }
+}

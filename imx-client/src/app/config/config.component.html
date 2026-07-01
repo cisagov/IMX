@@ -1,0 +1,122 @@
+<div style="margin-top: 49px; display: block; height: 800px; padding: 100px; padding-top: 50px">
+    <div>
+        <h5>TAXII Server Information</h5>
+        <p>
+            Enter the TAXII server you wish to publish to, query to, query from; or leave the default values to submit to IMX's pre-configured TAXII
+            server.
+        </p>
+    </div>
+
+    <div class="mb-3 col-6 p-0">
+        <span id="password">Select TAXII Server</span>
+        <br />
+        <div class="d-flex">
+            <div class="dropdown">
+                <button
+                    class="btn btn-outline-primary dropdown-toggle mt-3"
+                    style="width: 250px"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    {{ taxiiServerSelection }}
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item" (click)="serverSettingsChanged('default', true)">Default</button>
+                    <button class="dropdown-item" (click)="serverSettingsChanged('custom', true)">Custom</button>
+                    <button class="dropdown-item" (click)="serverSettingsChanged('ais', true)">AIS</button>
+                    @if (this.envService.env.cmaServer && this.envService.env.cmaServer.url !== '') {
+                        <button class="dropdown-item" (click)="serverSettingsChanged('cma', true)">CMA</button>
+                    }
+                    @if (!this.envService.env.production) {
+                        <button class="dropdown-item" (click)="serverSettingsChanged('pfte', true)">PFTE</button>
+                    }
+                </div>
+            </div>
+            <div class="mt-3 ms-5">
+                @if (taxiiServerType !== 'custom') {
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm query-button"
+                        [disabled]="stixService.isLoading"
+                        (click)="saveConfig(true)"
+                        style="font-size: 1rem"
+                    >
+                        <fa-icon [icon]="faConnect" class="pe-1"></fa-icon>
+                        Connect
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (taxiiServerType === 'custom') {
+        <div class="col-6 p-0 pb-4" style="padding-top: 15px !important">
+            <div class="dropdown">
+                <button
+                    class="btn btn-outline-primary dropdown-toggle mt-3"
+                    style="width: 250px"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    Select a TAXII Server
+                </button>
+                <div class="dropdown-menu" style="overflow-x: auto; max-height: 300px">
+                    <button class="dropdown-item" (click)="openCustomTaxiiModal()">Add a new custom TAXII Server</button>
+                    @for (customTaxii of customTaxiiArray; track customTaxii) {
+                        <button class="dropdown-item" (click)="openCustomTaxiiModal(customTaxii)">
+                            {{ customTaxii }}
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (stixService.isLoading) {
+        <div class="mb-3 col-2 p-0">
+            <div class="spinner mx-auto"></div>
+            <div class="text-center">Loading API Roots...</div>
+        </div>
+    }
+
+    @if (this.isLoadingRoots && this.stixService.latency.serverLatency) {
+        <div class="mb-3 col-6 p-0 pt-5">
+            <p>Average response time: {{ this.stixService.latency.serverLatency }}</p>
+        </div>
+    }
+
+    @if (!stixService.isLoading && !this.isLoadingRoots) {
+        <div class="mb-3 col-6 p-0 pt-5">
+            @if (this.stixService.apiRootProcessingError == '') {
+                <p>
+                    Currently connected to
+                    {{
+                        this.stixService.taxiiServer.url == aisUrl
+                            ? this.stixService.prod
+                                ? 'https://ais2.cisa.dhs.gov/taxii2/'
+                                : 'https://ais2-pfte.taxii.cisa.dhs.gov/'
+                            : this.stixService.taxiiServer.url
+                    }}
+                </p>
+            }
+            @if (this.stixService.apiRootProcessingError != '') {
+                <p style="font-weight: bold">
+                    Failed to connect to
+                    {{
+                        this.stixService.taxiiServer.url == aisUrl
+                            ? this.stixService.prod
+                                ? 'https://ais2.cisa.dhs.gov/taxii2/'
+                                : 'https://ais2-pfte.taxii.cisa.dhs.gov/'
+                            : this.stixService.taxiiServer.url
+                    }}
+                </p>
+                {{ this.stixService.apiRootProcessingError }}
+                @if (this.stixService.apiRootProcessingErrorURL != '') {
+                    <br />URL: {{ this.stixService.apiRootProcessingErrorURL }}
+                }
+            }
+        </div>
+    }
+</div>

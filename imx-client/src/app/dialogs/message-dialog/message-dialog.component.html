@@ -1,0 +1,24 @@
+<div>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-title">{{ messageObj?.title }}</h4>
+        <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal" (click)="close()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body extensions-modal-body">
+        <span [innerHTML]="messageObj?.message"></span>
+    </div>
+    <div class="modal-footer">
+        <div class="item-action">
+            <button type="button" class="btn btn-sm btn-outline-secondary me-3" (click)="close()">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-success" (click)="confirm()">
+                <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,128 @@
+<div class="body">
+    <div class="modal-header">
+        @if (roleType === 0) {
+            <h4 class="modal-title" id="modal-title">New Group</h4>
+        }
+        @if (roleType === 1) {
+            <h4 class="modal-title" id="modal-title">New Collection</h4>
+        }
+        @if (roleType === 2) {
+            <h4 class="modal-title" id="modal-title">Edit Group Permission</h4>
+        }
+        <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal" (click)="close()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="item-content">
+        <label class="item-label">
+            <div class="item-label-title">Group</div>
+            <input
+                type="text"
+                class="form-control item-label-input input-lg mb-1"
+                [disabled]="role?.length > 0 && roleType !== 0"
+                (focusout)="onFocusOutGroup($event)"
+                [(ngModel)]="role"
+            />
+        </label>
+
+        <label class="item-label">
+            <div class="item-label-title">API Root</div>
+            <select
+                class="form-control form-select dropdown input-lg item-list-wrapper mb-1"
+                (change)="selectApiRoot($event)"
+                [(ngModel)]="currentRootTitle"
+                [disabled]="roleType === 2"
+            >
+                <option value="" disabled selected></option>
+                @for (r of apiRoots; track r) {
+                    <option [value]="r?.apiRoot?.title">
+                        {{ r?.apiRoot?.title }}
+                    </option>
+                }
+            </select>
+        </label>
+
+        <label class="item-label">
+            <div class="item-label-title">Collection</div>
+            <select
+                class="form-control form-select dropdown input-lg item-list-wrapper mb-1"
+                (change)="selectCollection($event)"
+                [(ngModel)]="currentCollectionTitle"
+                [disabled]="roleType === 2"
+            >
+                <option value="null" disabled selected></option>
+                @for (c of getCollectionsListFromRoot(); track c) {
+                    <option [value]="c['title']">
+                        {{ c['title'] }}
+                    </option>
+                }
+            </select>
+        </label>
+
+        <label class="item-label">
+            <div class="item-label-title">Can Read</div>
+            @if (collectionPerRolePermission?.can_read) {
+                <input
+                    type="checkbox"
+                    class="input-cb"
+                    [checked]="collectionPerRolePermission?.can_read ? roleDetail.can_read : collectionPerRolePermission.can_read"
+                    [(ngModel)]="roleDetail.can_read"
+                />
+            }
+            @if (!collectionPerRolePermission?.can_read) {
+                <input
+                    type="checkbox"
+                    [disabled]="!collectionPerRolePermission?.can_read"
+                    class="input-cb"
+                    [checked]="collectionPerRolePermission?.can_read"
+                />
+            }
+        </label>
+
+        <label class="item-label">
+            <div class="item-label-title">Can Write</div>
+            @if (collectionPerRolePermission?.can_write) {
+                <input
+                    type="checkbox"
+                    class="mt-1 input-cb"
+                    [checked]="collectionPerRolePermission?.can_write ? roleDetail.can_write : collectionPerRolePermission.can_write"
+                    [(ngModel)]="roleDetail.can_write"
+                />
+            }
+            @if (!collectionPerRolePermission?.can_write) {
+                <input
+                    type="checkbox"
+                    [disabled]="!collectionPerRolePermission?.can_write"
+                    class="mt-1 input-cb"
+                    [checked]="collectionPerRolePermission?.can_write"
+                />
+            }
+        </label>
+    </div>
+
+    <div class="item-action modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary me-3" (click)="close()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button type="button" class="btn btn-sm btn-success" (click)="save()" [disabled]="disableSave()">
+            <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+            Save
+        </button>
+    </div>
+
+    @if (errorMessages?.length > 0) {
+        <div class="row error-message">
+            <div class="col">
+                <div class="d-flex justify-content-center flex-column">
+                    @for (err of errorMessages; track err) {
+                        <div class="alert alert-danger" role="alert">
+                            {{ err }}
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

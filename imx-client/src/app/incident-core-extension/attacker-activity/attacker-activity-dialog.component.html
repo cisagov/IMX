@@ -1,0 +1,203 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>Attacker Activity</span>
+        </h4>
+        <button type="button" class="close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
+        </div>
+        <div class="form-group mt-2 pt-2 ps-2 pe-2">
+            <div class="row">
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">Outcome*</p>
+                    @if (this.stixService.revoked || this.stixService.revocation) {
+                        <input class="form-control" readonly />
+                    }
+                    @if (!this.stixService.revoked && !this.stixService.revocation) {
+                        <select class="form-control dropdown">
+                            <option value="" selected></option>
+                            @for (opt of this.activityOutcomeEnum; track opt) {
+                                <option [value]="opt">
+                                    {{ this.stixService.toTitle(opt) }}
+                                </option>
+                            }
+                        </select>
+                    }
+                </div>
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">Goal</p>
+                    <input class="form-control" [readonly]="this.stixService.revoked || this.stixService.revocation" />
+                </div>
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">Pattern Ref</p>
+                    <input class="form-control" [readonly]="this.stixService.revoked || this.stixService.revocation" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">Start Time</p>
+                    <input
+                        class="form-control"
+                        [readonly]="this.stixService.revoked || this.stixService.revocation"
+                        [owlDateTimeTrigger]="dtStartTime"
+                        [owlDateTime]="dtStartTime"
+                    />
+                    <owl-date-time #dtStartTime></owl-date-time>
+                </div>
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">Start Time Fidelity</p>
+                    @if (this.stixService.revoked || this.stixService.revocation) {
+                        <input class="form-control" readonly />
+                    }
+                    @if (!this.stixService.revoked && !this.stixService.revocation) {
+                        <select class="form-control dropdown">
+                            <option value="" selected></option>
+                            @for (opt of this.timestampFidelityEnum; track opt) {
+                                <option [value]="opt">
+                                    {{ this.stixService.toTitle(opt) }}
+                                </option>
+                            }
+                        </select>
+                    }
+                </div>
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">End Time</p>
+                    <input
+                        class="form-control"
+                        [readonly]="this.stixService.revoked || this.stixService.revocation"
+                        [owlDateTimeTrigger]="dtStartTime"
+                        [owlDateTime]="dtStartTime"
+                    />
+                    <owl-date-time #dtStartTime></owl-date-time>
+                </div>
+            </div>
+            <div class="row">
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">End Time Fidelity</p>
+                    @if (this.stixService.revoked || this.stixService.revocation) {
+                        <input class="form-control" readonly />
+                    }
+                    @if (!this.stixService.revoked && !this.stixService.revocation) {
+                        <select class="form-control dropdown">
+                            <option value="" selected></option>
+                            @for (opt of this.timestampFidelityEnum; track opt) {
+                                <option [value]="opt">
+                                    {{ this.stixService.toTitle(opt) }}
+                                </option>
+                            }
+                        </select>
+                    }
+                </div>
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">Sequence Start</p>
+                    <input class="form-control" type="number" [readonly]="this.stixService.revoked || this.stixService.revocation" />
+                </div>
+                <div class="p-0 ps-2 pe-2 col-4">
+                    <p style="float: left">Sequence End</p>
+                    <input class="form-control" type="number" [readonly]="this.stixService.revoked || this.stixService.revocation" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="p-0 ps-2 pe-2 col-12">
+                    <p style="float: left">Description</p>
+                    <textarea class="form-control" [readonly]="this.stixService.revoked || this.stixService.revocation"></textarea>
+                </div>
+            </div>
+
+            <div class="col-12 p-0">
+                <div class="row w-100 m-0">
+                    <div class="row w-100 ps-2">
+                        <span>
+                            <p class="pb-no-span">Kill Chain</p>
+                        </span>
+                        <div class="input-group">
+                            @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                <select class="form-control dropdown" [(ngModel)]="killChain">
+                                    <option value="" selected></option>
+                                    <option value="lockheed-martin-cyber-kill-chain">lockheed-martin-cyber-kill-chain</option>
+                                    <option value="mitre-attack">mitre-attack</option>
+                                </select>
+                            }
+                            <input
+                                class="form-control"
+                                style="border-radius: 0"
+                                [(ngModel)]="killChain"
+                                type="text"
+                                [readonly]="this.stixService.revoked || this.stixService.revocation"
+                            />
+                        </div>
+                    </div>
+                    <div class="row w-100 ps-2">
+                        <span class="tooltipright">
+                            <p style="float: left">Phase Name</p>
+                            <span style="float: left">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"> </fa-icon>
+                                <div class="toolttext">The name of the phase in the kill chain</div>
+                            </span>
+                        </span>
+                        <div class="input-group">
+                            @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                <select class="form-control dropdown" [(ngModel)]="this.phaseName">
+                                    <option value="" selected></option>
+                                    @for (opt of killChainPhases; track opt) {
+                                        <option [value]="opt">
+                                            {{ this.stixService.toTitle(opt) }}
+                                        </option>
+                                    }
+                                </select>
+                            }
+                            <input
+                                class="form-control"
+                                [(ngModel)]="this.phaseName"
+                                type="text"
+                                [readonly]="this.stixService.revoked || this.stixService.revocation"
+                            />
+                            @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                <button
+                                    class="btn btn-fa-sm btn-primary"
+                                    type="button"
+                                    (click)="addKillChain()"
+                                    [disabled]="phaseName == '' || killChain == ''"
+                                >
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-0">
+                @if (stixService.stringArrays.get('dialogKillChain') && stixService.stringArrays.get('dialogKillChain')!.length > 0) {
+                    <div class="form-group mt-2 added-items-font">
+                        <ul>
+                            @for (currentString of stixService.stringArrays.get('dialogKillChain'); track currentString) {
+                                <li tabindex="0">
+                                    {{ currentString }}
+                                    @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                        <button
+                                            type="button"
+                                            class="btn btn-fa-xsm btn-danger trash-can"
+                                            (click)="this.stixService.deleteString(currentString, 'dialogKillChain')"
+                                            (keydown.enter)="this.stixService.deleteString(currentString, 'dialogKillChain')"
+                                        >
+                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                        </button>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="onX()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success" (click)="onConfirm()">Add</button>
+    </div>
+</div>

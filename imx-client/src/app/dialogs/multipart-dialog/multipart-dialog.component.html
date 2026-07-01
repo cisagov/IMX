@@ -1,0 +1,93 @@
+<div class="dialog">
+    <div class="modal-header d-flex justify-content-between align-items-center">
+        <h2 class="modal-title" id="modal-title">Configure Body Multipart</h2>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cancelModal()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        @if (modalError) {
+            <div class="alert alert-warning mb-3" role="alert">
+                <small>{{ modalError }}</small>
+            </div>
+        }
+
+        <div class="multipart-form-container">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="body" class="form-label">Body</label>
+                    <input
+                        id="body"
+                        class="form-control"
+                        (input)="isModalAddEnabled()"
+                        [(ngModel)]="body"
+                        type="text"
+                        placeholder="Enter body content"
+                    />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Body Raw Ref</label>
+                    <select id="body_raw_ref_select" class="form-select mb-2" (change)="onSelectBodyRawRef($event)">
+                        <option value="">Select from existing references...</option>
+                        @for (opt of this.ref_options; track opt) {
+                            <option [value]="opt['id']">
+                                {{ getObjDisplayName(opt) }}
+                            </option>
+                        }
+                    </select>
+                    <div class="input-group">
+                        <span class="input-group-text custom-id-label">Or enter manually:</span>
+                        <input
+                            id="body_raw_ref"
+                            class="form-control"
+                            (input)="isModalAddEnabled()"
+                            [(ngModel)]="body_raw_ref"
+                            type="text"
+                            placeholder="artifact-- or file-- ID"
+                        />
+                    </div>
+                    <div class="invalid-feedback" [class.d-block]="body_raw_ref != '' && body_ref_error">
+                        {{ body_ref_error }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                    <label for="content_type" class="form-label">Content Type</label>
+                    <input
+                        id="content_type"
+                        class="form-control"
+                        (input)="isModalAddEnabled()"
+                        [(ngModel)]="content_type"
+                        type="text"
+                        placeholder="e.g., text/plain"
+                    />
+                </div>
+                <div class="col-md-6">
+                    <label for="content_disposition" class="form-label">Content Disposition</label>
+                    <input
+                        id="content_disposition"
+                        class="form-control"
+                        (input)="isModalAddEnabled()"
+                        [(ngModel)]="content_disposition"
+                        type="text"
+                        placeholder="e.g., attachment"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" aria-label="Close" (click)="cancelModal()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button class="btn btn-success" [disabled]="!addEnabled" type="button" (click)="onAdd()">
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+            Add
+        </button>
+    </div>
+</div>

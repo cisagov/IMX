@@ -1,0 +1,113 @@
+<div class="d-flex flex-column mt-3">
+    <div class="row dashboard-card">
+        <div class="col d-flex flex-column ps-4 pe-4">
+            <div class="pt-3 pb-3 card-title title-border">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>Users</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <fa-icon [icon]="faRecycle" (click)="refreshUsers()" class="bundle-icon cursor-pointer me-2"></fa-icon>
+                        <fa-icon [icon]="faPlus" (click)="adminService.addUser()" class="bundle-icon cursor-pointer"></fa-icon>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table justify-self-center table-striped table-hover">
+                <thead>
+                    <th scope="col" (click)="setSortKey('user')" class="pt-3 pb-3 align-left ps-3 cursor-pointer">
+                        User Names
+                        @if (sortKey == 'user-des') {
+                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                        } @else if (sortKey == 'user-asc') {
+                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                        }
+                    </th>
+                    <th scope="col" class="pt-3 pb-3 align-left ps-2">Roles</th>
+                    <th scope="col" (click)="setSortKey('authType')" class="pt-3 pb-3 align-left ps-2 cursor-pointer">
+                        Authentication
+                        @if (sortKey == 'authType-des') {
+                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                        } @else if (sortKey == 'authType-asc') {
+                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                        }
+                    </th>
+                    <th scope="col" class="pt-3 pb-3 align-left ps-2">Actions</th>
+                </thead>
+                @if (loading) {
+                    <tbody>
+                        <tr>
+                            <td colspan="4">
+                                <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                                    <span class="main-text"> Loading... </span>
+                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                } @else {
+                    @if (users.length == 0) {
+                        <tbody>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
+                                        <span class="main-text"> No Users Found </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    } @else {
+                        <tbody>
+                            @for (user of users; track user; let ind = $index) {
+                                <tr>
+                                    <td class="docname align-left ps-3">
+                                        {{ user.user }}
+                                    </td>
+                                    <td class="docname align-left">
+                                        @for (role of user.roles; track role; let ind = $index) {
+                                            <div class="badge rounded-pill prod-color">{{ role }}</div>
+                                            @if (user.roles.length > 1 && ind < user.roles.length - 1) {
+                                                <br />
+                                            }
+                                        }
+                                    </td>
+                                    <td class="docname align-left">
+                                        {{ user.authType }}
+                                    </td>
+                                    <td class="docname align-left">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            @if (user.authType == 'SSO') {
+                                                <button
+                                                    type="button"
+                                                    (click)="openKeycloak(user)"
+                                                    class="btn btn-fa btn-color-action me-1"
+                                                    title="Click to edit."
+                                                >
+                                                    <fa-icon [icon]="faExternalLinkAlt"></fa-icon>
+                                                </button>
+                                            } @else {
+                                                <button
+                                                    type="button"
+                                                    (click)="adminService.editUser(user)"
+                                                    class="btn btn-fa btn-color-action me-1"
+                                                    title="Click to edit."
+                                                >
+                                                    <fa-icon [icon]="faList"></fa-icon>
+                                                </button>
+                                                <button
+                                                    class="btn btn-fa btn-outline-danger me-1"
+                                                    (click)="confirmRemove(user)"
+                                                    title="Click to remove."
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                }
+            </table>
+        </div>
+    </div>
+</div>

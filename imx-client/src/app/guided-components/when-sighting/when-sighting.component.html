@@ -1,0 +1,139 @@
+<div class="d-flex flex-column justify-content-start align-items-center content-wrapper">
+    <div class="d-flex flex-row justify-content-around align-items-end gr-top-width">
+        <div class="d-flex align-items-end me-5">
+            <fa-icon class="title-main-size4 pe-1" [icon]="faClock"></fa-icon>
+            <span class="title-main-size3">WHEN?</span>
+        </div>
+
+        <div class="title-sub-size1-2 mb-3">Let's timestamp this event.</div>
+    </div>
+
+    <div class="horizonal-rule-top"></div>
+
+    <div class="d-flex justify-content-center align-items-start w-100">
+        <div class="mt-5 d-flex flex-column justify-content-start gr-help-section me-3">
+            <h6 class="gr-help-section-title">Timing Details</h6>
+            <div class="gr-help-section-content">
+                Time zone: The time zone where the incident occurred.
+                <br /><br />
+                Start: Enter the time and date the event started.
+                <br /><br />
+                End: Enter the time and date the event ended, or select "ongoing" if the event is ongoing.
+                <br /><br />
+                Number observed: How many times has this event occurred?
+                <br /><br />
+                Frequency: Is there a detectable pattern to the frequency of these events? Eventer in free text.
+                <br /><br />
+                Jitter: Is there randomness added to the beaconing interval?
+            </div>
+        </div>
+        <div class="mt-5 d-flex flex-column align-items-center gr-outter-wrapper">
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 w-75 position-relative mt-4">
+                <span class="w-25" title="Time Zone">Time Zone</span>
+                <select type="text" class="noborder form-select" style="width: 88%; margin-left: 3%" (change)="setTimeZone($event)">
+                    @for (tz of timeZones; track tz) {
+                        <option value="{{ tz }}">{{ guidedService.showTimezoneAndOffset(tz) }}</option>
+                    }
+                </select>
+                <span class="position-relative" style="top: 1px; right: 0px">
+                    <fa-icon class="pe-1" style="color: #91a4bb" [icon]="faClock"></fa-icon>
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 w-75 position-relative mt-2">
+                <span class="w-25" title="Start Time">Start Time</span>
+                <input
+                    placeholder="Local Start Time"
+                    class="form-control noborder"
+                    style="width: 88%; margin-left: 1.8%"
+                    [(ngModel)]="startTime"
+                    id="grPublished"
+                    [owlDateTimeTrigger]="grDtPicker"
+                    [owlDateTime]="grDtPicker"
+                    [max]="maxDateTime"
+                />
+                <owl-date-time
+                    pickerMode="dialog"
+                    #grDtPicker
+                    (afterPickerClosed)="selectedTime('startTime')"
+                    (yearSelected)="onYearSelected($event, 'startTime')"
+                ></owl-date-time>
+                <span class="position-relative" style="top: 1px; right: 0px">
+                    <fa-icon class="pe-1" style="color: #91a4bb" [icon]="faClock"></fa-icon>
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 w-75 position-relative mt-2">
+                <span class="w-25" title="End Time">End Time</span>
+                <div class="d-flex justify-content-left align-items-center w-100">
+                    <div class="d-flex flex-column align-items-left w-100">
+                        <div class="form-check d-flex justify-content-left align-items-center mt-1 mb-1">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                (change)="onGoing = false"
+                                name="flexRadioDefault"
+                                id="flexRadioDefault1"
+                                [value]="onGoing"
+                                checked
+                            />
+                            <input
+                                placeholder="Local End Time"
+                                class="form-control noborder"
+                                style="width: 88%"
+                                [(ngModel)]="endTime"
+                                id="grPublished"
+                                [owlDateTimeTrigger]="grDtPicker2"
+                                [owlDateTime]="grDtPicker2"
+                                [min]="minDateTime"
+                                [disabled]="onGoing"
+                            />
+                            <owl-date-time
+                                pickerMode="dialog"
+                                #grDtPicker2
+                                (afterPickerClosed)="selectedTime('endTime')"
+                                (yearSelected)="onYearSelected($event, 'endTime')"
+                            ></owl-date-time>
+                        </div>
+
+                        <div class="form-check d-flex justify-content-left align-items-center mb-2">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                (change)="onGoing = true"
+                                name="flexRadioDefault"
+                                id="flexRadioDefault2"
+                                [value]="onGoing"
+                            />
+                            <label class="form-check-label" style="margin-left: 11px" for="flexRadioDefault2"> Ongoing </label>
+                        </div>
+                    </div>
+                    <span class="position-relative" style="top: 1px">
+                        <fa-icon class="pe-1" style="color: #91a4bb" [icon]="faClock"></fa-icon>
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 w-75 position-relative mt-2">
+                <span class="w-25" title="Number Observed">Number Observed</span>
+                <input type="number" placeholder="" min="0" class="form-control noborder" style="width: 88%" [(ngModel)]="numObserved" />
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 w-75 position-relative mt-2">
+                <span class="w-25" title="Frequency">Frequency</span>
+                <input placeholder="" class="form-control noborder" style="width: 88%" [(ngModel)]="frequency" />
+            </div>
+
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 w-75 position-relative mt-2">
+                <span class="w-25" title="Jitter">Jitter</span>
+                <input placeholder="" class="form-control noborder" style="width: 88%" [(ngModel)]="jitter" />
+            </div>
+            <div class="w-100 d-flex justify-content-end mt-3 mb-2 me-5">
+                <div class="d-flex assist-text" style="right: 2vw" (click)="showAssistance.emit()">
+                    <h6 class="mt-2 me-1">Need Help</h6>
+                    <fa-icon class="assist-question-mark" [icon]="faQuestionCircle"></fa-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

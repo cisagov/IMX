@@ -1,0 +1,110 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h5 class="modal-title">Upload A User Certificate</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="close()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label input-header"> PKCS12 User Certificate* </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input
+                                class="form-control"
+                                [ngClass]="{ 'select-placeholder': !payload.pem, 'is-invalid': !payload.pem }"
+                                type="file"
+                                id="pkcs12"
+                                accept=".p12"
+                                (change)="onFileChanged($event)"
+                            />
+                            <div class="invalid-feedback">PKCS12 File Is Required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label input-header"> Password* </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input
+                                class="form-control"
+                                [ngClass]="{ 'is-invalid': !payload.password }"
+                                placeholder="Password"
+                                type="password"
+                                [(ngModel)]="payload.password"
+                            />
+                            <div class="invalid-feedback">Password Is Required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label input-header"> Groups </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="d-flex">
+                                <select
+                                    [(ngModel)]="selectedRole"
+                                    class="form-control form-select me-3"
+                                    [ngClass]="{ 'select-placeholder': !selectedRole }"
+                                >
+                                    <option selected value="">Select Group</option>
+                                    @for (role of filterRoles(); track role) {
+                                        <option [value]="role">{{ role }}</option>
+                                    }
+                                </select>
+                                <button [disabled]="!selectedRole" (click)="addRole(selectedRole)" class="btn btn-color">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @for (role of payload.roles; track role) {
+                <div class="row mt-2">
+                    <div class="col">
+                        <div class="d-flex roles-list role-item justify-content-between align-items-center">
+                            <span class="role-name">
+                                {{ role }}
+                            </span>
+                            <button class="btn btn-fa-sm btn-color list-trash" type="button" (click)="removeRole(role)">
+                                <fa-icon [icon]="faTrash"></fa-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="modal-footer d-flex justify-content-end">
+        <button type="button" class="btn btn-outline-secondary" (click)="close()">Cancel</button>
+        <button type="button" class="btn btn-outline-success" (click)="createUser()" [disabled]="!payload.pem || !payload.password || loading">
+            @if (loading) {
+                <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
+            } @else {
+                Create User
+            }
+        </button>
+    </div>
+</div>

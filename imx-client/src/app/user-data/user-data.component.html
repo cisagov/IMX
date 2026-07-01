@@ -1,0 +1,298 @@
+<div class="body user-data">
+    <div class="sidebar-bg" [ngClass]="{ 'expanded-side': expandSidebar }">
+        <fa-icon [icon]="faRight" class="sidebar-icon expand-right-arrow"></fa-icon>
+    </div>
+    <div class="sidebar cursor-pointer" [ngClass]="{ 'expanded-side': expandSidebar }" (mouseenter)="enableSidebar()" (mouseleave)="disableSidebar()">
+        <div class="d-flex flex-column sidebar-content justify-content-start align-items-center">
+            <div
+                title="Submissions"
+                id="expand-submissions-btn"
+                (click)="clickSubmission($event)"
+                [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                class="d-flex sidebar-item align-items-center mt-5"
+            >
+                <fa-icon [icon]="faFile" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Submissions </span>
+                <fa-icon *ngIf="expandSidebar && !submissionExpanded" [icon]="faCaretDown" class="sidebar-icon ms-auto"></fa-icon>
+                <fa-icon *ngIf="expandSidebar && submissionExpanded" [icon]="faCaretUp" class="sidebar-icon ms-auto"></fa-icon>
+            </div>
+            <div
+                title="TAXII Submissions"
+                id="taxii-btn"
+                (click)="setTab('submissions')"
+                *ngIf="expandSidebar && submissionExpanded"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                    active: activeTab === 'submissions',
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <span class="sidebar-label ms-5" style="font-size: 13px"> TAXII </span>
+            </div>
+            <div
+                title="MISP Submissions"
+                id="misp-btn"
+                (click)="setTab('misp')"
+                *ngIf="expandSidebar && submissionExpanded"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                    active: activeTab === 'misp',
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <span class="sidebar-label ms-5" style="font-size: 13px"> MISP </span>
+            </div>
+            <div
+                title="Saved Bundle"
+                id="save-btn"
+                (click)="setTab('bundles')"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                    active: activeTab === 'bundles',
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faSave" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Saved Bundles </span>
+            </div>
+            <div
+                title="Alert"
+                id="alerts-bundle-btn"
+                (click)="setTab('alerts')"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                    active: activeTab === 'alerts',
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faBell" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Alerts </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ms-5">
+        <ng-container *ngIf="isLoading">
+            <div class="row-name ps-3 pt-3">
+                Loading...
+                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+            </div>
+        </ng-container>
+
+        <ng-container
+            *ngIf="
+                (activeTab == 'submissions' && stixService.imxServerConnectionError != '') ||
+                (activeTab == 'misp' && stixService.imxServerConnectionError != '' && !isLoading)
+            "
+        >
+            <div class="row-name ps-3 pt-3 text-center">
+                <span class="color-red">**{{ stixService.imxServerConnectionError }}**</span>
+            </div>
+        </ng-container>
+
+        <div
+            *ngIf="activeTab == 'submissions' && stixService.imxServerConnectionError == ''"
+            class="row w-100"
+            style="margin-top: 20px; overflow: auto"
+        >
+            <div class="status-table w-100" style="margin-top: 10px; overflow: auto">
+                <div *ngIf="!isLoading" class="w-20 mt-2 mb-2 ms-2">
+                    <ng-container>
+                        <select class="form-control form-select" (change)="onUserChange($event)" [(ngModel)]="currentSelection">
+                            <option [value]="null" selected disabled></option>
+                            <option *ngFor="let option of selectionOptions; let i = index" [value]="option">{{ option }}</option>
+                        </select>
+                    </ng-container>
+                </div>
+                <div class="container-fluid">
+                    <div>
+                        <table *ngIf="statusTable.length != 0 && !isLoading" class="table mb-0 status-bottom-border">
+                            <thead>
+                                <tr style="height: 50px">
+                                    <th scope="col">
+                                        <span style="cursor: pointer" (click)="sort('user', 'status')">
+                                            User ID
+                                            <fa-icon *ngIf="sortKey === 'user-des'" [icon]="faAngleDown"> </fa-icon>
+                                            <fa-icon *ngIf="sortKey === 'user-asc'" [icon]="faAngleUp"> </fa-icon>
+                                        </span>
+                                    </th>
+                                    <th scope="col">
+                                        <span style="cursor: pointer" (click)="sort('document', 'status')">
+                                            STIX Doc Name
+                                            <fa-icon *ngIf="sortKey === 'document-des'" [icon]="faAngleDown"> </fa-icon>
+                                            <fa-icon *ngIf="sortKey === 'document-asc'" [icon]="faAngleUp"> </fa-icon>
+                                        </span>
+                                    </th>
+                                    <th scope="col">
+                                        <span style="cursor: pointer" (click)="sort('created_timestamp', 'status')">
+                                            Submission
+                                            <fa-icon *ngIf="sortKey === 'created_timestamp-des'" [icon]="faAngleDown"> </fa-icon>
+                                            <fa-icon *ngIf="sortKey === 'created_timestamp-asc'" [icon]="faAngleUp"> </fa-icon>
+                                        </span>
+                                    </th>
+                                    <th scope="col">
+                                        <span style="cursor: pointer" (click)="sort('status', 'status')">
+                                            Status
+                                            <fa-icon *ngIf="sortKey === 'status-des'" [icon]="faAngleDown"> </fa-icon>
+                                            <fa-icon *ngIf="sortKey === 'status-asc'" [icon]="faAngleUp"> </fa-icon>
+                                        </span>
+                                    </th>
+                                    <th scope="col">
+                                        <span style="cursor: pointer" (click)="sort('taxii', 'status')">
+                                            TAXII Server
+                                            <fa-icon *ngIf="sortKey === 'taxii-des'" [icon]="faAngleDown"> </fa-icon>
+                                            <fa-icon *ngIf="sortKey === 'taxii-asc'" [icon]="faAngleUp"> </fa-icon>
+                                        </span>
+                                    </th>
+                                    <th scope="col">
+                                        <span style="cursor: pointer" (click)="sort('root_collection', 'status')">
+                                            Root/Collection
+                                            <fa-icon *ngIf="sortKey === 'root_collection-des'" [icon]="faAngleDown"> </fa-icon>
+                                            <fa-icon *ngIf="sortKey === 'root_collection-asc'" [icon]="faAngleUp"> </fa-icon>
+                                        </span>
+                                    </th>
+                                    <th scope="col">
+                                        <span style="cursor: pointer" (click)="sort('updated_timestamp', 'status')">
+                                            Last Status Update
+                                            <fa-icon *ngIf="sortKey === 'updated_timestamp-des'" [icon]="faAngleDown"> </fa-icon>
+                                            <fa-icon *ngIf="sortKey === 'updated_timestamp-asc'" [icon]="faAngleUp"> </fa-icon>
+                                        </span>
+                                    </th>
+                                    <th scope="col" class="text-center">
+                                        <span> Actions </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let obj of statusTable; let i = index">
+                                    <tr style="height: 90px" [ngClass]="{ 'gray-bg': i % 2 === 0 }">
+                                        <td
+                                            style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 10%"
+                                            class="row-name"
+                                            (click)="changeStatusShow(i)"
+                                        >
+                                            {{ obj.userID }}
+                                        </td>
+                                        <td
+                                            style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 20%; word-break: break-word"
+                                            class="row-name"
+                                            (click)="changeStatusShow(i)"
+                                        >
+                                            {{ obj.docName }}
+                                        </td>
+                                        <td
+                                            style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 15%"
+                                            class="row-name"
+                                            (click)="changeStatusShow(i)"
+                                        >
+                                            {{ getDate(obj['@created_timestamp'], obj) }}
+                                        </td>
+                                        <td
+                                            style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 10%"
+                                            class="row-name"
+                                            (click)="changeStatusShow(i)"
+                                        >
+                                            <fa-icon *ngIf="obj.res.status == 'complete'" [icon]="faCheck" class="color-green"></fa-icon>
+                                            <fa-icon
+                                                *ngIf="obj.res.status != 'complete' && obj.res.status != 'pending'"
+                                                [icon]="faStop"
+                                                class="color-red"
+                                            ></fa-icon>
+                                            <fa-icon *ngIf="obj.res.status == 'pending'" [icon]="faClock" class="color-yellow"></fa-icon>
+                                            {{ obj.res.status }}
+                                        </td>
+                                        <td
+                                            style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 10%"
+                                            class="row-name"
+                                            (click)="changeStatusShow(i)"
+                                        >
+                                            <fa-icon
+                                                *ngIf="getTaxiiServer(obj.taxiiServer) != 'Default' && getTaxiiServer(obj.taxiiServer) != 'AIS'"
+                                                [icon]="faStop"
+                                                class="color-red"
+                                            ></fa-icon>
+                                            {{ getTaxiiServer(obj.taxiiServer) }}
+                                        </td>
+                                        <td
+                                            style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 10%"
+                                            class="row-name"
+                                            (click)="changeStatusShow(i)"
+                                        >
+                                            {{ obj.root_collection }}
+                                        </td>
+                                        <td
+                                            style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 15%"
+                                            class="row-name"
+                                            (click)="changeStatusShow(i)"
+                                        >
+                                            {{ getDate(obj['@updated_timestamp'], obj) }}
+                                        </td>
+                                        <td style="cursor: pointer; color: #1d1e1e; font-weight: normal; width: 10%" class="row-name">
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa btn-primary ms-1"
+                                                (click)="downloadSubmission(obj)"
+                                                title="Click to transfer bundle to Local"
+                                            >
+                                                <fa-icon [icon]="faDownload"></fa-icon>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="expanded-panel" [ngClass]="{ 'gray-bg': i % 2 === 0 }" *ngIf="statusRowNumber == i">
+                                        <td colspan="13" class="ps-4 pe-4 pb-3 preview">
+                                            <pre class="preview-json-window p-3">{{ statusQueryResults | json }}</pre>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                        <div class="footer" *ngIf="totalStatusPages !== 0 && !isLoading" [ngClass]="{ 'footer-no-bottom': totalStatusPages == 1 }">
+                            <div *ngIf="totalStatusPages !== 1 && !isLoading" class="span-footer float-start">
+                                <span>Page: {{ currentStatusPage }}/{{ totalStatusPages }}</span>
+                            </div>
+                            <div class="buttons-footer">
+                                <button
+                                    *ngIf="currentStatusPage > 1 && !isLoading"
+                                    class="btn btn-fa-sm btn-outline-primary ms-1 btn-status"
+                                    (click)="nextPage('left')"
+                                >
+                                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                                </button>
+                                <button
+                                    *ngIf="currentStatusPage < totalStatusPages && !isLoading"
+                                    class="btn btn-fa-sm btn-outline-primary ms-1 btn-status"
+                                    (click)="nextPage('right')"
+                                >
+                                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="!isLoading && statusTable.length == 0">
+                        <span style="font-weight: bold; text-align: left">No Status IDs saved for user</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="activeTab == 'misp' && stixService.imxServerConnectionError == ''" class="" style="margin-top: 20px">
+            <app-misp-submission [selectionOptions]="selectionOptions"></app-misp-submission>
+        </div>
+
+        <div *ngIf="activeTab == 'bundles'" class="row w-100" style="margin-top: 20px; overflow: auto">
+            <app-saved-bundles-table *ngIf="!isLoading" class="w-100" [mode]="'basic'"></app-saved-bundles-table>
+        </div>
+
+        <div *ngIf="activeTab == 'alerts'" class="row w-100" style="margin-top: 20px; overflow: auto">
+            <app-alert-tab *ngIf="!isLoading" class="w-100"></app-alert-tab>
+        </div>
+    </div>
+</div>

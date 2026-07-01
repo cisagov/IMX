@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo installing dependencies...
+      - npm i -g @angular/cli
+      - npm i
+
+  build:
+    commands:
+      - echo building...
+      - ng build --configuration development
+artifacts:
+  files:
+    - "**/*"
+  base-directory: "dist/imx"

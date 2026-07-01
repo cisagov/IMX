@@ -1,0 +1,453 @@
+<div (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+    <div class="arrow d-flex align-items-center">
+        <fa-icon *ngIf="!isExpanded" class="sidebar-icon" [icon]="faRight"></fa-icon>
+    </div>
+
+    <div class="sidebar-bg" [ngClass]="{ 'expanded-side': isExpanded }">
+        <fa-icon [icon]="faRight" class="sidebar-icon expand-right-arrow"></fa-icon>
+    </div>
+
+    <div class="sidebar cursor-pointer" [ngClass]="{ 'expanded-side': isExpanded }">
+        <div class="d-flex flex-column sidebar-content justify-content-start align-items-center" style="margin-top: 100px">
+            <div
+                title="Home"
+                id="home-btn"
+                (click)="onSelectMenu('indicator-type-1')"
+                [ngClass]="{
+                    'justify-content-center': !isExpanded,
+                    '': isExpanded,
+                    'expand-icon': isExpanded,
+                    'current-page': currentPage.includes('indicator-type'),
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faHome" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Home </span>
+            </div>
+
+            <div
+                title="Build Report"
+                id="build-report-btn"
+                (click)="updateSideMenu(); onSelectMenu('who-individual')"
+                [ngClass]="{ 'justify-content-center': !isExpanded, '': isExpanded, 'expand-icon': isExpanded }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faArrowsAlt" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Build Report </span>
+            </div>
+
+            <div
+                class="build-submenu"
+                [ngClass]="{
+                    'expand-icon': isExpanded,
+                    'sidebar-unexpanded': !isExpanded,
+                    'build-submenu-visible': expandGrSubmenu && getTab() == 'build',
+                }"
+            >
+                @if (getTab() == 'build') {
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item mb-0 top-border-item justify-content-between"
+                            [ngClass]="{ 'current-page': currentPage.includes('who-individual'), disabled: disableGrSubmenuItem('who-individual') }"
+                            (click)="onSelectMenu('who-individual')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="icon-wrapper">
+                                    <fa-icon [icon]="faUser"></fa-icon>
+                                </span>
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label">Who</span>
+                                }
+                            </div>
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('who-individual') && this.guidedService.cartLengths['who-individual'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('who-individual') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item justify-content-between mb-0"
+                            [class]="{ 'current-page': currentPage.includes('where-location'), disabled: disableGrSubmenuItem('where-location') }"
+                            (click)="!disableGrSubmenuItem('where-location') && onSelectMenu('where-location')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="icon-wrapper">
+                                    <fa-icon [icon]="faGlobe"></fa-icon>
+                                </span>
+
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label">Location</span>
+                                }
+                            </div>
+
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('where-location') && this.guidedService.cartLengths['where-location'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('where-location') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex justify-content-between section-item mb-0"
+                            [ngClass]="{
+                                'current-page': currentPage === 'how-event-detection',
+                                disabled: disableGrSubmenuItem('how-event-detection'),
+                            }"
+                            (click)="!disableGrSubmenuItem('how-event-detection') && onSelectMenu('how-event-detection')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="nav-icon custom-icon icon-wrapper">
+                                    <img *ngIf="currentPage !== 'how-event-detection'" src="./assets/sword-grey-dark.svg" alt="Detection" />
+                                    <img *ngIf="currentPage === 'how-event-detection'" src="./assets/sword-grey-light.svg" alt="Detection" />
+                                </span>
+
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label">Detection</span>
+                                }
+                            </div>
+
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('how-event-detection') && this.guidedService.cartLengths['how-event-detection'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('how-event-detection') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item mb-0 justify-content-between"
+                            [ngClass]="{ 'current-page': currentPage.includes('how-observable'), disabled: disableGrSubmenuItem('how-observable') }"
+                            (click)="!disableGrSubmenuItem('how-observable') && onSelectMenu('how-observable')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="icon-wrapper">
+                                    <fa-icon [icon]="faEye"></fa-icon>
+                                </span>
+
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label">Observable</span>
+                                }
+                            </div>
+
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('how-observable') && this.guidedService.cartLengths['how-observable'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('how-observable') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item mb-0 justify-content-between"
+                            [ngClass]="{
+                                'current-page': currentPage.includes('how-pattern-builder'),
+                                disabled: disableGrSubmenuItem('how-pattern-builder'),
+                            }"
+                            (click)="!disableGrSubmenuItem('how-pattern-builder') && onSelectMenu('how-pattern-builder')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="icon-wrapper">
+                                    <fa-icon [icon]="faSearch"></fa-icon>
+                                </span>
+                                @if (isExpanded) {
+                                    <span class="ms-2 me-2 sidebar-label sub-label">Query</span>
+                                }
+                            </div>
+
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('how-pattern-builder') && this.guidedService.cartLengths['how-pattern-builder'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('how-pattern-builder') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item mb-0 justify-content-between"
+                            [ngClass]="{ 'current-page': currentPage.includes('how-ttp'), disabled: disableGrSubmenuItem('how-ttp') }"
+                            (click)="!disableGrSubmenuItem('how-ttp') && onSelectMenu('how-ttp')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="icon-wrapper">
+                                    <fa-icon [icon]="faChess"></fa-icon>
+                                </span>
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label">TTP</span>
+                                }
+                            </div>
+
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('how-ttp') && this.guidedService.cartLengths['how-ttp'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('how-ttp') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item justify-content-between mb-0"
+                            [ngClass]="{ 'current-page': currentPage.includes('how-cwe'), disabled: disableGrSubmenuItem('how-cwe') }"
+                            (click)="!disableGrSubmenuItem('how-cwe') && onSelectMenu('how-cwe')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="icon-wrapper">
+                                    <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+                                </span>
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label">CWE</span>
+                                }
+                            </div>
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('how-cwe') && this.guidedService.cartLengths['how-cwe'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('how-cwe') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item justify-content-between mb-0"
+                            [ngClass]="{ 'current-page': currentPage.includes('what-impact'), disabled: disableGrSubmenuItem('what-impact') }"
+                            (click)="!disableGrSubmenuItem('what-impact') && onSelectMenu('what-impact')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="icon-wrapper">
+                                    <fa-icon [icon]="faTools"></fa-icon>
+                                </span>
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label">Impact</span>
+                                }
+                            </div>
+                            @if (isExpanded) {
+                                @if (!disableGrSubmenuItem('what-impact') && this.guidedService.cartLengths['what-impact'] > 0) {
+                                    <span class="badge rounded-pill bg-secondary item-count">
+                                        {{ getCartLength('what-impact') }}
+                                    </span>
+                                }
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex justify-content-start section-item mb-0 bottom-border-item"
+                            [class]="{
+                                'current-page': currentPage.includes('report-assessment'),
+                                disabled: disableGrSubmenuItem('report-assessment'),
+                            }"
+                            (click)="!disableGrSubmenuItem('report-assessment') && onSelectMenu('report-assessment')"
+                        >
+                            <div class="d-flex label-transition" [ngClass]="{ 'ms-3': getTab() == 'build' && isExpanded }">
+                                <span class="nav-icon custom-icon icon-wrapper">
+                                    <img *ngIf="currentPage !== 'report-assessment'" src="./assets/plus-grey-dark.svg" alt="Detection" />
+                                    <img *ngIf="currentPage === 'report-assessment'" src="./assets/plus-grey-light.svg" alt="Detection" />
+                                </span>
+                                @if (isExpanded) {
+                                    <span class="me-2 ms-2 sidebar-label sub-label"> Report </span>
+                                }
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <div
+                title="Review Report"
+                id="review-report-btn"
+                (click)="onSelectMenu('build-review')"
+                [ngClass]="{
+                    'justify-content-center': !isExpanded,
+                    'expand-icon': isExpanded,
+                    'current-page': currentPage === 'build-review',
+                    'section-item-disabled': disableMenuItem('build-review'),
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faClipboardList" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Review Report </span>
+            </div>
+
+            <div
+                class="build-submenu"
+                [ngClass]="{ 'expand-icon': isExpanded, 'sidebar-unexpanded': !isExpanded, 'review-submenu-visible': getTab() == 'review' }"
+            >
+                @if (getTab() == 'review') {
+                    <div class="w-100 section-submenu-item">
+                        <a class="d-flex section-item mb-0 top-border-item justify-content-start" (click)="onSelectMenu('save-bundle', false)">
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'review' && isExpanded }">
+                                <fa-icon [icon]="faClipboardList"></fa-icon>
+                            </span>
+                            @if (isExpanded) {
+                                <span class="me-2 ms-2 sidebar-label sub-label">Save</span>
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a class="d-flex justify-content-start section-item mb-0" (click)="onSelectMenu('load-saved-bundle', false)">
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'review' && isExpanded }">
+                                <fa-icon [icon]="faSave"></fa-icon>
+                            </span>
+
+                            @if (isExpanded) {
+                                <span class="me-2 ms-2 sidebar-label sub-label">Load</span>
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a class="d-flex section-item mb-0 justify-content-start" (click)="onSelectMenu('download-bundle', false)">
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'review' && isExpanded }">
+                                <fa-icon [icon]="faDownload"></fa-icon>
+                            </span>
+
+                            @if (isExpanded) {
+                                <span class="me-2 ms-2 sidebar-label sub-label">Download</span>
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a class="d-flex section-item mb-0 justify-content-start bottom-border-item" (click)="onSelectMenu('reset-bundle', false)">
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'review' && isExpanded }">
+                                <fa-icon [icon]="faUndo"></fa-icon>
+                            </span>
+
+                            @if (isExpanded) {
+                                <span class="me-2 ms-2 sidebar-label sub-label">Restart</span>
+                            }
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <div
+                title="Publish Report"
+                (click)="onSelectMenu('tlp-type')"
+                id="publish-report-btn"
+                [ngClass]="{ 'justify-content-center': !isExpanded, 'expand-icon': isExpanded }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faUpload" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Publish Report </span>
+            </div>
+
+            <div
+                class="build-submenu"
+                [ngClass]="{ 'expand-icon': isExpanded, 'sidebar-unexpanded': !isExpanded, 'build-submenu-visible': getTab() == 'publish' }"
+            >
+                @if (getTab() == 'publish') {
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex section-item mb-0 top-border-item justify-content-start"
+                            [ngClass]="{ 'current-page': currentPage == 'tlp-type', 'section-item-disabled': disableMenuItem('tlp-type') }"
+                            (click)="onSelectMenu('tlp-type')"
+                        >
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'publish' && isExpanded }">
+                                <fa-icon [icon]="faTrafficLight"></fa-icon>
+                            </span>
+                            @if (isExpanded) {
+                                <span class="me-2 ms-2 sidebar-label sub-label">TLP Status</span>
+                            }
+                        </a>
+                    </div>
+
+                    <div class="w-100 section-submenu-item">
+                        <a
+                            class="d-flex justify-content-start section-item mb-0"
+                            [ngClass]="{
+                                'current-page': currentPage.includes('publish-type'),
+                                'section-item-disabled': disableMenuItem('publish-type'),
+                            }"
+                            (click)="onSelectMenu('publish-type-1')"
+                        >
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'publish' && isExpanded }">
+                                <fa-icon [icon]="faServer"></fa-icon>
+                            </span>
+
+                            @if (isExpanded) {
+                                <span class="me-2 ms-2 sidebar-label sub-label">TAXII Servers</span>
+                            }
+                        </a>
+                    </div>
+
+                    <div
+                        class="w-100 section-submenu-item"
+                        [ngClass]="{ 'cursor-not-allowed': disableMenuItem('publish-review') || !serverSelected || publishStatus == 'none' }"
+                    >
+                        <a
+                            class="d-flex section-item mb-0 justify-content-start"
+                            [ngClass]="{
+                                'current-page': currentPage === 'publish-review',
+                                'section-item-disabled': disableMenuItem('publish-review') || !serverSelected,
+                            }"
+                            (click)="onSelectMenu('publish-review')"
+                        >
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'publish' && isExpanded }">
+                                <fa-icon [icon]="faClipboardCheck"></fa-icon>
+                            </span>
+
+                            @if (isExpanded) {
+                                <span class="me-2 ms-2 sidebar-label sub-label">Review</span>
+                            }
+                        </a>
+                    </div>
+
+                    <div
+                        class="w-100 section-submenu-item"
+                        [ngClass]="{ 'cursor-not-allowed': disableMenuItem('publish-review') || !serverSelected || publishStatus == 'none' }"
+                    >
+                        <a
+                            class="d-flex section-item mb-0 justify-content-start bottom-border-item"
+                            [ngClass]="{
+                                'current-page': currentPage === 'publish-success',
+                                'section-item-disabled': disableMenuItem('publish-review') || !serverSelected || publishStatus == 'none',
+                            }"
+                            (click)="onSelectMenu('publish-success')"
+                        >
+                            <span class="icon-wrapper label-transition" [ngClass]="{ 'ms-3': getTab() == 'publish' && isExpanded }">
+                                <fa-icon [icon]="faSearch"></fa-icon>
+                            </span>
+
+                            @if (isExpanded) {
+                                <span class="ms-2 me-2 sidebar-label sub-label">Publish Status</span>
+                            }
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="isExpanded" class="gm-pin-flag gm-pin-wrapper" (click)="togglePinMenu()" [class.gm-pin-active]="isPinnedOpen">
+        @if (isPinnedOpen) {
+            <fa-icon [icon]="faLock"></fa-icon>
+        } @else {
+            <fa-icon [icon]="faUnlock"></fa-icon>
+        }
+    </div>
+</div>

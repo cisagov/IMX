@@ -1,0 +1,10 @@
+<div class="d-flex justify-content-center align-items-start content-wrapper">
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <div class="d-flex object-info-wrapper mt-5 w-100">
+            Threat Actor
+            <input type="text" [(ngModel)]="name" />
+
+            <app-add-component #addComponent style="display: none" [objectSelectionInput]="objectSelection"> </app-add-component>
+        </div>
+    </div>
+</div>

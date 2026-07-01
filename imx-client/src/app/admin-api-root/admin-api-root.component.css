@@ -1,0 +1,148 @@
+.btn-warning {
+    color: black !important;
+}
+
+.fa-trash {
+    padding-left: 7px;
+    padding-top: 6px;
+}
+
+.left-col {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.body .item-title {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 24px;
+    background-color: rgb(248, 249, 250);
+    padding: 20px;
+    margin-top: 50px;
+}
+
+.body .item-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    width: fit-content;
+}
+
+.body .item-label {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.body .item-label .item-label-title {
+    width: 100px;
+}
+
+.body .item-action {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.body .item-list-wrapper {
+    width: 580px;
+}
+
+.body .media-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.body .media-list-item-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(248, 249, 250);
+    border-radius: 5px;
+    padding: 5px 20px;
+    margin-bottom: 10px;
+}
+
+.body .media-list-item-type {
+    width: 300px;
+}
+
+.body .item-label-input {
+    width: 580px;
+}
+
+.body .add-button-inactive {
+    color: rgb(204, 204, 204);
+}
+
+.body .rw-wrapper {
+    padding: 5px 20px;
+    background: rgb(248, 249, 250);
+    margin-left: 100px;
+    width: 580px;
+}
+
+.body .error-message {
+    position: absolute;
+    top: 10%;
+    left: 25%;
+    width: 50%;
+}
+
+.tooltipright {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: -5px !important;
+}
+
+.tooltipright .toolttext {
+    visibility: hidden;
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -30%;
+    margin-left: 12px;
+}
+
+.toolttext {
+    min-width: 200px;
+}
+
+.tooltipright:hover .toolttext {
+    visibility: visible;
+}
+
+.tooltipright:empty .toolttext {
+    visibility: hidden;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper {
+    padding: 30px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper .tooltip-content {
+    margin-top: 15px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}

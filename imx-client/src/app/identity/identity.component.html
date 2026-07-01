@@ -1,0 +1,88 @@
+<div class="d-flex align-items-center" [ngClass]="{ 'col-4': stixService.guidedUI, 'col-12 pe-5 justify-content-between': !stixService.guidedUI }">
+    <div class="col-4">
+        <p class="stix-title input-header">Available Identities</p>
+    </div>
+</div>
+
+@if (storedIdentities?.arr.length > 0) {
+    <div class="form-group mt-2" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
+        <accordion>
+            @for (identity of storedIdentities?.arr; track identity; let i = $index) {
+                <accordion-group tabindex="0" [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="false">
+                    <div id="identity_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                        <div class="col d-flex justify-content-between align-items-center">
+                            <div class="btn btn-link">{{ identity.name ? identity.name : 'NO NAME' }} ({{ identity.id }})</div>
+                            @if (identity.id !== cisaId) {
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-color me-2 list-trash"
+                                    id="identities_list{{ i }}_edit"
+                                    (click)="$event.stopPropagation(); editObject.emit(identity)"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-color me-2 list-trash"
+                                    id="identities_list{{ i }}_revoke"
+                                    (click)="$event.stopPropagation(); revokeObject.emit(identity)"
+                                >
+                                    Revoke
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-color me-2 list-trash"
+                                    id="identities_list{{ i }}_remove"
+                                    style="width: 170px"
+                                    (click)="$event.stopPropagation(); removeObject.emit(identity.id)"
+                                >
+                                    Remove Local
+                                </button>
+                                @if (!compareIdentity(identity.id)) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-color me-2 list-trash"
+                                        id="identities_list{{ i }}_set"
+                                        (click)="$event.stopPropagation(); setMainIdentity.emit(identity.id)"
+                                    >
+                                        Set Identity
+                                    </button>
+                                }
+                                @if (compareIdentity(identity.id)) {
+                                    <button type="button" class="btn btn-sm btn-color me-2 list-trash" id="identities_list{{ i }}_set" disabled>
+                                        Identity Set
+                                    </button>
+                                }
+                            } @else {
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-color me-2 list-trash"
+                                    id="identities_list{{ i }}_add"
+                                    (click)="$event.stopPropagation(); addCISAIdentity.emit(identity)"
+                                >
+                                    Add Object
+                                </button>
+                                @if (!compareIdentity(identity.id)) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-color me-2 list-trash"
+                                        id="identities_list{{ i }}_set"
+                                        (click)="$event.stopPropagation(); setMainIdentity.emit(identity.id)"
+                                    >
+                                        Set Identity
+                                    </button>
+                                }
+                                @if (compareIdentity(identity.id)) {
+                                    <button type="button" class="btn btn-sm btn-color me-2 list-trash" id="identities_list{{ i }}_set" disabled>
+                                        Identity Set
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <pre>{{ getJsonDisplayForComponent(identity) | json }}</pre>
+                </accordion-group>
+            }
+        </accordion>
+    </div>
+}

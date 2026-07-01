@@ -1,0 +1,11 @@
+./node_modules
+./node_scripts
+./uploads
+./environment
+./Docker
+./moe-test
+./scripts
+./temp
+
+.env
+.git

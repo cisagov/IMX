@@ -1,0 +1,110 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>{{ this.objectType }} Entry</span>
+        </h4>
+        <button type="button" class="close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
+        </div>
+        <div class="form-group ps-2 pe-2">
+            <div class="pt-2">
+                <div class="row p-0 ps-2">
+                    <h5 style="float: left">Next {{ objectType }} Refs*</h5>
+                    <br />
+                    @if (!this.stixService.revoked && !this.stixService.revocation) {
+                        <div class="input-group pe-2">
+                            <div class="input-group">
+                                <div class="input-group col-11 p-0">
+                                    <div class="col-12 p-0">
+                                        <p class="stix-title pe-2" style="float: left">{{ objectType }} Ref</p>
+                                        <div class="input-group">
+                                            <select id="seq_object_ref" class="form-control dropdown" [(ngModel)]="seq_object_ref">
+                                                <option value="" selected></option>
+                                                @for (opt of this.refObjects; track opt) {
+                                                    <option [value]="opt['id']">
+                                                        @if (objectType == 'Event') {
+                                                            <span>
+                                                                {{ opt['name'] ? opt['name'] : opt['id'] }}
+                                                            </span>
+                                                        }
+                                                        @if (objectType == 'Impact') {
+                                                            <span>
+                                                                {{
+                                                                    opt['impact_category']
+                                                                        ? opt['impact_category'] + ' (' + opt['id'] + ')'
+                                                                        : opt['id']
+                                                                }}
+                                                            </span>
+                                                        }
+                                                        @if (objectType == 'Task') {
+                                                            <span>
+                                                                {{ opt['name'] ? opt['name'] : opt['id'] }}
+                                                            </span>
+                                                        }
+                                                    </option>
+                                                }
+                                            </select>
+                                            <input class="form-control" id="seq_object_ref" type="text" [(ngModel)]="seq_object_ref" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pt-4 ps-1">
+                                    <button
+                                        class="btn btn-fa-sm btn-primary add-button"
+                                        type="button"
+                                        (click)="this.addNextStep()"
+                                        [disabled]="!seq_object_ref || next_steps.includes(seq_object_ref)"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (this.errors['next_steps'] && this.errors['next_steps'] != '') {
+                        <div class="row">
+                            <span class="mb-2 warning-message ps-3">
+                                {{ this.errors['next_steps'] }}
+                            </span>
+                        </div>
+                    }
+
+                    @if (this.next_steps.length > 0) {
+                        <div class="form-group mt-2 pe-0 col-9 ps-4">
+                            <accordion>
+                                @for (step of this.next_steps; track step; let i = $index) {
+                                    <accordion-group [heading]="step" [panelClass]="'accordion-panel-class'">
+                                        @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa btn-danger"
+                                                    style="margin-left: 10px"
+                                                    (click)="this.next_steps.splice(i, 1)"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </div>
+                                        }
+                                        <pre>{{ step | json }}</pre>
+                                    </accordion-group>
+                                }
+                            </accordion>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="onX()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success" (click)="onConfirm()" [disabled]="!isDialogValid()">Add</button>
+    </div>
+</div>

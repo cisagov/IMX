@@ -1,0 +1,154 @@
+<div class="dialog">
+    <div class="modal-header">
+        <div class="col-10 align-items-start">
+            <h4 class="modal-title" id="publish-modal-title">
+                <span>Referencing Object Detected: {{ this.objectId }}</span>
+            </h4>
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn-close float-right" aria-label="Close" (click)="close()">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <h5>STIX Preview Window</h5>
+        @if (this.stixService.origID.length == 0) {
+            <p>
+                An object referencing the deleted object has been detected. Please confirm whether you would like to delete the references within
+                object or skip otherwise.
+            </p>
+        }
+        @if (this.stixService.origID.length > 0) {
+            <p>
+                An object referencing the edited object's previous ID has been detected. Please confirm whether you would like to update the
+                reference, delete the non-required references within the object, or skip otherwise. Deletion is not supported for required properties.
+            </p>
+        }
+        <div>
+            <ul class="nav nav-underline">
+                <li class="nav-item">
+                    <a class="nav-link active">JSON</a>
+                </li>
+            </ul>
+
+            <pre class="preview-bundle">{{ this.object | json }}</pre>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (this.parentsLength > 1) {
+            <div class="button-row">
+                <button type="button" class="btn btn-outline-secondary component-button text" (click)="confirmSkip(confirmSkipModal)">
+                    <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                    Skip All ({{ this.parentsLength }})
+                </button>
+                @if (this.stixService.origID.length > 0) {
+                    <button type="button" class="btn btn-outline-success component-button text" (click)="update(true)">
+                        Update All References ({{ this.parentsLength }})
+                    </button>
+                }
+                <button
+                    type="button"
+                    class="btn btn-outline-danger component-button text"
+                    (click)="confirm(confirmModal)"
+                    [disabled]="this.deleteCount <= 0"
+                >
+                    <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                    Delete All References ({{ this.deleteCount }})
+                </button>
+            </div>
+            <hr class="button-divider" />
+        }
+        <div class="button-row">
+            <button type="button" class="btn btn-outline-secondary component-button text" (click)="close()">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Skip
+            </button>
+            @if (this.stixService.origID.length > 0) {
+                <button type="button" class="btn btn-outline-success component-button text" (click)="update()">Update Reference</button>
+            }
+            <button type="button" class="btn btn-outline-danger component-button text" (click)="delete()" [disabled]="!this.deletable">
+                <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                Delete Reference
+            </button>
+        </div>
+    </div>
+</div>
+
+<ng-template #confirmSkipModal let-modal>
+    <div class="dialog">
+        <div class="modal-header">
+            <div class="col-10 align-items-start">
+                <h4 class="modal-title" id="publish-modal-title">
+                    <span>Confirm that the following {{ this.parentsLength }} referencing objects will be skipped:</span>
+                </h4>
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn-close float-right" aria-label="Close" (click)="this.confirmSkipRef.close()">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="preview-bundle">
+                @for (p of this.parents; track p) {
+                    <div>
+                        {{ p.id }}
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <div class="button-row">
+                <button type="button" class="btn btn-outline-secondary component-button text" (click)="this.confirmSkipRef.close()">
+                    <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                    Back
+                </button>
+                <button type="button" class="btn btn-outline-secondary component-button text" (click)="close(true)">
+                    <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                    Skip All
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #confirmModal let-modal>
+    <div class="dialog">
+        <div class="modal-header">
+            <div class="col-10 align-items-start">
+                <h4 class="modal-title" id="publish-modal-title">
+                    <span>Confirm that references in the following {{ this.deleteCount }} objects are to be deleted:</span>
+                </h4>
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn-close float-right" aria-label="Close" (click)="this.confirmRef.close()">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="preview-bundle">
+                @for (p of this.parents; track p) {
+                    <div>
+                        {{ p.id }}
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <div class="button-row">
+                <button type="button" class="btn btn-outline-secondary component-button text" (click)="this.confirmRef.close()">
+                    <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                    Back
+                </button>
+                <button type="button" class="btn btn-outline-danger component-button text" (click)="delete(true)">
+                    <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                    Delete All
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>

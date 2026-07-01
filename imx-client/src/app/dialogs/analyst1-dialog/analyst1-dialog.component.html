@@ -1,0 +1,1719 @@
+@if (step === 0) {
+    <div style="height: 95vh" [ngClass]="{ loadingSpinner: addingStixToPending }">
+        <div class="modal-body pb-0" style="padding-left: 0px; padding-right: 0px">
+            @if (showingAnalyst1) {
+                <div class="w-100" [ngClass]="{ 'display-expanded': expandDetails, 'display-collapsed': !expandDetails }">
+                    <div class="d-flex justify-content-center flex-column">
+                        <div class="text-center d-flex flex-row justify-content-between ps-4 pe-4 pt-2 pb-4 align-items-center w-100">
+                            <div class="d-flex flex-row" style="width: 85%">
+                                <div class="search-label">Search Evidence Packages</div>
+                                <div class="col-8 search-bar pe-2 d-flex align-items-center">
+                                    <input
+                                        class="form-control search-input"
+                                        [(ngModel)]="searchTextAnalyst1"
+                                        placeholder="Input criteria to search indicators on Analyst1."
+                                        (keydown.enter)="getAnalyst1Objects()"
+                                    />
+                                    @if (searchTextAnalyst1) {
+                                        <button (click)="clearSearchAnalyst1()" type="button" class="btn-close" aria-label="Close"></button>
+                                    }
+                                </div>
+                                <div>
+                                    @if (!loadingStix) {
+                                        <button
+                                            [disabled]="!searchTextAnalyst1 || addingStixToPending"
+                                            class="btn btn-md btn-primary query-button search-button"
+                                            (click)="getAnalyst1Objects()"
+                                        >
+                                            <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                            Search
+                                        </button>
+                                    }
+
+                                    @if (loadingStix) {
+                                        <button class="btn btn-md btn-secondary query-button search-button" (click)="cancelAnalyst1Search()">
+                                            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                                            Cancel
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <div class="w-25">
+                                @if (showNextAnalyst1Page() && !addingStixToPending) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary next-button ms-2"
+                                        (click)="getNextAnalyst1Page()"
+                                        [disabled]="addingStixToPending"
+                                        style="height: 38px; float: right"
+                                        title="More objects are available for this query. Click Next to see them."
+                                    >
+                                        <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                                        Next
+                                    </button>
+                                }
+                                @if (showPrevAnalyst1Page() && !addingStixToPending) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary next-button"
+                                        (click)="getPrevAnalyst1Page()"
+                                        [disabled]="addingStixToPending"
+                                        style="height: 38px; float: right"
+                                        title="More objects are available for this query. Click Prev to see previous page."
+                                    >
+                                        <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                                        Prev
+                                    </button>
+                                }
+                                @if (showNextAnalyst1Page() && addingStixToPending) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary next-button"
+                                        style="height: 38px; float: right"
+                                        disabled
+                                        title="More objects are available for this query. Click Next to see them."
+                                    >
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    </button>
+                                }
+                                @if (showPrevAnalyst1Page() && addingStixToPending) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary next-button"
+                                        style="height: 38px; float: right"
+                                        disabled
+                                        title="More objects are available for this query. Click Prev to see previous page."
+                                    >
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                        <div class="pb-1" style="border-bottom: 1px solid #dee2e6"></div>
+                        @if (analyst1Objects?.length > 0) {
+                            <div class="row text-center ps-2 pe-2 pb-2 result-label w-100">
+                                <div class="mt-2 d-flex w-100">
+                                    <div
+                                        class="d-flex mt-2 ps-4 pe-4 display-stat"
+                                        [ngClass]="{ 'display-stat': expandDetails, 'hide-stat': !expandDetails }"
+                                    >
+                                        <h1 class="h3">
+                                            Total:
+                                            <span style="font-weight: 200; font-style: normal"
+                                                >{{ totalResults }} {{ totalResults > 1 ? 'results' : 'result' }}</span
+                                            >
+                                        </h1>
+                                        <div>Displaying page {{ analyst1currentPage }} of {{ analyst1TotalPages }}</div>
+                                    </div>
+                                    @if (expandDetails) {
+                                        <div class="d-flex mt-2 mb-4 flex-column align-items-start output-table">
+                                            <div class="w-100 mb-4 text-start">Select output format:</div>
+                                            <div class="d-flex w-100 flex-row justify-content-start">
+                                                <div class="d-flex align-items-center">
+                                                    <input class="me-2" type="checkbox" [checked]="textOutput" [(ngModel)]="textOutput" />
+                                                    TXT
+                                                </div>
+                                                <div class="ms-4 d-flex align-items-center">
+                                                    <input class="me-2" type="checkbox" [checked]="csvOutput" [(ngModel)]="csvOutput" />
+                                                    CSV
+                                                </div>
+                                                <div class="ms-4 d-flex align-items-center">
+                                                    <input
+                                                        class="me-2"
+                                                        type="checkbox"
+                                                        [disabled]="addingStixToPending"
+                                                        [checked]="xmlOutput"
+                                                        [(ngModel)]="xmlOutput"
+                                                        (change)="getCountries('output')"
+                                                    />
+                                                    STIX 1.1
+                                                </div>
+                                                <div class="ms-4 d-flex align-items-center">
+                                                    <input
+                                                        class="me-2"
+                                                        type="checkbox"
+                                                        [disabled]="addingStixToPending"
+                                                        [checked]="stixOutput"
+                                                        [(ngModel)]="stixOutput"
+                                                        (change)="getCountries('output')"
+                                                    />
+                                                    STIX 2.1
+                                                </div>
+                                                <button
+                                                    class="btn btn-success ms-4"
+                                                    [disabled]="this.exportingObjects || this.addingStixToPending || !isReady()"
+                                                    (click)="exportObjects()"
+                                                    style="height: 45px; width: 74px"
+                                                >
+                                                    @if (!exportingObjects) {
+                                                        <span> Export </span>
+                                                    }
+                                                    @if (exportingObjects) {
+                                                        <span>
+                                                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                                        </span>
+                                                    }
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (expandDetails) {
+                                        <div class="ms-auto me-2">
+                                            <fa-icon style="cursor: pointer" [icon]="faArrowUp" (click)="expandResultDetail()"></fa-icon>
+                                        </div>
+                                    }
+                                    @if (!expandDetails) {
+                                        <div class="ms-auto mb-auto mt-auto me-2">
+                                            <fa-icon style="cursor: pointer" [icon]="faArrowDown" (click)="expandResultDetail()"></fa-icon>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            <div
+                [class]="analyst1Objects?.length === 0 ? 'mb-6' : 'mb-3'"
+                [ngClass]="{ 'expanded-body': !expandDetails, 'collapsed-body': expandDetails }"
+                style="display: flex; justify-content: center; align-items: center; width: 100%"
+                class="mt-1 analyst1-objects-wrapper"
+            >
+                @if (analyst1Objects?.length === 0 && !addingStixToPending && !searchError) {
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="container" style="text-align: center">
+                            <p style="font-weight: bold">No results</p>
+                        </div>
+                    </div>
+                }
+                @if (analyst1Objects?.length === 0 && !addingStixToPending && searchError) {
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="container" style="text-align: center">
+                            <p style="font-weight: bold">{{ searchError }}</p>
+                            <p style="font-weight: bold">Please try again</p>
+                        </div>
+                    </div>
+                }
+                @if (loadingStix) {
+                    <div>
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    </div>
+                }
+
+                @if (analyst1Objects?.length > 0) {
+                    <div style="width: 100%; height: 100%">
+                        <div class="d-flex justify-content-start mt-3 table-label">
+                            <div class="d-flex align-items-center ms-5" style="width: 3%; max-width: 3%; min-width: 3%">
+                                <input type="checkbox" [disabled]="addingStixToPending" (change)="checkAllAnalyst1Objects($event)" />
+                            </div>
+                            <div class="d-flex align-items-center ms-4" style="width: 5%; max-width: 5%; min-width: 5%">
+                                <div class="w-100" style="font-weight: bold">ID</div>
+                            </div>
+                            <div class="d-flex align-items-center ms-4" style="width: 42%; max-width: 42%; min-width: 42%">
+                                <div class="w-100" style="font-weight: bold">Package Name</div>
+                            </div>
+
+                            <div class="d-flex align-items-center ms-4" style="width: 3%; max-width: 3%; min-width: 3%">
+                                <div class="w-100" style="font-weight: bold; text-align: center">CVE</div>
+                            </div>
+                            <div class="d-flex align-items-center ms-4" style="width: 8%; max-width: 8%; min-width: 8%">
+                                <div class="w-100" style="font-weight: bold; text-align: center">Threat Actor</div>
+                            </div>
+                            <div class="d-flex align-items-center ms-4" style="width: 4%; max-width: 4%; min-width: 4%">
+                                <div class="w-100" style="font-weight: bold; text-align: center">TLP</div>
+                            </div>
+                            <div class="d-flex align-items-center ms-4" style="width: 6%; max-width: 6%; min-width: 6%; text-align: center">
+                                <div class="w-100" style="font-weight: bold">Details</div>
+                            </div>
+                            <div class="d-flex align-items-center ms-4" style="width: 10%; max-width: 10%; min-width: 10%; text-align: center">
+                                <div class="w-100" style="font-weight: bold">Preview</div>
+                            </div>
+                        </div>
+                        @for (object of analyst1Objects; track object; let i = $index) {
+                            <div class="d-flex flex-column" style="background-color: #f5f5f5; border-bottom: 1px solid #969696">
+                                <div class="d-flex justify-content-start mt-3 mb-3 result-table">
+                                    <div class="ms-5 d-flex align-items-center" style="width: 3%; max-width: 3%; min-width: 3%">
+                                        <input
+                                            type="checkbox"
+                                            [disabled]="addingStixToPending"
+                                            (change)="checkAllAnalyst1Indicators(object, $event)"
+                                            [(ngModel)]="object.checked"
+                                        />
+                                    </div>
+                                    <div class="d-flex align-items-center ms-4" style="width: 5%; max-width: 5%; min-width: 5%">
+                                        <div class="w-100">{{ object.id }}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center ms-4" style="width: 42%; max-width: 42%; min-width: 42%">
+                                        <div class="w-100">{{ object.title.name }}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center ms-4" style="width: 3%; max-width: 3%; min-width: 3%; text-align: center">
+                                        <div class="w-100">{{ object.cves?.values?.length > 0 ? object.cves.values.length : 0 }}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center ms-4" style="width: 8%; max-width: 8%; min-width: 8%; text-align: center">
+                                        <div class="w-100">
+                                            {{ object.actors?.idNamePairs.length > 0 ? object.actors.idNamePairs[0].name : 'N/A' }}
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="d-flex align-items-center ms-4"
+                                        style="width: 4%; max-width: 4%; min-width: 4%; word-break: break-all; text-align: center"
+                                    >
+                                        <div class="w-100">{{ object.tlp.toUpperCase() }}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center ms-4" style="width: 6%; max-width: 6%; min-width: 6%">
+                                        <button
+                                            class="btn btn-primary btn-sm"
+                                            [disabled]="addingStixToPending"
+                                            (click)="getIndicators(object)"
+                                            style="background-color: #1f80b6; width: 80px"
+                                        >
+                                            @if (object.expandedResult === 'visible') {
+                                                <span>-</span>
+                                            }
+                                            @if (object.expandedResult === 'hidden' || object.expandedResult === 'not-loaded') {
+                                                <span>+</span>
+                                            }
+                                            @if (object.expandedResult !== 'loading') {
+                                                <span> Details</span>
+                                            }
+                                            @if (object.expandedResult === 'loading') {
+                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            }
+                                        </button>
+                                    </div>
+                                    <div
+                                        class="d-flex align-items-center justify-content-center ms-4"
+                                        style="width: 10%; max-width: 10%; min-width: 10%"
+                                    >
+                                        <button
+                                            (click)="previewFile('text', object)"
+                                            [disabled]="addingStixToPending"
+                                            class="btn btn-primary preview-button me-2"
+                                        >
+                                            @if (!object.textLoading) {
+                                                <span> TXT </span>
+                                            }
+                                            @if (object.textLoading) {
+                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            }
+                                        </button>
+                                        <button
+                                            (click)="previewFile('csv', object)"
+                                            [disabled]="addingStixToPending"
+                                            class="btn btn-primary preview-button me-2"
+                                        >
+                                            @if (!object.csvLoading) {
+                                                <span> CSV </span>
+                                            }
+                                            @if (object.csvLoading) {
+                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            }
+                                        </button>
+                                        <button
+                                            (click)="getStix1(object)"
+                                            [disabled]="addingStixToPending"
+                                            class="btn btn-primary preview-button me-2"
+                                        >
+                                            @if (!object.stixLoading) {
+                                                <span> STIX 1.1 </span>
+                                            }
+                                            @if (object.stixLoading) {
+                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            }
+                                        </button>
+                                        <button
+                                            (click)="getCountries('preview', object)"
+                                            [disabled]="addingStixToPending"
+                                            class="btn btn-primary preview-button"
+                                        >
+                                            @if (!object.stixLoading) {
+                                                <span> STIX 2.1 </span>
+                                            }
+                                            @if (object.stixLoading) {
+                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            }
+                                        </button>
+                                    </div>
+                                </div>
+                                @if (object.expandedResult === 'visible') {
+                                    <div class="d-flex flex-column pt-4 pb-4 ps-5 pe-5 detail-box">
+                                        <div>
+                                            <span class="fw-bold">Source Title:</span> {{ object.sourceTitle }}
+                                            <br />
+                                            <span class="fw-bold">Source ID:</span> {{ object.sourceId }}
+                                            <br />
+                                            <span class="fw-bold">TLP:</span> {{ object.tlp }}
+                                            <br />
+                                            <span class="fw-bold">Type:</span> {{ object.type }}
+                                            <br />
+                                            <span class="fw-bold">Last Updated:</span>
+                                            {{ object.reportedDate?.date ? object.reportedDate.date : 'N/A' }}
+                                            <br />
+                                            <span class="fw-bold">Description:</span> {{ object.description ? object.description.name : 'None' }}
+                                        </div>
+                                        <div class="w-100 mt-4 ms-2 me-4 detail-items">
+                                            @if (object.indicatorNum > 0) {
+                                                <table class="w-100">
+                                                    <thead
+                                                        class="detail-table-head p-4 d-flex flex-row justify-content-between align-items-center"
+                                                        (click)="expandIndicator(object)"
+                                                        style="font-weight: 500"
+                                                    >
+                                                        <div class="d-flex flex-row align-items-center">
+                                                            <input
+                                                                class="me-2"
+                                                                type="checkbox"
+                                                                [disabled]="addingStixToPending"
+                                                                (change)="checkAllAnalyst1Types(object, $event)"
+                                                                [checked]="object.indicatorChecked"
+                                                                (click)="$event.stopPropagation()"
+                                                                [(ngModel)]="object.indicatorChecked"
+                                                            />
+                                                            <div>Indicators ({{ object.indicatorNum }})</div>
+                                                        </div>
+                                                        @if (!object.indicatorExpanded) {
+                                                            <div>+</div>
+                                                        }
+                                                        @if (object.indicatorExpanded) {
+                                                            <div>-</div>
+                                                        }
+                                                    </thead>
+                                                    @if (object.indicatorExpanded) {
+                                                        <tbody style="display: table-row-group; background-color: white">
+                                                            @for (type of object.indicatorTypes; track type) {
+                                                                <table class="type-table mt-2 mb-2 me-2">
+                                                                    <thead
+                                                                        class="detail-table-head p-4 d-flex flex-row justify-content-between align-items-center"
+                                                                        (click)="expand(type)"
+                                                                        style="font-weight: 500"
+                                                                    >
+                                                                        <div class="d-flex flex-row align-items-center">
+                                                                            <input
+                                                                                class="me-2"
+                                                                                type="checkbox"
+                                                                                [disabled]="addingStixToPending"
+                                                                                (change)="checkAllIndicators(object.indicatorList[type.type], $event)"
+                                                                                [checked]="type.checked"
+                                                                                (click)="$event.stopPropagation()"
+                                                                                [(ngModel)]="type.checked"
+                                                                            />
+                                                                            {{ type.type }} ({{ object.indicatorList[type.type].length }})
+                                                                        </div>
+                                                                        @if (!type.expanded) {
+                                                                            <div>+</div>
+                                                                        }
+                                                                        @if (type.expanded) {
+                                                                            <div>-</div>
+                                                                        }
+                                                                    </thead>
+                                                                    @if (type.expanded) {
+                                                                        <tbody>
+                                                                            @for (
+                                                                                indicator of object.indicatorList[type.type];
+                                                                                track indicator;
+                                                                                let num = $index
+                                                                            ) {
+                                                                                <table class="type-table mt-2 mb-2 me-2">
+                                                                                    <thead
+                                                                                        class="detail-table-head p-4 d-flex flex-row justify-content-between align-items-center"
+                                                                                        (click)="expand(indicator)"
+                                                                                        style="font-weight: 500"
+                                                                                    >
+                                                                                        <div class="d-flex flex-row align-items-center">
+                                                                                            <input
+                                                                                                class="me-2"
+                                                                                                type="checkbox"
+                                                                                                [disabled]="addingStixToPending"
+                                                                                                [checked]="indicator.checked"
+                                                                                                (click)="$event.stopPropagation()"
+                                                                                                [(ngModel)]="indicator.checked"
+                                                                                            />
+                                                                                            {{ num + 1 }}. {{ indicator.nameValue }}
+                                                                                        </div>
+                                                                                        @if (!indicator.expanded) {
+                                                                                            <div>+</div>
+                                                                                        }
+                                                                                        @if (indicator.expanded) {
+                                                                                            <div>-</div>
+                                                                                        }
+                                                                                    </thead>
+                                                                                    @if (indicator.expanded) {
+                                                                                        <tbody
+                                                                                            class="detail-expanded"
+                                                                                            style="display: table-row-group"
+                                                                                        >
+                                                                                            <tr>
+                                                                                                <td>
+                                                                                                    <div class="d-flex flex-column p-4">
+                                                                                                        <div>
+                                                                                                            <span class="fw-bold">Name:</span>
+                                                                                                            {{ indicator.nameValue }}
+                                                                                                        </div>
+                                                                                                        <div class="mt-2">
+                                                                                                            <span class="fw-bold">Type:</span>
+                                                                                                            {{ type.type }}
+                                                                                                        </div>
+                                                                                                        @if (indicator.description) {
+                                                                                                            <div class="mt-2">
+                                                                                                                <span class="fw-bold"
+                                                                                                                    >Description:</span
+                                                                                                                >
+                                                                                                                {{ indicator.description }}
+                                                                                                            </div>
+                                                                                                        }
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    }
+                                                                                </table>
+                                                                            }
+                                                                        </tbody>
+                                                                    }
+                                                                </table>
+                                                            }
+                                                        </tbody>
+                                                    }
+                                                </table>
+                                            }
+                                            @for (type of object.objectsList | keyvalue; track type) {
+                                                <div>
+                                                    @if ($any(type.value).objects.length > 0) {
+                                                        <table class="w-100 mt-2">
+                                                            <thead
+                                                                class="detail-table-head p-4 d-flex flex-row justify-content-between align-items-center"
+                                                                (click)="expandProperty($any(type.value))"
+                                                                style="font-weight: 500"
+                                                            >
+                                                                <div class="d-flex flex-row align-items-center">
+                                                                    @if ($any(type.key) !== 'report' && $any(type.key) !== 'location') {
+                                                                        <input
+                                                                            class="me-2"
+                                                                            type="checkbox"
+                                                                            [disabled]="addingStixToPending"
+                                                                            (change)="checkAllTypes($any(type.value), $event)"
+                                                                            [checked]="$any(type.value).checked"
+                                                                            (click)="$event.stopPropagation()"
+                                                                            [(ngModel)]="$any(type.value).checked"
+                                                                        />
+                                                                    }
+                                                                    @if ($any(type.key) == 'report' || $any(type.key) == 'location') {
+                                                                        <input class="me-2" type="checkbox" disabled checked />
+                                                                    }
+                                                                    <div>{{ type.key }} ({{ $any(type.value).objects.length }})</div>
+                                                                </div>
+                                                                @if (!$any(type.value).expanded) {
+                                                                    <div>+</div>
+                                                                }
+                                                                @if ($any(type.value).expanded) {
+                                                                    <div>-</div>
+                                                                }
+                                                            </thead>
+                                                            @if ($any(type.value).expanded) {
+                                                                <tbody style="display: table-row-group; background-color: white">
+                                                                    @for (typeObj of $any(type.value).objects; track typeObj; let num = $index) {
+                                                                        <table class="type-table mt-2 mb-2 me-2">
+                                                                            <thead
+                                                                                class="detail-table-head p-4 d-flex flex-row justify-content-between align-items-center"
+                                                                                (click)="expandProperty(typeObj)"
+                                                                                style="font-weight: 500"
+                                                                            >
+                                                                                <div class="d-flex flex-row align-items-center">
+                                                                                    @if (
+                                                                                        $any(type.key) !== 'report' && $any(type.key) !== 'location'
+                                                                                    ) {
+                                                                                        <input
+                                                                                            class="me-2"
+                                                                                            type="checkbox"
+                                                                                            [disabled]="addingStixToPending"
+                                                                                            [checked]="typeObj.checked"
+                                                                                            (click)="$event.stopPropagation()"
+                                                                                            [(ngModel)]="typeObj.checked"
+                                                                                        />
+                                                                                    }
+                                                                                    @if ($any(type.key) == 'report' || $any(type.key) == 'location') {
+                                                                                        <input class="me-2" type="checkbox" disabled checked />
+                                                                                    }
+                                                                                    {{ num + 1 }}. {{ typeObj.name }}
+                                                                                </div>
+                                                                                @if (type.key === 'report' && !typeObj.expanded) {
+                                                                                    <div>+</div>
+                                                                                }
+                                                                                @if (type.key === 'report' && typeObj.expanded) {
+                                                                                    <div>-</div>
+                                                                                }
+                                                                            </thead>
+                                                                            @if (type.key === 'report' && typeObj.expanded) {
+                                                                                <tbody class="detail-expanded" style="display: table-row-group">
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div class="d-flex flex-column p-4">
+                                                                                                <div class="mt-2">
+                                                                                                    <span class="fw-bold">Name:</span>
+                                                                                                    {{ typeObj.name }}
+                                                                                                </div>
+                                                                                                <div class="mt-2">
+                                                                                                    <span class="fw-bold">Description:</span>
+                                                                                                    {{ typeObj.description }}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            }
+                                                                        </table>
+                                                                    }
+                                                                </tbody>
+                                                            }
+                                                        </table>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-secondary query-button" (click)="close()">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            @if (!addingStixToPending) {
+                <button [disabled]="!enableAddToCart()" class="btn btn-sm btn-outline-primary query-button" (click)="getCountries('review')">
+                    <fa-icon [icon]="faUserEdit" class="pe-1"></fa-icon>
+                    Review
+                    @if (analyst1ObjectsInCart?.length > 0) {
+                        <span class="badge rounded-circle bg-primary sdo-badge">{{ analyst1ObjectsInCart?.length }}</span>
+                    }
+                </button>
+            }
+            @if (addingStixToPending) {
+                <button type="button" disabled class="btn btn-outline-primary pe-4 ps-4 pt-2 pb-2 query-button">
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    <span class="sr-only">Importing...</span>
+                </button>
+            }
+        </div>
+        <ng-template #stixModal let-modal>
+            <div class="modal-body">
+                <div class="d-flex flex-column">
+                    <div class="d-flex flex-row fw-bold justify-content-space-between mb-4">
+                        <div class="p-3 col-6 text-center" style="background-color: #e0ecfc; margin: 0 auto">ACS Information</div>
+                        <div (click)="closeStixConfig()" style="color: #89888b; position: absolute; right: 20px; cursor: pointer">X</div>
+                    </div>
+                    <div class="acs-form">
+                        <div class="d-flex flex-column">
+                            @if (acsErrors.usage_permission) {
+                                <div class="d-flex flex-row fw-bold justify-content-center mb-4">
+                                    <div class="col d-flex justify-content-center align-items-center warning-message">
+                                        {{ acsErrors.usage_permission }}
+                                    </div>
+                                </div>
+                            }
+                            @if (acsErrors.further_sharing) {
+                                <div class="d-flex flex-row fw-bold justify-content-center mb-4">
+                                    <div class="col d-flex justify-content-center align-items-center warning-message">
+                                        {{ acsErrors.further_sharing }}
+                                    </div>
+                                </div>
+                            }
+                            <ng-container>
+                                <div class="d-flex flex-row justify-content-center mb-4">
+                                    <div class="fw-bold col-3 d-flex align-items-center acsLabel">
+                                        <span class="acs-tooltipright me-2 ps-2">
+                                            <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                            <div class="toolttext">Choose the destination of which this ACS Marking will apply to</div>
+                                        </span>
+                                        Destination*
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div [ngClass]="{ 'is-invalid': acsErrors.destination }" class="col d-flex">
+                                                <select
+                                                    class="form-control form-select"
+                                                    [ngClass]="{ 'is-invalid': acsErrors.destination }"
+                                                    id="destination"
+                                                    name="destination"
+                                                    [(ngModel)]="acsMarkingConfig.destination"
+                                                    (ngModelChange)="updateDestination()"
+                                                >
+                                                    <option id="acs_destination_default" value="" selected disabled>Select Destination</option>
+                                                    @for (destination of acs_enums.destination; track destination; let i = $index) {
+                                                        <option id="acs_destination_list{{ i }}" [value]="destination" title="{{ destination }}">
+                                                            {{ destination }}
+                                                        </option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <div class="d-flex flex-row justify-content-center mb-4">
+                                <div class="fw-bold col-3 d-flex align-items-center acsLabel">
+                                    <span class="acs-tooltipright me-2 ps-2">
+                                        <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                        <div class="toolttext">This property contains information specifying the classification level.</div>
+                                    </span>
+                                    Classification*
+                                </div>
+                                <div class="col-6">
+                                    <select
+                                        class="form-control form-select form-select"
+                                        [ngClass]="{ 'is-invalid': acsErrors.classification }"
+                                        id="classification"
+                                        name="classification"
+                                        [(ngModel)]="acsMarkingConfig.classification"
+                                        (ngModelChange)="validateAcsMarking()"
+                                    >
+                                        <option value="" selected disabled>Select Classification</option>
+                                        @for (classification of acs_enums.classification; track classification; let i = $index) {
+                                            <option [value]="classification" title="{{ classification }}">{{ classification }}</option>
+                                        }
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        {{ acsErrors.classification }}
+                                    </div>
+                                </div>
+                            </div>
+                            @if (configureOption) {
+                                <div class="d-flex flex-row justify-content-center mb-4">
+                                    <div class="fw-bold col-3 d-flex align-items-center acsLabel">
+                                        <span class="acs-tooltipright me-2 ps-2">
+                                            <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                            <div class="toolttext">
+                                                The formal determination property is used to Indicate other formal determinations beyond
+                                                classification that have been applied to a resource.
+                                            </div>
+                                        </span>
+                                        Formal Determination*
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col">
+                                                <ng-container>
+                                                    <div class="d-flex" [ngClass]="{ 'is-invalid': acsErrors.formal_determination }">
+                                                        <input
+                                                            class="form-control formal-input"
+                                                            matInput
+                                                            [disabled]="stixService.taxiiServerType === 'ais'"
+                                                            [ngClass]="{
+                                                                'is-invalid': acsErrors.formal_determination,
+                                                                'valid-input': !acsErrors.formal_determination,
+                                                                'invalid-input': acsErrors.formal_determination,
+                                                            }"
+                                                            placeholder="Formal Determination"
+                                                            id="formalDeterminationInput"
+                                                            [(ngModel)]="formalDeterminationText"
+                                                            (ngModelChange)="filterFormalDetermination()"
+                                                            [matAutocomplete]="formalDetAuto"
+                                                            type="text"
+                                                        />
+                                                        <mat-autocomplete #formalDetAuto="matAutocomplete" class="autocomplete">
+                                                            @for (opt of filteredFormalDeterminationOptions; track opt) {
+                                                                <mat-option [value]="opt">
+                                                                    {{ opt }}
+                                                                </mat-option>
+                                                            }
+                                                        </mat-autocomplete>
+                                                        <button
+                                                            class="btn btn-fa-sm addStringBtn"
+                                                            id="formalDet_add"
+                                                            type="button"
+                                                            [disabled]="
+                                                                !formalDeterminationText.trim() ||
+                                                                selectedFormalDeterminations.includes(formalDeterminationText) ||
+                                                                stixService.taxiiServerType === 'ais'
+                                                            "
+                                                            (click)="addFormalDetermination()"
+                                                        >
+                                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </ng-container>
+                                                <div class="invalid-feedback">
+                                                    {{ acsErrors.formal_determination }}
+                                                </div>
+                                                <ng-container>
+                                                    @for (formalDet of selectedFormalDeterminations; track formalDet; let i = $index) {
+                                                        <div class="d-flex justify-content-center ms-0 mb-2 mt-4 row">
+                                                            <div class="col">
+                                                                <div class="row">
+                                                                    <div class="ps-0 col d-flex">
+                                                                        <input
+                                                                            id="formalDet_list{{ i }}"
+                                                                            class="form-control addStringSelect ps-3"
+                                                                            style="
+                                                                                cursor: pointer;
+                                                                                background-color: #e9ecef;
+                                                                                color: #495057;
+                                                                                opacity: 1;
+                                                                            "
+                                                                            readonly
+                                                                            value="{{ formalDet }}"
+                                                                        />
+                                                                        <button
+                                                                            class="btn btn-fa-sm removeStringBtn"
+                                                                            id="formalDet_delete{{ i }}"
+                                                                            [disabled]="stixService.taxiiServerType === 'ais'"
+                                                                            type="button"
+                                                                            style="height: 35px"
+                                                                            (click)="removeFormalDetermination(i)"
+                                                                        >
+                                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row fw-bold justify-content-center mb-4">
+                                    <div class="col-3 d-flex align-items-center acsLabel">
+                                        <span class="acs-tooltipright me-2 ps-2">
+                                            <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                            <div class="toolttext">
+                                                This property provides a means of limiting or permitting specific actions once access control
+                                                decisions have been made.
+                                            </div>
+                                        </span>
+                                        Usage Permissions*
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col">
+                                                <select
+                                                    class="form-control form-select form-select"
+                                                    id="usagePermissions"
+                                                    name="usagePermissions"
+                                                    [(ngModel)]="acsMarkingConfig['usage_permissions']"
+                                                    [disabled]="stixService.taxiiServerType === 'ais'"
+                                                    (ngModelChange)="validateAcsMarking()"
+                                                >
+                                                    <option disabled selected value="">Select Usage Permissions</option>
+                                                    @for (usage_permissions of acs_enums.deny_permit; track usage_permissions; let i = $index) {
+                                                        <option [value]="usage_permissions" title="{{ usage_permissions }}">
+                                                            {{ usage_permissions }}
+                                                        </option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (stixService.taxiiServerType !== 'ais') {
+                                    <div class="d-flex flex-row fw-bold justify-content-center ms-4 mb-4" style="color: #495057">
+                                        <div (click)="expandAccessPrivilege()" class="pointer me-4 pe-2 ps-4 col-9 d-flex justify-content-between">
+                                            @if (!showAccessPriv) {
+                                                <span>Show Access Privilege Options</span>
+                                            }
+                                            @if (showAccessPriv) {
+                                                <span>Hide Access Privilege Options</span>
+                                            }
+                                            @if (!showAccessPriv) {
+                                                <fa-icon [icon]="faAngleDown"> </fa-icon>
+                                            }
+                                            @if (showAccessPriv) {
+                                                <fa-icon [icon]="faAngleUp"> </fa-icon>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (showAccessPriv) {
+                                    <div class="d-flex flex-row fw-bold justify-content-center ms-5 mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">
+                                                    This property indicates the action that may be taken when the access privilege is allowed.
+                                                </div>
+                                            </span>
+                                            Privilege Action
+                                        </div>
+                                        <div class="col-6">
+                                            <select
+                                                class="form-control form-select form-select"
+                                                id="privilegeAction"
+                                                name="privilegeAction"
+                                                [(ngModel)]="acsMarkingConfig.privilege_action"
+                                                (ngModelChange)="validateAddObj()"
+                                            >
+                                                <option disabled selected value="">Select Privilege Action</option>
+                                                @for (privilege_action of acs_enums.privilege_action; track privilege_action; let i = $index) {
+                                                    <option [value]="privilege_action" title="{{ privilege_action }}">{{ privilege_action }}</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+                                @if (showAccessPriv) {
+                                    <div class="d-flex flex-row fw-bold justify-content-center ms-5 mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">This property indicates if actions are permitted or denied.</div>
+                                            </span>
+                                            Rule Effect
+                                        </div>
+                                        <div class="col-6">
+                                            <select
+                                                class="form-control form-select form-select"
+                                                id="usageRuleEffect"
+                                                name="usageRuleEffect"
+                                                [(ngModel)]="acsMarkingConfig.usage_rule_effect"
+                                                (ngModelChange)="validateAddObj()"
+                                            >
+                                                <option disabled selected value="">Select Rule Effect</option>
+                                                @for (rule_effect of acs_enums.deny_permit; track rule_effect; let i = $index) {
+                                                    <option [value]="rule_effect" title="{{ rule_effect }}">{{ rule_effect }}</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+                                @if (showAccessPriv) {
+                                    <div class="d-flex ms-5 flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">
+                                                    The property is used to identify the entities to which information may be released based on the
+                                                    determination of an originator.
+                                                </div>
+                                            </span>
+                                            Entity
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="col d-flex">
+                                                    <select
+                                                        class="form-control form-select form-select addStringSelect"
+                                                        id="entity"
+                                                        name="entity"
+                                                        [(ngModel)]="acsMarkingConfig.entity"
+                                                        (ngModelChange)="validateAddString('entity')"
+                                                    >
+                                                        <option value="">Select Entity</option>
+                                                        @for (entity of acs_enums.entity; track entity; let i = $index) {
+                                                            <option [value]="entity" title="{{ entity }}">{{ entity }}</option>
+                                                        }
+                                                    </select>
+                                                    <button
+                                                        class="btn btn-fa-sm addStringBtn"
+                                                        type="button"
+                                                        [disabled]="!enableAddValue.entity_list"
+                                                        (click)="addString('entity')"
+                                                    >
+                                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @for (ent of acsMarkingConfig.entity_list; track ent) {
+                                                <div class="row mt-2">
+                                                    <div class="col d-flex">
+                                                        <input
+                                                            class="form-control addStringSelect ps-3"
+                                                            disabled
+                                                            id="entity"
+                                                            value="{{ ent }}"
+                                                            name="entity"
+                                                        />
+                                                        <button
+                                                            class="btn btn-fa-sm removeStringBtn"
+                                                            type="button"
+                                                            style="height: 35px"
+                                                            (click)="removeString('entity', ent)"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (showAccessPriv) {
+                                    <div class="d-flex ms-5 flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">
+                                                    The property identifies the limitation on the distribution of the resource based on nationality.
+                                                </div>
+                                            </span>
+                                            Permitted Nationalities
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="col d-flex">
+                                                    <select
+                                                        class="form-control form-select form-select addStringSelect"
+                                                        id="permittedNationalities"
+                                                        name="permittedNationalities"
+                                                        [(ngModel)]="acsMarkingConfig.permitted_nationalities"
+                                                        (ngModelChange)="validateAddString('permitted_nationalities')"
+                                                    >
+                                                        <option value="">Select Permitted Nationalities</option>
+                                                        @for (
+                                                            permitted_nationalities of acs_enums.permitted_nationalities;
+                                                            track permitted_nationalities;
+                                                            let i = $index
+                                                        ) {
+                                                            <option [value]="permitted_nationalities" title="{{ permitted_nationalities }}">
+                                                                {{ permitted_nationalities }}
+                                                            </option>
+                                                        }
+                                                    </select>
+                                                    <button
+                                                        class="btn btn-fa-sm addStringBtn"
+                                                        type="button"
+                                                        [disabled]="!enableAddValue.permitted_nationalities_list"
+                                                        (click)="addString('permitted_nationalities')"
+                                                    >
+                                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @for (permit_nat of acsMarkingConfig.permitted_nationalities_list; track permit_nat) {
+                                                <div class="row mt-2">
+                                                    <div class="col d-flex">
+                                                        <input class="form-control addStringSelect ps-3" disabled value="{{ permit_nat }}" />
+                                                        <button
+                                                            class="btn btn-fa-sm removeStringBtn"
+                                                            type="button"
+                                                            style="height: 35px"
+                                                            (click)="removeString('permitted_nationalities', permit_nat)"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (showAccessPriv) {
+                                    <div class="d-flex ms-5 flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">
+                                                    The property identifies the limitation on the distribution of the resource based on organization.
+                                                </div>
+                                            </span>
+                                            Permitted Organizations
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="col d-flex">
+                                                    <select
+                                                        class="form-control form-select form-select addStringSelect"
+                                                        id="permitted_organizations"
+                                                        name="permitted_organizations"
+                                                        [(ngModel)]="acsMarkingConfig.permitted_organizations"
+                                                        (ngModelChange)="validateAddString('permitted_organizations')"
+                                                    >
+                                                        <option value="">Select Permitted Organizations</option>
+                                                        @for (
+                                                            permitted_organizations of acs_enums.permitted_organizations;
+                                                            track permitted_organizations;
+                                                            let i = $index
+                                                        ) {
+                                                            <option [value]="permitted_organizations" title="{{ permitted_organizations }}">
+                                                                {{ permitted_organizations }}
+                                                            </option>
+                                                        }
+                                                    </select>
+                                                    <button
+                                                        class="btn btn-fa-sm addStringBtn"
+                                                        type="button"
+                                                        [disabled]="!enableAddValue.permitted_organizations_list"
+                                                        (click)="addString('permitted_organizations')"
+                                                    >
+                                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @for (permit_org of acsMarkingConfig.permitted_organizations_list; track permit_org) {
+                                                <div class="row mt-2">
+                                                    <div class="col d-flex">
+                                                        <input class="form-control addStringSelect ps-3" disabled value="{{ permit_org }}" />
+                                                        <button
+                                                            class="btn btn-fa-sm removeStringBtn"
+                                                            type="button"
+                                                            style="height: 35px"
+                                                            (click)="removeString('permitted_organizations', permit_org)"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (showAccessPriv) {
+                                    <div class="d-flex ms-5 flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">
+                                                    The property is used to identify the shareability of a resource that may be released based on the
+                                                    determination of an originator in accordance with established disclosure procedures.
+                                                </div>
+                                            </span>
+                                            Shareability
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="col d-flex">
+                                                    <select
+                                                        class="form-control form-select form-select addStringSelect"
+                                                        id="shareability"
+                                                        name="shareability"
+                                                        [(ngModel)]="acsMarkingConfig.shareability"
+                                                        (ngModelChange)="validateAddString('shareability')"
+                                                    >
+                                                        <option value="">Select Shareability</option>
+                                                        @for (shareability of acs_enums.shareability; track shareability; let i = $index) {
+                                                            <option [value]="shareability" title="{{ shareability }}">{{ shareability }}</option>
+                                                        }
+                                                    </select>
+                                                    <button
+                                                        class="btn btn-fa-sm addStringBtn"
+                                                        type="button"
+                                                        [disabled]="!enableAddValue.shareability_list"
+                                                        (click)="addString('shareability')"
+                                                    >
+                                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @for (share of acsMarkingConfig.shareability_list; track share) {
+                                                <div class="row mt-2">
+                                                    <div class="col d-flex">
+                                                        <input class="form-control addStringSelect ps-3" disabled value="{{ share }}" />
+                                                        <button
+                                                            class="btn btn-fa-sm removeStringBtn"
+                                                            type="button"
+                                                            style="height: 35px"
+                                                            (click)="removeString('shareability', share)"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (showAccessPriv) {
+                                    <div class="d-flex flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-flex justify-content-center">
+                                                    <button
+                                                        class="btn"
+                                                        style="background-color: #1f80b6; color: white; border: 1px solid #1f80b6"
+                                                        type="button"
+                                                        [disabled]="!enableObj.access_privilege"
+                                                        (click)="addObj('access_privilege_list')"
+                                                    >
+                                                        Add Access Privilege
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @for (acc_priv of acsMarkingConfig.access_privilege_list; track acc_priv; let i = $index) {
+                                    <div class="d-flex justify-content-center mb-2 row">
+                                        <div class="col-3"></div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="ps-0 col d-flex">
+                                                    <input
+                                                        class="form-control addStringSelect ps-3"
+                                                        (click)="collapseJson('access_privilege_collapse', i)"
+                                                        style="cursor: pointer; background-color: #e9ecef; color: #495057; opacity: 1"
+                                                        readonly
+                                                        value="Privilege Action: {{ acc_priv.privilege_action }} | Rule Effect: {{
+                                                            acc_priv.rule_effect
+                                                        }}"
+                                                    />
+                                                    <button
+                                                        class="btn btn-fa-sm removeStringBtn"
+                                                        type="button"
+                                                        style="height: 35px"
+                                                        [disabled]="stixService.taxiiServerType === 'ais'"
+                                                        (click)="removeObj('access_privilege', i)"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @if (access_privilege_collapse[i]) {
+                                                <div class="row">
+                                                    <div class="col ps-0">
+                                                        <textarea
+                                                            class="form-control p-2"
+                                                            value="{{ acc_priv | json }}"
+                                                            style="
+                                                                border-top: none;
+                                                                border-radius: 0 0 0.375rem 0.375rem;
+                                                                background-color: white;
+                                                                min-height: 150px;
+                                                                max-height: 300px;
+                                                            "
+                                                            disabled
+                                                            readonly
+                                                        ></textarea>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (acsMarkingConfig.access_privilege_list.length > 0) {
+                                    <div class="mb-3"></div>
+                                }
+                                @if (acsMarkingConfig.access_privilege_list.length === 0) {
+                                    <div class="mb-1"></div>
+                                }
+                                <div class="d-flex flex-row fw-bold justify-content-center mb-4">
+                                    <div class="col-3 d-flex align-items-center acsLabel">
+                                        <span class="acs-tooltipright me-2 ps-2">
+                                            <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                            <div class="toolttext">
+                                                This property provides a means of limiting or permitting further sharing once original access control
+                                                decisions have been made.
+                                            </div>
+                                        </span>
+                                        Further Sharing*
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col">
+                                                <select
+                                                    class="form-control form-select form-select"
+                                                    id="furtherSharing"
+                                                    name="furtherSharing"
+                                                    [(ngModel)]="acsMarkingConfig.further_sharing"
+                                                    [disabled]="stixService.taxiiServerType === 'ais'"
+                                                    (ngModelChange)="validateAcsMarking()"
+                                                >
+                                                    <option disabled value="">Select Further Sharing</option>
+                                                    @for (further_sharing of acs_enums.deny_permit; track further_sharing; let i = $index) {
+                                                        <option [value]="further_sharing" title="{{ further_sharing }}">{{ further_sharing }}</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (stixService.taxiiServerType !== 'ais') {
+                                    <div class="d-flex flex-row fw-bold justify-content-center ms-4 mb-4" style="color: #495057">
+                                        <div (click)="expandFurtherSharing()" class="pointer me-4 pe-2 ps-4 col-9 d-flex justify-content-between">
+                                            @if (!showFurtherSharing) {
+                                                <span>Show Further Sharing Options</span>
+                                            }
+                                            @if (showFurtherSharing) {
+                                                <span>Hide Further Sharing Options</span>
+                                            }
+                                            @if (!showFurtherSharing) {
+                                                <fa-icon [icon]="faAngleDown"> </fa-icon>
+                                            }
+                                            @if (showFurtherSharing) {
+                                                <fa-icon [icon]="faAngleUp"> </fa-icon>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (showFurtherSharing) {
+                                    <div class="d-flex ms-5 flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">This property indicates the scope of the further sharing.</div>
+                                            </span>
+                                            Sharing Scope
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="col d-flex">
+                                                    <select
+                                                        class="form-control form-select form-select addStringSelect"
+                                                        id="sharingScope"
+                                                        name="sharingScope"
+                                                        [(ngModel)]="acsMarkingConfig.sharing_scope"
+                                                        (ngModelChange)="validateAddString('sharing_scope')"
+                                                    >
+                                                        <option disabled selected value="">Select Sharing Scope</option>
+                                                        @for (sharing_scope of acs_enums.sharing_scope; track sharing_scope; let i = $index) {
+                                                            <option [value]="sharing_scope" title="{{ sharing_scope }}">{{ sharing_scope }}</option>
+                                                        }
+                                                    </select>
+                                                    <button
+                                                        class="btn btn-fa-sm addStringBtn"
+                                                        type="button"
+                                                        [disabled]="!enableAddValue.sharing_scope_list"
+                                                        (click)="addString('sharing_scope')"
+                                                    >
+                                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @for (share of acsMarkingConfig.sharing_scope_list; track share) {
+                                                <div class="row mt-2">
+                                                    <div class="col d-flex">
+                                                        <input class="form-control addStringSelect ps-3" disabled value="{{ share }}" />
+                                                        <button
+                                                            class="btn btn-fa-sm removeStringBtn"
+                                                            type="button"
+                                                            style="height: 35px"
+                                                            (click)="removeString('sharing_scope', share)"
+                                                        >
+                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (showFurtherSharing) {
+                                    <div class="d-flex ms-5 flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col-3 d-flex align-items-center acsLabel">
+                                            <span class="acs-tooltipright me-2 ps-4">
+                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                <div class="toolttext">This property indicates if further sharing is permitted or denied.</div>
+                                            </span>
+                                            Rule Effect
+                                        </div>
+                                        <div class="col-6">
+                                            <select
+                                                class="form-control form-select form-select"
+                                                id="ruleEffect"
+                                                name="ruleEffect"
+                                                [(ngModel)]="acsMarkingConfig.further_rule_effect"
+                                                (ngModelChange)="validateAddObj()"
+                                            >
+                                                <option disabled selected value="">Select Rule Effect</option>
+                                                @for (further_rule_effect of acs_enums.deny_permit; track further_rule_effect; let i = $index) {
+                                                    <option [value]="further_rule_effect" title="{{ further_rule_effect }}">
+                                                        {{ further_rule_effect }}
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+                                @if (showFurtherSharing) {
+                                    <div class="d-flex flex-row fw-bold justify-content-center mb-4">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-flex justify-content-center">
+                                                    <button
+                                                        class="btn"
+                                                        style="background-color: #1f80b6; color: white; border: 1px solid #1f80b6"
+                                                        type="button"
+                                                        [disabled]="!enableObj.further_sharing"
+                                                        (click)="addObj('further_sharing_list')"
+                                                    >
+                                                        Add Further Sharing
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @for (further_share of acsMarkingConfig.further_sharing_list; track further_share; let i = $index) {
+                                    <div class="d-flex justify-content-center mb-2 row">
+                                        <div class="col-3"></div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="ps-0 col d-flex">
+                                                    <input
+                                                        class="form-control addStringSelect ps-3"
+                                                        (click)="collapseJson('further_sharing_collapse', i)"
+                                                        style="cursor: pointer; background-color: #e9ecef; color: #495057; opacity: 1"
+                                                        readonly
+                                                        value="Rule Effect: {{ further_share.rule_effect }} | Sharing Scopes: {{
+                                                            further_share.sharing_scope.length
+                                                        }}"
+                                                    />
+                                                    <button
+                                                        class="btn btn-fa-sm removeStringBtn"
+                                                        type="button"
+                                                        style="height: 35px"
+                                                        [disabled]="stixService.taxiiServerType === 'ais'"
+                                                        (click)="removeObj('further_sharing', i)"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @if (further_sharing_collapse[i]) {
+                                                <div class="row">
+                                                    <div class="col ps-0">
+                                                        <textarea
+                                                            class="form-control p-2"
+                                                            value="{{ further_share | json }}"
+                                                            style="
+                                                                border-top: none;
+                                                                border-radius: 0 0 0.375rem 0.375rem;
+                                                                background-color: white;
+                                                                min-height: 150px;
+                                                                max-height: 300px;
+                                                            "
+                                                            disabled
+                                                            readonly
+                                                        ></textarea>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (acsMarkingConfig.further_sharing_list.length > 0) {
+                                    <div class="mb-4"></div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button
+                            id="apply"
+                            (click)="configureOption = !configureOption"
+                            class="btn btn-md me-2"
+                            style="background-color: rgb(40, 167, 69); color: white"
+                        >
+                            Expand
+                        </button>
+                        @if (stixConfigType === 'output') {
+                            <button
+                                class="btn btn-md me-2"
+                                (click)="setSkipAcs(true); saveStixConfig()"
+                                style="background-color: #6c757d; color: white"
+                            >
+                                Skip
+                            </button>
+                        }
+                        @if (stixConfigType === 'output') {
+                            <button
+                                [disabled]="!acsIsValid"
+                                (click)="setSkipAcs(false); generateAcs(); saveStixConfig()"
+                                class="btn btn-md"
+                                style="background-color: #1f80b6; color: white"
+                            >
+                                Save
+                            </button>
+                        }
+                        @if (stixConfigType === 'preview') {
+                            <button
+                                class="btn btn-md me-2"
+                                (click)="setSkipAcs(true); previewFile('stix', previewAnalyst1)"
+                                style="background-color: #6c757d; color: white"
+                            >
+                                @if (!acsLoading) {
+                                    <span> Skip </span>
+                                }
+                                @if (acsLoading) {
+                                    <span>
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    </span>
+                                }
+                            </button>
+                        }
+                        @if (stixConfigType === 'preview') {
+                            <button
+                                [disabled]="!acsIsValid || acsLoading"
+                                (click)="setSkipAcs(false); generateAcs(); previewFile('stix', previewAnalyst1)"
+                                class="btn btn-md"
+                                style="background-color: #1f80b6; color: white"
+                            >
+                                @if (!acsLoading) {
+                                    <span> Preview </span>
+                                }
+                                @if (acsLoading) {
+                                    <span>
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"> </span>
+                                    </span>
+                                }
+                            </button>
+                        }
+                        @if (stixConfigType === 'review') {
+                            <button class="btn btn-md me-2" (click)="setSkipAcs(true); viewDetail()" style="background-color: #6c757d; color: white">
+                                @if (!acsLoading) {
+                                    <span> Skip </span>
+                                }
+                                @if (acsLoading) {
+                                    <span>
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    </span>
+                                }
+                            </button>
+                        }
+                        @if (stixConfigType === 'review') {
+                            <button
+                                [disabled]="!acsIsValid || acsLoading"
+                                (click)="setSkipAcs(false); generateAcs(); viewDetail()"
+                                class="btn btn-md"
+                                style="background-color: #1f80b6; color: white"
+                            >
+                                @if (!acsLoading) {
+                                    <span> Add To Bundle </span>
+                                }
+                                @if (acsLoading) {
+                                    <span>
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    </span>
+                                }
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+}
+
+@if (step === 1) {
+    <div>
+        <div class="modal-body mb-3" style="padding: 2rem; height: 81vh; overflow: hidden">
+            <div style="height: 65vh">
+                <div>
+                    <ul class="nav nav-underline me-2">
+                        <li class="nav-item" (click)="activeTab = 'indicator'">
+                            <a class="nav-link active" [ngClass]="{ active: activeTab === 'indicator' }">Indicator</a>
+                        </li>
+                        <li class="nav-item" (click)="activeTab = 'stix'">
+                            <a class="nav-link" [ngClass]="{ active: activeTab === 'stix' }">Observable</a>
+                        </li>
+                    </ul>
+                    <div class="tooltipright inline-block">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <div class="toolttext" style="width: 350px">
+                            Parsed indicators are IOC's that IMX can and does automatically convert to cyber-observable STIX objects. Indicators are
+                            IOC's pulled from A1, but that the analyst would have to manually add as STIX objects. User has option to add one or both
+                            to the bundle, but Indicators will not be classified into STIX objects.
+                        </div>
+                    </div>
+                    @if (activeTab === 'indicator') {
+                        <div>
+                            <div class="row">
+                                <div class="col text-center text-dark stix-preview-message">
+                                    <div class="bundle-wrapper">
+                                        @for (stixObject of stixObjects; track stixObject; let i = $index) {
+                                            <div>
+                                                @for (object of stixObject.objects; track object; let j = $index) {
+                                                    <div>
+                                                        @if ((pendingObjects | bundlefilter: object.type).length > 0) {
+                                                            <div>
+                                                                <div class="row text-start">
+                                                                    <div class="col" id="{{ getStixObjectID(object.type) }}">
+                                                                        <table class="w-100">
+                                                                            <thead class="w-100">
+                                                                                <th colspan="2">
+                                                                                    {{ object.displayName }}
+                                                                                    <span class="badge rounded-circle bg-primary sdo-badge">
+                                                                                        {{ (pendingObjects | bundlefilter: object.type).length }}
+                                                                                    </span>
+                                                                                </th>
+                                                                            </thead>
+                                                                            <tbody class="w-100 ps-4" style="overflow: hidden">
+                                                                                @for (
+                                                                                    component of pendingObjects | bundlefilter: object.type;
+                                                                                    track component;
+                                                                                    let k = $index;
+                                                                                    let c = $count
+                                                                                ) {
+                                                                                    <tr class="d-flex w-100">
+                                                                                        <td
+                                                                                            class="btn-link overflow d-flex align-items-center justify-content-between"
+                                                                                            style="
+                                                                                                padding-top: 14px;
+                                                                                                padding-bottom: 14px;
+                                                                                                width: 100%;
+                                                                                                border-top: 1px solid #dee2e6;
+                                                                                                max-width: 100%;
+                                                                                            "
+                                                                                            id="{{ getComponentId(component, i, j, k) }}"
+                                                                                            (click)="changeShow(j, k)"
+                                                                                        >
+                                                                                            <div class="pull-left float-start overflow">
+                                                                                                {{ getComponentDisplay(component) }}
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <button
+                                                                                                    type="button"
+                                                                                                    class="btn btn-fa btn-outline-danger me-4"
+                                                                                                    (click)="removeObject(component.id)"
+                                                                                                >
+                                                                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    @if (objnumber == j && rownumber == k) {
+                                                                                        <tr class="expanded-panel">
+                                                                                            <td colspan="2">
+                                                                                                <div class="row" style="width: 80%">
+                                                                                                    <pre>{{
+                                                                                                        getJsonDisplayForComponent(component) | json
+                                                                                                    }}</pre>
+                                                                                                </div>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    }
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (activeTab === 'stix') {
+                        <div>
+                            <div class="row">
+                                <div class="col text-center text-dark stix-preview-message">
+                                    <div class="bundle-wrapper">
+                                        @for (stixObject of stixObjects; track stixObject; let i = $index) {
+                                            <div>
+                                                @for (object of stixObject.objects; track object; let j = $index) {
+                                                    <div>
+                                                        @if ((pendingStixObjects | bundlefilter: object.type).length > 0) {
+                                                            <div>
+                                                                <div class="row text-start">
+                                                                    <div class="col" id="{{ getStixObjectID(object.type) }}">
+                                                                        <table class="w-100">
+                                                                            <thead class="w-100">
+                                                                                <th colspan="2">
+                                                                                    {{ object.displayName }}
+                                                                                    <span class="badge rounded-circle bg-primary sdo-badge">
+                                                                                        {{ (pendingStixObjects | bundlefilter: object.type).length }}
+                                                                                    </span>
+                                                                                </th>
+                                                                            </thead>
+                                                                            <tbody class="w-100 ps-4" style="overflow: hidden">
+                                                                                @if (true) {
+                                                                                    <div>
+                                                                                        @for (
+                                                                                            component of pendingStixObjects
+                                                                                                | bundlefilter: object.type;
+                                                                                            track component;
+                                                                                            let k = $index;
+                                                                                            let c = $count
+                                                                                        ) {
+                                                                                            <tr class="d-flex w-100">
+                                                                                                <td
+                                                                                                    class="btn-link overflow d-flex align-items-center justify-content-between"
+                                                                                                    style="
+                                                                                                        padding-top: 14px;
+                                                                                                        padding-bottom: 14px;
+                                                                                                        width: 100%;
+                                                                                                        border-top: 1px solid #dee2e6;
+                                                                                                        max-width: 100%;
+                                                                                                    "
+                                                                                                    id="{{ getComponentId(component, i, j, k) }}"
+                                                                                                    (click)="changeShow(j, k)"
+                                                                                                >
+                                                                                                    <div class="pull-left float-start overflow">
+                                                                                                        {{ getComponentDisplay(component) }}
+                                                                                                    </div>
+                                                                                                    <div>
+                                                                                                        <button
+                                                                                                            type="button"
+                                                                                                            class="btn btn-fa btn-outline-danger me-4"
+                                                                                                            (click)="removeObject(component.id)"
+                                                                                                        >
+                                                                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            @if (objnumber == j && rownumber == k) {
+                                                                                                <tr class="expanded-panel">
+                                                                                                    <td colspan="2">
+                                                                                                        <div class="row" style="width: 80%">
+                                                                                                            <pre>{{
+                                                                                                                getJsonDisplayForComponent(component)
+                                                                                                                    | json
+                                                                                                            }}</pre>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            }
+                                                                                        }
+                                                                                    </div>
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        @if (pendingStixObjects?.length === 0) {
+                                            <div style="margin-top: 20%">
+                                                The JSON information pulled from A1 does not have a clear a:b pattern that allows IMX to convert it to
+                                                a STIX object.
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-secondary query-button" (click)="close()">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button [disabled]="false" class="btn btn-sm btn-outline-primary query-button" (click)="goBack()">
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Back
+            </button>
+            <div class="dropdown d-flex align-items-center">
+                <button
+                    class="btn btn-sm btn-outline-success dropdown-toggle query-button add-button"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    <fa-icon [icon]="faAddToBundle" class="pe-1"></fa-icon>
+                    Add To Bundle
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" (click)="addToBundle('indicator')">Indicator Only</a>
+                    <a class="dropdown-item" (click)="addToBundle('parsed')">Observable Only</a>
+                    <a class="dropdown-item" (click)="addToBundle('both')">Indicator + Observable</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

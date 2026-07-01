@@ -1,0 +1,7 @@
+<button class="btn btn-primary btn-cart" (click)="openCart()" [disabled]="this.guidedService.cartLengths['total'] == 0" aria-label="View total cart">
+    <fa-icon [icon]="faCart"></fa-icon>
+    <span class="ms-2">Total</span>
+    @if (countCartLength() != 0) {
+        <span class="ms-1 cart-number">{{ countCartLength() }}</span>
+    }
+</button>

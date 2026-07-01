@@ -1,0 +1,148 @@
+<div class="d-flex flex-column mt-3">
+    <div class="row dashboard-card">
+        <div class="col d-flex flex-column ps-4 pe-4">
+            <div class="pt-3 pb-3 card-title title-border">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        @if (newObject) {
+                            Create New User
+                        } @else {
+                            <span class="badge bg-success" style="font-size: 20px">{{ user.user }}</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="body">
+                <div class="mt-4 d-flex flex-column align-items-start mb-3">
+                    <div class="item-label mb-4" style="border: 0">
+                        <div class="item-label-title mt-1">User Name</div>
+                        @if (!editingUsername) {
+                            <input type="text" class="form-control item-label-input" [value]="user.user" disabled />
+                            @if (newObject) {
+                                <button
+                                    type="button"
+                                    class="btn btn-fa-sm btn-primary ms-3 me-1"
+                                    style="padding-top: 5px !important; padding-left: 9px !important"
+                                    title="Click to edit"
+                                    (click)="editUsername()"
+                                >
+                                    <fa-icon [icon]="faEdit"> </fa-icon>
+                                </button>
+                            }
+                        } @else {
+                            <div class="d-flex flex-column">
+                                <input
+                                    class="form-control item-label-input"
+                                    type="text"
+                                    placeholder="User Name"
+                                    [disabled]="pem !== ''"
+                                    [(ngModel)]="user.user"
+                                    [ngClass]="{ 'is-invalid': !user.user && !pem }"
+                                />
+                                <div class="invalid-feedback">User Name or Certificate File is required</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="item-label mb-4" style="border: 0">
+                        <div class="item-label-title">Cert</div>
+                        <div class="d-flex flex-column">
+                            <div class="d-flex" [ngClass]="{ 'is-invalid': !pem && !user.user }">
+                                <input
+                                    class="form-control item-label-input"
+                                    [disabled]="user.user"
+                                    [ngClass]="{ 'select-placeholder': !pem, 'is-invalid': !pem && !user.user }"
+                                    type="file"
+                                    id="pkcs12"
+                                    accept=".p12, .pem, .crt"
+                                    (change)="onFileChanged($event)"
+                                />
+                                @if (pem) {
+                                    <button type="button" class="btn btn-outline-danger ms-2" title="Click to add" (click)="removeFile($event)">
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                }
+                            </div>
+                            <div class="invalid-feedback">User Name or Certificate File is required</div>
+                        </div>
+                    </div>
+
+                    <div class="item-label mb-4" style="border: 0">
+                        <div class="item-label-title mt-1">Password</div>
+                        <div class="d-flex flex-column">
+                            <input type="password" class="form-control item-label-input" [(ngModel)]="user.password" placeholder="Password" />
+                        </div>
+                    </div>
+
+                    <div class="item-label" style="border: 0">
+                        <div class="item-label-title">Groups</div>
+                        <div class="d-flex">
+                            <select
+                                class="form-control form-select item-label-input"
+                                id="APIRoots"
+                                name="APIRoots"
+                                (change)="selectRole($event)"
+                                [ngClass]="{ 'select-placeholder': !newRole }"
+                                [(ngModel)]="newRole"
+                            >
+                                <option value="undefined" disabled selected>Select Group</option>
+                                @for (role of existingRoles; track role; let i = $index) {
+                                    <option [value]="role" title="role">{{ role }}</option>
+                                }
+                            </select>
+                            <button type="button" class="btn btn-primary ms-2" title="Click to add" (click)="addRole()" [disabled]="!newRole">
+                                <fa-icon [icon]="faPlus"></fa-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="item-list-wrapper">
+                            @for (role of user.roles; track role; let i = $index) {
+                                <div class="media-list-item-wrapper mt-2">
+                                    <div class="media-list-item-type">{{ role }}</div>
+                                    <fa-icon
+                                        [icon]="faTrash"
+                                        title="Click to remove."
+                                        class="btn btn-fa-sm btn-danger me-1 action-button"
+                                        (click)="removeRole(i)"
+                                    ></fa-icon>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-action mb-2">
+                    <button type="button" class="btn btn-sm btn-secondary me-3" [disabled]="loading" (click)="backToMain()">
+                        <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-sm btn-success" (click)="backToMain('save')" [disabled]="!isValid() || loading">
+                        <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                        @if (loading) {
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                        } @else {
+                            Save
+                        }
+                    </button>
+                </div>
+
+                @if (errorMessages?.length > 0) {
+                    <div class="row error-message">
+                        <div class="col">
+                            <div class="d-flex justify-content-center flex-column">
+                                @for (err of errorMessages; track err) {
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ err }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

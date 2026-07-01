@@ -1,0 +1,277 @@
+<div class="main-container">
+    <!-- Header -->
+    <div class="guided-header">
+        <div class="guided-header-items">
+            <div class="guided-header-icon">
+                <fa-icon [icon]="faSearch" style="font-size: 1.75rem"></fa-icon>
+                <div class="d-flex flex-column">
+                    <h3 class="guided-header-title component-title ps-2">HOW (Query)</h3>
+                    <p class="guided-header-subtitle ps-2">Build detection queries</p>
+                </div>
+            </div>
+
+            <app-total-guided-cart (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+        </div>
+        <div class="horizonal-rule-top" style="width: 100%"></div>
+    </div>
+
+    <!-- Form container -->
+    <div class="form-container">
+        <!-- Form Body -->
+        <div class="guided-form">
+            <div class="guided-dual-container">
+                <!-- String Label -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        String Label
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('string_label')"></span>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            class="form-control form-control-guided"
+                            placeholder="Enter a label for your data string"
+                            [(ngModel)]="name"
+                            (input)="checkContinue(false)"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(name) }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Pattern Type -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        Pattern Type<span class="text-danger ms-1">*</span>
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"></fa-icon>
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('pattern_type')"></span>
+                        </span>
+                    </div>
+                    <select
+                        class="form-select form-control form-control-guided"
+                        [(ngModel)]="toolSelection"
+                        (change)="checkContinue(false); openPatternBuilder()"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(toolSelection) }"
+                    >
+                        <option disabled selected value="">Select Pattern Type</option>
+                        @for (option of toolOptions; track option) {
+                            <option>{{ option }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Pattern -->
+            <div class="inner-row">
+                <div class="input-header">
+                    Pattern<span class="text-danger ms-1">*</span>
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"></fa-icon>
+                        @if (toolSelection === 'STIX') {
+                            <fa-icon
+                                style="vertical-align: top"
+                                [icon]="faEdit"
+                                class="ms-2 patternEditor"
+                                [ngClass]="{ 'pattern-editor-can-edit': patternEdit === true }"
+                                (click)="setPatternEditMode()"
+                            ></fa-icon>
+                        }
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('pattern')"></span>
+                    </span>
+                </div>
+                @if (toolSelection !== 'STIX') {
+                    <textarea
+                        [disabled]="!toolSelection"
+                        class="form-control form-control-guided"
+                        placeholder="Add Pattern"
+                        rows="4"
+                        wrap="soft"
+                        [(ngModel)]="details"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(details) }"
+                        (input)="checkContinue(false)"
+                    ></textarea>
+                }
+                @if (toolSelection === 'STIX') {
+                    <textarea
+                        [readonly]="patternEdit === false"
+                        [ngClass]="{ 'pattern-box-disabled': patternEdit === false }"
+                        class="form-control form-control-guided"
+                        placeholder="Click here to open the Pattern Builder. You can click on the pencil to manually update a pattern."
+                        rows="4"
+                        wrap="soft"
+                        [(ngModel)]="details"
+                        (click)="openPatternBuilder()"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(details) }"
+                        (input)="checkContinue(false)"
+                    ></textarea>
+                }
+            </div>
+
+            <!-- First Observed -->
+            <div class="inner-row">
+                <div class="input-header">
+                    First Observed
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('first_observed')"></span>
+                    </span>
+                </div>
+
+                <div class="guided-dual-container">
+                    <div class="date-input-container">
+                        <input
+                            class="form-control form-control-guided"
+                            placeholder="When was this first seen?"
+                            [max]="last_seen"
+                            [owlDateTimeTrigger]="dtPicker2"
+                            [owlDateTime]="dtPicker2"
+                            [(ngModel)]="firstObserved"
+                            (ngModelChange)="checkObserved('first')"
+                            (input)="checkContinue(true)"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(firstObserved) }"
+                        />
+                        <button class="clear-button">
+                            @if (firstObserved !== '') {
+                                <p class="clear-button-text" (click)="clearObserved('first')">X</p>
+                            }
+                        </button>
+                    </div>
+
+                    <div class="timezone-input-container">
+                        <input
+                            type="text"
+                            class="form-control form-control-guided"
+                            [(ngModel)]="firstTimeZoneSearch"
+                            (input)="filterTimezones(firstTimeZoneSearch)"
+                            (focus)="showFirstTimezoneDropdown = true"
+                            (blur)="hideFirstTimezoneDropdown()"
+                            placeholder="Select Time Zone"
+                            [ngClass]="{
+                                'select-placeholder-guided': guidedService.emptyDropdown(firstObservedTimeZone),
+                            }"
+                        />
+
+                        <div *ngIf="showFirstTimezoneDropdown && filteredTimeZoneOptions.length" class="timezone-dropdown">
+                            <div *ngFor="let tz of filteredTimeZoneOptions" class="timezone-option" (mousedown)="selectFirstTimezone(tz)">
+                                {{ guidedService.showTimezoneAndOffset(tz) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <owl-date-time
+                    pickerMode="dialog"
+                    [startAt]="lastDateStart"
+                    #dtPicker2
+                    (afterPickerClosed)="checkContinue(true)"
+                    (yearSelected)="onYearSelected($event, 'first')"
+                ></owl-date-time>
+            </div>
+
+            <!-- Last Observed -->
+            <div class="inner-row">
+                <div class="input-header">
+                    Last Observed
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('last_observed')"></span>
+                    </span>
+                </div>
+                <div class="guided-dual-container">
+                    <div class="date-input-container">
+                        <input
+                            class="form-control form-control-guided"
+                            placeholder="When did you last see it?"
+                            [min]="first_seen"
+                            [owlDateTimeTrigger]="dtPicker3"
+                            [owlDateTime]="dtPicker3"
+                            [(ngModel)]="lastObserved"
+                            (ngModelChange)="checkObserved('last')"
+                            (input)="checkContinue(true)"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(lastObserved) }"
+                        />
+                        <button class="clear-button">
+                            @if (lastObserved !== '') {
+                                <p class="clear-button-text" (click)="clearObserved('last')">X</p>
+                            }
+                        </button>
+                    </div>
+
+                    <div class="timezone-input-container">
+                        <input
+                            type="text"
+                            class="form-control form-control-guided"
+                            [(ngModel)]="lastTimeZoneSearch"
+                            (input)="filterTimezones(lastTimeZoneSearch)"
+                            (focus)="showLastTimezoneDropdown = true"
+                            (blur)="hideLastTimezoneDropdown()"
+                            placeholder="Select Time Zone"
+                            [ngClass]="{
+                                'select-placeholder-guided': guidedService.emptyDropdown(lastObservedTimeZone),
+                            }"
+                        />
+
+                        <div *ngIf="showLastTimezoneDropdown && filteredTimeZoneOptions.length" class="timezone-dropdown">
+                            <div *ngFor="let tz of filteredTimeZoneOptions" class="timezone-option" (mousedown)="selectLastTimezone(tz)">
+                                {{ guidedService.showTimezoneAndOffset(tz) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <owl-date-time
+                    pickerMode="dialog"
+                    [startAt]="firstDateStart"
+                    #dtPicker3
+                    (afterPickerClosed)="checkContinue(true)"
+                    (yearSelected)="onYearSelected($event, 'last')"
+                ></owl-date-time>
+            </div>
+
+            <!-- Number Observed -->
+            <div class="inner-row half-row">
+                <div class="input-header">
+                    Number Observed
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('number_observed')"></span>
+                    </span>
+                </div>
+                <input
+                    type="number"
+                    min="0"
+                    placeholder="How many times have you seen it occur?"
+                    class="form-control form-control-guided"
+                    [(ngModel)]="numberObserved"
+                    (input)="checkContinue(false)"
+                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(numberObserved) }"
+                />
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="guided-information">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="d-flex flex-column justify-content-start gr-help-section">
+                <div class="gr-help-section-title">Adding Detection Strings</div>
+                <div class="gr-help-section-content">
+                    If you have a detection string, select the Pattern Type that was used.
+                    <br /><br />
+                    If it is a STIX pattern, you will be guided through the STIX pattern building process. Once you are done with the Pattern Builder,
+                    the pattern built will automatically populate the Detection String field on this page and you may continue.
+                    <br /><br />
+                    If it is another pattern type, paste the string into the box below the type selector. Note that this string will not be validated.
+                    <br /><br />
+                    Please note if you provide your own pattern, it won't be validated.
+                    <br /><br />
+                    If you do not have a detection string to add, proceed to the next page.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

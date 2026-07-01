@@ -1,0 +1,21 @@
+{
+  "name": "devcontainer",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "mise trust && mise install",
+  "postStartCommand": "mise run install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "exiasr.hadolint",
+        "tamasfe.even-better-toml",
+        "redhat.vscode-yaml"
+      ]
+    }
+  }
+}

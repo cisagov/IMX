@@ -1,0 +1,357 @@
+<div class="dialog">
+    <div class="modal-header">
+        @if (pageNum === 1 || (pageNum === 2 && (notes.size > 0 || new_notes.size > 0))) {
+            <h4 class="modal-title ps-3 pt-3">Add or Edit Note Referencing {{ type }} Object</h4>
+        }
+        @if (pageNum === 2 && notes?.size === 0 && new_notes?.size === 0) {
+            <h4 class="modal-title ps-3 pt-3">Add Note Referencing {{ type }} Object</h4>
+        }
+    </div>
+    <div class="modal-body">
+        @if (pageNum === 1) {
+            <div class="row">
+                <div class="col ms-4">
+                    <div class="row form-control note-items p-3" (click)="createNewNote()">
+                        <div class="col">Create a new Note Object</div>
+                    </div>
+                    @for (n of notes.keys(); track n) {
+                        <div [ngClass]="{ 'selected-note': selectedNote == n }" (click)="selectNote(n)" class="row form-control note-items p-3 mt-3">
+                            <div class="col">
+                                {{ shortenContent(notes.get(n)['content']) }}
+                            </div>
+                        </div>
+                    }
+                    @for (m of new_notes.keys(); track m) {
+                        <div (click)="selectNote(m)" [ngClass]="{ 'selected-note': selectedNote == m }" class="row form-control note-items p-3 mt-3">
+                            <div class="col d-flex justify-content-between">
+                                <div>
+                                    {{ shortenContent(new_notes.get(m)['content']) }}
+                                </div>
+                                @if (deletable_notes.has(m)) {
+                                    <button (click)="deleteNote(m)" class="btn btn-close float-end"></button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (pageNum === 2) {
+            <div class="row">
+                <div class="col">
+                    <div class="row mb-4">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="col stix-title ms-0 mb-2 input-header" id="note_confidence_title" style="float: left">Confidence</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <input
+                                        id="note_confidence"
+                                        class="form-control"
+                                        type="number"
+                                        min="0"
+                                        [ngClass]="{ 'is-invalid': this.errors['confidence'] }"
+                                        max="100"
+                                        placeholder="Confidence"
+                                        [(ngModel)]="note['confidence']"
+                                        (ngModelChange)="isValid()"
+                                    />
+                                    @if (this.errors['confidence']) {
+                                        <div class="invalid-feedback">
+                                            {{ this.errors['confidence'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="col stix-title ms-0 mb-2 input-header" id="note_lang_title" style="float: left">Language</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <select
+                                        id="note_lang"
+                                        class="form-control form-select dropdown"
+                                        [(ngModel)]="note['lang']"
+                                        (ngModelChange)="isValid()"
+                                    >
+                                        <option [ngValue]="undefined" disabled selected>Select language</option>
+                                        <option value=""></option>
+                                        @for (lang of lang_options; track lang) {
+                                            <option [value]="lang.key">{{ lang.value }}</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="col stix-title ms-0 mb-2 input-header" id="note_created_by_ref_title" style="float: left">
+                                        Created By Ref
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <select
+                                        id="note_created_by_ref"
+                                        class="form-control form-select dropdown"
+                                        [(ngModel)]="note['created_by_ref']"
+                                        (ngModelChange)="isValid()"
+                                    >
+                                        <option [ngValue]="undefined" disabled>Select reference</option>
+                                        <option value=""></option>
+                                        @for (id of ids; track id) {
+                                            <option [value]="id.id">{{ id.name }}</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="note_abstract_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">Abstract</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <input
+                                        id="note_abstract"
+                                        class="form-control"
+                                        [(ngModel)]="note['abstract']"
+                                        (ngModelChange)="isValid()"
+                                        placeholder="Abstract"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="note_authors_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">Authors</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-flex">
+                                    <input
+                                        id="note_authors"
+                                        class="form-control add-left no-border-right"
+                                        [(ngModel)]="authors"
+                                        (ngModelChange)="isValid()"
+                                        placeholder="Authors"
+                                        style="width: 97%"
+                                    />
+                                    <button
+                                        class="btn btn-fa-sm add-btn add-right float-end"
+                                        style="max-width: 3%"
+                                        id="note_authors_add"
+                                        type="button"
+                                        [disabled]="!authors"
+                                        (click)="addString('authors')"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            @if (note['authors'] && note['authors'].length > 0) {
+                                <div class="row">
+                                    <div class="col mb-2 mt-2">
+                                        <accordion>
+                                            @for (currentString of note['authors']; track currentString; let i = $index) {
+                                                <accordion-group
+                                                    tabindex="0"
+                                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
+                                                    [isDisabled]="true"
+                                                >
+                                                    <div
+                                                        id="note_authors_list{{ i }}"
+                                                        class="row justify-content-between d-flex pt-0 pb-0"
+                                                        accordion-heading
+                                                        type="button"
+                                                    >
+                                                        <div class="col d-flex justify-content-between align-items-center">
+                                                            <div class="btn btn-link">
+                                                                {{ currentString }}
+                                                            </div>
+                                                            <button
+                                                                id="note_authors_list{{ i }}_delete"
+                                                                class="btn btn-fa-sm btn-color list-trash"
+                                                                type="button"
+                                                                (click)="deleteString('authors', currentString)"
+                                                            >
+                                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </accordion-group>
+                                            }
+                                        </accordion>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="note_object_refs_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                        Object Refs*
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-flex">
+                                    <select
+                                        id="note_object_refs"
+                                        class="form-control form-select dropdown add-left no-border-right"
+                                        style="width: 97%"
+                                        [(ngModel)]="object_refs"
+                                    >
+                                        <option [ngValue]="undefined" disabled>Select reference</option>
+                                        @for (id of object_ref_list; track id) {
+                                            <option [value]="id">{{ id }}</option>
+                                        }
+                                    </select>
+                                    <button
+                                        id="note_object_refs_add"
+                                        class="btn btn-fa-sm add-btn add-right float-end"
+                                        style="max-width: 3%"
+                                        type="button"
+                                        [disabled]="!object_refs"
+                                        (click)="addString('object_refs')"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            @if (note['object_refs'] && note['object_refs'].length > 0) {
+                                <div class="row">
+                                    <div class="col mb-2 mt-2">
+                                        <accordion>
+                                            @for (currentString of note['object_refs']; track currentString; let i = $index) {
+                                                <accordion-group
+                                                    tabindex="0"
+                                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
+                                                    [isDisabled]="true"
+                                                >
+                                                    <div
+                                                        id="note_object_refs_list{{ i }}"
+                                                        class="row justify-content-between d-flex pt-0 pb-0"
+                                                        accordion-heading
+                                                        type="button"
+                                                    >
+                                                        <div class="col d-flex justify-content-between align-items-center">
+                                                            <div class="btn btn-link">
+                                                                {{ currentString }}
+                                                            </div>
+                                                            @if (currentString !== objectId) {
+                                                                <button
+                                                                    id="note_object_refs_list{{ i }}_delete"
+                                                                    class="btn btn-fa-sm btn-color list-trash"
+                                                                    type="button"
+                                                                    (click)="deleteString('object_refs', currentString)"
+                                                                >
+                                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                                </button>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </accordion-group>
+                                            }
+                                        </accordion>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="note_content_title" class="col stix-title ms-0 mb-2 input-header" style="float: left">Content*</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="note_content" class="col">
+                                    <textarea
+                                        [ngClass]="{ 'is-invalid': this.errors['content'] }"
+                                        class="form-control"
+                                        style="font-size: 14px; padding: 4px 8px"
+                                        [(ngModel)]="note['content']"
+                                        (ngModelChange)="isValid()"
+                                        placeholder="Content"
+                                    ></textarea>
+                                    @if (this.errors['content']) {
+                                        <div class="invalid-feedback">
+                                            {{ this.errors['content'] }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="modal-footer">
+        @if (pageNum === 1) {
+            <button type="button" class="btn btn-sm btn-outline-secondary component-button text me-2" (click)="close()" id="close_button">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Close
+            </button>
+        }
+        @if (pageNum === 2) {
+            <button type="button" class="btn btn-sm btn-outline-secondary component-button text me-2" (click)="close()" id="cancel_button">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+        }
+        @if (pageNum === 1) {
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-success component-button text"
+                [disabled]="!selectedNote"
+                (click)="goNext()"
+                id="next_button"
+            >
+                <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                Next
+            </button>
+        }
+        @if (pageNum === 2 && (notes.size > 0 || new_notes.size > 0)) {
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary component-button text me-2 ms-2"
+                (click)="goPrevious()"
+                id="previous_button"
+            >
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Previous
+            </button>
+        }
+        @if (pageNum === 2) {
+            <button
+                type="button"
+                id="add_note_button"
+                class="btn btn-sm btn-outline-success component-button ms-2 text"
+                [disabled]="!valid"
+                (click)="addNote()"
+            >
+                <fa-icon [icon]="faAddToBundle" class="pe-1"></fa-icon>
+                Add Note
+            </button>
+        }
+    </div>
+</div>

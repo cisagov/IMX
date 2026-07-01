@@ -1,0 +1,338 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="custom-taxii-modal-title">Custom TAXII Information</h4>
+    </div>
+
+    <div class="modal-body pb-0">
+        @if (!customTaxiiType) {
+            <div class="p-0 pb-4 d-flex justify-content-around align-items-center">
+                <div
+                    class="d-flex flex-column justify-content-center align-items-center object-type-wrapper me-5 card"
+                    (click)="switchCustomTaxiiType('basic')"
+                >
+                    <div class="mb-2" style="font-size: 3rem">
+                        <fa-icon [icon]="faUser" alt="" width="30px" height="20" class="d-inline-block align-top"></fa-icon>
+                    </div>
+                    <div class="mt-5">
+                        Username / Password<br />&nbsp;
+                        <span style="font-size: 0.8rem; font-style: normal"
+                            >Use standard username and password to authenticate with the TAXII server</span
+                        >
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (customTaxiiType) {
+            <div class="col-6 p-0 pb-4">
+                <div class="mb-3">
+                    <span id="taxii-server-url">TAXII Server URL</span>
+                    <input
+                        type="url"
+                        name="taxii-server-url"
+                        minlength="8"
+                        [(ngModel)]="this.taxiiServer.url"
+                        [disabled]="isNewCustom === false"
+                        placeholder="TAXII Server URL"
+                        required
+                        class="form-control t1t-left ms-4 mt-2"
+                        aria-label="TAXII Server URL"
+                        aria-describedby="taxii-server-url"
+                        (change)="saved = false"
+                    />
+                </div>
+                <div class="mb-3 mt-3">
+                    <span id="taxii-server-username">TAXII Server Username</span>
+                    <input
+                        type="text"
+                        ngModel
+                        name="taxii-server-username"
+                        #passwordInput="ngModel"
+                        minlength="8"
+                        [(ngModel)]="taxiiServer.username"
+                        placeholder="TAXII Server Username"
+                        required
+                        class="form-control t1t-left ms-4 mt-2"
+                        aria-label="TAXII Server Username"
+                        aria-describedby="taxii-server-username"
+                        (change)="saved = false"
+                    />
+                </div>
+                <div class="mb-2 mt-3">
+                    <span id="taxii-server-url">TAXII Server Password</span>
+                    <input
+                        type="password"
+                        ngModel
+                        name="taxii-server-password"
+                        #passwordInput="ngModel"
+                        minlength="8"
+                        [(ngModel)]="taxiiServer.password"
+                        placeholder="TAXII Server Password"
+                        required
+                        class="form-control t1t-left ms-4 mt-2"
+                        aria-label="TAXII Server Password"
+                        aria-describedby="taxii-server-password"
+                        (change)="saved = false"
+                    />
+                </div>
+                @if (customTaxiiType === 'cert') {
+                    <div>
+                        Generate a certificate?
+                        <div class="mt-2 ms-4">
+                            <button
+                                class="btn btn-outline-primary btn-sm me-2"
+                                [ngClass]="{ 'btn-primary': generateCert === true, 'btn-outline-primary': !generateCert }"
+                                (click)="genCert(true)"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                class="btn btn-outline-primary btn-sm"
+                                [ngClass]="{
+                                    'btn-primary': generateCert === false,
+                                    'btn-outline-primary': generateCert || generateCert === undefined,
+                                }"
+                                (click)="genCert(false)"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                }
+                @if (customTaxiiType === 'cert' && generateCert === true) {
+                    <div class="mb-5 mt-3" style="height: 31px">
+                        <span id="taxii-server-username">Certificate Name</span>
+                        <div class="ms-2 mt-2">
+                            <input
+                                type="text"
+                                minlength="8"
+                                [(ngModel)]="certName"
+                                placeholder="Certificate Name"
+                                required
+                                class="form-control t1t-left ms-4 mt-2"
+                                aria-label="TAXII Server Certificate Name"
+                                aria-describedby="taxii-cert-name"
+                            />
+                        </div>
+                    </div>
+                }
+                @if (customTaxiiType === 'cert' && generateCert === true) {
+                    <div class="mb-5 mt-3" style="height: 31px">
+                        <span id="taxii-server-username">Organization Name</span>
+                        <div class="ms-2 mt-2">
+                            <input
+                                type="text"
+                                minlength="8"
+                                [(ngModel)]="orgName"
+                                placeholder="Organization Name"
+                                required
+                                class="form-control t1t-left ms-4 mt-2"
+                                aria-label="TAXII Server Organization Name"
+                                aria-describedby="taxii-org-name"
+                            />
+                        </div>
+                    </div>
+                }
+                @if (customTaxiiType === 'cert' && generateCert === false) {
+                    <div class="mb-2 mt-3">
+                        <span id="taxii-server-username">Certificate Password</span>
+                        <div class="ms-2 mt-2">
+                            <input
+                                type="text"
+                                minlength="8"
+                                [(ngModel)]="certPassword"
+                                placeholder="Certificate Password"
+                                required
+                                class="form-control t1t-left ms-4 mt-2"
+                                aria-label="TAXII Server Certificate Password"
+                                aria-describedby="taxii-cert-password"
+                            />
+                        </div>
+                    </div>
+                }
+
+                @if (customTaxiiType === 'cert' && generateCert === true) {
+                    <div class="mb-3 mt-3" style="height: 31px">
+                        <div class="ms-2 mt-2">
+                            @if (!isGeneratingCert) {
+                                <button
+                                    class="btn btn-outline-primary btn-sm ms-2 mt-2"
+                                    [disabled]="!certName || !orgName || userRoles.length === 0 || !taxiiServer.url"
+                                    (click)="requestCert()"
+                                >
+                                    Generate Cert
+                                </button>
+                            }
+                            @if (isGeneratingCert) {
+                                <button class="btn btn-outline-primary btn-sm ms-2 mt-2" disabled>Generating Cert...</button>
+                            }
+                        </div>
+                    </div>
+                }
+                @if (customTaxiiType === 'cert' && generateCert === false) {
+                    <div>
+                        Manually enter certificates as text?
+                        <div class="mt-2 ms-4">
+                            <button
+                                class="btn btn-outline-primary btn-sm me-2"
+                                [ngClass]="{ 'btn-primary': manualCertInput === true, 'btn-outline-primary': !manualCertInput }"
+                                (click)="switchManualInput(true)"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                class="btn btn-outline-primary btn-sm"
+                                [ngClass]="{
+                                    'btn-primary': manualCertInput === false,
+                                    'btn-outline-primary': manualCertInput || manualCertInput === undefined,
+                                }"
+                                (click)="switchManualInput(false)"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                }
+                @if (customTaxiiType === 'cert' && generateCert === false) {
+                    <div class="mb-3 mt-3">
+                        <span id="taxii-server-username">Certificate PEM File (.pem)</span>
+                        <div class="ms-4 mt-2">
+                            @if (manualCertInput === false) {
+                                <input
+                                    type="file"
+                                    id="pemUpload"
+                                    #pemUpload
+                                    name="taxii-server-pem"
+                                    minlength="8"
+                                    required
+                                    accept=".pem"
+                                    aria-label="TAXII Server Pem"
+                                    aria-describedby="taxii-server-pem"
+                                    (change)="handleFileChange($event)"
+                                />
+                            }
+                            @if (manualCertInput === true) {
+                                <textarea
+                                    style="width: 700px; height: 150px"
+                                    class="form-control t1t-left"
+                                    name="taxii-server-pem-manual"
+                                    minlength="8"
+                                    aria-label="Taxii Server Pem Manual"
+                                    aria-describedby="taxii-server-pem-manual"
+                                    [(ngModel)]="pemFile"
+                                ></textarea>
+                            }
+                        </div>
+                    </div>
+                }
+                @if (customTaxiiType === 'cert' && generateCert === false) {
+                    <div class="mt-4">
+                        <span id="taxii-server-username">Certificate CRT File (.crt)</span>
+                        <div class="ms-4 mt-2">
+                            @if (manualCertInput === false) {
+                                <input
+                                    type="file"
+                                    id="crtUpload"
+                                    #crtUpload
+                                    (change)="handleFileChange($event)"
+                                    name="taxii-server-crt"
+                                    minlength="8"
+                                    required
+                                    accept=".crt"
+                                    aria-label="TAXII Server Crt"
+                                    aria-describedby="taxii-server-crt"
+                                />
+                            }
+                            @if (manualCertInput === true) {
+                                <textarea
+                                    style="width: 700px; height: 150px"
+                                    class="form-control t1t-left"
+                                    name="taxii-server-crt-manual"
+                                    minlength="8"
+                                    aria-label="Taxii Server Crt Manual"
+                                    aria-describedby="taxii-server-crt-manual"
+                                    [(ngModel)]="crtFile"
+                                ></textarea>
+                            }
+                        </div>
+                    </div>
+                }
+                @if (customTaxiiType === 'cert' && generateCert === false) {
+                    <div class="mb-2" style="padding-top: 30px">
+                        <span id="taxii-server-username">Certificate KEY file (.key)</span>
+                        <div class="ms-4 mt-2">
+                            @if (manualCertInput === false) {
+                                <input
+                                    type="file"
+                                    id="keyUpload"
+                                    #keyUpload
+                                    (change)="handleFileChange($event)"
+                                    name="taxii-server-key"
+                                    minlength="8"
+                                    required
+                                    accept=".key"
+                                    aria-label="TAXII Server Key"
+                                    aria-describedby="taxii-server-key"
+                                />
+                            }
+                            @if (manualCertInput === true) {
+                                <textarea
+                                    style="width: 700px; height: 150px"
+                                    class="form-control t1t-left"
+                                    name="taxii-server-key-manual"
+                                    minlength="8"
+                                    aria-label="Taxii Server Key Manual"
+                                    aria-describedby="taxii-server-key-manual"
+                                    [(ngModel)]="keyFile"
+                                ></textarea>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (this.isLoadingRoots == false && customTaxiiType) {
+            <div class="mb-3 col-6 p-0">
+                @if (this.connectionError != '') {
+                    <p style="font-weight: bold">Failed to connect to {{ this.taxiiServer.url }}</p>
+                    {{ this.connectionError }}
+                    @if (this.connectionErrorURL != '') {
+                        <ng-container class="ms-4"><br />URL: {{ this.connectionErrorURL }}</ng-container>
+                    }
+                }
+            </div>
+        }
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-secondary" (click)="closeCustomModal()">
+            <fa-icon [icon]="faBan"></fa-icon>
+            Close
+        </button>
+        @if (customTaxiiType) {
+            <button class="btn btn-sm btn-secondary ms-2" (click)="switchCustomTaxiiType('')">
+                <fa-icon [icon]="faArrowLeft"></fa-icon>
+                Previous
+            </button>
+        }
+        @if (customTaxiiType && isNewCustom === false) {
+            <button type="button" class="btn btn-danger btn-sm query-button ms-2" (click)="deleteCustomTaxii()" style="font-size: 1rem">
+                <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                Delete
+            </button>
+        }
+        @if (customTaxiiType) {
+            <button
+                type="button"
+                class="btn btn-primary btn-sm query-button ms-2"
+                [disabled]="customIsValid(customTaxiiType)"
+                (click)="checkConnection()"
+                style="font-size: 1rem"
+            >
+                <fa-icon [icon]="faConnect" class="pe-1"></fa-icon>
+                Connect
+            </button>
+        }
+    </div>
+</div>

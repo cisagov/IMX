@@ -1,0 +1,32 @@
+<div>
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Customize Columns</h2>
+        <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body extensions-modal-body">
+        <table>
+            <tbody>
+                @for (column of columns; track column) {
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="me-1 mt-1" name="column.name" [checked]="column.checked" [(ngModel)]="column.checked" />
+                        </td>
+                        <td>
+                            {{ column.name }}
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="col text-end mt-2 pe-0">
+            <button class="btn btn-sm btn-success content-button" type="button" (click)="closeModal(); activeModal.dismiss('Cross click')">
+                <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                OK
+            </button>
+        </div>
+    </div>
+</div>

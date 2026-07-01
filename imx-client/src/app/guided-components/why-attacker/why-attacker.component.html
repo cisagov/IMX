@@ -1,0 +1,81 @@
+<div class="d-flex flex-column justify-content-start align-items-center mb-3">
+    <div class="d-flex flex-row justify-content-around align-items-end w-100">
+        <div class="d-flex align-items-end">
+            <fa-icon class="title-main-size4 pe-3" [icon]="faPuzzle"></fa-icon>
+            <span class="title-main-size3">WHY?</span>
+        </div>
+
+        <div class="title-sub-size1-2 mb-3">What drove this attack? Can you identify<br />the attacker and their motivation?</div>
+    </div>
+
+    <div class="horizonal-rule-top"></div>
+    <div class="d-flex justify-content-center align-items-start outter-wrapper-min-height">
+        <div class="mt-5 d-flex flex-column justify-content-start gr-help-section me-3">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="gr-help-section-title">Attacker Details</div>
+            <div class="gr-help-section-content">
+                <p><b>Attacker Name</b>: enter if known.</p>
+                <p><b>Attacker Roles</b>: select what role the attacker played.</p>
+                <p><b>Attacker Motivation</b>: enter if known.</p>
+            </div>
+        </div>
+        <div class="d-flex flex-column align-items-left gr-outter-wrapper mt-5" style="position: relative">
+            <div class="col-12 total-cart-wrapper observable-section px-4 p-2 mt-1">
+                <div class="col-8 float-start"></div>
+                <app-total-guided-cart class="float-end" (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+            </div>
+            <div class="px-5 pb-3">
+                <div id="attacker" class="d-flex align-items-center gr-input-wrapper px-4 mt-2 me-2">
+                    <span class="w-25" title="Attacker Name">Attacker Name<span class="text-danger ms-1">*</span></span>
+                    <input
+                        type="text"
+                        [(ngModel)]="currentAttackerName"
+                        class="form-control w-75 noborder col-9 custom-select"
+                        placeholder="Enter Attacker Name"
+                        (input)="checkCart()"
+                        list="attackers"
+                    />
+                    <datalist id="attackers">
+                        @for (option of attackerOptions; track option) {
+                            <option [value]="option"></option>
+                        }
+                    </datalist>
+                </div>
+
+                <div class="d-flex align-items-center gr-input-wrapper px-4 mt-4 py-2">
+                    <span class="w-25" title="Attacker Roles">Attacker Roles</span>
+                    <select
+                        class="form-control form-select w-75 noborder"
+                        type="text"
+                        [(ngModel)]="currentAttackerRoles"
+                        [disabled]="!currentAttackerName"
+                        multiple
+                    >
+                        <option disabled selected style="color: #91a4bb" value="">Select Attacker Roles</option>
+                        @for (option of roleOptions; track option) {
+                            <option [value]="option.key">{{ option.value }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="d-flex align-items-center gr-input-wrapper px-4 mt-4 mb-4">
+                    <span class="w-25" title="Attacker Motivation">Attacker Motivation</span>
+                    <select
+                        class="form-control form-select w-75 noborder"
+                        type="text"
+                        [(ngModel)]="currentAttackerMotivation"
+                        [disabled]="!currentAttackerName"
+                    >
+                        <option disabled selected style="color: #91a4bb" value="">Select Attacker Motivation</option>
+                        @for (option of motivationOptions; track option) {
+                            <option [value]="option.key">{{ option.value }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
