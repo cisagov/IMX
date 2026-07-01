@@ -1,0 +1,172 @@
+<div class="row">
+    <div class="col-12 mt-1 pe-0 ps-0">
+        @if (key === 'labels') {
+            <div class="input-group" [ngClass]="{ 'ps-3': !stixService.guidedUI, 'display-flex w-100 mt-1': stixService.guidedUI }">
+                <div class="col-12 p-0" [ngClass]="{ 'display-flex': stixService.guidedUI }">
+                    <div [ngClass]="{ 'float-start': !stixService.guidedUI }">
+                        <p class="me-2 stix-title input-header" style="margin-top: 4px" [title]="tooltip">{{ currentStringValidator.displayName }}</p>
+                    </div>
+                    <div class="d-flex input-group-append" [ngStyle]="{ width: stixService.guidedUI ? '90%' : null }">
+                        <input
+                            placeholder="Labels"
+                            class="form-control add-left me-0 no-border-right"
+                            id="labels"
+                            style="height: 31px"
+                            [(ngModel)]="newString"
+                            type="text"
+                        />
+                        <ng-container>
+                            <button
+                                class="btn btn-fa-sm btn-color add-right ms-0"
+                                id="labels_add"
+                                type="button"
+                                (click)="addString()"
+                                [disabled]="newString === ''"
+                            >
+                                <fa-icon [icon]="faPlus"></fa-icon>
+                            </button>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (key !== 'labels') {
+            <div class="d-flex align-items-center">
+                <p class="stix-title" [ngClass]="{ 'input-header': stixService.guidedUI }" style="float: left" [title]="tooltip">
+                    {{ currentStringValidator.displayName }}
+                </p>
+                @if (stixService.guidedUI) {
+                    <span [ngClass]="{ 'input-header': stixService.guidedUI }">&nbsp;(TLP Color)</span>
+                }
+
+                <div class="ms-3">
+                    @if (!this.stixService.revoked && !this.stixService.revocation) {
+                        @if (!isAddingElement) {
+                            <button class="btn btn-fa-sm btn-color" id="object_marking_refs_add" type="button" (click)="openDialog()">
+                                <fa-icon [icon]="faPlus"></fa-icon>
+                                <!-- Add -->
+                            </button>
+                        }
+                    }
+                    @if (isAddingElement) {
+                        <button class="btn btn-fa-sm btn-outline-secondary fa-ban-sm" type="button" (click)="addOrCancel()">
+                            <fa-icon [icon]="faBan"></fa-icon>
+                            <!-- Cancel -->
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!--Labels-->
+@if (stixService.stringArrays.get(key) && stixService.stringArrays.get(key)!.length > 0) {
+    <div class="form-group mt-2 row" id="questions">
+        <div class="col pe-0">
+            <accordion class="ms-5 ps-2">
+                @for (currentString of stixService.stringArrays.get(key); track currentString; let i = $index) {
+                    <accordion-group tabindex="0" class="col" [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                        <div id="label_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                            <div class="col d-flex justify-content-between align-items-center">
+                                <div class="btn btn-link">
+                                    {{ currentString }}
+                                </div>
+                                <ng-container>
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa-sm btn-color list-trash"
+                                        id="label{{ i }}_delete"
+                                        (click)="deleteString(currentString, key)"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </accordion-group>
+                }
+            </accordion>
+        </div>
+    </div>
+}
+<!-- Object Marking References -->
+@if (
+    !isAddingElement &&
+    (stixService.objectMarkingReferences.length > 0 || stixService.objectMarkingReferencesTemp.length > 0) &&
+    key == 'object_marking_refs'
+) {
+    <div class="form-group mt-2" id="questions">
+        @if (isObjectMarkingRefUpdated) {
+            <ul class="bulletless">
+                @for (currentString of stixService.objectMarkingReferencesTemp; track currentString; let i = $index) {
+                    <li tabindex="0">
+                        <span class="me-2 badge" id="object_marking_refs{{ i }}" [class]="getDisplayStyle(getDisplayName(currentString))">{{
+                            acsView(getDisplayName(currentString))
+                        }}</span>
+                        @if (!this.stixService.revoked && !this.stixService.revocation) {
+                            <button
+                                type="button"
+                                class="btn btn-fa-xsm btn-danger trash-can"
+                                (click)="deleteOmr(currentString)"
+                                id="object_marking_refs{{ i }}_delete"
+                            >
+                                <fa-icon [icon]="faTrash"></fa-icon>
+                            </button>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        @if (!isObjectMarkingRefUpdated) {
+            <ul class="bulletless">
+                @for (currentString of stixService.objectMarkingReferences; track currentString; let i = $index) {
+                    <li tabindex="0">
+                        <span class="me-2 badge" id="object_marking_refs{{ i }}" [class]="getDisplayStyle(getDisplayName(currentString))">{{
+                            acsView(getDisplayName(currentString))
+                        }}</span>
+                        @if (!this.stixService.revoked && !this.stixService.revocation) {
+                            <button
+                                type="button"
+                                class="btn btn-fa-xsm btn-danger trash-can"
+                                id="object_marking_refs{{ i }}_delete"
+                                (click)="deleteOmr(currentString)"
+                            >
+                                <fa-icon [icon]="faTrash"></fa-icon>
+                            </button>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+}
+@if (isAddingElement && key === 'object_marking_refs') {
+    <div class="form-group mt-2">
+        <div class="input-group mb-2">
+            <span class="input-group-text">
+                <div class="tooltipright">
+                    <b>{{ currentStringValidator.displayName }}</b>
+                    <span class="toolttext">Common references in dropdown -<br />use the box on the right for custom entries.</span>
+                </div>
+            </span>
+            <select type="text" class="form-control form-select col-2" (change)="getTlpOptions($event)">
+                <option value="" selected></option>
+                <option value="v1">TLP v1.0</option>
+                <option value="v2">TLP v2.0</option>
+            </select>
+            <select type="text" class="form-control form-select col-2" [(ngModel)]="this.currentString" (change)="addStringElement()">
+                <option value="" selected></option>
+                @for (tlp of tlp_options; track tlp) {
+                    <option [value]="tlp.value">{{ tlp.key }}</option>
+                }
+            </select>
+            <input
+                class="form-control"
+                placeholder="{{ currentStringValidator.placeholder }}"
+                [(ngModel)]="this.currentString"
+                [pattern]="currentStringValidator.regexValidation"
+                type="text"
+            />
+        </div>
+    </div>
+}

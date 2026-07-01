@@ -1,0 +1,12 @@
+<div class="d-flex mt-3">
+    <div ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills d-flex" orientation="vertical">
+        <ng-container ngbNavItem="disabled-taxii" style="width: 1000vw">
+            <button class="btn-sm" style="padding-top: 0.25rem !important" ngbNavLink>Disabled</button>
+            <ng-template ngbNavContent style="width: 1000vw">
+                <app-disabled-taxii></app-disabled-taxii>
+            </ng-template>
+        </ng-container>
+    </div>
+
+    <div [ngbNavOutlet]="nav" class="ms-4"></div>
+</div>

@@ -1,0 +1,2632 @@
+<div class="d-flex body guided">
+    @if (fullScreenMode) {
+        <div>
+            <app-stix-viewer class="full-width nav-link" [bundle]="getStixPreview()" [class]="{ 'full-screen-guided': fullScreenMode }">
+            </app-stix-viewer>
+        </div>
+    }
+
+    @if (!fullScreenMode) {
+        <app-guided-menu
+            #menu
+            class="guided-menu"
+            (menuSelection)="selectMenu($event)"
+            [currentMenu]="menuSelection"
+            [serverSelected]="this.selectedRootAndCollection()"
+            [publishStatus]="publishStatus"
+            (menuExpandedChange)="onMenuExpandedChange($event)"
+        >
+        </app-guided-menu>
+    }
+
+    <app-string-array #objectMarking style="display: none" [key]="'object_marking_refs'"></app-string-array>
+    <app-root #appRoot style="display: none"></app-root>
+    @if (addComponentRefreshed) {
+        <app-add-component #appAddComponent style="display: none" [objectSelectionInput]="objectSelection"></app-add-component>
+    }
+
+    <div
+        class="main-wrapper w-100"
+        [ngClass]="{
+            'move-out-of-view': fullScreenMode,
+            'guided-setting': menuSelection !== 'build-review',
+            'sticky-footer-expanded': menuSelection !== 'build-review',
+            'bundle-background': menuSelection == 'build-review',
+            'expanded-bundle-background': isMenuExpanded && menuSelection == 'build-review',
+        }"
+    >
+        @if (menuSelection === 'who-individual') {
+            <div class="w-100">
+                <app-who-individual
+                    #whoIndividual
+                    (updateContinue)="disableContinue($event)"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                >
+                </app-who-individual>
+            </div>
+        }
+        @if (menuSelection === 'how-event-detection') {
+            <div class="w-100">
+                <app-how-event-detection
+                    #howEventDetection
+                    (updateContinue)="disableContinue($event)"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                >
+                </app-how-event-detection>
+            </div>
+        }
+        @if (menuSelection === 'how-pattern-builder') {
+            <div class="w-100">
+                <app-how-pattern-builder
+                    #howPatternBuilder
+                    [patternBuilderEvent]="patternBuilderEmitter"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                ></app-how-pattern-builder>
+            </div>
+        }
+        @if (menuSelection === 'how-observable') {
+            <div class="w-100">
+                <app-how-observable #howObservable (showAssistance)="showAssistance()" (changePage)="redirectCart($event)"></app-how-observable>
+            </div>
+        }
+        @if (menuSelection === 'how-ttp') {
+            <div class="w-100">
+                <app-how-ttp
+                    #howTtp
+                    [deciderToolEvent]="deciderToolEmitter"
+                    (changePage)="redirectCart($event)"
+                    (updateContinue)="disableContinue($event)"
+                    (disableDecider)="disableDecider($event)"
+                    (triggerDecider)="openDeciderTool()"
+                    (showAssistance)="showAssistance()"
+                ></app-how-ttp>
+            </div>
+        }
+
+        @if (menuSelection === 'when-event') {
+            <div class="w-100">
+                <app-when-event #whenEvent (showAssistance)="showAssistance()" (changePage)="redirectCart($event)"> </app-when-event>
+            </div>
+        }
+
+        @if (menuSelection === 'how-event') {
+            <div class="w-100">
+                <app-how-event #howEvent (showAssistance)="showAssistance()" (changePage)="redirectCart($event)"> </app-how-event>
+            </div>
+        }
+
+        @if (menuSelection === 'report-assessment') {
+            <div class="w-100">
+                <app-report-assessment #reportAssessment (showAssistance)="showAssistance()" (changePage)="redirectCart($event)">
+                </app-report-assessment>
+            </div>
+        }
+
+        @if (menuSelection === 'how-cwe') {
+            <div class="w-100">
+                <app-how-cwe
+                    #howCwe
+                    (updateContinue)="disableContinue($event)"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                >
+                </app-how-cwe>
+            </div>
+        }
+
+        @if (menuSelection === 'why-common-behaviors') {
+            <div class="w-100">
+                <app-why-common-behaviors
+                    #whyCommonBehaviors
+                    (updateContinue)="disableContinue($event)"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                >
+                </app-why-common-behaviors>
+            </div>
+        }
+
+        @if (menuSelection === 'why-attacker') {
+            <div class="w-100">
+                <app-why-attacker
+                    #whyAttacker
+                    (updateContinue)="disableContinue($event)"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                >
+                </app-why-attacker>
+            </div>
+        }
+
+        @if (menuSelection === 'where-location') {
+            <div class="w-100">
+                <app-where-location
+                    #whereLocation
+                    (updateContinue)="disableContinue($event)"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                >
+                </app-where-location>
+            </div>
+        }
+
+        @if (menuSelection === 'what-impact') {
+            <div class="w-100">
+                <app-what-impact
+                    #whatImpact
+                    (updateContinue)="disableContinue($event)"
+                    (showAssistance)="showAssistance()"
+                    (changePage)="redirectCart($event)"
+                >
+                </app-what-impact>
+            </div>
+        }
+
+        <!-- TLP Type -->
+        @if (false && menuSelection === 'tlp-type') {
+            <div class="d-flex justify-content-center align-items-center content-wrapper">
+                <div class="d-flex flex-column justify-content-start align-items-center content-wrapper">
+                    <div class="tlp-build">Let's Build & Publish a STIX Envelope</div>
+                    <div class="tlp-select">Select a Default TLP</div>
+                    <div class="mt-2" style="width: 100px">
+                        @if (this.env.tlpConfig.enabledTlpVersions.length > 1) {
+                            <select type="text" [(ngModel)]="tlpVersion" (change)="getTlpOptions($event)">
+                                @for (ver of this.env.tlpConfig.enabledTlpVersions; track ver) {
+                                    <option value="{{ ver.value }}">{{ ver.label }}</option>
+                                }
+                            </select>
+                        }
+                    </div>
+                    @if (this.env.tlpConfig.enabledTlpVersions.length == 1) {
+                        <input class="form-control" disabled value="{{ this.env.tlpConfig.enabledTlpVersions[0].label }}" style="width: 49vw" />
+                    }
+
+                    <div class="d-flex mt-3">
+                        @for (option of this.objectMarking.tlp_options; track option) {
+                            <div
+                                class="d-flex justify-content-center align-items-center card card-tlp {{ option.css }}"
+                                [ngClass]="{ 'item-selected': checkSelectedTLP(option.key) }"
+                                (click)="selectTLP(option.key)"
+                            >
+                                <div>{{ option.name }}</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Indicator Type - 1 -->
+        @if (menuSelection === 'indicator-type-1') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper mt-5">
+                <div class="d-flex flex-column justify-content-center align-items-center" style="width: 60%">
+                    <div class="tlp-build text-center">Threat Intelligence Portal</div>
+
+                    <div class="d-flex mt-3 justify-content-between" style="min-width: 100%">
+                        <div
+                            *ngIf="false"
+                            class="d-flex flex-column justify-content-center align-items-center object-type-wrapper me-5 card"
+                            [ngClass]="{ 'item-selected': indicatorSelection === 'ioc' }"
+                            (click)="selectIndicatorType('ioc'); goForward()"
+                        >
+                            <div class="mb-4" style="font-size: 3rem">
+                                <fa-icon [icon]="faEdit" alt="" width="30px" height="20" class="d-inline-block align-top"></fa-icon>
+                            </div>
+                            <div class="mt-5">Create CTI Object<br />&nbsp;</div>
+                        </div>
+                        <div
+                            class="d-flex flex-column justify-content-center align-items-center object-type-wrapper me-5 card"
+                            [ngClass]="{ 'item-selected': indicatorSelection === 'gr' }"
+                            (click)="selectIndicatorType('gr'); goForward()"
+                        >
+                            <div class="mb-4" style="font-size: 3rem">
+                                <fa-icon [icon]="faChartBar" alt="" width="30px" height="20" class="d-inline-block align-top"></fa-icon>
+                            </div>
+                            <div class="mt-5">Guided CTI Creation<br />&nbsp;</div>
+                        </div>
+                        @if (env.customConfiguration.analyst1.enabled) {
+                            <div
+                                class="d-flex flex-column justify-content-center align-items-center object-type-wrapper ms-5 card"
+                                [ngClass]="{ 'item-selected': indicatorSelection === 'add-evidence' }"
+                                (click)="openAnalyst1Modal()"
+                            >
+                                <div class="mb-5" style="font-size: 3rem">
+                                    <img
+                                        src="./assets/analyst1-full-logo.png"
+                                        width="200"
+                                        height="35"
+                                        role="button"
+                                        tabindex="0"
+                                        class="ms-2 center"
+                                        title="analyst1"
+                                        alt="analyst1"
+                                    />
+                                </div>
+                                <div class="mb-3">Search Evidence</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Indicator Type - 2 -->
+        @if (menuSelection === 'indicator-type-2') {
+            <div
+                class="d-flex justify-content-center align-items-start content-wrapper"
+                [class]="{ 'content-wrapper-long': indicatorSelection === 'add-evidence' && activeTabAnalyst1EvidenceType === 'Search' }"
+            >
+                @if (indicatorSelection !== 'add-evidence') {
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        @if (indicatorSelection === 'ioc') {
+                            <div class="tlp-build">Let's Create a CTI Object</div>
+                        }
+                        <div class="tlp-select">Select or Search for a CTI Type</div>
+                        <div class="mt-4 input-group d-flex justify-content-end search-bar align-self-end">
+                            <input
+                                class="form-control search-input"
+                                (keydown.shift.enter)="search('shift+enter')"
+                                (keydown.enter)="search('enter')"
+                                (keydown.escape)="clearSearch()"
+                                placeholder="Search for an Indicator Type"
+                                [(ngModel)]="searchText"
+                                (ngModelChange)="clearSearchResults()"
+                            />
+                            <div class="search-control">
+                                @if (searchText !== '') {
+                                    <p class="search-results">{{ searchResults }}</p>
+                                }
+                            </div>
+                            <button class="search-control clear-button" [disabled]="searchText === ''" (click)="clearSearch()">
+                                @if (searchText !== '') {
+                                    <p class="clear-button-text">X</p>
+                                }
+                            </button>
+                        </div>
+                        <div class="d-flex flex-column mt-2">
+                            <ul class="nav nav-tabs">
+                                @for (tab of tabs; track tab) {
+                                    <li class="nav-item" style="cursor: pointer" (click)="activeTab = tab">
+                                        <a class="nav-link" [ngClass]="{ active: activeTab?.title === tab?.title }">
+                                            {{ tab.title }}
+                                        </a>
+                                    </li>
+                                }
+                                <li class="nav-item" (click)="activeTab = 'favorite-object'" style="cursor: pointer">
+                                    <a class="nav-link" [ngClass]="{ active: activeTab === 'favorite-object' }">
+                                        <strong>Favorites</strong>
+                                    </a>
+                                </li>
+                            </ul>
+                            @if (activeTab !== 'favorite-object') {
+                                <div class="row tab-objects-wrapper w-100">
+                                    @for (object of activeTab?.objects; track object.id) {
+                                        <div class="col col-md-3 col-lg-3 d-flex align-items-center mt-3" style="margin-right: 50px">
+                                            <button
+                                                type="button"
+                                                class="btn btn-clear btn-100"
+                                                style="color: black; background: rgb(233, 236, 239)"
+                                                (click)="selectObject(object); goForward()"
+                                                [ngClass]="{
+                                                    'btn-clear-blue': objectSelection && object.displayName === objectSelection.displayName,
+                                                    'btn-match': object?.match,
+                                                    'btn-match-selected':
+                                                        object?.type ===
+                                                        searchMatches[searchIndex]?.tab?.objects[searchMatches[searchIndex]?.objIndex]?.type,
+                                                }"
+                                            >
+                                                {{ object?.displayName }}
+                                            </button>
+                                            @if (stixService.guidedUI && showFavIconType(object) === 'plus') {
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-sm btn-outline-danger d-flex justify-content-center ms-0 me-2"
+                                                    title="Click to add favorite"
+                                                    (click)="updateFavObj(object)"
+                                                >
+                                                    <fa-icon
+                                                        [icon]="faHeart"
+                                                        alt=""
+                                                        width="30px"
+                                                        height="20"
+                                                        class="d-inline-block align-top"
+                                                    ></fa-icon>
+                                                </button>
+                                            }
+                                            @if (stixService.guidedUI && showFavIconType(object) === 'minus') {
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-sm btn-danger d-flex justify-content-center ms-0 me-2"
+                                                    title="Click to remove favorite"
+                                                >
+                                                    <img
+                                                        src="./assets/heart-circle-minus-solid.svg"
+                                                        (click)="updateFavObj(object)"
+                                                        alt=""
+                                                        width="30px"
+                                                        height="20"
+                                                        class="d-inline-block align-top fav-color ms-1"
+                                                    />
+                                                </button>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @if (activeTab === 'favorite-object') {
+                                <div class="row tab-objects-wrapper w-100">
+                                    @for (object of getFavoriteObjects(); track object.id) {
+                                        <div class="col col-md-3 col-lg-3 d-flex align-items-center mt-3" style="margin-right: 50px">
+                                            <button
+                                                type="button"
+                                                class="btn btn-clear btn-100"
+                                                style="color: black; background: rgb(233, 236, 239)"
+                                                (click)="selectObject(object); goForward()"
+                                                [ngClass]="{
+                                                    'btn-clear-blue': objectSelection && object.displayName === objectSelection.displayName,
+                                                    'btn-match': object?.match,
+                                                    'btn-match-selected':
+                                                        object?.type ===
+                                                        searchMatches[searchIndex]?.tab?.objects[searchMatches[searchIndex]?.objIndex]?.type,
+                                                }"
+                                            >
+                                                {{ object?.displayName }}
+                                            </button>
+                                            @if (stixService.guidedUI && showFavIconType(object) === 'minus') {
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa-sm btn-danger d-flex justify-content-center ms-0 me-2"
+                                                    title="Click to remove favorite"
+                                                >
+                                                    <img
+                                                        src="./assets/heart-circle-minus-solid.svg"
+                                                        (click)="updateFavObj(object)"
+                                                        alt=""
+                                                        width="30px"
+                                                        height="20"
+                                                        class="d-inline-block align-top fav-color ms-1"
+                                                    />
+                                                </button>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                @if (indicatorSelection === 'add-evidence') {
+                    <div class="d-flex flex-column justify-content-center align-items-center" style="width: 40vw">
+                        <div class="tlp-build">Let's Add Indicators from Analyst1</div>
+
+                        <div class="tlp-select">{{ analyst1Indicatorheader() }}</div>
+                        <div class="d-flex flex-column justify-content-left mt-2" style="min-width: 60vw">
+                            <div class="d-flex flex-column mt-2">
+                                <ul class="nav nav-tabs">
+                                    @for (tab of evidenceTypeTabs; track tab) {
+                                        <li
+                                            class="nav-item"
+                                            style="cursor: pointer"
+                                            (click)="activeTabAnalyst1EvidenceType = tab; setAnalyst1Tab(); analyst1Objects = []"
+                                        >
+                                            <a class="nav-link" [ngClass]="{ active: activeTabAnalyst1EvidenceType === tab }">
+                                                {{ tab }}
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            @if (activeTabAnalyst1EvidenceType === 'File') {
+                                <div>
+                                    @if (activeTabAnalyst1EvidenceType === 'File') {
+                                        <h6 class="mt-5 d-flex justify-content-center">
+                                            To extract indicators from a report, please select the file below. <br />This file will be sent to
+                                            Analyst1 for indicator extraction and then IMX will <br />automatically ingest those indicators for the
+                                            creation/updating of your STIX bundle.
+                                        </h6>
+                                    }
+                                </div>
+                            }
+                            @if (activeTabAnalyst1EvidenceType === 'File') {
+                                <div class="d-flex mt-5 justify-content-around align-items-center profile-upload mt-5">
+                                    <div class="d-flex justify-content-start align-items-start">
+                                        <div class="d-flex flex-column">
+                                            <button type="button" class="btn btn-100 btn-outline-primary pt-1 pb-1 ms-5" (click)="fileInput.click()">
+                                                <fa-icon [icon]="faSelect" class="pe-1"></fa-icon>
+                                                Select File
+                                            </button>
+                                        </div>
+                                        <input
+                                            #fileInput
+                                            style="display: none"
+                                            class="profile-upload-input"
+                                            type="file"
+                                            (click)="fileInput.value = null"
+                                            value=""
+                                            (change)="handleFileInput($event.target)"
+                                            name="file"
+                                            id="myfile"
+                                        />
+                                    </div>
+
+                                    <span (click)="uploadEvidence()" class="me-5">
+                                        <button
+                                            type="button"
+                                            class="btn btn-100 btn-outline-primary pt-1 pb-1"
+                                            [disabled]="evidenceSubmissions.length === 0 || evidenceUploadClicked"
+                                        >
+                                            <fa-icon [icon]="faFileUpload" class="pe-1"></fa-icon>
+                                            Upload
+                                        </button>
+                                    </span>
+                                </div>
+                            }
+                            @if (activeTabAnalyst1EvidenceType === 'Evidence ID') {
+                                <h6 class="mt-5 d-flex justify-content-center mb-3">
+                                    Entering an evidence ID allows you to automatically ingest all indicators from a report submitted to Analyst1.
+                                    <br />Click on the "Where's My Evidence ID" link in the bottom left to learn more.
+                                </h6>
+                            }
+                            @if (activeTabAnalyst1EvidenceType === 'Evidence ID') {
+                                <div class="d-flex mt-2 justify-content-center align-items-center">
+                                    <div class="d-flex guided-div-border">
+                                        <p class="pt-2 pe-1 pb-2 mb-0 me-1">Evidence ID</p>
+                                        <div>
+                                            <input
+                                                type="text"
+                                                class="form-control guided-input-border"
+                                                [(ngModel)]="evidenceIdUserInput"
+                                                style="margin-bottom: 3px"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (evidenceSubmissions.length > 0 && evidenceUploadClicked && activeTabAnalyst1EvidenceType === 'File') {
+                                <div class="d-flex justify-content-between mt-5 pt-3 pb-3">
+                                    <div>File</div>
+                                    <div>Evidence ID</div>
+                                    <div>Status</div>
+                                </div>
+                            }
+                            @if (evidenceSubmissions.length > 0 && evidenceUploadClicked && activeTabAnalyst1EvidenceType === 'File') {
+                                <div
+                                    class="d-flex justify-content-between mt-1 pt-3 pb-3"
+                                    style="border-top: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6"
+                                >
+                                    <div>{{ showEvidenceFileName() }}</div>
+                                    <div [ngStyle]="{ left: getEvidenceIdPosition() }" style="position: relative">{{ evidenceIdFromFile }}</div>
+                                    <div>{{ getUploadStatus() }}</div>
+                                </div>
+                            }
+                            @if (activeTabAnalyst1EvidenceType === 'File' && !evidenceUploadClicked) {
+                                <div class="d-flex justify-content-center mt-5 pt-3 pb-3">
+                                    <span>{{ evidenceSubmissions[0]?.file?.name }}</span>
+                                </div>
+                            }
+                            @if (activeTabAnalyst1EvidenceType === 'Search') {
+                                <div class="d-flex flex-column justify-content-start align-items-center">
+                                    <div style="height: 35vh; width: 60vw">
+                                        <div class="modal-body" style="padding-left: 0px; padding-right: 0px; height: 40vh">
+                                            @if (showingAnalyst1) {
+                                                <div class="w-100">
+                                                    <div class="d-flex justify-content-center flex-column">
+                                                        <div class="row text-center pt-2 pb-4 offset-1">
+                                                            <div class="col-8 input-group search-bar">
+                                                                <input
+                                                                    class="form-control search-input"
+                                                                    [(ngModel)]="searchTextAnalyst1"
+                                                                    placeholder="Input criteria to search indicators on Analyst1."
+                                                                    (keydown.enter)="getAnalyst1Objects()"
+                                                                />
+                                                                <button
+                                                                    class="clear-button"
+                                                                    [disabled]="!searchTextAnalyst1"
+                                                                    (click)="clearSearchAnalyst1()"
+                                                                >
+                                                                    @if (searchTextAnalyst1) {
+                                                                        <p class="clear-button-text">X</p>
+                                                                    }
+                                                                </button>
+                                                            </div>
+                                                            <div class="col-3" style="padding-left: 4.5%">
+                                                                @if (!loadingStix) {
+                                                                    <button
+                                                                        [disabled]="!searchTextAnalyst1"
+                                                                        class="btn btn-primary pe-4 ps-4 pt-2 pb-2 query-button"
+                                                                        (click)="getAnalyst1Objects()"
+                                                                    >
+                                                                        <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                                        Search
+                                                                    </button>
+                                                                }
+
+                                                                @if (loadingStix) {
+                                                                    <button
+                                                                        class="btn btn-secondary pe-4 ps-4 pt-2 pb-2 query-button"
+                                                                        (click)="cancelAnalyst1Search()"
+                                                                    >
+                                                                        <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                                                                        Cancel
+                                                                    </button>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="pb-1 mb-1" style="border-bottom: 1px solid #dee2e6"></div>
+                                                        @if (analyst1Objects?.length > 0) {
+                                                            <div style="width: 98%; align-self: center" class="row text-center pb-2">
+                                                                <div class="col-md-12 mt-2 d-flex justify-content-between">
+                                                                    <div class="col-md-9 d-flex">
+                                                                        <h1 class="h3">Objects</h1>
+                                                                    </div>
+                                                                    <div class="d-flex justify-content-end align-items-center col-md-3 pe-0">
+                                                                        @if (showNextAnalyst1Page() && !loadingStixNext) {
+                                                                            <button
+                                                                                type="button"
+                                                                                class="btn btn-sm btn-outline-primary next-button"
+                                                                                (click)="getNextAnalyst1Page()"
+                                                                                title="More objects are available for this query. Click Next to see them."
+                                                                            >
+                                                                                <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                                                                                Next
+                                                                            </button>
+                                                                        }
+                                                                        @if (loadingStixNext) {
+                                                                            <button
+                                                                                type="button"
+                                                                                disabled
+                                                                                class="btn btn-sm btn-outline-primary next-button"
+                                                                            >
+                                                                                <span
+                                                                                    class="spinner-grow spinner-grow-sm"
+                                                                                    role="status"
+                                                                                    aria-hidden="true"
+                                                                                ></span>
+                                                                                <span class="sr-only">Loading...</span>
+                                                                            </button>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div
+                                                [class]="analyst1Objects?.length === 0 ? 'mb-6' : 'mb-3'"
+                                                style="
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    width: 100%;
+                                                    height: 70%;
+                                                    overflow: auto;
+                                                "
+                                                class="mt-1 analyst1-objects-wrapper"
+                                            >
+                                                @if (analyst1Objects?.length === 0 && !addingStixToPending) {
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <div class="container" style="text-align: center">
+                                                            <p style="font-weight: bold">No results</p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (addingStixToPending) {
+                                                    <div class="d-flex justify-content-center align-items-center" style="margin-top: 20vh">
+                                                        Loading&nbsp;<span
+                                                            class="spinner-grow spinner-grow-sm"
+                                                            role="status"
+                                                            aria-hidden="true"
+                                                        ></span>
+                                                    </div>
+                                                }
+                                                @if (analyst1Objects?.length > 0) {
+                                                    <div style="width: 100%; height: 100%">
+                                                        <div class="d-flex justify-content-start mt-3">
+                                                            <div style="margin-left: 5%" class="d-flex flex-column">
+                                                                <span style="font-weight: bold">Check All</span>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    (change)="checkAllAnalyst1Objects($event)"
+                                                                    class="align-self-start"
+                                                                />
+                                                            </div>
+                                                            <div style="margin-left: 7%; width: 60%">
+                                                                <p style="font-weight: bold">Value</p>
+                                                            </div>
+                                                            <div style="margin-left: 5%">
+                                                                <p style="font-weight: bold">Type</p>
+                                                            </div>
+                                                        </div>
+                                                        @for (object of analyst1Objects; track object) {
+                                                            <div>
+                                                                <div class="d-flex justify-content-start mt-3">
+                                                                    <div style="margin-left: 5%">
+                                                                        <input type="checkbox" [(ngModel)]="object.checked" />
+                                                                    </div>
+                                                                    <div style="margin-left: 13%; width: 60%; overflow: auto">
+                                                                        @if (useGeneralApi || useEvidenceApi) {
+                                                                            <div>{{ object?.value?.name }}</div>
+                                                                        }
+                                                                        @if (useBatchCheckApi) {
+                                                                            <div>{{ object?.matchedValue }}</div>
+                                                                        }
+                                                                    </div>
+                                                                    <div style="margin-left: 5%">
+                                                                        @if (useGeneralApi || useEvidenceApi) {
+                                                                            <span>{{ object?.type }}</span>
+                                                                        }
+                                                                        @if (useBatchCheckApi) {
+                                                                            <span>{{ object?.type?.key }}</span>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Indicator type - 3 -->
+        @if (menuSelection === 'indicator-type-3') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div style="width: 60vw">
+                        <div class="d-flex justify-content-center tlp-build">Select Indicator for Object Details</div>
+                        <div class="modal-body analyst1-indicator-body">
+                            @if (showingAnalyst1) {
+                                <div class="w-100">
+                                    <div class="d-flex justify-content-center flex-column">
+                                        @if (indicatorSelection === 'add-ioc') {
+                                            <div class="row text-center pt-2 pb-4 offset-1">
+                                                <div class="col-8 input-group search-bar">
+                                                    <input
+                                                        class="form-control search-input"
+                                                        [(ngModel)]="searchTextAnalyst1"
+                                                        placeholder="Input criteria to search indicators on Analyst1."
+                                                        (keydown.enter)="getAnalyst1Objects()"
+                                                    />
+                                                    <button class="clear-button" [disabled]="!searchTextAnalyst1" (click)="clearSearchAnalyst1()">
+                                                        @if (searchTextAnalyst1) {
+                                                            <p class="clear-button-text">X</p>
+                                                        }
+                                                    </button>
+                                                </div>
+                                                <div class="col-3" style="padding-left: 4.5%">
+                                                    @if (!loadingStix) {
+                                                        <button
+                                                            [disabled]="!searchTextAnalyst1"
+                                                            class="btn btn-primary pe-4 ps-4 pt-2 pb-2 query-button"
+                                                            (click)="getAnalyst1Objects()"
+                                                        >
+                                                            <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                            Search
+                                                        </button>
+                                                    }
+                                                    @if (loadingStix) {
+                                                        <button disabled class="btn btn-primary pe-4 ps-4 pt-2 pb-2 query-button">
+                                                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                                            <span class="sr-only">Loading...</span>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="pb-1 mb-1" style="border-bottom: 1px solid #dee2e6"></div>
+                                        @if (analyst1Objects?.length > 0) {
+                                            <div style="width: 98%; align-self: center" class="row text-center pb-2">
+                                                <div class="col-md-12 mt-2 d-flex justify-content-between">
+                                                    <div class="col-md-9 d-flex">
+                                                        <h1 class="h3">Objects</h1>
+                                                    </div>
+                                                    <div class="d-flex justify-content-end align-items-center col-md-3 pe-0">
+                                                        @if (showNextAnalyst1Page() && !loadingStixNext) {
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-sm btn-outline-primary next-button"
+                                                                (click)="getNextAnalyst1Page()"
+                                                                title="More objects are available for this query. Click Next to see them."
+                                                            >
+                                                                <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                                                                Next
+                                                            </button>
+                                                        }
+                                                        @if (loadingStixNext) {
+                                                            <button type="button" disabled class="btn btn-sm btn-outline-primary next-button">
+                                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                                                <span class="sr-only">Loading...</span>
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            <div
+                                [class]="analyst1Objects?.length === 0 ? 'mb-6' : 'mb-3'"
+                                style="display: flex; justify-content: center; align-items: center; width: 100%; height: 70%; overflow: auto"
+                                class="mt-1 analyst1-objects-wrapper"
+                            >
+                                @if (analyst1Objects?.length === 0 && !addingStixToPending) {
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <div class="container" style="text-align: center">
+                                            <p style="font-weight: bold">No results</p>
+                                        </div>
+                                    </div>
+                                }
+                                @if (addingStixToPending) {
+                                    <div class="d-flex justify-content-center align-items-center" style="margin-top: 20vh">
+                                        Loading&nbsp;<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    </div>
+                                }
+                                @if (analyst1Objects?.length > 0) {
+                                    <div style="width: 100%; height: 100%">
+                                        <div class="d-flex justify-content-start mt-3">
+                                            <div style="margin-left: 5%" class="d-flex flex-column">
+                                                <span style="font-weight: bold">Check All</span>
+                                                <input type="checkbox" (change)="checkAllAnalyst1Objects($event)" class="align-self-start" />
+                                            </div>
+                                            <div style="margin-left: 7%; width: 60%">
+                                                <p style="font-weight: bold">Value</p>
+                                            </div>
+                                            <div style="margin-left: 5%">
+                                                <p style="font-weight: bold">Type</p>
+                                            </div>
+                                        </div>
+                                        @for (object of analyst1Objects; track object) {
+                                            <div>
+                                                <div class="d-flex justify-content-start mt-3">
+                                                    <div style="margin-left: 5%">
+                                                        <input type="checkbox" [(ngModel)]="object.checked" />
+                                                    </div>
+                                                    <div style="margin-left: 13%; width: 60%; overflow: auto">
+                                                        @if (useGeneralApi || useEvidenceApi) {
+                                                            <div>{{ object?.value?.name }}</div>
+                                                        }
+                                                        @if (useBatchCheckApi) {
+                                                            <div>{{ object?.matchedValue }}</div>
+                                                        }
+                                                    </div>
+                                                    <div style="margin-left: 5%">
+                                                        @if (useGeneralApi || useEvidenceApi) {
+                                                            <span>{{ object?.type }}</span>
+                                                        }
+                                                        @if (useBatchCheckApi) {
+                                                            <span>{{ object?.type?.key }}</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Additional Info - 1 -->
+        @if (menuSelection === 'additional-info-1') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                @if (indicatorSelection !== 'add-evidence' && indicatorSelection !== 'add-ioc') {
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        @if (!customObject) {
+                            <div class="tlp-build">{{ displayObjectTitle() }}</div>
+                        }
+                        <div class="d-flex object-info-wrapper mt-5 w-100">
+                            <div class="d-flex flex-column">
+                                <button
+                                    type="button"
+                                    (click)="selectObjectPropertyType('required')"
+                                    [class]="{
+                                        'btn-primary': objectPropertyTypeSelection === 'required' && !isPrimaryPropertiesDisabled,
+                                        'btn-disabled': isPrimaryPropertiesDisabled === true,
+                                        'btn-clear': !isPrimaryPropertiesDisabled,
+                                    }"
+                                    class="btn-clear btn-100"
+                                    [disabled]="isPrimaryPropertiesDisabled"
+                                >
+                                    Primary Properties
+                                </button>
+                                <button
+                                    type="button"
+                                    (click)="selectObjectPropertyType('common')"
+                                    [class]="{ 'btn-primary': objectPropertyTypeSelection === 'common' }"
+                                    class="btn-clear btn-100 mt-5"
+                                >
+                                    Common Properties
+                                </button>
+                                <button
+                                    type="button"
+                                    (click)="selectObjectPropertyType('read-only')"
+                                    [class]="{ 'btn-primary': objectPropertyTypeSelection === 'read-only' }"
+                                    class="btn-clear btn-100 mt-5"
+                                >
+                                    Read-only Properties
+                                </button>
+                            </div>
+                            @if (!customObject) {
+                                <app-add-component
+                                    class="guided-add-component"
+                                    [objectPropertyTypeSelectionInput]="objectPropertyTypeSelection"
+                                    [objectSelectionInput]="objectSelection"
+                                    [queryParams]="queryParams"
+                                >
+                                </app-add-component>
+                            }
+                            @if (customObject) {
+                                <app-custom-object
+                                    class="guided-add-component"
+                                    [objectPropertyTypeSelectionInput]="objectPropertyTypeSelection"
+                                    [queryParams]="queryParams"
+                                    style="position: relative; top: -80px; left: 50px"
+                                >
+                                </app-custom-object>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (menuSelection === 'add-indicator-to-bundle') {
+            <div
+                class="d-flex justify-content-center align-items-start content-wrapper w-100"
+                [class]="{ 'content-wrapper-long': indicatorSelection === 'add-evidence' }"
+            >
+                <app-add-indicator-to-bundle #addIndicatorToBundle [evidenceId]="evidenceId"></app-add-indicator-to-bundle>
+            </div>
+        }
+
+        <!-- Additional Info - 2 -->
+        @if (menuSelection === 'additional-info-2') {
+            <div
+                class="d-flex justify-content-center align-items-start content-wrapper w-100"
+                [class]="{ 'content-wrapper-long': indicatorSelection === 'add-evidence' }"
+            >
+                @if (indicatorSelection === 'add-evidence' || indicatorSelection === 'add-ioc') {
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <div style="height: 35vh; width: 60vw">
+                            <div class="d-flex justify-content-center tlp-build">Add Indicator to Bundle</div>
+                            <div class="modal-body mb-3" style="padding: 2rem; height: 60vh; overflow: hidden">
+                                <div style="height: 63vh">
+                                    @if (addingStixToPending) {
+                                        <div class="d-flex justify-content-center align-items-center" style="margin-top: 20vh">
+                                            Loading&nbsp;<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                        </div>
+                                    }
+                                    @if (!addingStixToPending) {
+                                        <div>
+                                            <ul class="nav nav-tabs">
+                                                <li class="nav-item" (click)="activeTabAnalyst1ObjType = 'indicator'">
+                                                    <a class="nav-link active" [ngClass]="{ active: activeTabAnalyst1ObjType === 'indicator' }"
+                                                        >Indicator</a
+                                                    >
+                                                </li>
+                                                <li class="nav-item" (click)="activeTabAnalyst1ObjType = 'stix'">
+                                                    <a class="nav-link" [ngClass]="{ active: activeTabAnalyst1ObjType === 'stix' }">Parsed</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tooltipright inline-block">
+                                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                                <div class="toolttext" style="width: 350px">
+                                                    Parsed indicators are IOC's that IMX can and does automatically convert to cyber-observable STIX
+                                                    objects. Indicators are IOC's pulled from A1, but that the analyst would have to manually add as
+                                                    STIX objects. User has option to add one or both to the bundle, but Indicators will not be
+                                                    classified into STIX objects.
+                                                </div>
+                                            </div>
+                                            @if (activeTabAnalyst1ObjType === 'indicator') {
+                                                <div>
+                                                    <div class="row">
+                                                        <div class="col text-center text-dark stix-preview-message">
+                                                            <div class="bundle-wrapper a1indicator">
+                                                                @for (stixObject of stixObjects; track stixObject; let i = $index) {
+                                                                    <div>
+                                                                        @for (object of stixObject.objects; track object; let j = $index) {
+                                                                            <div>
+                                                                                @if ((pendingObjects | bundlefilter: object.type).length > 0) {
+                                                                                    <div>
+                                                                                        <div class="row text-start">
+                                                                                            <div class="col" id="{{ getStixObjectID(object.type) }}">
+                                                                                                <table class="table bundle-wrapper a1indicator">
+                                                                                                    <thead>
+                                                                                                        <th colspan="2">
+                                                                                                            {{ object.displayName }}
+                                                                                                            <span
+                                                                                                                class="badge rounded-circle bg-primary sdo-badge"
+                                                                                                            >
+                                                                                                                {{
+                                                                                                                    (
+                                                                                                                        pendingObjects
+                                                                                                                        | bundlefilter: object.type
+                                                                                                                    ).length
+                                                                                                                }}
+                                                                                                            </span>
+                                                                                                        </th>
+                                                                                                    </thead>
+                                                                                                    <tbody class="overflow">
+                                                                                                        @if (true) {
+                                                                                                            <div>
+                                                                                                                @for (
+                                                                                                                    component of pendingObjects
+                                                                                                                        | bundlefilter: object.type;
+                                                                                                                    track component;
+                                                                                                                    let k = $index;
+                                                                                                                    let c = $count
+                                                                                                                ) {
+                                                                                                                    <tr>
+                                                                                                                        <td
+                                                                                                                            class="btn-link overflow"
+                                                                                                                            style="
+                                                                                                                                padding-top: 14px;
+                                                                                                                                width: 65vw;
+                                                                                                                            "
+                                                                                                                            id="{{
+                                                                                                                                getComponentId(
+                                                                                                                                    component,
+                                                                                                                                    i,
+                                                                                                                                    j,
+                                                                                                                                    k
+                                                                                                                                )
+                                                                                                                            }}"
+                                                                                                                            (click)="changeShow(j, k)"
+                                                                                                                        >
+                                                                                                                            <div
+                                                                                                                                class="pull-left float-start overflow"
+                                                                                                                            >
+                                                                                                                                {{
+                                                                                                                                    getComponentDisplay(
+                                                                                                                                        component
+                                                                                                                                    )
+                                                                                                                                }}
+                                                                                                                            </div>
+                                                                                                                        </td>
+                                                                                                                    </tr>
+                                                                                                                    @if (
+                                                                                                                        objnumber == j &&
+                                                                                                                        rownumber == k
+                                                                                                                    ) {
+                                                                                                                        <tr class="expanded-panel">
+                                                                                                                            <td colspan="2">
+                                                                                                                                <div class="row">
+                                                                                                                                    <div
+                                                                                                                                        class="col-md-2"
+                                                                                                                                    >
+                                                                                                                                        <button
+                                                                                                                                            type="button"
+                                                                                                                                            class="btn btn-fa btn-warning"
+                                                                                                                                            (click)="
+                                                                                                                                                removeObject(
+                                                                                                                                                    component.id
+                                                                                                                                                )
+                                                                                                                                            "
+                                                                                                                                        >
+                                                                                                                                            <fa-icon
+                                                                                                                                                [icon]="
+                                                                                                                                                    faTrash
+                                                                                                                                                "
+                                                                                                                                            ></fa-icon>
+                                                                                                                                        </button>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div
+                                                                                                                                    class="row"
+                                                                                                                                    style="width: 80%"
+                                                                                                                                >
+                                                                                                                                    <pre>{{
+                                                                                                                                        getJsonDisplayForComponent(
+                                                                                                                                            component
+                                                                                                                                        ) | json
+                                                                                                                                    }}</pre>
+                                                                                                                                </div>
+                                                                                                                            </td>
+                                                                                                                        </tr>
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            </div>
+                                                                                                        }
+                                                                                                    </tbody>
+                                                                                                </table>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            @if (activeTabAnalyst1ObjType === 'stix') {
+                                                <div>
+                                                    <div class="row">
+                                                        <div class="col text-center text-dark stix-preview-message">
+                                                            <div class="bundle-wrapper">
+                                                                @for (stixObject of stixObjects; track stixObject; let i = $index) {
+                                                                    <div>
+                                                                        @for (object of stixObject.objects; track object; let j = $index) {
+                                                                            <div>
+                                                                                @if ((pendingStixObjects | bundlefilter: object.type).length > 0) {
+                                                                                    <div>
+                                                                                        <div class="row text-start">
+                                                                                            <div class="col" id="{{ getStixObjectID(object.type) }}">
+                                                                                                <table class="table">
+                                                                                                    <thead>
+                                                                                                        <th colspan="2">
+                                                                                                            {{ object.displayName }}
+                                                                                                            <span
+                                                                                                                class="badge rounded-circle bg-primary sdo-badge"
+                                                                                                            >
+                                                                                                                {{
+                                                                                                                    (
+                                                                                                                        pendingStixObjects
+                                                                                                                        | bundlefilter: object.type
+                                                                                                                    ).length
+                                                                                                                }}
+                                                                                                            </span>
+                                                                                                        </th>
+                                                                                                    </thead>
+                                                                                                    <tbody style="overflow: hidden">
+                                                                                                        @if (true) {
+                                                                                                            <div>
+                                                                                                                @for (
+                                                                                                                    component of pendingStixObjects
+                                                                                                                        | bundlefilter: object.type;
+                                                                                                                    track component;
+                                                                                                                    let k = $index;
+                                                                                                                    let c = $count
+                                                                                                                ) {
+                                                                                                                    <tr>
+                                                                                                                        <td
+                                                                                                                            class="btn-link overflow"
+                                                                                                                            style="
+                                                                                                                                padding-top: 14px;
+                                                                                                                                width: 65vw;
+                                                                                                                            "
+                                                                                                                            id="{{
+                                                                                                                                getComponentId(
+                                                                                                                                    component,
+                                                                                                                                    i,
+                                                                                                                                    j,
+                                                                                                                                    k
+                                                                                                                                )
+                                                                                                                            }}"
+                                                                                                                            (click)="changeShow(j, k)"
+                                                                                                                        >
+                                                                                                                            <div
+                                                                                                                                class="pull-left float-start overflow"
+                                                                                                                            >
+                                                                                                                                {{
+                                                                                                                                    getComponentDisplay(
+                                                                                                                                        component
+                                                                                                                                    )
+                                                                                                                                }}
+                                                                                                                            </div>
+                                                                                                                        </td>
+                                                                                                                    </tr>
+                                                                                                                    @if (
+                                                                                                                        objnumber == j &&
+                                                                                                                        rownumber == k
+                                                                                                                    ) {
+                                                                                                                        <tr class="expanded-panel">
+                                                                                                                            <td colspan="2">
+                                                                                                                                <div class="row">
+                                                                                                                                    <div
+                                                                                                                                        class="col-md-2"
+                                                                                                                                    >
+                                                                                                                                        <button
+                                                                                                                                            type="button"
+                                                                                                                                            class="btn btn-fa btn-warning"
+                                                                                                                                            (click)="
+                                                                                                                                                removeObject(
+                                                                                                                                                    component.id
+                                                                                                                                                )
+                                                                                                                                            "
+                                                                                                                                        >
+                                                                                                                                            <fa-icon
+                                                                                                                                                [icon]="
+                                                                                                                                                    faTrash
+                                                                                                                                                "
+                                                                                                                                            ></fa-icon>
+                                                                                                                                        </button>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div
+                                                                                                                                    class="row"
+                                                                                                                                    style="width: 80%"
+                                                                                                                                >
+                                                                                                                                    <pre>{{
+                                                                                                                                        getJsonDisplayForComponent(
+                                                                                                                                            component
+                                                                                                                                        ) | json
+                                                                                                                                    }}</pre>
+                                                                                                                                </div>
+                                                                                                                            </td>
+                                                                                                                        </tr>
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            </div>
+                                                                                                        }
+                                                                                                    </tbody>
+                                                                                                </table>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                                @if (pendingStixObjects?.length === 0) {
+                                                                    <div style="margin-top: 20%">
+                                                                        The JSON information pulled from A1 does not have a clear a:b pattern that
+                                                                        allows IMX to convert it to a STIX object.
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Additional Info - 3 -->
+        @if (menuSelection === 'additional-info-3') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="success">Successfully Added Object!</div>
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <fa-icon class="check-circle" [icon]="faCheckCircle"> </fa-icon>
+                        <div class="d-flex justify-content-center align-items-center mt-4">
+                            <strong>Would you like to create a relationship with this object?</strong>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button
+                            type="button"
+                            class="btn-clear btn-100"
+                            style="color: black"
+                            (click)="createRelationship = true; goForward()"
+                            [ngClass]="{ 'btn-clear-blue': createRelationship === true }"
+                        >
+                            <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                            Yes
+                        </button>
+                        <button
+                            type="button"
+                            class="btn-clear btn-100 ms-4"
+                            style="color: black"
+                            (click)="createRelationship = false; goForward()"
+                            [ngClass]="{ 'btn-clear-blue': createRelationship === false }"
+                        >
+                            <fa-icon [icon]="faTimes" class="pe-1"></fa-icon>
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Relationship - 1 -->
+        @if (menuSelection === 'relationship-1') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper bundle-card outter-wrapper-min-height" style="">
+                <div class="d-flex flex-column justify-content-center align-items-center w-75">
+                    <div class="tlp-build">Let's Create a Relationship Object!</div>
+                    <div class="tlp-select">Select Object(s) and Type of Relationship</div>
+                    <app-bundle
+                        #bundleForReview
+                        [showObjectSection]="false"
+                        [showVisualizerSection]="false"
+                        [showBundleSection]="true"
+                        [menuSelection]="menuSelection"
+                        style="width: 100%"
+                    >
+                    </app-bundle>
+                </div>
+            </div>
+        }
+
+        <!-- Relationship - 2 -->
+        @if (menuSelection === 'relationship-2') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="tlp-build">{{ displayObjectTitle() }}</div>
+                    <div class="d-flex object-info-wrapper mt-3">
+                        <div class="d-flex flex-column">
+                            <button
+                                type="button"
+                                (click)="selectObjectPropertyType('required')"
+                                [class]="{ 'btn-primary': objectPropertyTypeSelection === 'required' }"
+                                class="btn-clear btn-100"
+                            >
+                                Primary Properties
+                            </button>
+                            <button
+                                type="button"
+                                (click)="selectObjectPropertyType('common')"
+                                [class]="{ 'btn-primary': objectPropertyTypeSelection === 'common' }"
+                                class="btn-clear btn-100 mt-5"
+                            >
+                                Common Properties
+                            </button>
+                            <button
+                                type="button"
+                                (click)="selectObjectPropertyType('read-only')"
+                                [class]="{ 'btn-primary': objectPropertyTypeSelection === 'read-only' }"
+                                class="btn-clear btn-100 mt-5"
+                            >
+                                Read-only Properties
+                            </button>
+                        </div>
+                        <app-add-component
+                            class="guided-add-component"
+                            [objectPropertyTypeSelectionInput]="objectPropertyTypeSelection"
+                            [objectSelectionInput]="objectSelection"
+                            (relationshipAdded)="onRelationshipAdded()"
+                        >
+                        </app-add-component>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Object Addition -->
+        @if (menuSelection === 'object-addition') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <app-object-addition #objectAddition (addObjectEvent)="onAddObjectChoice($event)"></app-object-addition>
+            </div>
+        }
+
+        <!-- Review -->
+        <div [ngClass]="{ 'bundle-visible': menuSelection == 'build-review', 'bundle-hidden': menuSelection !== 'build-review' }">
+            <div style="margin-bottom: 100px">
+                <app-bundle
+                    #bundle
+                    [showObjectSection]="false"
+                    [showVisualizerSection]="false"
+                    [showBundleObjectsSectionOnly]="true"
+                    [menuSelection]="menuSelection"
+                    [isGroupByTLP]="isGroupByTLP"
+                    class="build-review-bundle-wrapper"
+                >
+                </app-bundle>
+            </div>
+        </div>
+
+        <!-- TLP Type -->
+        @if (menuSelection === 'tlp-type') {
+            <div class="d-flex justify-content-center align-items-center content-wrapper">
+                <div class="d-flex flex-column justify-content-start align-items-center content-wrapper">
+                    <div class="tlp-build">Assign Default TLP</div>
+
+                    <div class="mt-2" style="width: 100px">
+                        @if (this.env.tlpConfig.enabledTlpVersions.length > 1) {
+                            <select type="text" [(ngModel)]="tlpVersion" (change)="getTlpOptions($event)">
+                                @for (ver of this.env.tlpConfig.enabledTlpVersions; track ver) {
+                                    <option value="{{ ver.value }}">{{ ver.label }}</option>
+                                }
+                            </select>
+                        }
+                    </div>
+                    @if (this.env.tlpConfig.enabledTlpVersions.length == 1) {
+                        <input class="form-control" disabled value="{{ this.env.tlpConfig.enabledTlpVersions[0].label }}" style="width: 49vw" />
+                    }
+
+                    <div class="mt-2" style="width: 100%; text-align: center">
+                        TLP is optional but <b>recommended</b>. This TLP color will only be applied to objects that do not have a TLP color assigned
+                        to them.<br />This pre-selected TLP is the highest TLP in bundle and can be deselected.
+                    </div>
+                    <div class="d-flex" style="margin-top: -20px">
+                        @for (option of this.objectMarking.tlp_options; track option) {
+                            <div
+                                class="d-flex justify-content-center align-items-center card card-tlp {{ option.css }}"
+                                [ngClass]="{ 'item-selected': checkSelectedTLP(option.key) }"
+                                (click)="selectTLP(option.key)"
+                            >
+                                <div style="width: -webkit-fill-available">{{ option.key }}</div>
+                            </div>
+                        }
+                    </div>
+                    @if (onPageMsgs?.length > 0) {
+                        <div class="row mt-5">
+                            <div class="col">
+                                <div class="d-flex justify-content-center flex-column">
+                                    @for (msg of onPageMsgs; track msg) {
+                                        <div>
+                                            {{ msg }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Publish Type - 1 -->
+        @if (menuSelection === 'publish-type-1') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper outter-wrapper-min-height">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="tlp-build">Where would you like to Publish?</div>
+                    <div class="tlp-select">Select an automatic or manual TAXII Server</div>
+                    <div class="d-flex flex-column mt-5" style="width: 50vw">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item" (click)="activePublishTab = 'Automatic'">
+                                <a class="nav-link" [ngClass]="{ active: activePublishTab === 'Automatic' }"> Automatic </a>
+                            </li>
+                            <li class="nav-item" (click)="activePublishTab = 'Manual'">
+                                <a class="nav-link" [ngClass]="{ active: activePublishTab === 'Manual' }"> Manual </a>
+                            </li>
+                        </ul>
+                        @if (activePublishTab === 'Manual') {
+                            <div class="d-flex mt-2 justify-content-center">
+                                <div
+                                    class="d-flex justify-content-center align-items-center card card-blue"
+                                    [ngClass]="{ 'item-selected': guidedBundle?.taxiiServerType === 'default' }"
+                                    (click)="selectPublishType('default')"
+                                >
+                                    <div>Default<br />Server</div>
+                                </div>
+                                <div
+                                    class="d-flex justify-content-center align-items-center card card-blue"
+                                    [ngClass]="{ 'item-selected': guidedBundle?.taxiiServerType === 'custom' }"
+                                    (click)="selectPublishType('custom')"
+                                >
+                                    <div>Custom<br />Server</div>
+                                </div>
+                            </div>
+                        }
+                        @if (activePublishTab === 'Automatic') {
+                            <div class="d-flex flex-column justify-content-center align-items-center mt-3">
+                                @if (publishToCisa) {
+                                    <div class="d-flex justify-content-center" style="height: 10%; width: 80%">
+                                        <h6 class="mt-5 d-flex justify-content-center">
+                                            This will publish your information directly to CISA via Analyst1.
+                                        </h6>
+                                    </div>
+                                }
+                                @if (publishToCisaAis) {
+                                    <div class="d-flex justify-content-center" style="height: 10%; width: 80%">
+                                        <h6 class="mt-5 d-flex justify-content-center">
+                                            This will publish your information directly to AIS (Automated Information Sharing).
+                                        </h6>
+                                    </div>
+                                }
+                                @if (!publishToCisa && !publishToCisaAis) {
+                                    <div class="d-flex justify-content-center" style="height: 10%; width: 80%">
+                                        @switch (guidedBundle?.taxiiServerType) {
+                                            @case ('raw') {
+                                                <h6 class="mt-5 d-flex justify-content-center">
+                                                    The "Collaboration" collection belongs to "Internal-CISA" API Root and both are housed on the
+                                                    Default TAXII server. This API root and collection are in place for analysts to publish new CTI
+                                                    and collaborate on existing CTI as new information becomes available.
+                                                </h6>
+                                            }
+                                            @case ('a1') {
+                                                <h6 class="mt-5 d-flex justify-content-center">
+                                                    The "Analyst1" collection belongs to {{ env.taxiiServer.a1ApiRoot }} API Root and both are housed
+                                                    on the Default TAXII server. This API root and collection are in place for analysts to publish CTI
+                                                    to Analyst1.
+                                                </h6>
+                                            }
+                                            @case ('sandbox') {
+                                                <h6 class="mt-5 d-flex justify-content-center">
+                                                    This will publish your information directly to the IMX TAXII Server.
+                                                </h6>
+                                            }
+                                            @default {
+                                                <h6 class="mt-5 d-flex justify-content-center"><br /><br /></h6>
+                                            }
+                                        }
+                                    </div>
+                                }
+                                <div class="d-flex justify-content-center" style="margin-top: -20px">
+                                    @if (env.customConfiguration.cisa.enabled) {
+                                        <div
+                                            class="d-flex justify-content-center align-items-center card card-blue"
+                                            [ngClass]="{ 'item-selected': guidedBundle?.taxiiServerType === 'cisa' }"
+                                            (click)="selectPublishType('cisa')"
+                                        >
+                                            <div class="pb-2">Publish to CISA Analyst1</div>
+                                            <img class="cisa-publication-logo" src="../../assets/CISA_Logo.png" alt="CISA Logo" />
+                                        </div>
+                                    }
+                                    @if (env.customConfiguration.cisaAis?.enabled) {
+                                        <div
+                                            class="d-flex justify-content-center align-items-center card card-blue"
+                                            [ngClass]="{ 'item-selected': guidedBundle?.taxiiServerType === 'cisaAis' }"
+                                            (click)="selectPublishType('cisaAis')"
+                                        >
+                                            <div class="pb-2">Publish to<br />AIS</div>
+                                            <fa-icon [icon]="faServer" class="imx-server-icon"></fa-icon>
+                                        </div>
+                                    }
+                                    @if (env.customConfiguration.sandbox?.enabled) {
+                                        <div
+                                            class="d-flex justify-content-center align-items-center card card-blue"
+                                            [ngClass]="{ 'item-selected': guidedBundle?.taxiiServerType === 'sandbox' }"
+                                            (click)="selectPublishType('sandbox')"
+                                        >
+                                            <div>Publish to<br />IMX</div>
+                                            <fa-icon [icon]="faServer" class="imx-server-icon"></fa-icon>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Publish type - 2 -->
+        @if (menuSelection === 'publish-type-2') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="tlp-build">Please provide more detail</div>
+                    <div class="tlp-select">Add an API Root & Collection</div>
+                    @if (guidedBundle?.taxiiServerType === 'default') {
+                        <div class="d-flex object-info-wrapper mt-5">
+                            <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-center align-items-center card card-blue">
+                                    <div>Default<br />Server</div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column relationship-properties-wrapper mt-5">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                        <div class="">
+                                            <div class="relationship-property-name">API Root</div>
+                                        </div>
+                                    </div>
+                                    <div class="relationship-property-input-wrapper">
+                                        <div ngbDropdown>
+                                            <button
+                                                class="btn btn-outline-primary server-detail-dropdown"
+                                                style="height: 31px"
+                                                id="sortMenu"
+                                                ngbDropdownToggle
+                                                [disabled]="stixService.isLoading || guidedBundle?.stixService?.apiRoots?.length === 0"
+                                            >
+                                                @if (stixService.isLoading) {
+                                                    <span> Loading API Roots... </span>
+                                                }
+                                                @if (!stixService.isLoading && !guidedBundle?.taxiiServer?.apiRoot) {
+                                                    <span>
+                                                        <fa-icon [icon]="faSelect" class="pe-1"></fa-icon>
+                                                        Select
+                                                    </span>
+                                                }
+                                                @if (!stixService.isLoading && guidedBundle?.taxiiServer?.apiRoot) {
+                                                    <span>
+                                                        {{ guidedBundle?.taxiiServer?.apiRoot }}
+                                                    </span>
+                                                }
+                                            </button>
+                                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                                @for (apiRoot of this.guidedBundle.apiRootsPublishTo(); track apiRoot) {
+                                                    <button
+                                                        class="dropdown-item"
+                                                        (click)="selectApiRoot(apiRoot); checkRootAndCollectionSelected()"
+                                                        title="{{ apiRoot?.description }}"
+                                                    >
+                                                        {{ apiRoot?.title }}
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                        <div class="">
+                                            <div class="relationship-property-name">Collections</div>
+                                        </div>
+                                    </div>
+                                    <div class="relationship-property-input-wrapper">
+                                        <div ngbDropdown>
+                                            <button
+                                                class="btn btn-outline-primary server-detail-dropdown"
+                                                style="height: 31px"
+                                                id="sortMenu"
+                                                ngbDropdownToggle
+                                                [disabled]="!guidedBundle.taxiiServer?.apiRoot || !guidedBundle.collectionsCanWriteTo()"
+                                            >
+                                                @if (!guidedBundle?.selectedCollection) {
+                                                    <span>
+                                                        <fa-icon [icon]="faSelect" class="pe-1"></fa-icon>
+                                                        Select
+                                                    </span>
+                                                }
+                                                @if (guidedBundle?.selectedCollection) {
+                                                    <span>
+                                                        {{ guidedBundle?.selectedCollection?.title }}
+                                                    </span>
+                                                }
+                                            </button>
+                                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                                @for (collection of guidedBundle?.collections; track collection) {
+                                                    <button
+                                                        class="dropdown-item"
+                                                        (click)="guidedBundle.onCollectionChanged(collection); checkRootAndCollectionSelected()"
+                                                        title="{{ collection?.description }}"
+                                                    >
+                                                        {{ collection.title }}
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (guidedBundle?.taxiiServerType === 'custom') {
+                        <div class="d-flex object-info-wrapper mt-5">
+                            <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-center align-items-center card card-blue">
+                                    <div>Custom TAXII Server</div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column relationship-properties-wrapper mt-5">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                        <div class="">
+                                            <div class="relationship-property-name">TAXII Server URL</div>
+                                        </div>
+                                    </div>
+                                    <div class="relationship-property-input-wrapper">
+                                        <input
+                                            type="url"
+                                            name="taxii-server-url"
+                                            minlength="8"
+                                            [(ngModel)]="guidedBundle.taxiiServer.url"
+                                            placeholder=""
+                                            required
+                                            class="form-control t1t-left server-detail-dropdown"
+                                            aria-label="TAXII Server URL"
+                                            aria-describedby="taxii-server-url"
+                                        />
+                                    </div>
+                                </div>
+
+                                @if (guidedBundle?.taxiiServerAuthType === 'cert') {
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                            <div class="">
+                                                <div class="relationship-property-name">TAXII Server Certificate</div>
+                                            </div>
+                                        </div>
+                                        <div class="relationship-property-input-wrapper">
+                                            <div class="server-detail-dropdown input-group">
+                                                <input
+                                                    type="file"
+                                                    class="custom-file-input"
+                                                    id="inputGroupFile02"
+                                                    name="taxii-server-certificate"
+                                                    minlength="8"
+                                                    [(ngModel)]="guidedBundle.taxiiServer.certificate"
+                                                    placeholder="Please select"
+                                                    required
+                                                    aria-label="TAXII Server Certificate"
+                                                    aria-describedby="taxii-server-certificate"
+                                                />
+                                                <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">{{
+                                                    guidedBundle?.taxiiServer?.certificate ? guidedBundle?.taxiiServer?.certificate : ''
+                                                }}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (guidedBundle?.taxiiServerAuthType === 'basic') {
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                            <div class="">
+                                                <div class="relationship-property-name">TAXII Server Username</div>
+                                            </div>
+                                        </div>
+                                        <div class="relationship-property-input-wrapper">
+                                            <div class="server-detail-dropdown input-group">
+                                                <input
+                                                    type="text"
+                                                    ngModel
+                                                    name="taxii-server-username"
+                                                    #passwordInput="ngModel"
+                                                    minlength="8"
+                                                    [(ngModel)]="guidedBundle.taxiiServer.username"
+                                                    placeholder=""
+                                                    required
+                                                    class="form-control t1t-left"
+                                                    aria-label="TAXII Server Username"
+                                                    aria-describedby="taxii-server-username"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (guidedBundle?.taxiiServerAuthType === 'basic') {
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                            <div class="">
+                                                <div class="relationship-property-name">TAXII Server Password</div>
+                                            </div>
+                                        </div>
+                                        <div class="relationship-property-input-wrapper">
+                                            <div class="server-detail-dropdown input-group">
+                                                <input
+                                                    type="password"
+                                                    ngModel
+                                                    name="taxii-server-password"
+                                                    #passwordInput="ngModel"
+                                                    minlength="8"
+                                                    [(ngModel)]="guidedBundle.taxiiServer.password"
+                                                    placeholder=""
+                                                    required
+                                                    class="form-control t1t-left"
+                                                    aria-label="TAXII Server Password"
+                                                    aria-describedby="taxii-server-password"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (guidedBundle?.taxiiServerType === 'custom') {
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                            <div class="">
+                                                <div class="relationship-property-name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="relationship-property-input-wrapper">
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-primary"
+                                                style="margin-bottom: 10px"
+                                                (click)="this.getAPIRoots()"
+                                                [disabled]="guidedBundle.isConnectDisabled(true) || guidedBundle.isPublishing"
+                                            >
+                                                <fa-icon [icon]="faConnect" class="pe-1"></fa-icon>
+                                                Connect
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                        <div class="">
+                                            <div class="relationship-property-name">API Root</div>
+                                        </div>
+                                    </div>
+                                    <div class="relationship-property-input-wrapper">
+                                        <div ngbDropdown>
+                                            <button
+                                                class="btn btn-outline-primary server-detail-dropdown"
+                                                style="height: 38px"
+                                                id="sortMenu"
+                                                ngbDropdownToggle
+                                                [disabled]="stixService.isLoading"
+                                            >
+                                                @if (stixService.isLoading) {
+                                                    <span> Loading API Roots... </span>
+                                                }
+                                                @if (stixService.isLoading && !guidedBundle?.taxiiServer?.apiRoot) {
+                                                    <span>
+                                                        <fa-icon [icon]="faSelect" class="pe-1"></fa-icon>
+                                                        Select
+                                                    </span>
+                                                }
+                                                @if (stixService.isLoading && guidedBundle?.taxiiServer?.apiRoot) {
+                                                    <span>
+                                                        {{ guidedBundle?.taxiiServer?.apiRoot }}
+                                                    </span>
+                                                }
+                                            </button>
+                                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                                @for (apiRoot of this.apiRootsPublishTo(); track apiRoot) {
+                                                    <button class="dropdown-item" (click)="selectApiRoot(apiRoot)" title="{{ apiRoot?.description }}">
+                                                        {{ apiRoot?.apiPath }}
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="d-flex justify-content-end relationship-property-name-wrapper">
+                                        <div class="">
+                                            <div class="relationship-property-name">Collections</div>
+                                        </div>
+                                    </div>
+                                    <div class="relationship-property-input-wrapper">
+                                        <div ngbDropdown>
+                                            <button
+                                                class="btn btn-outline-primary server-detail-dropdown"
+                                                style="height: 38px"
+                                                id="sortMenu"
+                                                ngbDropdownToggle
+                                                [disabled]="!guidedBundle.taxiiServer?.apiRoot || !guidedBundle.collectionsCanWriteTo()"
+                                            >
+                                                @if (coll == null) {
+                                                    <span>
+                                                        <fa-icon [icon]="faSelect" class="pe-1"></fa-icon>
+                                                        Select
+                                                    </span>
+                                                }
+                                                @if (coll != null) {
+                                                    <span>
+                                                        {{ coll.title }}
+                                                    </span>
+                                                }
+                                            </button>
+                                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                                @for (collection of guidedBundle?.taxiiServer?.availableCollections; track collection) {
+                                                    @if (collection.can_write) {
+                                                        <button
+                                                            class="dropdown-item"
+                                                            (click)="guidedBundle.selectedCollection = collection; sanityCheck(collection)"
+                                                            title="{{ collection?.description }}"
+                                                        >
+                                                            {{ collection.title }}
+                                                        </button>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Publish Polling -->
+        @if (menuSelection === 'publish-polling') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="tlp-build">Polling for Results</div>
+
+                    <div class="d-flex flex-column mt-5 pt-5">
+                        <div class="spinner mx-auto"></div>
+                        <div class="text-center">Waiting for Results...</div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Publish Review -->
+        @if (menuSelection === 'publish-review') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper outter-wrapper-min-height">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="tlp-build">Let's Review</div>
+                    <div class="tlp-select">Current TAXII Server</div>
+
+                    <!-- Review Card -->
+                    <div class="review-card mt-5">
+                        <div class="review-card-header">Publishing Configuration</div>
+                        <div class="review-card-body">
+                            <div class="review-row">
+                                <div class="review-label">TAXII Server</div>
+                                <div class="review-value">{{ serverTypeReview() }}</div>
+                            </div>
+                            <div class="review-row">
+                                <div class="review-label">API Root</div>
+                                <div class="review-value">{{ guidedBundle?.taxiiServer?.apiRoot }}</div>
+                            </div>
+                            <div class="review-row">
+                                <div class="review-label">Collection</div>
+                                <div class="review-value">
+                                    @switch (this.guidedBundle.taxiiServerType) {
+                                        @case ('a1') {
+                                            {{ getCollectionFromID(env.taxiiServer.a1CollectionId)?.title }}
+                                        }
+                                        @case ('raw') {
+                                            {{ getCollectionFromID(env.taxiiServer.a1RawCollectionId)?.title }}
+                                        }
+                                        @case ('sandbox') {
+                                            {{ guidedBundle?.taxiiServer?.collection?.title }}
+                                        }
+                                        @case ('cisa') {
+                                            {{ guidedBundle?.taxiiServer?.collection?.title }}
+                                        }
+                                        @case ('cisaAis') {
+                                            {{ guidedBundle?.taxiiServer?.collection?.title }}
+                                        }
+                                        @default {
+                                            {{ guidedBundle?.selectedCollection?.title }}
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Publish Success -->
+        @if (menuSelection === 'publish-success') {
+            <div
+                class="d-flex col-12 flex-column justify-content-center align-items-center outter-wrapper-min-height"
+                [class]="contentWrapperClass()"
+            >
+                @if (isPublishing) {
+                    <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 60vh">
+                        <div class="tlp-build">Publication Status</div>
+                        <div class="d-flex flex-column mt-5 pt-5">
+                            <div class="spinner mx-auto"></div>
+                            <div class="text-center">Publishing Bundle...</div>
+                        </div>
+                    </div>
+                } @else {
+                    <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                        <div class="tlp-build">Publication Status</div>
+                        <div class="d-flex flex-column justify-content-center align-items-center">
+                            @if (this.publishStatus == 'success') {
+                                <fa-icon class="check-circle" [icon]="faCheckCircle"></fa-icon>
+                            }
+                            @if (this.publishStatus == 'warn') {
+                                <fa-icon class="warn-circle" [icon]="faInfoCircle"></fa-icon>
+                            }
+                            @if (this.publishStatus == 'error') {
+                                <fa-icon class="error-circle" [icon]="faExclamationTriangle"></fa-icon>
+                            }
+                            @if (this.publishStatus == 'none') {
+                                <fa-icon class="warn-circle" [icon]="faInfoCircle"></fa-icon>
+                            }
+                        </div>
+                        <div class="text-center">
+                            @if (this.publishStatus == 'success') {
+                                <div class="success">Successfully Published Bundle!</div>
+                            }
+                            @if (this.publishStatus == 'warn') {
+                                <div class="warn">Partially Published Bundle</div>
+                            }
+                            @if (this.publishStatus == 'error') {
+                                <div class="error">Error Publishing Bundle</div>
+                            }
+                            @if (this.publishStatus == 'none') {
+                                <div class="warn">No Publication Status</div>
+                                <div class="tlp-select mt-2 text-center">Please go through the TAXII Server step to publish.</div>
+                            }
+                            @if (this.additionalStatusMessage.length > 0) {
+                                <div class="tlp-select">{{ this.additionalStatusMessage }}</div>
+                            }
+                        </div>
+                        <!-- Publish Status Tabs -->
+                        @if (this.publishStatus != 'none') {
+                            <div class="publish-tabs mt-4">
+                                @if (publishFeedback?.successes?.length > 0) {
+                                    <div
+                                        class="publish-tab"
+                                        [class.active]="expandSuccess"
+                                        (click)="expandSuccess = !expandSuccess; expandFailure = false; expandAdvancedDetails = false"
+                                    >
+                                        Published
+                                        <span class="badge rounded-circle bg-primary ms-1">{{ publishFeedback.successes.length }}</span>
+                                    </div>
+                                }
+                                @if (publishFeedback?.failures?.length > 0) {
+                                    <div
+                                        class="publish-tab"
+                                        [class.active]="expandFailure"
+                                        (click)="expandFailure = !expandFailure; expandSuccess = false; expandAdvancedDetails = false"
+                                    >
+                                        Not Published
+                                        <span class="badge rounded-circle bg-danger ms-1">{{ publishFeedback.failures.length }}</span>
+                                    </div>
+                                }
+                                <div
+                                    class="publish-tab"
+                                    [class.active]="expandAdvancedDetails"
+                                    (click)="expandAdvancedDetails = !expandAdvancedDetails; expandSuccess = false; expandFailure = false"
+                                >
+                                    Publication Details
+                                </div>
+                            </div>
+
+                            <!-- Tab Content -->
+                            <div class="publish-tab-content">
+                                @if (expandSuccess) {
+                                    <div class="publish-items-wrapper">
+                                        @for (successObj of publishFeedback?.successes; track successObj) {
+                                            <div class="publish-item list-group">
+                                                <div
+                                                    class="list-group-item d-flex justify-content-between align-items-center"
+                                                    style="cursor: pointer"
+                                                    (click)="toggleSuccessItem(successObj.id)"
+                                                >
+                                                    <span>{{ getObjectNameFromPublish(successObj) }}</span>
+                                                    <span>{{ expandedSuccesses.has(successObj.id) ? '▲' : '▼' }}</span>
+                                                </div>
+                                                @if (expandedSuccesses.has(successObj.id)) {
+                                                    <div class="list-group-item">
+                                                        <pre>{{ getBundleObject(successObj.id) | json }}</pre>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                @if (expandFailure) {
+                                    <div class="publish-items-wrapper">
+                                        @for (failureObj of publishFeedback?.failures; track failureObj) {
+                                            <div class="publish-item list-group">
+                                                <div
+                                                    class="list-group-item d-flex justify-content-between align-items-center"
+                                                    style="cursor: pointer"
+                                                    (click)="toggleFailureItem(failureObj.id)"
+                                                >
+                                                    <span>{{ getObjectNameFromPublish(failureObj) }}</span>
+                                                    <span>{{ expandedFailures.has(failureObj.id) ? '▲' : '▼' }}</span>
+                                                </div>
+                                                @if (expandedFailures.has(failureObj.id)) {
+                                                    <div class="list-group-item">
+                                                        <div class="text-danger mb-2">{{ failureObj.message }}</div>
+                                                        <pre>{{ getBundleObject(failureObj.id) | json }}</pre>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                @if (expandAdvancedDetails) {
+                                    <pre>{{ this.publishFeedback | json }}</pre>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Guided Report 1 -->
+        @if (menuSelection === 'guided-report-1') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <app-report-type></app-report-type>
+                </div>
+            </div>
+        }
+
+        <!-- Threat Actor 2 -->
+        @if (menuSelection === 'threat-actor-2') {
+            <div class="d-flex justify-content-center align-items-start content-wrapper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <app-threat-actor #threatActor></app-threat-actor>
+                </div>
+            </div>
+        }
+
+        @if (menuSelection === 'tlp-type') {
+            <div class="d-flex flex-column mb-3" style="margin-left: 20%">
+                @if (reportObject && reportTLP) {
+                    <div class="ms-2">
+                        <strong style="display: inline-block; width: 150px">Report Object:</strong>
+                        <span class="me-2 badge" [class]="stixService.getTlpStyle(reportTLP?.key)" style="width: 135px">{{ reportTLP?.key }}</span>
+                    </div>
+                }
+                @if (reportObject && !reportTLP) {
+                    <div class="ms-2"><strong style="display: inline-block; width: 150px">Report Object:</strong> Unassigned</div>
+                }
+                <div>
+                    <span class="ms-2" style="display: inline-block; width: 164px"><strong>Unassigned:</strong></span>
+                    <span class="badge rounded-circle bg-primary sdo-badge ms-1" style="min-width: 1rem; margin-left: 5px !important">{{
+                        unassignedObjMarkingRefObjs?.length
+                    }}</span>
+                </div>
+                @for (tlpCount of tlpCounts; track tlpCount) {
+                    <div>
+                        <div class="me-2 badge" [class]="stixService.getTlpStyle(tlpCount.tlp.key)">{{ tlpCount.tlp.key }}</div>
+                        <span
+                            class="badge rounded-circle bg-primary sdo-badge"
+                            style="min-width: 1rem"
+                            [class]="{
+                                'tlp-margin-left': tlpMargin(tlpCount.tlp) === 'other',
+                                'tlp-margin-left-amber': tlpMargin(tlpCount.tlp) === 'amber',
+                                'tlp-margin-left-strict': tlpMargin(tlpCount.tlp) === 'strict',
+                                'tlp-margin-left-red': tlpMargin(tlpCount.tlp) === 'red',
+                            }"
+                        >
+                            {{ tlpCount.count }}
+                        </span>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="d-flex flex-column justify-content-center align-items-center sticky-footer sticky-footer-collapsed">
+            <div class="bottom-wrapper">
+                <div class="assist-wrapper d-flex">
+                    <div class="d-flex align-items-center justify-content-between" style="width: 65%; margin-left: 3%">
+                        @if (showContinueAnalyst1()) {
+                            <button
+                                [disabled]="!enableAddToCart()"
+                                class="btn btn-100 btn-outline-primary pe-4 ps-4 pt-2 pb-2 ms-4 query-button"
+                                (click)="addToCart()"
+                            >
+                                <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                Add
+                            </button>
+                        }
+                        @if (analyst1ObjectsInCart?.length > 0 && showContinueAnalyst1()) {
+                            <span style="position: absolute; left: 680px"> Indicators Added: </span>
+                        }
+                        @if (analyst1ObjectsInCart?.length > 0 && showContinueAnalyst1()) {
+                            <span style="color: white; position: absolute; left: 810px" class="badge rounded-circle bg-primary sdo-badge">
+                                {{ analyst1ObjectsInCart?.length }}
+                            </span>
+                        }
+                        @if (
+                            menuSelection === 'additional-info-2' &&
+                            (indicatorSelection === 'add-evidence' || indicatorSelection === 'add-ioc') &&
+                            !addingStixToPending
+                        ) {
+                            <div class="dropup">
+                                <button
+                                    class="btn btn-100 btn-success dropdown-toggle query-button"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <fa-icon [icon]="faSelect" class="pe-1"></fa-icon>
+                                    <!-- Add To Bundle -->
+                                    {{ showAddAnalyst1Type() }}
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" (click)="selectAddToBundleType('indicator')">Add Indicator Only</a>
+                                    <a class="dropdown-item" (click)="selectAddToBundleType('parsed')">Add Parsed Only</a>
+                                    <a class="dropdown-item" (click)="selectAddToBundleType('both')">Add Indicator + Parsed</a>
+                                </div>
+                            </div>
+                        }
+
+                        @if (menuSelection === 'build-review' && evidenceId && showViewEvidenceOnAnalyst1()) {
+                            <span style="margin-left: 60%">
+                                <a class="btn-link pointer view-evidence-button" (click)="openAnalyst1('view-evidence')">View Evidence on Analyst1</a>
+                            </span>
+                        }
+                        @if (
+                            menuSelection === 'indicator-type-2' &&
+                            indicatorSelection === 'add-evidence' &&
+                            activeTabAnalyst1EvidenceType === 'Evidence ID'
+                        ) {
+                            <span class="ms-4">
+                                <a class="btn-link pointer" (click)="findEvidenceIdModal()">Where's My Evidence ID?</a>
+                            </span>
+                        }
+                    </div>
+                </div>
+                <div class="bottom-nav-wrapper mt-3" [ngClass]="{ 'sidebar-expanded': isMenuExpanded == true }">
+                    <div class="d-flex align-items-center">
+                        <!-- LEFT: Back / Cancel -->
+                        <div class="d-flex justify-content-start align-items-center footer-col-side">
+                            @if (
+                                menuSelection != 'publish-polling' &&
+                                menuSelection != 'build-review' &&
+                                this.guidedService.currentCartIndex === null &&
+                                !isPublishing
+                            ) {
+                                <button
+                                    class="btn component-button button-guided btn-secondary ms-3"
+                                    [ngClass]="{ 'placeholder-hidden': menuSelection === 'indicator-type-1' }"
+                                    (click)="goBack()"
+                                    [disabled]="guidedService.cartEditMode"
+                                >
+                                    <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                                    Back
+                                </button>
+                            }
+                            @if (
+                                this.guidedService.currentCartIndex !== null &&
+                                menuSelection !== 'build-review' &&
+                                menuSelection !== 'publish-review' &&
+                                menuSelection !== 'publish-success'
+                            ) {
+                                <button
+                                    class="btn component-button button-guided btn-secondary ms-3"
+                                    [ngClass]="{ 'placeholder-hidden': menuSelection === 'indicator-type-1' }"
+                                    (click)="cancelEditFromBundle()"
+                                >
+                                    <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                                    Cancel
+                                </button>
+                            }
+                            @if (menuSelection === 'build-review') {
+                                <button type="button" class="btn component-button button-guided btn-secondary ms-3" (click)="goBack()">
+                                    <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                                    Back
+                                </button>
+                            }
+                            @if (menuSelection === 'build-review') {}
+                            @if (showCartButtons() && guidedCartFooter?.editMode && guidedService.currentCartIndex === null) {
+                                <button
+                                    class="btn btn-secondary component-button button-guided ms-2"
+                                    (click)="guidedCartFooter.cancelUpdate()"
+                                    aria-label="Cancel update"
+                                >
+                                    <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                                    Cancel Update
+                                </button>
+                            }
+                        </div>
+
+                        <!-- CENTER: Cart anchor / Current Bundle -->
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            @if (showCartButtons()) {
+                                <app-guided-cart #guidedCartFooter [currentComponent]="menuSelection"> </app-guided-cart>
+                            }
+                            @if (menuSelection === 'publish-success' && !isPublishing) {
+                                <button
+                                    class="btn component-button button-guided btn-outline-secondary"
+                                    (click)="createAnotherBundle('no'); menuSelection = 'build-review'"
+                                >
+                                    <fa-icon [icon]="faFile" class="pe-1"></fa-icon>
+                                    Current Bundle
+                                </button>
+                            }
+                        </div>
+
+                        <!-- RIGHT: Continue / Update / Publish / etc. -->
+                        <div class="d-flex justify-content-end align-items-center footer-col-side">
+                            @if (showCartButtons()) {
+                                <button
+                                    class="btn component-button button-guided btn-primary me-2"
+                                    (click)="guidedCartFooter.addToCart()"
+                                    [disabled]="guidedCartFooter?.isCartDisabled"
+                                    [attr.aria-label]="guidedCartFooter?.editMode ? 'Update cart' : 'Add to cart'"
+                                >
+                                    <fa-icon [icon]="faCartPlus" class="pe-1"></fa-icon>
+                                    {{ guidedCartFooter?.editMode ? 'Update Cart' : 'Add to Cart' }}
+                                </button>
+                            }
+                            @if (showAddObject()) {
+                                <button class="btn component-button button-guided btn-success me-2" (click)="addObject()">
+                                    <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                    Add More CTI
+                                </button>
+                            }
+                            @if (
+                                showContinue() &&
+                                menuSelection !== 'build-review' &&
+                                menuSelection !== 'publish-review' &&
+                                menuSelection !== 'publish-success' &&
+                                this.guidedService.currentCartIndex === null
+                            ) {
+                                <button
+                                    class="btn component-button button-guided btn-primary me-3"
+                                    (click)="goForward()"
+                                    [disabled]="disableContinue() || guidedService.cartEditMode"
+                                >
+                                    Continue
+                                    <fa-icon [icon]="faArrowRight" class="ps-1"></fa-icon>
+                                </button>
+                            }
+                            @if (
+                                showContinue() &&
+                                this.guidedService.currentCartIndex !== null &&
+                                menuSelection !== 'build-review' &&
+                                menuSelection !== 'publish-review' &&
+                                menuSelection !== 'publish-success'
+                            ) {
+                                <button
+                                    class="btn component-button button-guided btn-primary me-3"
+                                    (click)="editFromBundle()"
+                                    [disabled]="disableContinue()"
+                                >
+                                    <fa-icon [icon]="faEdit" class="pe-1"></fa-icon>
+                                    Update
+                                </button>
+                            }
+                            @if (menuSelection === 'additional-info-3') {
+                                <button class="btn component-button button-guided btn-primary me-3" (click)="goForward()">
+                                    Skip To Publication
+                                    <fa-icon [icon]="faArrowRight" class="ps-1"></fa-icon>
+                                </button>
+                            }
+                            @if (menuSelection === 'build-review') {
+                                <button type="button" class="btn component-button button-guided btn-primary me-3" (click)="goForward()">
+                                    Continue
+                                    <fa-icon [icon]="faArrowRight" class="ps-1"></fa-icon>
+                                </button>
+                            }
+                            @if (showContinue() && menuSelection === 'publish-review') {
+                                <button
+                                    class="btn component-button button-guided btn-success me-3"
+                                    (click)="goForward()"
+                                    [disabled]="disableContinue() || isPublishing"
+                                >
+                                    @if (isPublishing) {
+                                        <span class="spinner-grow spinner-grow-sm me-1" role="status" aria-hidden="true"></span>
+                                        Publishing...
+                                    } @else {
+                                        <fa-icon [icon]="faUpload" class="pe-1"></fa-icon>
+                                        Publish
+                                    }
+                                </button>
+                            }
+                            @if (showContinueAnalyst1()) {
+                                <button
+                                    [disabled]="!enableReview()"
+                                    class="btn component-button button-guided btn-primary me-3"
+                                    (click)="viewDetail(); goForward()"
+                                >
+                                    <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                                    Continue
+                                </button>
+                            }
+                            @if (showContinue() && menuSelection === 'publish-success' && !isPublishing) {
+                                <button class="btn component-button button-guided btn-primary me-3" (click)="createAnotherBundle('yes'); goForward()">
+                                    <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                    New Bundle
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (errorMessages?.length > 0) {
+        <div class="row error-message">
+            <div class="col">
+                <div class="d-flex justify-content-center flex-column">
+                    @for (err of errorMessages; track err) {
+                        <div class="alert alert-danger" role="alert">
+                            {{ err }}
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (popupMsgs?.length > 0) {
+        <div class="row error-message">
+            <div class="col">
+                <div class="d-flex justify-content-center flex-column">
+                    @for (msg of popupMsgs; track msg) {
+                        <div class="alert alert-primary" role="alert">
+                            {{ msg }}
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (showCartGuardDialog) {
+        <div class="cart-guard-backdrop">
+            <div class="cart-guard-dialog">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="cart-guard-modal-title">Unsaved Items</h4>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="showCartGuardDialog = false">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span>You have unsaved items. Add them to cart before continuing?</span>
+                </div>
+                <div class="modal-footer">
+                    <div class="item-action">
+                        <button type="button" class="btn btn-sm btn-outline-secondary me-2" (click)="showCartGuardDialog = false">
+                            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger me-2" (click)="continueWithoutSaving()">Continue Anyway</button>
+                        <button type="button" class="btn btn-sm btn-outline-success" (click)="triggerAddToCartFromGuard()">
+                            <fa-icon [icon]="faCartPlus" class="pe-1"></fa-icon>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<ng-template #supportModal let-modal>
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">
+            {{ appRoot.supportLabel }}
+        </h2>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body" id="changelog">
+        <div class="row">
+            <div class="col">
+                <form>
+                    <div class="form-group">
+                        <label for="supportDescription">Description</label>
+                        <textarea
+                            class="form-control"
+                            name="description"
+                            id="supportDescription"
+                            rows="3"
+                            [(ngModel)]="appRoot.supportRequest.description"
+                        ></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-md btn-secondary" (click)="modal.dismiss()">
+            <fa-icon [icon]="faBan"></fa-icon>
+            Cancel
+        </button>
+        <button type="button" class="btn btn-md btn-success" [disabled]="appRoot.isSupportSubmitDisabled()" (click)="appRoot.submitSupportRequest()">
+            <fa-icon [icon]="faPaperPlane"></fa-icon>
+            Submit
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #saveModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="save-modal-title">
+            @if (guidedBundle.importingObjects && !guidedBundle.savingBundle) {
+                <span>Import STIX Objects</span>
+            }
+            @if (!guidedBundle.importingObjects && !guidedBundle.isReset) {
+                <span>Save STIX Bundle</span>
+            }
+            @if (!guidedBundle.importingObjects && !guidedBundle.savingBundle && guidedBundle.isReset) {
+                <span>Reset STIX Objects</span>
+            }
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        @if (!guidedBundle.savingBundle && !guidedBundle.isReset && !guidedBundle.importingObjects) {
+            <div class="pt-2">
+                <app-saved-bundles-table
+                    class="w-100"
+                    [mode]="'saving'"
+                    (bundleStatus)="guidedBundle.updateSaveModal($event)"
+                ></app-saved-bundles-table>
+            </div>
+        }
+        @if (guidedBundle.savingBundle || guidedBundle.isReset || guidedBundle.importingObjects) {
+            <div class="pt-2">
+                @if (guidedBundle.importingObjects && !guidedBundle.savingBundle) {
+                    Your current bundle is displayed below. Choose how you would like to handle the existing objects:<br />
+                    (1) Discard the bundle entirely, (2) Merge the objects you are importing into the current bundle, or (3) Save the current bundle
+                    for later use.
+                    <br />
+                }
+                @if (guidedBundle.savingBundle) {
+                    <div class="row ps-3 pb-1">
+                        If you would like to save your bundle, please enter a name below. If you would instead like to discard/reset the bundle please
+                        confirm so.
+                    </div>
+                    <div class="row ms-0 input-border">
+                        <input
+                            placeholder="Enter a name for the bundle"
+                            class="form-control"
+                            style="font-size: x-large; font-weight: 400"
+                            type="text"
+                            [disabled]="true"
+                            [(ngModel)]="guidedBundle.savingModalData.name"
+                        />
+                    </div>
+                }
+                @if (!guidedBundle.importingObjects && !guidedBundle.savingBundle) {
+                    Your current bundle is displayed below. Confirm you would like to discard the bundle to reset.<br />
+                }
+                <br />
+                <ul class="nav nav-tabs">
+                    <li class="nav-item" (click)="guidedBundle.activeTab = 'jsonViewer'">
+                        <a class="nav-link active" [ngClass]="{ active: guidedBundle.activeTab === 'jsonViewer' }">JSON</a>
+                    </li>
+                </ul>
+                @if (guidedBundle.activeTab === 'jsonViewer') {
+                    <pre class="preview-bundle">{{ guidedBundle.getStixPreview() | json }}</pre>
+                }
+                @if (guidedBundle.activeTab === 'visualViewer') {
+                    <app-stix-viewer class="nav-link" [bundle]="guidedBundle.getStixPreview()"> </app-stix-viewer>
+                }
+            </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="modal.close(false)">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        @if (guidedBundle.savingBundle) {
+            <button type="button" class="btn btn-sm btn-secondary" (click)="guidedBundle.savingBundle = false">
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Back
+            </button>
+        }
+
+        @if (guidedBundle.importingObjects && !guidedBundle.savingBundle) {
+            <button type="button" class="btn btn-sm btn-warning" (click)="guidedBundle.discardBundle()">
+                <fa-icon [icon]="faBackspace" class="pe-1"></fa-icon>
+                Discard Bundle
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="guidedBundle.mergeBundle(stixService.objectsToLoad)">
+                <fa-icon [icon]="faMerge" class="pe-1"></fa-icon>
+                Merge into Bundle
+            </button>
+        }
+        @if (guidedBundle.savingBundle) {
+            @if (guidedBundle.savingModalData.destination == 'local' && guidedBundle.savingModalData.isNew == false) {
+                <button type="button" class="btn btn-sm btn-success" (click)="guidedBundle.overwriteBundle()">
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Locally
+                </button>
+            }
+            @if (guidedBundle.savingModalData.destination == 'local' && guidedBundle.savingModalData.isNew == true) {
+                <button type="button" class="btn btn-sm btn-success" (click)="guidedBundle.saveBundle('local')">
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Locally
+                </button>
+            }
+            @if (guidedBundle.savingModalData.destination == 'profile' && guidedBundle.savingModalData.isNew == true) {
+                <button type="button" class="btn btn-sm btn-success" (click)="guidedBundle.saveBundle('profile')">
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Profile
+                </button>
+            }
+            @if (guidedBundle.savingModalData.destination == 'profile' && guidedBundle.savingModalData.isNew == false) {
+                <button type="button" class="btn btn-sm btn-success" (click)="guidedBundle.overwriteBundle()">
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Profile
+                </button>
+            }
+        }
+        @if (!guidedBundle.importingObjects && !guidedBundle.savingBundle && guidedBundle.isReset) {
+            <button type="button" class="btn btn-sm btn-warning" (click)="guidedBundle.discardBundle()">
+                <fa-icon [icon]="faBackspace" class="pe-1"></fa-icon>
+                Discard Bundle
+            </button>
+        }
+    </div>
+</ng-template>
+
+<ng-template #loadModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="load-modal-title">Load STIX Bundle</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        @if (!guidedBundle.loadingBundle) {
+            <div class="pt-2">
+                <app-saved-bundles-table
+                    class="w-100"
+                    [mode]="'loading'"
+                    (bundleStatus)="guidedBundle.updateLoadModal($event)"
+                ></app-saved-bundles-table>
+            </div>
+        }
+        @if (guidedBundle.loadingBundle) {
+            <div class="pt-2">
+                Selected Bundle:
+                <select
+                    class="col-4 form-control form-select"
+                    style="font-size: large; font-weight: 500"
+                    type="text"
+                    [(ngModel)]="guidedBundle.selectedBundle"
+                    [disabled]="true"
+                >
+                    @for (bundle of this.stixService.savedBundles; track bundle) {
+                        <option [value]="bundle.name">{{ bundle.name }}</option>
+                    }
+                </select>
+                <br />
+                <ul class="nav nav-tabs">
+                    <li class="nav-item" (click)="guidedBundle.activeTab = 'jsonViewer'">
+                        <a class="nav-link active" [ngClass]="{ active: guidedBundle.activeTab === 'jsonViewer' }">JSON</a>
+                    </li>
+                </ul>
+                @if (guidedBundle.activeTab === 'jsonViewer') {
+                    <pre class="preview-bundle">{{ guidedBundle.getStixPreview() | json }}</pre>
+                }
+            </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="modal.close(false)">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        @if (false) {
+            <button
+                type="button"
+                class="btn btn-sm btn-secondary"
+                data-bs-toggle="tooltip"
+                data-placement="top"
+                title="Open this visualization in a new tab so that you can use your browser's full width to view your bundle"
+                (click)="guidedBundle.routeToNewTab('stix-viewer')"
+            >
+                <fa-icon [icon]="faVisualize" class="pe-1"></fa-icon>
+                Visualize Bundle
+            </button>
+        }
+        <button type="button" class="btn btn-sm btn-success" (click)="guidedBundle.sendBundle()" [disabled]="guidedBundle.selectedBundle == ''">
+            <fa-icon [icon]="faFileDownload" class="pe-1"></fa-icon>
+            Load Bundle
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #uploadFile let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="load-modal-title">Upload File</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <h6>Select File(s) to Upload Below</h6>
+        <div class="row justify-content-start">
+            <div class="col-2">
+                <input
+                    type="file"
+                    style="display: block"
+                    [(ngModel)]="guidedBundle.selectedFile"
+                    class="bottom-bump"
+                    accept=".json"
+                    id="file1"
+                    name="upload"
+                    (change)="guidedBundle.onFileChanged($event)"
+                    multiple
+                />
+            </div>
+        </div>
+        <div class="row justify-content-start">
+            <div class="col-2">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="guidedBundle.uploadBundle()"
+                    [disabled]="guidedBundle.selectedFile == undefined"
+                >
+                    <fa-icon [icon]="faFileUpload" class="pe-1"></fa-icon>
+                    Upload
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>

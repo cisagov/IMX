@@ -1,0 +1,168 @@
+<div
+    class="d-flex align-items-center justify-content-between"
+    [ngClass]="{ 'col-12 mt-1': stixService.guidedUI, 'col-12 pe-5': !stixService.guidedUI }"
+>
+    <div class="col-4">
+        <p class="stix-title input-header" [title]="tooltip">External References</p>
+    </div>
+    <div class="ms-3">
+        <div class="float-end">
+            @if (!isAddingExternalReferences) {
+                <button class="btn btn-fa-sm btn-color mt-1" id="extRefs_add" type="button" (click)="openDialog()">
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                    <!-- Add -->
+                </button>
+            }
+
+            @if (isAddingExternalReferences) {
+                <button class="btn btn-fa-sm btn-outline-secondary fa-ban-sm" type="button" (click)="addOrCancel()">
+                    <fa-icon [icon]="faBan"></fa-icon>
+                    <!-- Cancel -->
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
+</div>
+
+@if (!isAddingExternalReferences && this.stixService.externalReferences.length > 0) {
+    <div class="form-group mt-2 ps-0" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
+        <accordion>
+            @for (externalReference of this.stixService.externalReferences; track externalReference; let i = $index) {
+                <accordion-group tabindex="0" [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="false">
+                    <div id="extRefs_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                        <div class="col d-flex justify-content-between align-items-center">
+                            <div class="btn btn-link btn-deco">
+                                {{ externalReference.source_name }}
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-fa-sm btn-color me-2 list-trash"
+                                (click)="editExternalRef(externalReference)"
+                                id="extRefs_list{{ i }}_edit"
+                            >
+                                <fa-icon [icon]="faEdit"></fa-icon>
+                            </button>
+                            <button
+                                class="btn btn-fa-sm btn-color list-trash"
+                                type="button"
+                                id="extRefs_list{{ i }}_delete"
+                                (click)="deleteExternalRef(externalReference)"
+                            >
+                                <fa-icon [icon]="faTrash"></fa-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <pre class="json-text">{{ externalReference | json }}</pre>
+                </accordion-group>
+            }
+        </accordion>
+    </div>
+}
+
+@if (isAddingExternalReferences) {
+    <div class="form-group mt-2">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <b>Source Name*</b>
+                    </span>
+                    <input class="form-control" [(ngModel)]="this.currentExternalReference.source_name" type="text" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <b>Description</b>
+                    </span>
+                    <input class="form-control" [(ngModel)]="this.currentExternalReference.description" type="text" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <b>URL</b>
+                    </span>
+                    <input class="form-control" [(ngModel)]="this.currentExternalReference.url" type="text" />
+                </div>
+            </div>
+            <div class="input-group" style="margin-left: 15px; margin-right: 15px">
+                <span class="input-group-text">
+                    <div class="tooltipright">
+                        <b>Hash Type</b>
+
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"> </fa-icon>
+                        <div class="toolttext">To enhance compatibility, the SHA-256 hash SHOULD be used whenever possible.</div>
+                    </div>
+                </span>
+                <select type="text" class="form-control form-select" style="max-width: 102px" [(ngModel)]="this.hashType" name="hashes" id="hashes">
+                    @for (item of hashOptions; track item) {
+                        <option [value]="item.value">{{ item.value }}</option>
+                    }
+                </select>
+                <span class="input-group-text">
+                    <b>Hash Value</b>
+                </span>
+                <input class="form-control" [(ngModel)]="this.hashValue" type="text" />
+                <button
+                    class="btn btn-fa-sm btn-primary"
+                    type="button"
+                    (click)="addHash(this.hashType, this.hashValue)"
+                    [disabled]="this.hashValue == undefined || this.hashValue == ''"
+                >
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                </button>
+            </div>
+
+            <div class="row">
+                <div class="ms-3 mb-2 ps-4 warning-message">
+                    {{ this.hashError }}
+                </div>
+            </div>
+            <div class="row" id="added-hash">
+                <span class="tab">
+                    <div class="form-group mt-2 added-items-font">
+                        @for (x of this.currentExternalReference.hashes | keyvalue; track x) {
+                            <li tabindex="0">
+                                {{ x.key }}: {{ x.value }}
+                                <button
+                                    type="button"
+                                    class="btn btn-fa-xsm btn-danger trash-can"
+                                    (click)="deleteHash(x.key)"
+                                    (keydown.enter)="deleteHash(x.key)"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </li>
+                        }
+                    </div>
+                </span>
+            </div>
+            <div class="col-12">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <b>External ID</b>
+                    </span>
+                    <input class="form-control" [(ngModel)]="this.currentExternalReference.external_id" type="text" />
+                </div>
+            </div>
+        </div>
+        <div class="float-end mb-3">
+            {{ this.errorMessage }}
+            <button
+                class="btn btn-fa-sm btn-primary"
+                type="button"
+                (click)="addExternalReference()"
+                [disabled]="this.currentExternalReference.source_name == ''"
+            >
+                <fa-icon [icon]="faPlus"></fa-icon>
+                <!-- Add -->
+            </button>
+        </div>
+    </div>
+}

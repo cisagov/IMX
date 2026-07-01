@@ -1,0 +1,105 @@
+<div class="d-flex justify-content-center tlp-build">Add Indicator to Bundle</div>
+
+<div class="row">
+    <div class="col text-center text-dark stix-preview-message">
+        <div class="bundle-wrapper a1indicator">
+            @for (stixObject of stixObjects; track stixObject; let i = $index) {
+                <div>
+                    @for (object of stixObject.objects; track object; let j = $index) {
+                        <div>
+                            @if ((pendingObjects | bundlefilter: object.type)?.length > 0) {
+                                <div>
+                                    <div class="row text-start">
+                                        <div class="col" id="{{ getStixObjectID(object.type) }}">
+                                            <table class="table bundle-wrapper a1indicator">
+                                                <thead>
+                                                    <th colspan="2">
+                                                        {{ object.displayName }}
+                                                        <span class="badge rounded-circle bg-primary sdo-badge">
+                                                            {{ (pendingObjects | bundlefilter: object.type).length }}
+                                                        </span>
+                                                    </th>
+                                                </thead>
+                                                <tbody class="overflow">
+                                                    @if (true) {
+                                                        <div>
+                                                            @for (
+                                                                component of pendingObjects | bundlefilter: object.type;
+                                                                track component;
+                                                                let k = $index;
+                                                                let c = $count
+                                                            ) {
+                                                                <tr>
+                                                                    <td
+                                                                        class="overflow"
+                                                                        style="padding-top: 14px; width: 65vw"
+                                                                        id="{{ stixService.getComponentId(component, i, j, k) }}"
+                                                                        (click)="changeShow(j, k)"
+                                                                    >
+                                                                        <div class="btn-link pull-left float-start overflow tooltipright">
+                                                                            {{ stixService.getComponentDisplay(component) }}
+                                                                            @if (component?.type === 'indicator') {
+                                                                                <span>
+                                                                                    : {{ getComponentPatternValue(component, 'short') }}
+                                                                                    <div class="toolttext">
+                                                                                        {{ getComponentPatternValue(component) }}
+                                                                                    </div>
+                                                                                </span>
+                                                                            }
+                                                                        </div>
+                                                                        @if (component?.type === 'indicator') {
+                                                                            <span>
+                                                                                <span class="tooltipright ms-3">
+                                                                                    ID
+                                                                                    <div class="toolttext-id">{{ component.id }}</div>
+                                                                                </span>
+                                                                            </span>
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="row">
+                                                                            <div class="col-md-2">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    class="btn btn-fa btn-warning"
+                                                                                    (click)="removeObject(component.id)"
+                                                                                >
+                                                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                @if (objnumber == j && rownumber == k) {
+                                                                    <tr class="expanded-panel">
+                                                                        <td colspan="2">
+                                                                            <div class="row" style="width: 80%">
+                                                                                <pre>{{
+                                                                                    stixService.getJsonDisplayForComponent(component) | json
+                                                                                }}</pre>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </div>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (addingStixToPending) {
+                <div class="d-flex justify-content-center align-items-center" style="margin-top: 30vh">
+                    Loading&nbsp;<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

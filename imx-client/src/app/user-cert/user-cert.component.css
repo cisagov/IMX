@@ -1,0 +1,75 @@
+.dialog {
+    font-size: 14px;
+}
+
+.modal-body {
+    font-size: 14px;
+}
+
+.input-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.form-control {
+    font-size: 14px;
+}
+
+.select-placeholder {
+    color: #adb5bd !important;
+}
+
+input::placeholder {
+    color: #adb5bd !important;
+}
+
+.btn-color {
+    background-color: white !important;
+    border-color: #ced4da !important;
+    color: #495057 !important;
+}
+
+.btn-color:hover {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color:focus {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color:active {
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #ced4da !important;
+}
+
+.roles-list {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow-y: auto;
+    max-height: 160px;
+}
+
+.role-item {
+    padding: 8px 12px;
+    font-size: 13.5px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.role-item:hover {
+    background-color: #f8f9fa;
+}
+
+.role-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    flex: 1;
+    margin-right: 8px;
+}

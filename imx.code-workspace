@@ -1,0 +1,37 @@
+{
+  "folders": [
+    { "name": "root", "path": "." },
+    { "path": "imx-client" },
+    { "path": "imx-server" },
+    { "path": "imx-py" }
+  ],
+  "settings": {
+    // Inherits global formatting from root, but we explicitly handle the multi-root overrides below
+
+    // UV Python Interpreter Resolution (Scoped to the Workspace Folder named "Python Service")
+    // Workflows hit: Host+Workspace, Devcontainer+Workspace
+    "python.defaultInterpreterPath": "${workspaceFolder:imx-py}/.venv/bin/python",
+    "python.analysis.extraPaths": [
+      "${workspaceFolder:imx-py}"
+    ],
+
+    // ESLint Monorepo Resolution (Scoped to individual workspace targets)
+    "eslint.workingDirectories": [
+      { "pattern": "./imx-client/" },
+      { "pattern": "./imx-server/" }
+    ],
+    "eslint.validate": ["javascript", "typescript"]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode-remote.remote-containers",
+      "ms-python.python",
+      "charliermarsh.ruff",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "exiasr.hadolint",
+      "tamasfe.even-better-toml",
+      "redhat.vscode-yaml"
+    ]
+  }
+}

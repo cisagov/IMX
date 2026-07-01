@@ -1,0 +1,29 @@
+.btn-color-action {
+    background-color: transparent !important;
+    border-color: #ced4da !important;
+    color: #495057 !important;
+}
+
+.btn-color-action:hover {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color-action:focus {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color-action:active {
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #ced4da !important;
+}
+
+.prod-color {
+    background-color: rgb(0, 66, 118);
+}
+
+.align-left {
+    text-align: left !important;
+}

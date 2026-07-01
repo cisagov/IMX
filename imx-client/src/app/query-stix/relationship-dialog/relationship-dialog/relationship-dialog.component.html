@@ -1,0 +1,54 @@
+<div class="dialog">
+    <div class="modal-header">
+        <div class="col align-items-start">
+            <h4 class="modal-title" id="publish-modal-title">
+                <span>Create Relationship</span>
+            </h4>
+        </div>
+        <div class="col">
+            <button type="button" class="btn-close float-right" aria-label="Close" (click)="onX()">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="dialogLabel">Source</label>
+            @if (sourceWarning !== '') {
+                <div class="warning">
+                    <h6>{{ sourceWarning }}</h6>
+                </div>
+            }
+            <select type="text" class="form-control form-select" [(ngModel)]="relationshipSourceID" (change)="sourceChange()">
+                <option [ngValue]="null" [disabled]="true">Select Source</option>
+                @for (option of relationshipOptions; track option) {
+                    <option [ngValue]="option.id">{{ stixService.getComponentDisplay(option) }}</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="dialogLabel">Target</label>
+            @if (targetWarning !== '') {
+                <div class="warning">
+                    <h6>{{ targetWarning }}</h6>
+                </div>
+            }
+            <select type="text" class="form-control form-select" [(ngModel)]="relationshipTargetID" (change)="targetChange()">
+                <option [ngValue]="null" [disabled]="true">Select Target</option>
+                @for (option of relationshipOptions; track option) {
+                    <option [ngValue]="option.id">{{ stixService.getComponentDisplay(option) }}</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer mt-3">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-success ms-2" (click)="onConfirm()">
+            <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+            Confirm
+        </button>
+    </div>
+</div>

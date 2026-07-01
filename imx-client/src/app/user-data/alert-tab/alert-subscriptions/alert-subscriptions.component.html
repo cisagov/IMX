@@ -1,0 +1,122 @@
+<div class="status-table w-100" style="margin-top: 10px; overflow: auto">
+    <div class="container-fluid">
+        @if (!isLoading) {
+            <div>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="addSub()">
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                    Subscription
+                </button>
+            </div>
+        }
+        <div class="mt-1">
+            @if (alertSubsTable.length != 0 && !isLoading) {
+                <table class="table mb-0 status-bottom-border">
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <span>
+                                    Type
+                                    @if (sortKey === 'status-des') {
+                                        <fa-icon [icon]="faAngleDown"> </fa-icon>
+                                    }
+                                    @if (sortKey === 'status-asc') {
+                                        <fa-icon [icon]="faAngleUp"> </fa-icon>
+                                    }
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    Taxii Server
+                                    @if (sortKey === 'taxii-des') {
+                                        <fa-icon [icon]="faAngleDown"> </fa-icon>
+                                    }
+                                    @if (sortKey === 'taxii-asc') {
+                                        <fa-icon [icon]="faAngleUp"> </fa-icon>
+                                    }
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    Target
+                                    @if (sortKey === 'taxii-des') {
+                                        <fa-icon [icon]="faAngleDown"> </fa-icon>
+                                    }
+                                    @if (sortKey === 'taxii-asc') {
+                                        <fa-icon [icon]="faAngleUp"> </fa-icon>
+                                    }
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span> Actions </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (obj of alertSubsTable; track obj; let i = $index) {
+                            <tr>
+                                <td style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%" class="row-name" (click)="changeShow(i)">
+                                    {{ obj._source.type }}
+                                </td>
+                                <td style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%" class="row-name" (click)="changeShow(i)">
+                                    {{ obj._source.taxiiServer }}
+                                </td>
+                                <td style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%" class="row-name" (click)="changeShow(i)">
+                                    {{ getTarget(i) }}
+                                </td>
+                                <td style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%" class="row-name">
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa btn-danger ms-1"
+                                        (click)="deleteSub(obj)"
+                                        title="Click to delete the subscription"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                            @if (rowNumber == i) {
+                                <tr class="expanded-panel">
+                                    <td colspan="5">
+                                        <pre class="preview-json-window">{{ alertResults | json }}</pre>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            @if (totalPages !== 0 && !isLoading) {
+                <div class="footer" [ngClass]="{ 'footer-no-bottom': totalPages == 1 }">
+                    @if (totalPages !== 1 && !isLoading) {
+                        <div class="span-footer float-start">
+                            <span>Page: {{ currentPage }}/{{ totalPages }}</span>
+                        </div>
+                    }
+                    <div class="buttons-footer">
+                        @if (currentPage > 1 && !isLoading) {
+                            <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('left')">
+                                <fa-icon [icon]="faArrowLeft"></fa-icon>
+                            </button>
+                        }
+                        @if (currentPage < totalPages && !isLoading) {
+                            <button class="btn btn-fa-sm btn-outline-primary ms-1 btn-status" (click)="nextPage('right')">
+                                <fa-icon [icon]="faArrowRight"></fa-icon>
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        @if (!isLoading && alertSubsTable.length == 0) {
+            <div>
+                <span style="font-weight: bold; text-align: left">No Alert Subscriptions for current user</span>
+            </div>
+        }
+        @if (isLoading) {
+            <div class="row-name ps-3 pt-3">
+                Loading...
+                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+            </div>
+        }
+    </div>
+</div>

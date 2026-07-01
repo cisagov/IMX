@@ -1,0 +1,623 @@
+<div class="main-container">
+    <!-- Header -->
+    <div class="guided-header">
+        <div class="guided-header-items">
+            <div class="guided-header-icon">
+                <fa-icon [icon]="faEye" style="font-size: 1.75rem"></fa-icon>
+                <div class="d-flex flex-column">
+                    <h3 class="guided-header-title component-title ps-2">HOW (Observable)</h3>
+                    <p class="guided-header-subtitle ps-2">What was observed?</p>
+                </div>
+            </div>
+
+            <app-total-guided-cart (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+        </div>
+        <div class="horizonal-rule-top" style="width: 100%"></div>
+    </div>
+
+    <div class="form-container">
+        <!-- Form Body -->
+        <div class="guided-form">
+            <!-- Observable Type -->
+            <div class="inner-row half-row">
+                <div class="input-header">Observable Type</div>
+
+                <select
+                    class="form-control form-control-guided form-select"
+                    type="text"
+                    [(ngModel)]="currentObservableType"
+                    (change)="changeObservableType(true)"
+                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentObservableType) }"
+                >
+                    <option disabled selected value="">Select Observable Type</option>
+                    @for (option of observableOptions; track option) {
+                        <option>{{ option }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Observable Value -->
+            @if (observableValueDropdown) {
+                <div class="input-header">
+                    Observable Value<span class="text-danger ms-1">*</span>
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"></fa-icon>
+                        <span class="tip-text">
+                            <ul>
+                                @for (string of currentObservableInfo; track string) {
+                                    <li>{{ string }}</li>
+                                }
+                            </ul>
+                        </span>
+                    </span>
+                </div>
+                <div class="inner-row guided-observable-value-inputs">
+                    <!-- Value Input Fields (Text, Numerical, Select, Hybrid, Hybrid Add, Hybrid Hybrid, Hybrid Hybrid Add) -->
+                    @for (field of currentObservableInput; track field) {
+                        <!-- Text Input Field -->
+                        <!-- Used in: Directory, Domain Name, Email Address, File, IPv4, IPv6, MAC Address, Malware, Malware Analysis, Mutex, Software, URL, User Account, Windows Registry Key, X509 Cert -->
+                        @if (field.type === 'text' && field.show === true) {
+                            <div class="guided-observable-value-input">
+                                @if (field.header) {
+                                    <div class="input-header">{{ field.header }}</div>
+                                }
+
+                                <input
+                                    type="text"
+                                    placeholder="{{ field.placeholder }}"
+                                    class="form-control form-control-guided"
+                                    [(ngModel)]="field.value"
+                                    (input)="disableAddToCart(false)"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                />
+                            </div>
+                        }
+
+                        <!-- Numerical Input Field -->
+                        <!-- Used in: Autonomous System, Process -->
+                        @if (field.type === 'number' && field.show === true) {
+                            <div class="guided-observable-value-input half-row">
+                                <input
+                                    type="number"
+                                    placeholder="{{ field.placeholder }}"
+                                    class="form-control form-control-guided"
+                                    [(ngModel)]="field.value"
+                                    (input)="disableAddToCart(false)"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                />
+                            </div>
+                        }
+
+                        <!-- Text Field w/ Add Button -->
+                        @if (field.type === 'text-modal-add' && field.show === true) {
+                            <!-- Used in: Email Message  -->
+                            <div class="guided-observable-value-input">
+                                <div class="input-header">
+                                    <span style="margin-bottom: 0.5rem">Multipart Bodies<span class="text-danger ms-1">*</span></span>
+                                    @if (field.arr.length > 0) {
+                                        <span class="badge bg-secondary ms-2 omr-count-badge">{{ field.arr.length }} added</span>
+                                    }
+                                </div>
+                                @if (field.arr.length > 0) {
+                                    <div class="other-refs-list" style="margin-bottom: 1rem">
+                                        @for (item of field.arr; track item; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">{{ getModalAddName(field.arr[i]) }}</span>
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_delete"
+                                                    (click)="deleteFieldArr(i, field)"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="empty-refs-state" style="margin-bottom: 1rem; padding: 0; text-align: left">
+                                        No Multipart Bodies added yet.
+                                    </div>
+                                }
+                                <div style="width: 100%; display: flex; justify-content: start">
+                                    <button
+                                        class="btn btn-color btn-add-ref"
+                                        style="display: inline-flex"
+                                        [disabled]="field.currentField == ''"
+                                        (click)="openModal(field)"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                        <span>Add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Dropdown Select Input Field -->
+                        @if (field.type === 'select' && field.show === true) {
+                            <!-- Used in: Email Message, Malware -->
+                            @if (field.type === 'select') {
+                                <div class="guided-observable-value-input half-row">
+                                    <select
+                                        class="form-control form-control-guided form-select"
+                                        (change)="selectChange($event)"
+                                        [(ngModel)]="field.value"
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                    >
+                                        <option disabled selected value="">{{ field.placeholder }}</option>
+                                        @for (option of field.options; track option) {
+                                            <option>{{ option }}</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        }
+
+                        <!-- Hybrid Non-Add Input -->
+                        @if (field.type === 'hybrid' && field.show === true) {
+                            <!-- Used in: Artifact, File, Network Traffic  -->
+
+                            @if (currentObservableType == 'Network Traffic') {
+                                <div class="guided-observable-value-input guided-dual-container" style="display: block">
+                                    <div class="input-header">{{ field.header }}<span class="text-danger ms-1">*</span></div>
+                                    <select
+                                        class="form-control form-control-guided form-select"
+                                        (change)="updateCurrentPlaceholder($event, field.index)"
+                                        [(ngModel)]="field.value"
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                    >
+                                        <option disabled selected [ngValue]="null">{{ field.select_placeholder }}</option>
+                                        @for (option of field.field_options; track i; let i = $index) {
+                                            <option [ngValue]="option">
+                                                {{ getNetworkRefLabel(option) }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            } @else {
+                                <div class="guided-observable-value-input guided-dual-container">
+                                    <select
+                                        class="form-control form-control-guided form-select"
+                                        (change)="updateCurrentPlaceholder($event, field.index)"
+                                        [(ngModel)]="field.currentField"
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.currentField) }"
+                                    >
+                                        <option disabled value="">{{ field.select_placeholder }}</option>
+                                        @for (option of field.field_options; track option) {
+                                            <option>{{ option }}</option>
+                                        }
+                                    </select>
+                                    <input
+                                        type="text"
+                                        placeholder="{{ field.currentPlaceholder }}"
+                                        class="form-control form-control-guided"
+                                        [disabled]="field.currentPlaceholder == ''"
+                                        [(ngModel)]="field.value"
+                                        (input)="disableAddToCart(false)"
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                    />
+                                </div>
+                            }
+                        }
+
+                        <!-- Hybrid w Add Input -->
+                        @if (field.type === 'hybrid-add' && field.show === true) {
+                            <!-- Used in: Network Traffic -->
+                            <div class="guided-observable-value-input half-row">
+                                <!-- Protocol Dropdown -->
+                                <div class="network-traffic-dropdown" style="display: flex; gap: 1rem; margin-bottom: 0.5rem">
+                                    <div class="timezone-input-container">
+                                        <input
+                                            type="text"
+                                            class="form-control form-control-guided"
+                                            [placeholder]="field.select_placeholder"
+                                            [(ngModel)]="field.value"
+                                            (ngModelChange)="filterProtocolOptions(field, $event)"
+                                            (focus)="showProtocolDropdown = true"
+                                            (blur)="showProtocolDropdown = false"
+                                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                        />
+                                        @if (showProtocolDropdown && filteredProtocolOptions.length > 0) {
+                                            <div class="autocomplete-dropdown">
+                                                @for (opt of filteredProtocolOptions; track opt) {
+                                                    <div class="autocomplete-option" (mousedown)="selectProtocol(field, opt)">{{ opt }}</div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                    <button
+                                        class="btn btn-color btn-add-ref"
+                                        style="display: inline-flex"
+                                        type="button"
+                                        [disabled]="!field.field_options.includes(field.value)"
+                                        (click)="addFieldArr(field)"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                        <span>Add</span>
+                                    </button>
+                                </div>
+
+                                <!-- Protocols Multiselect list -->
+                                <div class="input-header" style="margin-top: 1rem">
+                                    <span>Protocols</span>
+                                    @if (field.arr.length > 0) {
+                                        <span class="badge bg-secondary ms-2 omr-count-badge">{{ field.arr.length }} added</span>
+                                    }
+                                </div>
+                                @if (field.arr.length > 0) {
+                                    <div class="other-refs-list" style="margin-bottom: 1rem">
+                                        @for (item of field.arr; track item; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">{{ field.arr[i] }}</span>
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_delete"
+                                                    (click)="deleteFieldArr(i, field)"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="empty-refs-state" style="margin-bottom: 1rem; padding: 0; text-align: left">
+                                        No Protocols added yet.
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <!-- Hybrid Hybrid Input -->
+                        @if (field.type === 'hybrid-hybrid' && field.show === true) {
+                            <!-- Used in: Malware Analysis -->
+                            <div class="guided-observable-value-input half-row">
+                                <select
+                                    class="form-control form-control-guided form-select"
+                                    (change)="updateCurrentPlaceholder($event, field.index)"
+                                    [(ngModel)]="field.currentField"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.currentField) }"
+                                >
+                                    <option disabled selected value="">{{ field.select_placeholder }}</option>
+                                    @for (option of field.field_options; track option) {
+                                        <option>{{ option }}</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+
+                        <!-- Hybrid Hybrid Add -->
+                        @if (field.type === 'hybrid-hybrid-add' && field.show === true) {
+                            <!-- Used in: Malware Analysis -->
+                            <div class="guided-observable-value-input">
+                                <div class="input-header" style="margin-top: 1rem">
+                                    <span>Result or Analysis SCO References<span class="text-danger ms-1">*</span></span>
+                                </div>
+                                <div class="guided-dual-container" style="margin-bottom: 0.5rem">
+                                    <div class="select-input-container w-100">
+                                        <select
+                                            class="form-control form-control-guided form-select"
+                                            (change)="updateCurrentPlaceholder($event, field.index)"
+                                            [(ngModel)]="field.currentField"
+                                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.currentField) }"
+                                        >
+                                            <option disabled selected value="">{{ field.select_placeholder }}</option>
+                                            @for (option of field.field_options; track option) {
+                                                <option>{{ option }}</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="guided-dual-container w-100">
+                                        <select
+                                            class="form-control form-control-guided form-select"
+                                            [disabled]="field.currentPlaceholder == '' || field.currentPlaceholder == 'No Refs Available'"
+                                            (change)="disableAddToCart(false)"
+                                            [(ngModel)]="field.value"
+                                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                        >
+                                            <option disabled selected value="">{{ field.hybrid_placeholder }}</option>
+                                            @for (option of field.hybrid_options; track option) {
+                                                <option [ngValue]="option.value">
+                                                    {{ option.label }}
+                                                </option>
+                                            }
+                                        </select>
+                                        <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="addFieldArr(field)">
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                @if (field.resultArr.length > 0 || field.arr.length > 0) {
+                                    <div class="other-refs-list">
+                                        @for (item of field.resultArr; track item; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">Result: {{ field.resultArr[i] }}</span>
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_delete"
+                                                    (click)="deleteResultArr(field)"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </div>
+                                        }
+                                        @for (item of field.arr; track item; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">{{ getMalwareRefLabel(field.arr[i]) || field.arr[i] }}</span>
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_delete"
+                                                    (click)="deleteFieldArr(i, field)"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="empty-refs-state" style="margin-bottom: 1rem; padding: 0; text-align: left">
+                                        No Result or Analysis SCO Refs added yet.
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <!-- Error Message (Observable Value Specific) -->
+                        @if (!!field.error) {
+                            <div class="value-error-message" style="margin-top: 0.5rem">
+                                <p class="hint" style="color: red; margin-bottom: 0rem">{{ field.error }}</p>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+
+            <!-- First Observed -->
+            <div class="inner-row" *ngIf="currentObservableType">
+                <div class="input-header">
+                    First Observed
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('first_observed')"></span>
+                    </span>
+                </div>
+
+                <div class="guided-dual-container">
+                    <div class="date-input-container w-100" style="position: relative">
+                        <input
+                            class="form-control form-control-guided"
+                            placeholder="When was this first seen?"
+                            [max]="last_seen"
+                            [owlDateTimeTrigger]="dtPicker2"
+                            [owlDateTime]="dtPicker2"
+                            [(ngModel)]="firstObserved"
+                            (ngModelChange)="checkObserved('first')"
+                            (input)="disableAddToCart(true)"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(firstObserved) }"
+                        />
+                        <button class="clear-button">
+                            @if (firstObserved !== '') {
+                                <p class="clear-button-text" (click)="clearObserved('first')">X</p>
+                            }
+                        </button>
+                    </div>
+
+                    <div class="timezone-input-container w-100">
+                        <input
+                            type="text"
+                            class="form-control form-control-guided"
+                            [(ngModel)]="firstTimeZoneSearch"
+                            (input)="filterTimezones(firstTimeZoneSearch)"
+                            (focus)="showFirstTimezoneDropdown = true"
+                            (blur)="hideFirstTimezoneDropdown()"
+                            placeholder="Select Time Zone"
+                            [ngClass]="{
+                                'select-placeholder-guided': guidedService.emptyDropdown(firstObservedTimeZone),
+                            }"
+                        />
+
+                        <div *ngIf="showFirstTimezoneDropdown && filteredTimeZoneOptions.length" class="timezone-dropdown">
+                            <div *ngFor="let tz of filteredTimeZoneOptions" class="timezone-option" (mousedown)="selectFirstTimezone(tz)">
+                                {{ guidedService.showTimezoneAndOffset(tz) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <owl-date-time
+                    pickerMode="dialog"
+                    [startAt]="lastDateStart"
+                    #dtPicker2
+                    (afterPickerClosed)="disableAddToCart(true)"
+                    (yearSelected)="onYearSelected($event, 'first')"
+                ></owl-date-time>
+            </div>
+
+            <!-- Last Observed -->
+            <div class="inner-row" *ngIf="currentObservableType">
+                <div class="input-header">
+                    Last Observed
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('last_observed')"></span>
+                    </span>
+                </div>
+                <div class="guided-dual-container">
+                    <div class="date-input-container w-100" style="position: relative">
+                        <input
+                            class="form-control form-control-guided"
+                            placeholder="When did you last see it?"
+                            [min]="first_seen"
+                            [owlDateTimeTrigger]="dtPicker3"
+                            [owlDateTime]="dtPicker3"
+                            [(ngModel)]="lastObserved"
+                            (ngModelChange)="checkObserved('last')"
+                            (input)="disableAddToCart(true)"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(lastObserved) }"
+                        />
+                        <button class="clear-button">
+                            @if (lastObserved !== '') {
+                                <p class="clear-button-text" (click)="clearObserved('last')">X</p>
+                            }
+                        </button>
+                    </div>
+
+                    <div class="timezone-input-container w-100">
+                        <input
+                            type="text"
+                            class="form-control form-control-guided"
+                            [(ngModel)]="lastTimeZoneSearch"
+                            (input)="filterTimezones(lastTimeZoneSearch)"
+                            (focus)="showLastTimezoneDropdown = true"
+                            (blur)="hideLastTimezoneDropdown()"
+                            placeholder="Select Time Zone"
+                            [ngClass]="{
+                                'select-placeholder-guided': guidedService.emptyDropdown(lastObservedTimeZone),
+                            }"
+                        />
+
+                        <div *ngIf="showLastTimezoneDropdown && filteredTimeZoneOptions.length" class="timezone-dropdown">
+                            <div *ngFor="let tz of filteredTimeZoneOptions" class="timezone-option" (mousedown)="selectLastTimezone(tz)">
+                                {{ guidedService.showTimezoneAndOffset(tz) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <owl-date-time
+                    pickerMode="dialog"
+                    [startAt]="firstDateStart"
+                    #dtPicker3
+                    (afterPickerClosed)="disableAddToCart(true)"
+                    (yearSelected)="onYearSelected($event, 'last')"
+                ></owl-date-time>
+            </div>
+
+            <!-- Number Observed -->
+            <div class="inner-row half-row" *ngIf="currentObservableType">
+                <div class="input-header">
+                    Number Observed
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('number_observed')"></span>
+                    </span>
+                </div>
+                <input
+                    type="number"
+                    min="0"
+                    placeholder="How many times have you seen it occur?"
+                    class="form-control form-control-guided"
+                    [(ngModel)]="numberObserved"
+                    (input)="disableAddToCart(false)"
+                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(numberObserved) }"
+                />
+            </div>
+
+            <!-- Observable Relationship -->
+            <div class="inner-row">
+                @if (showObservableAlignment) {
+                    <div *ngIf="currentObservableType" class="input-header">
+                        Observable Relationship
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('observable_relationship')"></span>
+                        </span>
+                    </div>
+
+                    <div class="guided-dual-container">
+                        <select
+                            class="form-control form-control-guided form-select"
+                            type="text"
+                            (change)="disableAddToCart(false)"
+                            [(ngModel)]="currentObservableAlignment"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentObservableAlignment) }"
+                        >
+                            <option disabled selected value="">Select Observable Alignment</option>
+                            <option>Target</option>
+                            <option>Attacker</option>
+                            <option>Unknown</option>
+                            <option>Benign</option>
+                        </select>
+
+                        @if (currentObservableAlignment != 'Attacker' && currentObservableAlignment != 'Target') {
+                            <input
+                                type="text"
+                                placeholder="{{ alignmentPlaceholder[currentObservableAlignment] }}"
+                                [disabled]="true"
+                                class="form-control form-control-guided form-select"
+                            />
+                        }
+                        @if (currentObservableAlignment == 'Target') {
+                            <select
+                                class="form-control form-control-guided form-select"
+                                type="text"
+                                [(ngModel)]="currentTarget"
+                                (change)="disableAddToCart(false)"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentTarget) }"
+                            >
+                                <option disabled selected value="">Select Target Name</option>
+                                @for (target of listOfTargets; track target) {
+                                    <option [value]="target.id">{{ target.name }}</option>
+                                }
+                            </select>
+                        }
+                        @if (currentObservableAlignment == 'Attacker') {
+                            <select
+                                class="form-control form-control-guided form-select"
+                                type="text"
+                                [(ngModel)]="currentAttacker"
+                                (change)="disableAddToCart(false)"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentAttacker) }"
+                            >
+                                <option disabled selected style="color: #999" value="">Select Attacker Name</option>
+                                @for (attacker of listOfAttackers; track attacker) {
+                                    <option [value]="attacker.id">{{ attacker.name }}</option>
+                                }
+                            </select>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="guided-information">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="d-flex flex-column justify-content-start gr-help-section">
+                <div class="gr-help-section-title">Adding Observables</div>
+                <div class="gr-help-section-content">
+                    <span class="gr-help-section-sub-title">Observable Type:</span> Enter the observable type. <br /><br />
+                    <span class="gr-help-section-sub-title">Observable Value:</span> Add it's value or any required information. <br /><br />
+                    <span class="gr-help-section-sub-title">Time:</span> Enter the time zone where the observable was seen, the number of times it was
+                    seen, and the first and last times it was observed. <br /><br />
+                    <span class="gr-help-section-sub-title">Observable Relationship:</span> Establishes a relationship between an attacker and its
+                    target or between an observable and the victim. This field will only be active if a relationship can be established. <br /><br />
+                    If <b>attacker</b> is selected then an attacker name must be added. If you don't know who the attacker is at this point, just add
+                    unknown. <br /><br />
+                    You may also select <b>benign</b> if the observable is not related to either the attacker or the target.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

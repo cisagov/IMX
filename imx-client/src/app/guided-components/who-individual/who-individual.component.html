@@ -1,0 +1,302 @@
+<div class="main-container">
+    <!-- Header -->
+    <div class="guided-header">
+        <div class="guided-header-items">
+            <div class="guided-header-icon">
+                <fa-icon [icon]="faUser" style="font-size: 1.75rem"></fa-icon>
+                <div class="d-flex flex-column">
+                    <h3 class="guided-header-title component-title ps-2" [ngClass]="{ 'mt-2': !stixService.guidedUI }">WHO</h3>
+                    <p class="guided-header-subtitle ps-2">Who was involved?</p>
+                </div>
+            </div>
+
+            <app-total-guided-cart (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+        </div>
+        <div class="horizonal-rule-top" style="width: 100%"></div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container">
+        <!-- Form Body -->
+        <div class="guided-form">
+            <!-- Target/Attacker -->
+            <div class="inner-row mb-4 col-6" style="padding-right: 1rem">
+                <div class="input-header">Target or Attacker</div>
+                <select
+                    class="form-select form-control form-control-guided"
+                    name="targetAttacker"
+                    [(ngModel)]="targetAttackerType"
+                    (ngModelChange)="changeTargetAttackerType($event)"
+                    [ngClass]="{
+                        disabled: disableTargetType || disableAttackerType,
+                        'select-placeholder-guided': guidedService.emptyDropdown(targetAttackerType),
+                    }"
+                    [disabled]="disableTargetType && disableAttackerType"
+                >
+                    <option [ngValue]="null" disabled selected>Select Target/Attacker</option>
+                    <option [value]="'target'" [disabled]="disableTargetType">Target</option>
+                    <option [value]="'attacker'" [disabled]="disableAttackerType">Attacker</option>
+                </select>
+            </div>
+
+            <!-- Individual/Organization -->
+            @if (targetAttackerType === 'target') {
+                <div class="inner-row mb-4 col-6" style="padding-right: 1rem">
+                    <div class="input-header">Individual or Organization</div>
+                    <select
+                        class="disabled form-select form-control form-control-guided"
+                        name="whoType"
+                        (change)="changeWhoType($event)"
+                        [(ngModel)]="whoType"
+                        [ngClass]="{ disabled: disableWhoType, 'select-placeholder-guided': guidedService.emptyDropdown(whoType) }"
+                    >
+                        <option [ngValue]="null" disabled selected>Select Individual/Organization</option>
+                        <option [value]="'individual'" title="Individual">Individual</option>
+                        <option [value]="'organization'" title="Organization">Organization</option>
+                    </select>
+                </div>
+            }
+
+            <!-- Target Inputs -->
+            @if (whoType === 'individual' && targetAttackerType === 'target') {
+                <div class="d-flex w-100">
+                    <div class="target-inputs col-12">
+                        <!-- Name & Phone Number -->
+                        <div class="guided-dual-container">
+                            <!-- Name -->
+                            <div class="inner-row">
+                                <div class="input-header">Name<span class="text-danger ms-1">*</span></div>
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-guided"
+                                        placeholder="Enter name"
+                                        (keyup)="enableAddToCart($event)"
+                                        [(ngModel)]="targetName"
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(targetName) }"
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="inner-row">
+                                <div class="input-header">
+                                    Phone Number
+                                    <span class="guided-tip">
+                                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('individual_phone')"></span>
+                                    </span>
+                                </div>
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-guided"
+                                        placeholder="Enter phone number"
+                                        [ngClass]="{ 'is-invalid': phoneError }"
+                                        (blur)="checkError('phone')"
+                                        (keyup)="enableAddToCart($event)"
+                                        [(ngModel)]="phone"
+                                        ,
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(phone) }"
+                                    />
+                                    <div *ngIf="phoneError" class="invalid-feedback">Must be a valid phone number</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Address -->
+                        <div class="inner-row half-row">
+                            <div class="input-header">
+                                Email Address
+                                <span class="guided-tip">
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"> </fa-icon>
+                                    <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('individual_email')"> </span>
+                                </span>
+                            </div>
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    class="form-control form-control-guided"
+                                    placeholder="Enter email"
+                                    [ngClass]="{ 'is-invalid': emailError }"
+                                    (blur)="checkError('email')"
+                                    (keyup)="enableAddToCart($event)"
+                                    [(ngModel)]="email"
+                                    ,
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(email) }"
+                                />
+                                <div *ngIf="emailError" class="invalid-feedback">Must be a valid email address</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (whoType === 'organization' && targetAttackerType === 'target') {
+                <div class="d-flex flex-column align-items-center w-100">
+                    <div class="target-inputs col-12">
+                        <!-- Target(s) Name & Contact Info -->
+                        <div class="inner-row">
+                            <div class="input-header">
+                                Target(s) name and Contact information<span class="text-danger ms-1">*</span>
+                                <span class="guided-tip">
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                    <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('organiztion_target')"></span>
+                                </span>
+                            </div>
+                            <textarea
+                                class="form-control form-control-guided w-100 mt-2 mb-2"
+                                name="name"
+                                id="nameAndContacts"
+                                rows="5"
+                                placeholder="Add multiple target names and associated contact information in the following format:&#10;name, phone, email;&#10;name, phone, email;&#10;"
+                                [(ngModel)]="nameAndContacts"
+                                (keyup)="enableAddToCart($event)"
+                            >
+                            </textarea>
+                        </div>
+
+                        <!-- Sector -->
+                        <div class="inner-row">
+                            <div class="input-header">
+                                Sector
+                                <span class="guided-tip">
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                    <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('sectors')"></span>
+                                </span>
+                            </div>
+
+                            <select
+                                class="form-control form-control-guided form-select w-100"
+                                [disabled]="!nameAndContacts"
+                                id="sector"
+                                name="sector"
+                                [(ngModel)]="sector"
+                                (change)="sectorHandler($event)"
+                            >
+                                <option value=""></option>
+                                @for (sector of guidedService.identitySectors; track sector; let i = $index) {
+                                    <option [value]="sector.key" [title]="sector?.value">{{ sector?.value }}</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Attacker Inputs -->
+            @if (targetAttackerType === 'attacker') {
+                <div class="d-flex w-100">
+                    <div class="inner-row guided-dual-container">
+                        <!-- Attacker Name -->
+                        <div class="inner-row">
+                            <div class="input-header">
+                                Attacker Name<span class="text-danger ms-1">*</span>
+                                <span class="guided-tip">
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"> </fa-icon>
+                                    <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_name')"> </span>
+                                </span>
+                            </div>
+                            <input
+                                type="text"
+                                class="form-control form-control-guided"
+                                placeholder="Enter name"
+                                [disabled]="guidedService.disableName(attackerName) || attackerUnknown"
+                                (keyup)="enableAddToCart($event)"
+                                [(ngModel)]="attackerName"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attackerName) }"
+                            />
+                            <div class="form-check mt-2">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="attackerUnknown"
+                                    name="attackerUnknown"
+                                    [(ngModel)]="attackerUnknown"
+                                    (ngModelChange)="toggleAttackerUnknown()"
+                                />
+                                <label class="form-check-label" for="attackerUnknown">Unknown Attacker</label>
+                            </div>
+                        </div>
+
+                        <!-- Attacker Motivation -->
+                        <div class="inner-row">
+                            <div class="input-header">
+                                Attacker Motivation
+                                <span class="guided-tip">
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"></fa-icon>
+                                    <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_motivation')"></span>
+                                </span>
+                            </div>
+                            <select
+                                class="form-control form-control-guided form-select"
+                                [(ngModel)]="currentAttackerMotivation"
+                                (change)="enableAddToCart($event)"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentAttackerMotivation) }"
+                            >
+                                <option disabled selected value="">Select Attacker Motivation</option>
+                                @for (option of motivationOptions; track option) {
+                                    <option [value]="option.key">{{ option.value }}</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Help Section -->
+        <div class="guided-information">
+            @if (whoType === 'individual' && isTarget) {
+                <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                    <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                    Need Help?
+                </span>
+                <div class="d-flex flex-column justify-content-start gr-help-section">
+                    <div class="gr-help-section-title">For targets</div>
+                    <div class="gr-help-section-content">
+                        <span class="gr-help-section-sub-title">Target name:</span> the name of the targeted individual. If the target is an
+                        enterprise or organization, toggle to "Organization". <br /><br />
+                        <span class="gr-help-section-sub-title">Target contact information:</span> enter the best contact information for the target
+                        such as an email address and/or phone number. <br /><br />
+                        @if (isOrganization && isTarget) {
+                            <span
+                                ><span class="gr-help-section-sub-title">Sector:</span> select the sector that best describes what part of the
+                                industry the target works within.</span
+                            >
+                        }
+                    </div>
+                </div>
+            }
+            @if (whoType === 'organization' && isTarget) {
+                <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                    <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                    Need Help?
+                </span>
+                <div class="d-flex flex-column justify-content-start gr-help-section">
+                    <div class="gr-help-section-title">For targets</div>
+                    <div class="gr-help-section-content">
+                        <span class="gr-help-section-sub-title">Target name and contact information:</span> enter the name and best contact
+                        information for the target such as an email address and/or phone number. Multiple organizations or individuals may be added.
+                        <br /><br />
+                        <span class="gr-help-section-sub-title">Sector:</span> select the sector that best describes what part of the industry the
+                        target works within.
+                    </div>
+                </div>
+            }
+            @if (!isTarget) {
+                <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                    <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                    Need Help?
+                </span>
+                <div class="d-flex flex-column justify-content-start gr-help-section">
+                    <div class="gr-help-section-title">For attackers</div>
+                    <div class="gr-help-section-content">
+                        <span class="gr-help-section-sub-title">Attacker name:</span> the name of the individual or organization that initiated the
+                        attack. <br /><br />
+                        <span class="gr-help-section-sub-title">Motivation: </span> Can you identify the attacker’s motivation?
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

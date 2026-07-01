@@ -1,0 +1,82 @@
+.dialog {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.dialog .modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.dialog .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+}
+
+.dialog .modal-body {
+    padding: 1.5rem;
+    background-color: #ffffff;
+}
+
+.dialog .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.multipart-form-container {
+    width: 100%;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-control,
+.form-select {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.alert {
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.btn {
+    border-radius: 4px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.custom-id-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}

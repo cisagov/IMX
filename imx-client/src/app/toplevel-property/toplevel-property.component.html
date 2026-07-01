@@ -1,0 +1,27 @@
+<div class="d-flex align-items-center" [ngClass]="{ 'col-4': stixService.guidedUI, 'col-12 pe-5 justify-content-between': !stixService.guidedUI }">
+    <div class="col-4">
+        <p class="stix-title input-header">Top Level Properties</p>
+    </div>
+</div>
+
+<div class="form-group mt-2" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
+    <accordion>
+        @for (prop of stixService.toplevel; track prop; let i = $index) {
+            <accordion-group tabindex="0" [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
+                <div id="toplevel_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                    <div class="col d-flex justify-content-between align-items-center">
+                        <div class="btn btn-link">{{ prop[0] }}: {{ prop[1] }}</div>
+                        <button
+                            class="btn btn-fa-sm btn-color list-trash"
+                            type="button"
+                            id="toplevel_list{{ i }}_delete"
+                            (click)="stixService.deleteProp(prop[0])"
+                        >
+                            <fa-icon [icon]="faTrash"></fa-icon>
+                        </button>
+                    </div>
+                </div>
+            </accordion-group>
+        }
+    </accordion>
+</div>

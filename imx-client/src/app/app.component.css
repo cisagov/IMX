@@ -1,0 +1,383 @@
+.wrapper {
+    height: 100vh;
+}
+
+.annoucement-toast {
+    position: fixed;
+    top: 100px;
+    right: 0px;
+    margin: 0.5em;
+
+    /* 1050 is the z-index of the publish modal; needs to stay under this */
+    z-index: 1049;
+
+    width: 600px;
+    max-width: 600px !important;
+
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+.annoucement-toast.bg-success {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%) !important;
+}
+
+.annoucement-toast.bg-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important;
+}
+
+.annoucement-toast.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+}
+
+.annoucement-toast .toast-header {
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 14px 18px;
+}
+
+.annoucement-toast.bg-warning .toast-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.annoucement-toast .toast-body {
+    padding: 18px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.annoucement-toast .toast-scroll-content {
+    max-height: 35vh;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+.annoucement-toast .toast-footer {
+    padding: 14px 18px;
+    background: transparent;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.annoucement-toast .btn {
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.annoucement-toast .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.annoucement-toast .toast-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.annoucement-toast.bg-warning .toast-header .btn-close {
+    filter: none;
+}
+
+.help-icon {
+    position: fixed;
+    z-index: 4000;
+    bottom: 5px;
+    left: 2px;
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+.btn-check:checked + .btn,
+.btn.active,
+.btn.show,
+.btn:first-child:active,
+:not(.btn-check) + .btn:active {
+    border-color: rgba(0, 0, 0, 0.175) !important;
+}
+.ms-support {
+    margin-left: 1.5rem !important;
+}
+
+.me-support {
+    margin-right: 1.5rem !important;
+}
+
+.separator-support {
+    display: inline-block !important;
+}
+
+.dev-bg {
+    background-color: rgb(86, 86, 86) !important;
+}
+
+.expand-for-details-title {
+    font-size: 14pt;
+}
+
+.expand-for-details-icon {
+    font-size: 24pt;
+    margin-top: -10px;
+}
+
+.expand-for-details-icon:hover {
+    cursor: pointer;
+}
+
+.hover-pointer {
+    cursor: pointer;
+}
+
+.announcement-download-icon {
+    width: 15px;
+    height: 15px;
+}
+
+.toast-code-previewer {
+    overflow-x: auto;
+    color: inherit !important;
+    margin-left: 25px;
+    white-space: pre-wrap;
+}
+
+.imx-logo {
+    font-size: 100px;
+}
+
+.navbar {
+    position: fixed;
+    background-color: rgb(0, 66, 118);
+    box-shadow: 0px 0px 5px rgba(18, 23, 39, 0.5);
+}
+
+.navbar-brand {
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: white;
+    text-align: justify;
+    vertical-align: text-bottom;
+    font-size: 15pt;
+}
+
+.navbar-nav {
+    margin-right: 50px;
+}
+
+.navbar {
+    background-color: rgb(0, 66, 118);
+    padding: 4px 8px 4px 16px;
+}
+
+.navbar-link {
+    color: #fff !important;
+    font-size: 13pt;
+    font-weight: 600;
+}
+
+.navbar-link:hover {
+    color: gray !important;
+}
+
+.currentPage {
+    text-decoration: underline;
+}
+
+.blue-button {
+    background-color: rgb(0, 123, 255);
+}
+
+.blue-button:hover {
+    background-color: rgb(0, 102, 204);
+}
+
+.btn-outline-secondary-redesign {
+    color: #fff !important;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    margin-left: 25px;
+    font-size: 12pt;
+    font-weight: 600;
+    -webkit-box-shadow: 0 0 5px #666 inset;
+    -moz-box-shadow: 0 0 5px #666 inset;
+    box-shadow: 0 0 10px #666 inset;
+}
+
+.btn-outline-secondary-redesign:hover {
+    color: rgb(4, 35, 92) !important;
+    background-color: whitesmoke;
+    border-color: rgb(4, 35, 92);
+}
+
+.btn-toggler {
+    margin-right: 22px;
+}
+
+.switch-text .on {
+    color: rgb(86, 86, 86);
+}
+
+.right-align {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.changelog-header {
+    font-size: xx-large;
+    white-space: pre-line;
+    font-weight: 500;
+}
+
+.changelog-date {
+    color: grey;
+    font-size: smaller;
+}
+
+.changelog-description {
+    font-size: large;
+}
+
+.tab {
+    padding-left: 25px;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.feature-coming-soon {
+    font-size: 9pt;
+    font-weight: 200;
+}
+
+.request-support-label {
+    color: #fff;
+    cursor: pointer;
+}
+
+.request-support-label:hover {
+    text-decoration: underline;
+}
+
+.support-tile {
+    text-align: center;
+    border-radius: 15px;
+    font-size: 27px;
+    min-height: 200px;
+    margin: auto 0px;
+    transition: all 0.3s linear;
+}
+
+.support-tile:hover {
+    cursor: pointer;
+}
+
+.support-tile.bug {
+    background-color: #f8d7da;
+}
+
+.support-tile.bug:hover {
+    color: #fff;
+    background-color: rgba(220, 53, 69, 1);
+}
+
+.support-tile.feature {
+    background-color: #cfe2ff;
+}
+
+.support-tile.feature:hover {
+    color: #fff;
+    background-color: rgba(13, 110, 253, 1);
+}
+
+.support-tile > span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.version-number {
+    color: #fff;
+    font-weight: 300;
+    text-decoration: underline;
+    margin-right: -10px;
+    cursor: pointer;
+}
+
+.cog-wrapper {
+    margin-top: -10px;
+}
+
+#changelog {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.notification-badge {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+}
+
+input[readonly] {
+    background-color: #e9ecef !important;
+    opacity: 1 !important;
+    color: #495057 !important;
+}
+
+/* Start Guided UI */
+
+.guided-toggle-wrapper {
+    margin-left: -8px;
+    margin-top: 10px;
+}
+
+.guided-text {
+    color: white;
+    font-size: 0.8rem;
+    margin: -3px 4px 0px 1px;
+}
+
+/* End Guided UI  */
+
+@media (max-width: 1890px) {
+    .ms-support {
+        margin-left: 1rem !important;
+        white-space: nowrap;
+    }
+
+    .me-support {
+        margin-right: 1rem !important;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 1750px) {
+    .ms-support {
+        margin-left: 0.5rem !important;
+        white-space: nowrap;
+    }
+
+    .me-support {
+        margin-right: 0.5rem !important;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 1654px) {
+    .ms-support {
+        margin-left: 0 !important;
+        white-space: nowrap;
+    }
+
+    .me-support {
+        margin-right: 0 !important;
+        white-space: nowrap;
+    }
+}

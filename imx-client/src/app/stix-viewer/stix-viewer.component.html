@@ -1,0 +1,47 @@
+<div class="viewer-wrapper mb-2">
+    <div id="canvas-container">
+        <div style="position: absolute; right: 0; z-index: 1500" (click)="openFullscreen()">
+            <img src="./assets/expand.png" alt="" width="25" height="25" class="d-inline-block align-top expand-icon" title="Expand full screen" />
+        </div>
+        <div id="canvas-wrapper">
+            <div id="canvas"></div>
+        </div>
+        <div
+            id="canvas-info d-flex flex-column"
+            style="width: 400px; max-width: 400px; min-width: 400px; font-size: 14px; font-family: system-ui; word-wrap: break-word"
+        >
+            <div style="position: relative">
+                <ul class="nav nav-underline">
+                    <li class="nav-item" (click)="setTab('selected-node')">
+                        <a class="nav-link" [ngClass]="{ active: activeTab === 'selected-node' }">Selected Node</a>
+                    </li>
+                    <li class="nav-item" (click)="setTab('linked-nodes')">
+                        <a class="nav-link active" [ngClass]="{ active: activeTab === 'linked-nodes' }">Linked Nodes</a>
+                    </li>
+                    <li class="nav-item" (click)="setTab('legend')">
+                        <a class="nav-link active" [ngClass]="{ active: activeTab === 'legend' }">Legend</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div [class]="showMenuBar ? 'visualizer-menu-content' : 'not-show'">
+                <div id="selected" class="sidebar" [class]="{ 'not-show': activeTab === 'linked-nodes' || activeTab === 'legend' }">
+                    <div id="selection"></div>
+                </div>
+                <div id="connections" class="sidebar" [class]="{ 'not-show': activeTab === 'selected-node' || activeTab === 'legend' }">
+                    @if (selectedNode) {
+                        <h5>Incoming Edges:</h5>
+                    }
+                    <div id="connections-incoming"></div>
+                    @if (selectedNode) {
+                        <h5>Outgoing Edges:</h5>
+                    }
+                    <div id="connections-outgoing"></div>
+                </div>
+                <div id="legend" class="sidebar" [class]="{ 'not-show': activeTab === 'linked-nodes' || activeTab === 'selected-node' }">
+                    <table id="legend-content"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

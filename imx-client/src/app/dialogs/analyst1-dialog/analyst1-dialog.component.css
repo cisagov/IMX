@@ -1,0 +1,619 @@
+.active {
+    text-decoration: underline;
+}
+
+.border-bottoms {
+    border-bottom: 1px solid #000;
+}
+
+.border-tops {
+    border-top: 1px solid #000;
+}
+
+.btn-collapse {
+    width: 135px;
+    height: 26px;
+}
+
+.bundle-button {
+    font-size: 15px;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    border-collapse: collapse;
+}
+
+.bundle-wrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+.addStringBtn {
+    background-color: #1f80b6;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 0 0.375rem 0.375rem 0;
+    border: 1px solid #1f80b6;
+}
+
+.removeStringBtn {
+    background-color: #dc3545;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 0 0.375rem 0.375rem 0;
+    border: 1px solid #dc3545;
+}
+
+.acs-form::-webkit-scrollbar:vertical {
+    width: 10px;
+}
+
+.acs-form::-webkit-scrollbar:horizontal {
+    height: 0px;
+}
+
+.warning-message {
+    font-weight: 600;
+    font-size: 14px;
+    color: #dc3545;
+}
+
+.acs-form::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.acs-form::-webkit-scrollbar-track {
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+.acs-form::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.removeStringBtn:hover {
+    cursor: pointer;
+}
+
+.addStringSelect {
+    border-radius: 0.375rem 0 0 0.375rem;
+}
+
+.acsLabel {
+    max-height: 38px;
+}
+
+.card-header {
+    padding: 0px !important;
+}
+
+.draft-stix-title {
+    color: #000;
+    text-align: center;
+    margin: 20px 0px;
+}
+
+input.form-control {
+    float: left;
+    padding: 4px 8px;
+    font-size: 14px;
+    height: 35px;
+    border: none;
+}
+
+.search-button {
+    height: 35px;
+    min-width: 73px;
+    border-radius: 0 0.25rem 0.25rem 0;
+    background-color: #1f80b6;
+}
+
+.search-bar {
+    height: 38px;
+    border: thin solid #d9d9d9;
+    padding-right: 20px;
+}
+
+.search-label {
+    height: 38px;
+    border: thin solid #d9d9d9;
+    border-right: none;
+    border-radius: 0.25rem 0 0 0.25rem;
+    font-size: 14px;
+    padding: 4px 15px;
+    background-color: #e7e7e7;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    color: #444444;
+}
+
+.search-input {
+    height: inherit;
+}
+
+.search-results {
+    color: gray;
+    font-size: 13px;
+    margin-top: 8px;
+    padding-right: 2px;
+}
+
+.clear-button {
+    border: none;
+    background-color: inherit;
+    color: gray;
+    position: absolute;
+}
+
+.clear-button:hover {
+    color: darkgray;
+}
+
+.clear-button-text {
+    margin-top: 5px;
+}
+
+.highlight {
+    background-color: rgb(255, 255, 49);
+}
+
+.form-control:focus {
+    box-shadow: none;
+}
+
+accordion-group::ng-deep .highlight-panel > a {
+    background-color: yellow !important;
+}
+
+.preview-bundle {
+    max-height: 600px;
+    overflow-x: auto;
+
+    margin: 5px;
+}
+
+.query-button {
+    width: 120px;
+    height: 38px;
+}
+
+.query-loading-icon {
+    width: 15px;
+    height: 15px;
+}
+
+.sdo-badge {
+    font-size: 0.65em;
+    vertical-align: middle;
+    color: #fff;
+}
+
+.sdo-object-button {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    background-color: rgb(48, 46, 46);
+    border-color: rgb(255, 255, 255);
+    font-size: 14px;
+}
+
+.sdo-object-button:hover {
+    color: rgb(6, 103, 194);
+    background-color: black;
+    border-color: rgb(6, 103, 194);
+}
+
+.tooltipright {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: -5px !important;
+}
+
+.tooltipright .toolttext {
+    visibility: hidden;
+    font-weight: normal;
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -30%;
+}
+
+.toolttext {
+    min-width: 200px;
+}
+
+@media (max-width: 1350px) {
+    .test {
+        width: 600px;
+    }
+}
+
+.btn-warning {
+    color: white;
+    background-color: red;
+    border-color: red;
+}
+
+.section-title {
+    font-size: 28px;
+    padding-left: 15px;
+    font-weight: 500;
+}
+
+.show {
+    font-size: 13px;
+}
+
+.stix-preview-message {
+    font-size: 16px;
+}
+
+@media (max-width: 767px) {
+    .bundle-button {
+        margin-top: 10px;
+        width: 80%;
+    }
+}
+
+.bottom-bump {
+    padding-bottom: 6px;
+}
+
+.big-bottom-bump {
+    padding-bottom: 50px;
+}
+
+.left-padding {
+    padding-left: 15px;
+}
+
+.button-row-padding {
+    padding-top: 13px;
+    padding-bottom: 13px;
+    padding-left: 13px;
+}
+
+.tooltipmenu {
+    cursor: pointer;
+}
+
+.tooltipmenu .toolttext {
+    visibility: hidden;
+    position: absolute;
+    white-space: nowrap;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 10;
+    top: 0;
+    margin-right: 12px;
+    right: 90%;
+    font-weight: 400;
+    pointer-events: none;
+}
+.tooltipmenu:hover .toolttext {
+    visibility: visible;
+}
+.tooltipmenu:empty .toolttext {
+    visibility: hidden;
+}
+
+.tooltipmenu .toolttextToRight {
+    visibility: hidden;
+    position: absolute;
+    white-space: nowrap;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 10;
+    top: 0;
+    margin-left: 12px;
+    left: 90%;
+    font-weight: 400;
+    pointer-events: none;
+}
+.tooltipmenu:hover .toolttextToRight {
+    visibility: visible;
+}
+.tooltipmenu:empty .toolttextToRight {
+    visibility: hidden;
+}
+
+.overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pre-overflow {
+    margin-left: 16px;
+    margin-right: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+::ng-deep .publish-modal .modal-dialog {
+    max-width: 70%;
+}
+
+table tbody {
+    overflow: auto;
+}
+table th {
+    border-top: white;
+    border-bottom: white;
+    position: sticky;
+    left: 0;
+}
+table th {
+    border: 1px solid white;
+}
+table td {
+    max-width: 95%;
+    overflow: inherit;
+    text-overflow: ellipsis;
+}
+thead,
+tbody {
+    display: block;
+}
+
+app-stix-viewer.full-width.nav-link {
+    position: relative;
+    left: -170px;
+    width: 125%;
+}
+
+app-stix-viewer.full-width.nav-link .stix-graph {
+    width: 55%;
+}
+
+.move-out-of-view {
+    position: absolute;
+    left: 15000px;
+}
+
+.display-expanded {
+    height: 22vh;
+    overflow: auto;
+}
+
+.display-collapsed {
+    height: 12vh;
+    overflow: auto;
+}
+
+.analyst1-objects-wrapper {
+    overflow: auto;
+}
+
+.acs-tooltipright {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: #928f8f;
+}
+
+.acs-tooltipright .toolttext {
+    visibility: hidden;
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    font-weight: normal;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -50%;
+    margin-left: 12px;
+    left: 100%;
+}
+
+.acs-tooltipright:hover .toolttext {
+    visibility: visible;
+}
+
+.acs-tooltipright:empty .toolttext {
+    visibility: hidden;
+}
+
+.acs-tooltipright:hover .toolttext .tooltip-wrapper {
+    padding: 30px;
+}
+
+.acs-tooltipright:hover .toolttext .tooltip-wrapper .tooltip-content {
+    margin-top: 15px;
+}
+
+.acs-tooltipright:hover .toolttext .tooltip-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.acs-tooltipright:hover .toolttext .tooltip-wrapper td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.result-label {
+    background-color: #f5f5f5;
+    width: 100%;
+    align-self: center;
+}
+
+.display-stat {
+    text-align: start;
+    font-size: 0.9rem;
+    font-weight: 300;
+    width: 30%;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.hide-stat {
+    text-align: start;
+    font-size: 0.9rem;
+    font-weight: 300;
+    width: 100%;
+    flex-direction: row;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+}
+
+.hide-stat h1 {
+    font-size: 1rem !important;
+    margin-right: 1rem;
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+}
+
+.hide-stat div {
+    margin-left: auto;
+}
+
+.output-table {
+    text-align: start;
+}
+
+.table-label {
+    background-color: #1f80b6;
+    color: white;
+    height: 50px;
+}
+
+.result-table {
+}
+
+.preview-button {
+    min-height: 50px !important;
+    width: 80px;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background-color: #1f80b6;
+    padding: 0;
+    font-size: 0.875rem;
+}
+
+.next-button {
+    border-color: #1f80b6;
+    color: #1f80b6;
+}
+
+.next-button:hover {
+    background-color: #1f80b6;
+    color: white;
+}
+
+.next-button:active {
+    background-color: #1f80b6;
+    color: white;
+}
+
+.inactive {
+    color: #1f80b6;
+}
+
+.detail-box {
+    font-size: 0.8rem;
+    word-wrap: break-word;
+}
+
+.detail-table-head {
+    width: 100%;
+    cursor: pointer;
+    background-color: white;
+    font-style: bold;
+    color: #1f80b6;
+    border: 1px solid #f1f1f1;
+}
+
+.detail-expanded {
+    background-color: white;
+    border: 1px solid #f1f1f1;
+    border-top: none;
+}
+
+.expanded-body {
+    height: 73vh;
+}
+
+.collapsed-body {
+    height: 63vh;
+}
+
+.type-table {
+    width: 98%;
+    margin-left: auto;
+}
+
+.add-button {
+    width: 150px;
+}
+
+.loadingSpinner {
+    cursor: wait !important;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 9999;
+}
+
+mat-option {
+    background-color: #f8f8f8 !important;
+}
+
+mat-option:hover {
+    background-color: #e1e2e3 !important;
+}
+
+.mat-mdc-option-active {
+    background-color: #e1e2e3 !important;
+}
+
+::ng-deep .mat-mdc-autocomplete-panel {
+    padding-top: 0 !important;
+}
+
+.formal-input {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 1rem !important;
+    border: var(--bs-border-width) solid !important;
+    margin-right: 0;
+    border-radius: 0.25rem 0 0 0.25rem;
+    height: auto !important;
+}
+
+.valid-input {
+    border-color: var(--bs-border-color) !important;
+}
+
+.invalid-input {
+    border-color: var(--bs-form-invalid-border-color) !important;
+}
+
+.form-control {
+    height: 35px !important;
+}

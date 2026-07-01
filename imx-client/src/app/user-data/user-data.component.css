@@ -1,0 +1,252 @@
+.user-data {
+    padding: 30px !important;
+    margin-top: 49px;
+    background-color: #f9fbfd;
+    min-height: 100%;
+}
+
+.color-green {
+    color: rgb(40, 167, 69);
+}
+
+.color-red {
+    color: #dc3545;
+}
+
+.color-yellow {
+    color: #ffc000;
+}
+
+.status-table {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: auto;
+}
+
+.footer {
+    border-top: solid #dee2e6 2px;
+    border-bottom: solid #dee2e6 1px;
+    height: 36px;
+}
+
+.footer-no-bottom {
+    border-bottom: none;
+}
+
+.notification-badge {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    margin-top: 0rem !important;
+}
+
+.alert-tab {
+    padding-left: 0 !important;
+}
+
+.status-table th {
+    text-align: center;
+}
+
+.status-table td {
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+}
+
+.status-table td pre {
+    text-align: start;
+    vertical-align: auto;
+}
+
+.status-table thead th {
+    background-color: #1779ba;
+    color: white;
+}
+
+.status-table table {
+    border: 1px solid;
+}
+
+.status-table tr {
+    border: none;
+}
+
+.gray-bg td {
+    background-color: #f1f1f1;
+}
+
+.preview pre {
+    background-color: #f1f1f1;
+    border-bottom: 10px solid white !important;
+}
+
+.gray-bg .preview pre {
+    background-color: white;
+    border-bottom: 10px solid #f1f1f1 !important;
+}
+
+.active {
+    background: rgba(199, 199, 199, 0.2) !important;
+}
+
+/* Sidebar related */
+@media (min-width: 900px) {
+    .sidebar {
+        visibility: visible !important;
+        width: 85px;
+    }
+
+    .sidebar-bg {
+        visibility: visible !important;
+        width: 85px;
+    }
+
+    .expanded-side {
+        width: 250px;
+    }
+
+    .user-data {
+        margin-left: 85px;
+    }
+
+    .arrow {
+        display: none;
+        height: 0px;
+    }
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    visibility: hidden;
+    display: block;
+    z-index: 1000;
+    font-weight: 200;
+}
+
+.sidebar-bg {
+    position: fixed;
+    top: 0;
+    visibility: hidden;
+    bottom: 0;
+    left: 0;
+    display: block;
+    z-index: 1000;
+    color: #ffffff;
+    font-weight: 200;
+    background: #ffffff;
+    transition: width 0.3s ease;
+    -webkit-box-shadow: 4px 4px 10px rgba(69, 65, 78, 0.06);
+    -moz-box-shadow: 4px 4px 10px rgba(69, 65, 78, 0.06);
+    box-shadow: 4px 4px 10px rgba(69, 65, 78, 0.06);
+}
+
+.sidebar-content {
+    padding-top: 65px;
+    height: 100%;
+    padding-bottom: 65px;
+    position: relative;
+}
+
+.sidebar-item {
+    height: 45px;
+    width: 45px;
+    border-radius: 0.6rem;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.sidebar-item:hover {
+    background: rgba(199, 199, 199, 0.2);
+}
+
+.sidebar-item:active {
+    background: #05316a !important;
+    box-shadow:
+        4px 4px 10px 0 rgba(0, 0, 0, 0.1),
+        4px 4px 15px -5px rgba(21, 114, 232, 0.4) !important;
+}
+
+.sidebar-item:active .sidebar-icon {
+    color: #fff;
+}
+
+.sidebar-active {
+    background: #05316a !important;
+    box-shadow:
+        4px 4px 10px 0 rgba(0, 0, 0, 0.1),
+        4px 4px 15px -5px rgba(21, 114, 232, 0.4) !important;
+}
+
+.sidebar-icon {
+    color: #8d9498;
+    font-size: 20px;
+    font-weight: 400;
+    width: 45px;
+    padding-left: 13.75px;
+    padding-right: 13.75px;
+}
+
+.sidebar-active .sidebar-icon {
+    color: #fff;
+}
+.sidebar-text {
+    color: #8d9498;
+    font-size: 20px;
+    font-weight: 400;
+    width: 45px;
+    text-align: center;
+}
+
+.sidebar-active .sidebar-text {
+    color: #fff;
+}
+
+.sidebar-label {
+    color: #3c3d40;
+    font-size: 16px;
+    font-weight: 300;
+    width: 0px;
+    visibility: hidden;
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-item:active .sidebar-label {
+    color: #fff !important;
+}
+
+.expand-icon .sidebar-label {
+    opacity: 1;
+    width: auto;
+    visibility: visible;
+}
+
+.expand-icon {
+    width: 210px;
+}
+
+.sidebar-bg .expand-right-arrow {
+    display: inline-block;
+    position: relative;
+    top: 55px;
+    left: 20px;
+    transition: left 0.3s ease;
+}
+
+.sidebar-bg.expanded-side .expand-right-arrow {
+    left: 210px;
+    transform: rotate(180deg);
+}
+
+.disabled-sidebar .sidebar-icon {
+    cursor: not-allowed;
+    color: #c2c8cc !important;
+}

@@ -1,0 +1,10 @@
+./backup-assets
+./src/assets/env.json
+./node_modules
+./scripts
+./test_data
+./tests
+./.angular
+
+.env
+.git

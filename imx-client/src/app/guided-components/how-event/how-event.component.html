@@ -1,0 +1,56 @@
+<div class="d-flex flex-column justify-content-start align-items-center content-wrapper">
+    <div class="d-flex flex-row justify-content-around align-items-end gr-top-width">
+        <div class="d-flex align-items-end">
+            <div class="mb-3">
+                <img class="card-img" src="./assets/sword.svg" class="center" width="80" height="80" />
+            </div>
+            <span class="title-main-size3">HOW?</span>
+        </div>
+
+        <div class="title-sub-size1-2 mb-3">What more do we know about this event?</div>
+    </div>
+
+    <div class="horizonal-rule-top"></div>
+
+    <div class="d-flex justify-content-center align-items-start outter-wrapper-min-height">
+        <div class="mt-5 d-flex flex-column justify-content-start gr-help-section me-3">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="gr-help-section-title">Event Methodology</div>
+            <div class="gr-help-section-content">
+                Do you have anything more to share about how this event was detected, what impact it had on its target, or how it could have been
+                mitigated?
+            </div>
+        </div>
+        <div class="mt-5 d-flex flex-column align-items-center gr-outter-wrapper" style="position: relative">
+            <div class="col-12 total-cart-wrapper observable-section px-4 p-2 mt-1">
+                <div class="col-8 float-start"></div>
+                <app-total-guided-cart class="float-end" (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+            </div>
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 mt-4">
+                <span class="col-2" title="Event title">Event Title</span>
+                <input type="text" class="form-control col-10 noborder" [(ngModel)]="name" (input)="checkCart()" />
+            </div>
+            <div class="d-flex align-items-center gr-input-wrapper ps-3 pe-3 mt-4">
+                <span class="col-2" title="Event Goal">Goal</span>
+                <input type="text" [disabled]="!name" class="form-control col-10 noborder" [(ngModel)]="goal" />
+            </div>
+            <div class="d-flex flex-column align-items-left gr-input-wrapper p-3 mt-4">
+                <div class="d-flex">
+                    <span class="col-2" title="Event Goal">Details</span>
+                    <textarea
+                        class="form-control col-10 noborder"
+                        name="event details"
+                        id="event-details"
+                        rows="8"
+                        placeholder="Add details"
+                        [disabled]="!name"
+                        [(ngModel)]="details"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

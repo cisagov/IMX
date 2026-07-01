@@ -1,0 +1,30 @@
+.dialog {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.dialog .modal-body {
+    padding: 1rem 1rem;
+}
+
+.dialog .modal-header {
+    padding: 1rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dialog .modal-footer {
+    padding: 1rem 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.input-group-text {
+    background-color: whitesmoke;
+    border-color: whitesmoke;
+}
+
+.warning-message {
+    color: red;
+}

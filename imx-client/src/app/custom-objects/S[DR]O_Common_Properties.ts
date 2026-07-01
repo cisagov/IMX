@@ -1,0 +1,17 @@
+export const SDO_SRO = [
+    'type',
+    'id',
+    'spec_version',
+    'created',
+    'modified',
+    'confidence',
+    'lang',
+    'created_by_ref',
+    'revoked',
+    'labels',
+    'extensions',
+    'object_marking_refs',
+    'external_references',
+    'granular_markings',
+    'extensions',
+];

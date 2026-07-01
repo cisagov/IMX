@@ -1,0 +1,61 @@
+<div class="dialog">
+    <div class="modal-header">
+        <div class="col align-items-start">
+            <h4 class="modal-title" id="publish-modal-title">
+                <span>{{ mode }} TAXII Server</span>
+            </h4>
+        </div>
+        <div class="col">
+            <button type="button" class="btn-close float-right" aria-label="Close" (click)="onX()">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+    <div class="modal-body">
+        @if (warning !== '') {
+            <div class="form-group row warning">
+                <h6>{{ warning }}</h6>
+            </div>
+        }
+        <div class="form-group row">
+            <label class="dialogLabel"
+                >TAXII Server URL
+                <input type="url" id="taxii-settings-url" class="form-control" [(ngModel)]="url" />
+            </label>
+        </div>
+        @if (mode !== 'Delete Disabled') {
+            <div class="form-group row">
+                <label class="dialogLabel"
+                    >TAXII Server Username
+                    <input type="text" id="taxii-settings-username" class="form-control" [(ngModel)]="username" />
+                </label>
+            </div>
+        }
+        @if (mode !== 'Delete Disabled') {
+            <div class="form-group row">
+                <label class="dialogLabel"
+                    >TAXII Server Password
+                    <input type="password" id="taxii-settings-password" class="form-control" [(ngModel)]="password" />
+                </label>
+            </div>
+        }
+    </div>
+    <div class="modal-footer mt-3">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        @if (mode !== 'Delete Disabled') {
+            <button type="button" class="btn btn-sm btn-success ms-2" (click)="onConfirm()">
+                <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                Confirm
+            </button>
+        }
+        @if (mode === 'Delete Disabled') {
+            <button type="button" class="btn btn-sm btn-danger ms-2" (click)="onDelete()">
+                <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                Delete
+            </button>
+        }
+    </div>
+</div>

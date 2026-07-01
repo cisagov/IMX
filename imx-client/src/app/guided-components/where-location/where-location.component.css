@@ -1,0 +1,61 @@
+.bottom-absolute {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.hint-box {
+    padding: 2px;
+    background-color: lightgray;
+    border-radius: 5px;
+}
+
+.hint {
+    font-size: small;
+}
+
+.sides {
+    width: 16.2%;
+}
+
+.time {
+    margin-bottom: 0.275rem !important;
+}
+
+.top-absolute {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.location-tabs {
+    display: flex;
+}
+
+.location-question {
+    padding: 0.5rem 1rem;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    color: #495057;
+    background-color: transparent;
+}
+
+.location-question:hover {
+    cursor: pointer;
+    border-color: #dee2e6 #dee2e6;
+}
+
+.form-active {
+    color: #495057;
+    background-color: #dee2e6;
+    border-color: #dee2e6 #dee2e6;
+}
+
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.margin-border-top {
+    margin-top: 1.5rem !important;
+}

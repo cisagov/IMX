@@ -1,0 +1,285 @@
+<div class="body">
+    @if (!editingFragment) {
+        <div class="item-title">
+            {{ fragment }}
+        </div>
+    }
+
+    @if (editingFragment) {
+        <div class="d-flex align-items-center item-title tooltipright">
+            <input
+                id="adminRootInput"
+                class="form-control item-label-input input-lg"
+                [style]="{ 'font-style': fragment === '{api-root}' ? 'italic' : 'inherit' }"
+                type="text"
+                (change)="updateRoot($event)"
+                (focus)="focusRoot()"
+                (focusout)="focusOutRoot()"
+                [(ngModel)]="fragment"
+            />
+            <span class="float-start icon-height">
+                <fa-icon class="ps-1" [icon]="faInfoCircle"> </fa-icon>
+                <div
+                    class="toolttext"
+                    [innerHTML]="'The base URL of the API Root. URLs should be comprised of letters, hyphens and numbers — no other characters, e.g., underscore, tilda, etc. URLs should be in lowercase.'"
+                ></div>
+            </span>
+            <div id="serverURL" style="display: inline-block">
+                <span class="ps-3">{{ serverRootURL }}</span
+                ><span>{{ fragment !== '{api-root}' ? fragment : '' }}</span>
+            </div>
+        </div>
+    }
+
+    <div class="item-content">
+        <label class="item-label">
+            <div class="item-label-title">Title</div>
+            <input type="text" class="form-control item-label-input input-sm" [(ngModel)]="apiRoot.title" />
+        </label>
+
+        <label class="item-label">
+            <div class="item-label-title">Max Content Length</div>
+            <input id="maxLength" type="number" class="form-control item-label-input input-sm" [(ngModel)]="apiRoot.max_content_length" />
+        </label>
+
+        <label class="item-label">
+            <div class="item-label-title">Versions</div>
+            <div class="d-flex">
+                <input type="text" class="form-control item-label-input input-sm" [(ngModel)]="newVersion" />
+                <button type="button" class="btn btn-fa-sm btn-primary ms-2" title="Click to add" (click)="addVersion()" [disabled]="!newVersion">
+                    <fa-icon class="add-button" [icon]="faPlus"></fa-icon>
+                </button>
+            </div>
+        </label>
+
+        <div class="item-label-title"></div>
+        <div class="item-list-wrapper">
+            @for (version of apiRoot?.versions; track version; let i = $index) {
+                <div class="media-list-item-wrapper">
+                    <div class="media-list-item-type">{{ version }}</div>
+                    <fa-icon
+                        class="btn btn-fa-sm btn-danger action-button fa-trash"
+                        [icon]="faTrash"
+                        (click)="removeVersion(i)"
+                        title="Click to remove."
+                    ></fa-icon>
+                </div>
+            }
+        </div>
+
+        <div class="left-col">
+            <div class="item-label-title me-3">Collections</div>
+            <div class="d-flex">
+                <button type="button" class="btn btn-sm btn-primary" (click)="upsertRW()">
+                    <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                    Add Collection
+                </button>
+            </div>
+        </div>
+
+        <div class="item-list-wrapper">
+            @for (rw of rws; track rw; let i = $index) {
+                <div class="d-flex justify-content-between rw-wrapper mt-2">
+                    <div class="d-flex flex-column">
+                        @if (rw?.cId) {
+                            <div>
+                                {{ getCollectionInAPIRoot(rw.cId)?.title }}
+                            </div>
+                        }
+                        <div class="d-flex">
+                            <div>Readable Groups:</div>
+                            @for (r of rw?.readers; track r) {
+                                <div class="d-flex ps-2">
+                                    {{ r }}
+                                </div>
+                            }
+                        </div>
+                        <div class="d-flex">
+                            <div>Writable Groups:</div>
+                            @for (w of rw?.writers; track w) {
+                                <div class="d-flex ps-2">
+                                    {{ w }}
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <fa-icon class="btn btn-fa-sm btn-warning me-1" (click)="upsertRW(rw)" [icon]="faList" title="Click to edit."></fa-icon>
+                        <fa-icon
+                            class="btn btn-fa-sm btn-danger ms-2 me-1 fa-trash"
+                            (click)="removeRW(i)"
+                            [icon]="faTrash"
+                            title="Click to remove."
+                        ></fa-icon>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <label class="item-label">
+            <div class="item-label-title">Description</div>
+            <textarea
+                rows="5"
+                class="form-control"
+                title="The base URL of the API Root"
+                [(ngModel)]="apiRoot.description"
+                style="height: auto !important; width: 580px"
+            ></textarea>
+        </label>
+
+        <label class="d-flex">
+            <div class="item-label-title me-3">Server Validation</div>
+
+            <div class="col-6">
+                <div class="d-flex flex-column ms-3 mt-3">
+                    @for (obj of serverValidation.slice(0, 5); track obj; let i = $index) {
+                        <div class="d-flex flex-column">
+                            <label class="d-flex align-items-center mt-3">
+                                <input
+                                    type="checkbox"
+                                    name="lenient-{{ i }}"
+                                    class="input-cb"
+                                    [checked]="obj.doCheck"
+                                    (change)="updateCheck($event, obj)"
+                                />
+                                <span class="ms-2">{{ obj.title }}</span>
+                                <span class="guided-tip mb-1">
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                    <span class="tip-text" [innerHTML]="stixService.getServerValidationTooltip(obj)"></span>
+                                </span>
+                            </label>
+                            <div class="d-flex align-items-center ms-4">
+                                <input
+                                    type="radio"
+                                    [disabled]="obj.disableBoth"
+                                    name="{{ obj.title }}"
+                                    id="pass-{{ i }}"
+                                    value="false"
+                                    [(ngModel)]="obj.doFail"
+                                    class="me-2 mb-1"
+                                />
+                                <label for="pass-{{ i }}">Pass</label>
+                            </div>
+                            <div class="d-flex align-items-center ms-4">
+                                <input
+                                    type="radio"
+                                    [disabled]="obj.disableBoth"
+                                    name="{{ obj.title }}"
+                                    id="fail-{{ i }}"
+                                    value="true"
+                                    [(ngModel)]="obj.doFail"
+                                    class="me-2 mb-1"
+                                />
+                                <label for="fail-{{ i }}">Fail<span>&nbsp;(Default)</span></label>
+                            </div>
+                        </div>
+                    }
+                    <label class="d-flex align-items-center mt-3">
+                        <input
+                            type="checkbox"
+                            name="lenient-sco"
+                            class="input-cb"
+                            [checked]="serverValidation[serverValidation.length - 1].doCheck"
+                            (change)="updateCheck($event, serverValidation[serverValidation.length - 1])"
+                        />
+                        <span class="ms-2">{{ serverValidation[serverValidation.length - 1].title }}</span>
+                        <span class="guided-tip mb-1">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                            <span
+                                class="tip-text"
+                                [innerHTML]="stixService.getServerValidationTooltip(serverValidation[serverValidation.length - 1])"
+                            ></span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="d-flex flex-column ms-3 mt-3">
+                    @for (obj of serverValidation.slice(5, serverValidation.length - 1); track obj; let j = $index) {
+                        <div class="d-flex flex-column">
+                            <label class="d-flex align-items-center mt-3">
+                                <input
+                                    type="checkbox"
+                                    name="lenient-{{ j }}"
+                                    class="input-cb"
+                                    [checked]="obj.doCheck"
+                                    (change)="updateCheck($event, obj)"
+                                />
+                                <span class="ms-2">{{ obj.title }}</span>
+                                <span class="guided-tip mb-1">
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                    <span class="tip-text" [innerHTML]="stixService.getServerValidationTooltip(obj)"></span>
+                                </span>
+                            </label>
+                            <div class="d-flex align-items-center ms-4">
+                                <input
+                                    type="radio"
+                                    [disabled]="obj.disableBoth"
+                                    name="{{ obj.title }}"
+                                    id="pass-{{ j + 5 }}"
+                                    value="false"
+                                    [(ngModel)]="obj.doFail"
+                                    class="me-2 mb-1"
+                                />
+                                <label for="pass-{{ j + 5 }}"
+                                    >Pass
+                                    @if (j + 5 > 7) {
+                                        <span>&nbsp;(Default)</span>
+                                    }
+                                </label>
+                            </div>
+                            <div class="d-flex align-items-center ms-4">
+                                <input
+                                    type="radio"
+                                    [disabled]="obj.disableBoth"
+                                    name="{{ obj.title }}"
+                                    id="fail-{{ j + 5 }}"
+                                    value="true"
+                                    [(ngModel)]="obj.doFail"
+                                    class="me-2 mb-1"
+                                />
+                                <label for="fail-{{ j + 5 }}"
+                                    >Fail
+                                    @if (j + 5 <= 7) {
+                                        <span>&nbsp;(Default)</span>
+                                    }
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </label>
+    </div>
+
+    <div class="item-action">
+        <button type="button" class="btn btn-sm btn-secondary me-3" (click)="backToMain()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button
+            type="button"
+            class="btn btn-sm btn-success"
+            (click)="backToMain('save')"
+            [disabled]="apiRoot?.versions?.length === 0 || !apiRoot.title || !fragment || fragment === '{api-root}' || !apiRoot.max_content_length"
+        >
+            <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+            Save
+        </button>
+    </div>
+
+    @if (errorMessages?.length > 0) {
+        <div class="row error-message">
+            <div class="col">
+                <div class="d-flex justify-content-center flex-column">
+                    @for (err of errorMessages; track err) {
+                        <div class="alert alert-danger" role="alert">
+                            {{ err }}
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

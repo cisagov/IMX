@@ -1,0 +1,164 @@
+<div
+    class="d-flex align-items-center justify-content-between"
+    [ngClass]="{ 'col-12 mt-1': stixService.guidedUI, 'col-12 pe-5': !stixService.guidedUI }"
+>
+    <div class="col-4">
+        <p class="stix-title input-header" [title]="tooltip">Granular Markings</p>
+    </div>
+    <div class="ms-3">
+        <div>
+            @if (!isAddingGranularMarkings) {
+                <button id="gmarkings_add" class="btn btn-fa-sm btn-color add-button mt-1" type="button" (click)="openDialog()">
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                    <!-- Add -->
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
+</div>
+
+@if (!isAddingGranularMarkings && this.stixService.granularMarkings.length > 0) {
+    <div class="form-group mt-2" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
+        <accordion>
+            @for (granularMarking of this.stixService.granularMarkings; track granularMarking; let i = $index) {
+                <accordion-group tabindex="0" [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="false">
+                    <div id="gmarkings_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
+                        <div class="col d-flex justify-content-between align-items-center">
+                            <div class="btn btn-link btn-deco">
+                                {{ granularMarking.selectors[0] }}
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-fa-sm btn-color me-2 list-trash"
+                                id="gmarkings_list{{ i }}_edit"
+                                (click)="editGranularMarkings(granularMarking)"
+                            >
+                                <fa-icon [icon]="faEdit"></fa-icon>
+                            </button>
+                            <button
+                                class="btn btn-fa-sm btn-color list-trash"
+                                type="button"
+                                id="gmarkings_list{{ i }}_delete"
+                                (click)="deleteGranularMarkings(granularMarking)"
+                            >
+                                <fa-icon [icon]="faTrash"></fa-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <pre class="json-text">{{ granularMarking | json }}</pre>
+                </accordion-group>
+            }
+        </accordion>
+    </div>
+}
+@if (isAddingGranularMarkings) {
+    <div class="form-group mt-2">
+        <div class="input-group mb-2">
+            <span class="input-group-text">
+                <div id="gmarkings_selectors_title" class="tooltipright">
+                    <b>Selectors</b>
+                    <span class="toolttext"
+                        >ctrl+click to choose multiple selectors.<br />
+                        The text field displays current selection(s).</span
+                    >
+                </div>
+            </span>
+            <input class="form-control form-select" [(ngModel)]="this.newSelector" type="text" [disabled]="true" />
+            <select
+                id="gmarkings_selectors"
+                type="text"
+                size="3"
+                class="selectpicker form-control"
+                [(ngModel)]="this.newSelector"
+                name="newSelector"
+                id="newSelector"
+                multiple
+                style="height: 90px"
+            >
+                @for (item of stixService.granularMarkingSelectors; track item) {
+                    <option [value]="item">
+                        {{ item }}
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="input-group mb-2">
+            <span id="gmarkings_lang_title" class="input-group-text">
+                <b>Language</b>
+            </span>
+            <select
+                id="gmarkings_lang"
+                type="text"
+                class="form-control form-select"
+                [(ngModel)]="this.currentGranularMarking.lang"
+                [disabled]="this.currentGranularMarking.marking_ref != ''"
+            >
+                <option value=""></option>
+                @for (lang of this.lang_options; track lang) {
+                    <option [value]="lang.key">{{ lang.value }}</option>
+                }
+            </select>
+        </div>
+        <div class="input-group">
+            <span class="input-group-text">
+                <div id="gmarkings_refs_title" class="tooltipright">
+                    <b>Marking Reference</b>
+                    <span class="toolttext">Common references in dropdown -<br />use the box on the right for custom entries.</span>
+                </div>
+            </span>
+            <select
+                id="gmarkings_refs"
+                type="text"
+                class="form-control form-select col-2"
+                (change)="getTlpOptions($event)"
+                [disabled]="this.currentGranularMarking.lang != ''"
+            >
+                <option value="" selected></option>
+                <option value="v1">TLP v1.0</option>
+                <option value="v2">TLP v2.0</option>
+            </select>
+            <select
+                type="text"
+                class="form-control form-select col-2"
+                [(ngModel)]="this.currentGranularMarking.marking_ref"
+                [disabled]="this.currentGranularMarking.lang != ''"
+            >
+                <option value="" selected></option>
+                @for (tlp of tlp_options; track tlp) {
+                    <option [value]="tlp.value">{{ tlp.key }}</option>
+                }
+            </select>
+            <input
+                class="form-control"
+                [(ngModel)]="this.currentGranularMarking.marking_ref"
+                type="text"
+                [disabled]="this.currentGranularMarking.lang != ''"
+            />
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="float-end mt-2">
+                    {{ this.errorMessage }}
+                    <button
+                        class="btn btn-fa-sm btn-primary"
+                        type="button"
+                        (click)="addGranularMarking()"
+                        [disabled]="
+                            (this.currentGranularMarking.lang == '' && this.currentGranularMarking.marking_ref == '') ||
+                            this.newSelector.length == 0 ||
+                            this.newSelector[0] == ''
+                        "
+                    >
+                        <fa-icon [icon]="faPlus"></fa-icon>
+                        <!-- Add -->
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

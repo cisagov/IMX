@@ -1,0 +1,148 @@
+<div class="dialog">
+    <div class="modal-header d-flex justify-content-between align-items-center">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>{{ mode }} STIX Bundle</span>
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <!-- SAVE -->
+
+        @if (mode == 'Save') {
+            <div class="pt-2">
+                <ng-container>
+                    Your current bundle is displayed below. Choose how you would like to handle the existing objects:<br />
+                    (1) Discard the bundle entirely, (2) Merge the objects you are importing into the current bundle, or (3) Save the current bundle
+                    for later use.
+                    <br />
+                </ng-container>
+                <ng-container>
+                    <div class="row ps-3 pb-1">
+                        If you would like to save your bundle, please enter a name below. If you would instead like to discard/reset the bundle please
+                        confirm so.
+                    </div>
+                    <div class="row ms-0 input-border">
+                        <input
+                            placeholder="Enter a name for the bundle"
+                            class="form-control"
+                            style="font-size: x-large; font-weight: 400"
+                            type="text"
+                            (input)="invalidBundleName()"
+                            [(ngModel)]="bundleName"
+                        />
+                    </div>
+                    @if (this.invalidName != '') {
+                        <div class="row ps-3">
+                            <div style="color: red">**{{ this.invalidName }}**</div>
+                        </div>
+                    }
+                </ng-container>
+                <br />
+                <ul class="nav nav-tabs">
+                    <li class="nav-item" (click)="activeTab = 'jsonViewer'">
+                        <a class="nav-link active" [ngClass]="{ active: activeTab === 'jsonViewer' }">JSON</a>
+                    </li>
+                    @if (!guidedUI) {
+                        <li class="nav-item" (click)="activeTab = 'visualViewer'">
+                            <a class="nav-link" [ngClass]="{ active: activeTab === 'visualViewer' }">Visual</a>
+                        </li>
+                    }
+                </ul>
+                @if (activeTab === 'jsonViewer') {
+                    <pre class="preview-bundle">{{ getStixPreview() | json }}</pre>
+                }
+                @if (activeTab === 'visualViewer') {
+                    <app-stix-viewer class="nav-link" [bundle]="getStixPreview()"> </app-stix-viewer>
+                }
+            </div>
+        }
+
+        <!-- EDIT OR DELETE OR TRANSFER -->
+
+        @if (mode != 'Save') {
+            <div>
+                <input [disabled]="true" class="form-control col-4 mb-1" [value]="bundleName" />
+                @if (mode == 'Edit') {
+                    Choose how you would like to handle the existing objects:<br />
+                    (1) Discard the bundle entirely or (2) Merge the objects you are importing into the current bundle.
+                    <br />
+                }
+            </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        @if (mode == 'Save') {
+            <div class="dropup">
+                <button
+                    class="btn-sm btn btn-success dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    [disabled]="this.bundleName == '' || this.invalidName != ''"
+                >
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Save Bundle
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" style="cursor: pointer" (click)="onSave('local')">Local</a>
+                    <a class="dropdown-item" style="cursor: pointer" (click)="onSave('server')">My Profile</a>
+                </div>
+            </div>
+        }
+        @if (mode == 'Edit') {
+            @if (!isDiscarding) {
+                <button type="button" class="btn btn-sm btn-danger ms-2" (click)="onDiscardBundle()">
+                    <fa-icon [icon]="faDiscard" class="pe-1"></fa-icon>
+                    Discard Bundle
+                </button>
+            }
+            @if (isDiscarding) {
+                <button type="button" class="btn btn-sm btn-danger ms-2" [disabled]="true">Discarding...</button>
+            }
+            @if (!isMerging) {
+                <button type="button" class="btn btn-sm btn-primary ms-2" (click)="onMergeBundle()" style="width: 175px !important">
+                    <fa-icon [icon]="faMerge" class="pe-1"></fa-icon>
+                    Merge into Bundle
+                </button>
+            }
+            @if (isMerging) {
+                <button type="button" class="btn btn-sm btn-primary ms-2" [disabled]="true">Merging...</button>
+            }
+        }
+        @if (mode == 'Transfer') {
+            <div class="dropup">
+                <button
+                    class="btn-sm btn btn-success dropdown-toggle ms-2"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    [disabled]="this.bundleName == '' || this.invalidName != ''"
+                    style="width: 175px !important"
+                >
+                    <fa-icon [icon]="faTransfer" class="pe-1"></fa-icon>
+                    Transfer Bundle
+                </button>
+                <div class="dropdown-menu">
+                    @if (table != 'local') {
+                        <a class="dropdown-item" style="cursor: pointer" (click)="onTransfer('local')">Local</a>
+                    }
+                    @if (table != 'profile') {
+                        <a class="dropdown-item" style="cursor: pointer" (click)="onTransfer('server')">My Profile</a>
+                    }
+                </div>
+            </div>
+        }
+        @if (mode == 'Delete') {
+            <button type="button" class="btn btn-sm btn-danger ms-2" (click)="onDelete()">
+                <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                Delete Bundle
+            </button>
+        }
+    </div>
+</div>

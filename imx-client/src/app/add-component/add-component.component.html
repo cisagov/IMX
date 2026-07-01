@@ -1,0 +1,89 @@
+@if (!isLoading) {
+    <div>
+        <div class="container-fluid ps-5" style="margin-top: 52px" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
+            <div class="row ms-2" [ngClass]="{ 'mt-3 me-3': !stixService.guidedUI, 'w-100': stixService.guidedUI }">
+                <div [ngClass]="{ 'col-xl-12': !stixService.guidedUI, 'w-100': stixService.guidedUI }">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="align-items-center">
+                            <h3 class="component-title ps-2" [ngClass]="{ 'mt-2': !stixService.guidedUI }" style="margin-bottom: 0">
+                                {{ getComponentDisplayName() }}
+                            </h3>
+                        </div>
+                        @if (requiredMessage) {
+                            <div class="mt-3">{{ requiredMessage }}</div>
+                        }
+                        <div class="d-flex align-items-center">
+                            <button
+                                type="button"
+                                id="add_note_button"
+                                class="btn add-btn float-end position-relative"
+                                style="overflow: visible"
+                                (click)="openNoteDialogModal()"
+                            >
+                                <fa-icon class="me-1" [icon]="faNote"></fa-icon>
+                                Add Note
+                                @if (stixService.notes && stixService.new_notes && stixService.notes.size + stixService.new_notes.size > 0) {
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">
+                                        {{ stixService.notes.size + stixService.new_notes.size }}
+                                    </span>
+                                }
+                            </button>
+                        </div>
+                    </div>
+                    @if (!isLoading) {
+                        <app-dynamic-form
+                            [questions]="questions"
+                            [hasExternalReferences]="hasExternalReferences()"
+                            [hasGranularMarkings]="hasGranularMarkings()"
+                            [hasExtensions]="hasExtensions()"
+                            [hasObjectMarkingReferences]="hasObjectMarkingReferences()"
+                            [hasContents]="hasContents()"
+                            [isFormValid]="currentComponent?.isFormValid"
+                            [currentComponent]="currentComponent"
+                            [componentMap]="componentMap"
+                            [displayName]="getComponentDisplayName()"
+                            [objectPropertyTypeSelectionInput]="objectPropertyTypeSelectionInput"
+                            (componentData)="addComponent($event)"
+                            (checkDuplicates)="checkDuplicates($event)"
+                            [queryParams]="queryParams"
+                            [objectSelectionInput]="objectSelectionInput"
+                            (guidedUIEvent)="guidedUIEventHandler($event)"
+                            (editObject)="editObject($event)"
+                            (revokeObject)="revokeObject($event)"
+                            (setMainIdentity)="setMainIdentity($event)"
+                            (removeObject)="removeObject($event)"
+                            (addCISAIdentity)="addCISAIdentity($event)"
+                            [getJsonDisplayForComponent]="getJsonDisplayForComponent"
+                            [compareIdentity]="compareIdentity"
+                            [storedIdentities]="storedIdentities"
+                            [cisaId]="cisaId"
+                            (viewDuplicatesEvent)="viewDuplicates($event.event, $event.component)"
+                        >
+                        </app-dynamic-form>
+                    }
+                </div>
+                <div class="col-md-12 col-lg-12 col-xl-6 d-none">
+                    <div class="mt-3 pt-2 json-previewer-title">{{ getComponentDisplayName() }} - STIX Previewer</div>
+
+                    <pre class="component-previewer">@if (this.errorList.length > 0) {
+            <span>@for (x of this.errorList; track x) {
+              <span>{{ x }}</span>
+            }</span>
+          }
+        </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isLoading) {
+    <div class="loading">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 400px">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted">Loading form, please wait...</p>
+        </div>
+    </div>
+}

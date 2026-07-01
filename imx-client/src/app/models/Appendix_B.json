@@ -1,0 +1,111 @@
+{
+  "attack-pattern": {
+	  "malware": [ "delivers", "uses" ],
+	  "identity": [ "targets" ],
+	  "location": [ "targets" ],
+	  "vulnerability": [ "targets" ],
+	  "tool": [ "uses" ]
+  },
+  "campaign": {
+	  "attack-pattern": [ "uses" ],
+	  "identity": [ "targets" ],
+	  "infrastructure": [ "compromises", "uses" ],
+	  "intrusion-set": [ "attributed-to" ],
+	  "location": [ "originates-from", "targets" ],
+	  "malware": [ "uses" ],
+	  "threat-actor": [ "attributed-to" ],
+	  "tool": [ "uses" ],
+	  "vulnerability": [ "targets" ]
+  },
+  "course-of-action": {
+	  "attack-pattern": [ "mitigates" ],
+	  "indicator": [ "investigates", "mitigates" ],
+	  "malware": [ "mitigates" ],
+	  "tool": [ "mitigates" ],
+	  "vulnerability": [ "mitigates" ]
+  },
+  "identity": {
+	  "location": [ "located-at" ]
+  },
+  "indicator": {
+	  "attack-pattern": [ "indicates" ],
+	  "campaign": [ "indicates" ],
+	  "infrastructure": [ "indicates" ],
+	  "intrusion-set": [ "indicates" ],
+	  "malware": [ "indicates" ],
+	  "observed-data": [ "based-on" ],
+	  "threat-actor": [ "indicates" ],
+	  "tool": [ "indicates" ]
+  },
+  "infrastructure": {
+	  "artifact": [ "consists-of" ],
+	  "autonomous-system": [ "consists-of" ],
+	  "directory": [ "consists-of" ],
+	  "domain-name": [ "communicates-with", "consists-of" ],
+	  "email-addr": [ "consists-of" ],
+	  "email-message": [ "consists-of" ],
+	  "file": [ "consists-of" ],
+	  "infrastructure": [ "communicates-with", "consists-of", "controls", "uses" ],
+	  "ipv4-addr": [ "communicates-with", "consists-of" ],
+	  "ipv6-addr": [ "communicates-with", "consists-of" ],
+	  "location": [ "located-at" ],
+	  "mac-addr": [ "consists-of" ],
+	  "malware": [ "controls", "delivers", "hosts" ],
+	  "mutex": [ "consists-of" ],
+	  "network-traffic": [ "consists-of" ],
+	  "observed-data": [ "consists-of" ],
+	  "process": [ "consists-of" ],
+	  "software": [ "consists-of" ],
+	  "tool": [ "hosts" ],
+	  "url": [ "communicates-with", "consists-of" ],
+	  "user-account": [ "consists-of" ],
+	  "vulnerability": [ "has" ],
+	  "windows-registry-key": [ "consists-of" ],
+	  "x509-certificate": [ "consists-of" ]
+  },
+  "intrusion-set": {
+	  "attack-pattern": [ "uses" ],
+	  "identity": [ "targets" ],
+	  "infrastructure": [ "compromises", "hosts/owns", "uses" ],
+	  "location": [ "originates-from", "targets" ],
+	  "malware": [ "uses" ],
+	  "threat-actor": [ "attributed-to" ],
+	  "tool": [ "uses" ],
+	  "vulnerability": [ "targets" ]
+  },
+  "malware": {
+	  "attack-pattern": [ "uses" ],
+	  "domain-name": [ "communicates-with" ],
+	  "file": [ "downloads/drops" ],
+	  "identity": [ "targets" ],
+	  "infrastructure": [ "beacons-to/exfiltrate-to", "targets", "uses" ],
+	  "instrusion-set": [ "authored-by" ],
+	  "ipv4-addr": [ "communicates-with" ],
+	  "ipv6-addr": [ "communicates-with" ],
+	  "location": [ "targets" ],
+	  "malware": [ "controls", "downloads/drops", "uses", "variant-of" ],
+	  "threat-actor": [ "authored-by" ],
+	  "tool": [ "downloads/drops", "uses" ],
+	  "url": [ "communicates-with" ],
+	  "vulnerability": [ "exploits", "targets" ]
+  },
+  "malware-analysis": {
+	  "malware": [ "analysis-of", "characterizes", "dynamic-analysis-of", "static-analysis-of" ]
+  },
+  "threat-actor": {
+	  "attack-pattern": [ "uses" ],
+	  "malware": [ "uses" ],
+	  "identity": [ "attributed-to", "impersonates", "targets" ],
+	  "infrastructure": [ "compromises", "hosts/owns", "uses" ],
+	  "location": [ "located-at", "targets" ],
+	  "vulnerability": [ "targets" ],
+	  "tool": [ "uses" ]
+  },
+  "tool": {
+	  "malware": [ "delivers", "drops" ],
+	  "identity": [ "targets" ],
+	  "infrastructure": [ "targets" ],
+	  "location": [ "targets" ],
+	  "vulnerability": [ "has", "targets" ]
+  }
+}

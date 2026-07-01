@@ -1,0 +1,171 @@
+<div class="dialog">
+    <div class="modal-header justify-content-between align-items-center">
+        <h5 class="modal-title mb-0" id="publish-modal-title">
+            Object Marking References
+            @if (stixService.guidedUI) {
+                <small class="text-muted ms-2 fw-normal">(TLP Color)</small>
+            }
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <!-- TLP Section -->
+        <div class="omr-section mb-4">
+            <div class="omr-section-header">
+                <span id="tlp_title">TLP Classification</span>
+            </div>
+            <div class="omr-section-body">
+                <div class="row g-3 align-items-end">
+                    @if (this.env.tlpConfig.enabledTlpVersions.length > 1) {
+                        <div class="col-3">
+                            <label class="form-label omr-field-label">Version</label>
+                            <select id="tlp_versions" class="form-control" (change)="getTlpOptions($event)">
+                                <option value="" selected></option>
+                                @for (ver of this.env.tlpConfig.enabledTlpVersions; track ver) {
+                                    <option value="{{ ver.value }}">{{ ver.label }}</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    @if (this.env.tlpConfig.enabledTlpVersions.length == 1) {
+                        <div class="col-3">
+                            <label class="form-label omr-field-label">Version</label>
+                            <input id="tlp_versions" class="form-control" disabled value="{{ this.env.tlpConfig.enabledTlpVersions[0].label }}" />
+                        </div>
+                    }
+                    <div class="col">
+                        <label class="form-label omr-field-label">TLP Level</label>
+                        <select
+                            id="tlp_input"
+                            [ngClass]="{ 'select-placeholder': !markingRefs }"
+                            (ngModelChange)="onTlpChange($event)"
+                            [(ngModel)]="markingRefs"
+                            class="form-control"
+                        >
+                            <option value="" selected>Select TLP level...</option>
+                            @for (tlp of tlp_options; track tlp) {
+                                <option value="{{ tlp.value }}">{{ tlp.key }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                @if (tlpDescription.length > 0) {
+                    <div class="tlp-info-box mt-3 p-3">
+                        <span
+                            class="badge me-2"
+                            [ngClass]="{
+                                'tlp-clear': tlpDescription[0] === 'TLP:CLEAR',
+                                'tlp-amber': tlpDescription[0] === 'TLP:AMBER+STRICT' || tlpDescription[0] === 'TLP:AMBER',
+                                'tlp-green': tlpDescription[0] === 'TLP:GREEN',
+                                'tlp-red': tlpDescription[0] === 'TLP:RED',
+                            }"
+                        >
+                            {{ tlpDescription[0] }}
+                        </span>
+                        <span class="tlp-desc-text">{{ tlpDescription[1] }} {{ tlpDescription[2] }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- ACS Section -->
+        <div class="omr-section mb-4">
+            <div class="omr-section-header">
+                <span>ACS Marking</span>
+                @if (acs) {
+                    <span class="badge bg-secondary ms-2 omr-count-badge">1 selected</span>
+                }
+            </div>
+            <div class="omr-section-body">
+                <label class="form-label omr-field-label">ACS Marking Definition</label>
+                <select
+                    [(ngModel)]="acs"
+                    [ngClass]="{ 'select-placeholder': !acs }"
+                    (ngModelChange)="onAcsChange($event)"
+                    id="acs_select"
+                    class="form-control"
+                >
+                    <option value="" selected>Select ACS marking...</option>
+                    @for (acs of acsOptions; track acs) {
+                        <option [value]="acs">{{ acsView(acsMap.get(acs)) }}</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Other Marking References Section -->
+        <div class="omr-section">
+            <div class="omr-section-header">
+                <span>Other Marking References</span>
+                @if (otherRefs.length > 0) {
+                    <span class="badge bg-secondary ms-2 omr-count-badge">{{ otherRefs.length }} selected</span>
+                }
+            </div>
+            <div class="omr-section-body">
+                <label class="form-label omr-field-label">Marking Reference</label>
+                <div class="d-flex gap-2 mb-3">
+                    <select
+                        [(ngModel)]="otherMarkingRefs"
+                        [ngClass]="{ 'select-placeholder': !otherMarkingRefs }"
+                        id="other_select"
+                        class="form-control"
+                    >
+                        <option value="" selected>Select marking reference...</option>
+                        @for (other of filteredOtherOptions; track other) {
+                            <option [value]="other">{{ markingRefsMap.get(other) }}</option>
+                        }
+                    </select>
+                    <button
+                        id="other_add_button"
+                        [disabled]="!otherMarkingRefs"
+                        (click)="addOther(otherMarkingRefs)"
+                        class="btn btn-color btn-add-ref"
+                    >
+                        <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
+                        Add
+                    </button>
+                </div>
+
+                @if (otherRefs.length > 0) {
+                    <div class="other-refs-list">
+                        @for (x of otherRefs; track x; let i = $index) {
+                            <div id="other_list{{ i }}" class="other-ref-item d-flex justify-content-between align-items-center">
+                                <span class="ref-name">{{ stixService.markingDefinition[x] }}</span>
+                                <button
+                                    class="btn btn-fa-sm btn-color list-trash"
+                                    type="button"
+                                    id="other_list{{ i }}_delete"
+                                    (click)="deleteOther(x)"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <div class="empty-refs-state">No additional marking references added yet.</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer d-flex justify-content-end gap-2">
+        <button id="obj_marking_refs_cancel" type="button" class="btn btn-outline-secondary" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button
+            id="obj_marking_refs_add"
+            type="button"
+            class="btn btn-outline-success"
+            (click)="onConfirm()"
+            [disabled]="!markingRefs && !acs && otherRefs.length === 0"
+        >
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+            Confirm
+        </button>
+    </div>
+</div>

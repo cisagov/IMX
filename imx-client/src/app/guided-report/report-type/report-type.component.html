@@ -1,0 +1,27 @@
+<div class="d-flex justify-content-center align-items-start content-wrapper">
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <div class="d-flex flex-column object-info-wrapper mt-5 w-100">
+            <div class="title-size2">What Type Of Report Would You Like To Create?</div>
+            <input type="text" class="form-control" [(ngModel)]="guidedService.gr.gr_name" />
+
+            <input
+                class="form-control"
+                [(ngModel)]="guidedService.gr.gr_published"
+                id="grPublished"
+                [placeholder]=""
+                [owlDateTimeTrigger]="grDtPicker"
+                [owlDateTime]="grDtPicker"
+            />
+            <owl-date-time #grDtPicker></owl-date-time>
+
+            <select class="form-control form-select" id="grReportType" name="grReportType" (change)="grTypeHandler($event)">
+                <option value="">Select Report Type</option>
+                @for (grType of grTypeOptions; track grType; let i = $index) {
+                    <option [value]="grType.key" [title]="grType.value">{{ grType?.value }}</option>
+                }
+            </select>
+
+            Description <textarea class="form-control" [(ngModel)]="guidedService.gr.gr_description" rows="5" wrap="soft"></textarea>
+        </div>
+    </div>
+</div>

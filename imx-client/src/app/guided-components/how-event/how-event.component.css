@@ -1,0 +1,9 @@
+.bottom {
+    height: 3.25rem;
+    width: 100%;
+}
+
+.bottom-absolute {
+    position: absolute;
+    bottom: 0;
+}

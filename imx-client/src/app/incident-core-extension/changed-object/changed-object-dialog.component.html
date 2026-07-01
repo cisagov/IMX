@@ -1,0 +1,111 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>State Change Object</span>
+        </h4>
+        <button type="button" class="close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
+        </div>
+        <div class="form-group mt-2 pt-2 ps-4 pe-2">
+            <div class="row">
+                <div class="col-6 p-1">
+                    <div class="stix-title" style="float: left">State Change Type*</div>
+                    @if (!this.stixService.revoked && !this.stixService.revocation) {
+                        <select id="state_change_type" class="form-control dropdown" [(ngModel)]="state_change_type">
+                            <option value="" selected></option>
+                            @for (opt of this.stateChangeTypeOV; track opt) {
+                                <option [value]="opt">
+                                    {{ this.stixService.toTitle(opt) }}
+                                </option>
+                            }
+                        </select>
+                    }
+                    @if (this.stixService.revoked || this.stixService.revocation) {
+                        <input class="form-control" id="state_change_type" type="text" [(ngModel)]="state_change_type" readonly />
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-8 p-1">
+                    <div class="stix-title" style="float: left">Initial Ref</div>
+                    <div class="col-12 p-0 mt-1 input-group">
+                        <div class="col-6 p-0">
+                            @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                <select id="initial_ref" class="form-control dropdown" [(ngModel)]="initial_ref">
+                                    <option value="" selected></option>
+                                    @for (opt of this.refIds; track opt) {
+                                        <option [value]="opt">
+                                            {{ opt }}
+                                        </option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        <div class="col-6 p-0">
+                            <input
+                                class="form-control"
+                                id="initial_ref"
+                                type="text"
+                                [(ngModel)]="initial_ref"
+                                [readonly]="this.stixService.revoked || this.stixService.revocation"
+                            />
+                        </div>
+                    </div>
+                    @if (this.errors['initial_ref'] && this.errors['initial_ref'] != '') {
+                        <div class="row">
+                            <span class="mb-2 warning-message ps-3">
+                                {{ this.errors['initial_ref'] }}
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-8 p-1">
+                    <div class="stix-title" style="float: left">Result Ref</div>
+                    <div class="col-12 p-0 mt-1 input-group">
+                        <div class="col-6 p-0">
+                            @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                <select id="result_ref" class="form-control dropdown" [(ngModel)]="result_ref">
+                                    <option value="" selected></option>
+                                    @for (opt of this.refIds; track opt) {
+                                        <option [value]="opt">
+                                            {{ opt }}
+                                        </option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        <div class="col-6 p-0">
+                            <input
+                                class="form-control"
+                                id="result_ref"
+                                type="text"
+                                [(ngModel)]="result_ref"
+                                [readonly]="this.stixService.revoked || this.stixService.revocation"
+                            />
+                        </div>
+                    </div>
+                    @if (this.errors['result_ref'] && this.errors['result_ref'] != '') {
+                        <div class="row">
+                            <span class="mb-2 warning-message ps-3">
+                                {{ this.errors['result_ref'] }}
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="onX()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success" (click)="onConfirm()" [disabled]="!isDialogValid()">Add</button>
+    </div>
+</div>

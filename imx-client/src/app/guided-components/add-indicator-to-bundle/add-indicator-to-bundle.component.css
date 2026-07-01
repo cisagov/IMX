@@ -1,0 +1,83 @@
+.sdo-badge {
+    font-size: 0.65em;
+    vertical-align: middle;
+    color: #fff;
+}
+
+.btn-warning {
+    color: white;
+    background-color: red;
+    border-color: red;
+}
+
+.tlp-build {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.tooltipright {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: -5px !important;
+}
+
+.tooltipright .toolttext,
+.tooltipright .toolttext-id {
+    visibility: hidden;
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: center;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -50%;
+    margin-left: 12px;
+    left: 100%;
+}
+
+.toolttext {
+    min-width: 150px;
+}
+
+.toolttext-id {
+    min-width: 345px;
+}
+
+.tooltipright:hover .toolttext,
+.tooltipright:hover .toolttext-id {
+    visibility: visible;
+}
+
+.tooltipright:empty .toolttext,
+.tooltipright:empty .toolttext-id {
+    visibility: hidden;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper {
+    padding: 30px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper .tooltip-content {
+    margin-top: 15px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.bundle-wrapper {
+    max-width: 65vw;
+}
