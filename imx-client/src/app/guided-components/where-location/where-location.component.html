@@ -1,0 +1,506 @@
+<div class="main-container">
+    <!-- Header -->
+    <div class="guided-header">
+        <div class="guided-header-items">
+            <div class="guided-header-icon">
+                <fa-icon [icon]="faGlobe" style="font-size: 1.75rem"></fa-icon>
+                <div class="d-flex flex-column">
+                    <h3 class="guided-header-title component-title ps-2">WHERE (Location)</h3>
+                    <p class="guided-header-subtitle ps-2">Where did this occur?</p>
+                </div>
+            </div>
+
+            <app-total-guided-cart (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+        </div>
+        <div class="horizonal-rule-top" style="width: 100%"></div>
+    </div>
+
+    <div class="form-container">
+        <!-- Form Body -->
+        <div class="guided-form">
+            <!-- Target/Attacker -->
+            <div class="inner-row mb-4 col-6" style="padding-right: 1rem">
+                <div class="input-header">Target or Attacker</div>
+
+                <select
+                    class="form-select form-control form-control-guided"
+                    name="targetAttacker"
+                    [(ngModel)]="activeTab"
+                    (ngModelChange)="setTab($event)"
+                    [ngClass]="{
+                        disabled: !isTargetTabEnabled && !isAttackerTabEnabled,
+                        'select-placeholder-guided': guidedService.emptyDropdown(activeTab),
+                    }"
+                    [disabled]="!isTargetTabEnabled && !isAttackerTabEnabled"
+                >
+                    <option [ngValue]="null" disabled>Select Target/Attacker</option>
+                    <option [value]="'target'">Target</option>
+                    <option [value]="'attacker'">Attacker</option>
+                </select>
+            </div>
+
+            <!-- Target Inputs -->
+            @if (activeTab === 'target') {
+                <!-- Region & Street Address -->
+                <div class="guided-dual-container">
+                    <!-- Region -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Region<span class="text-danger ms-1">*</span>
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_region')"></span>
+                            </span>
+                        </div>
+                        <select
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="target.region"
+                            (change)="isEnabled()"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.region) }"
+                        >
+                            <option disabled selected style="color: #adb5bd" value="">Select Region</option>
+                            @for (option of regionOptions; track option) {
+                                <option [ngValue]="option.key">{{ option.value }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Street Address -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Street Address
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_street_address')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="target.street_address"
+                            [disabled]="!isOptionalEnabled || !isTargetTabEnabled"
+                            placeholder="Enter Street Address"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.street_address) }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Country & Administrative Area -->
+                <div class="guided-dual-container">
+                    <!-- Country -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Country
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_country')"></span>
+                            </span>
+                        </div>
+                        <select
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="target.country"
+                            (change)="isEnabled()"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.country) }"
+                        >
+                            <option disabled selected style="color: #adb5bd" value="">Select Country</option>
+                            @for (option of countryOptions; track option) {
+                                <option [ngValue]="option.key">{{ option.value }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Administrative Area -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Administrative Area
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_admin_area')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            [ngClass]="{ 'mb-4': areaError === '' }"
+                            type="text"
+                            [(ngModel)]="target.administrative_area"
+                            [disabled]="!isOptionalEnabled || !isTargetTabEnabled"
+                            (input)="isEnabled()"
+                            placeholder="Enter Administrative Area"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.administrative_area) }"
+                        />
+                        @if (areaError !== '') {
+                            <p class="text-danger mb-4 ms-1">**{{ areaError }}**</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Latitude & City -->
+                <div class="guided-dual-container">
+                    <!-- Latitude -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Latitude
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_latitude')"></span>
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <input
+                                class="form-control form-control-guided"
+                                type="number"
+                                [(ngModel)]="target.latitude"
+                                placeholder="Enter Latitude"
+                                (input)="isEnabled()"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.latitude) }"
+                            />
+                            @if (latError !== '') {
+                                <p class="text-danger mb-4 ms-1">**{{ latError }}**</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- City -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            City
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_city')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="target.city"
+                            [disabled]="!isOptionalEnabled || !isTargetTabEnabled"
+                            placeholder="Enter City"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.city) }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Longitude & Postal Code -->
+                <div class="guided-dual-container">
+                    <!-- Longitude -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Longitude
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_longitude')"></span>
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <input
+                                class="form-control form-control-guided"
+                                type="number"
+                                [(ngModel)]="target.longitude"
+                                placeholder="Enter Longitude"
+                                (input)="isEnabled()"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.longitude) }"
+                            />
+                            @if (longError !== '') {
+                                <p class="text-danger mb-4 ms-1">**{{ longError }}**</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Postal Code -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Postal Code
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('target_postal_code')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="target.postal_code"
+                            [disabled]="!isOptionalEnabled || !isTargetTabEnabled"
+                            placeholder="Enter Postal Code"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(target.postal_code) }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Target Input -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        Target
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('select_target')"></span>
+                        </span>
+                    </div>
+                    <select
+                        class="form-control form-control-guided"
+                        type="text"
+                        [(ngModel)]="currentTarget"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentTarget) }"
+                    >
+                        <option disabled selected value="">Select a Target</option>
+                        @for (option of getTargets(); track option) {
+                            <option [value]="option.id">{{ option.name }}</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            <!-- Attacker Inputs -->
+            @if (activeTab === 'attacker') {
+                <!-- Region & Street Address -->
+                <div class="guided-dual-container">
+                    <!-- Region -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Region<span class="text-danger ms-1">*</span>
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_region')"></span>
+                            </span>
+                        </div>
+                        <select
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="attacker.region"
+                            (change)="isEnabled()"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.region) }"
+                        >
+                            <option disabled selected style="color: #adb5bd" value="">Select Region</option>
+                            @for (option of regionOptions; track option) {
+                                <option>{{ option.value }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Street Address -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Street Address
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_street_address')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="attacker.street_address"
+                            [disabled]="!isOptionalEnabled || !isAttackerTabEnabled"
+                            placeholder="Enter Street Address"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.street_address) }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Country & Administrative Area -->
+                <div class="guided-dual-container">
+                    <!-- Country -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Country
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_country')"></span>
+                            </span>
+                        </div>
+                        <select
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="attacker.country"
+                            (change)="isEnabled()"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.country) }"
+                        >
+                            <option disabled selected style="color: #adb5bd" value="">Select Country</option>
+                            @for (option of countryOptions; track option) {
+                                <option>{{ option.value }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Administrative Area -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Administrative Area
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_admin_area')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            [ngClass]="{ 'mb-4': areaError === '' }"
+                            type="text"
+                            [(ngModel)]="attacker.administrative_area"
+                            [disabled]="!isOptionalEnabled || !isAttackerTabEnabled"
+                            (input)="isEnabled()"
+                            placeholder="Enter Administrative Area"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.administrative_area) }"
+                        />
+                        @if (areaError !== '') {
+                            <p class="text-danger mb-4 ms-1">**{{ areaError }}**</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Latitude & City -->
+                <div class="guided-dual-container">
+                    <!-- Latitude -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Latitude
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_latitude')"></span>
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <input
+                                class="form-control form-control-guided"
+                                type="number"
+                                [(ngModel)]="attacker.latitude"
+                                placeholder="Enter Latitude"
+                                (input)="isEnabled()"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.latitude) }"
+                            />
+                            @if (latError !== '') {
+                                <p class="text-danger mb-4 ms-1">**{{ latError }}**</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- City -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            City
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_city')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="attacker.city"
+                            [disabled]="!isOptionalEnabled || !isAttackerTabEnabled"
+                            placeholder="Enter City"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.city) }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Longitude & Postal Code -->
+                <div class="guided-dual-container">
+                    <!-- Longitude -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Longitude
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_longitude')"></span>
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <input
+                                class="form-control form-control-guided"
+                                type="number"
+                                [(ngModel)]="attacker.longitude"
+                                placeholder="Enter Longitude"
+                                (input)="isEnabled()"
+                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.longitude) }"
+                            />
+                            @if (longError !== '') {
+                                <p class="text-danger mb-4 ms-1">**{{ longError }}**</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Postal Code -->
+                    <div class="inner-row">
+                        <div class="input-header">
+                            Postal Code
+                            <span class="guided-tip">
+                                <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('attacker_postal_code')"></span>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-guided"
+                            type="text"
+                            [(ngModel)]="attacker.postal_code"
+                            [disabled]="!isOptionalEnabled || !isAttackerTabEnabled"
+                            placeholder="Enter Postal Code"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(attacker.postal_code) }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Attacker Input -->
+                <div class="inner-row">
+                    <div class="input-header">
+                        Attacker
+                        <span class="guided-tip">
+                            <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('select_attacker')"></span>
+                        </span>
+                    </div>
+                    <select
+                        class="form-control form-control-guided"
+                        type="text"
+                        [(ngModel)]="currentAttacker"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentAttacker) }"
+                    >
+                        <option disabled selected value="">Select an attacker</option>
+                        @for (option of getAttackers(); track option) {
+                            <option [value]="option.id">{{ option.name }}</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <!-- Help Section -->
+        <div class="guided-information">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="d-flex flex-column justify-content-start gr-help-section">
+                <div class="gr-help-section-title">Location</div>
+                <div class="gr-help-section-content">
+                    For the target, is the incident contained to a physical location?
+                    <br /><br />
+                    For the attacker, did the threat activity come from a physical location?
+                    <br /><br />
+                    First, choose whose location you are recording—the target or attackers—by selecting the correct tab.
+                    <br /><br />
+                    If both locations are known, you may fill out both forms.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #clearCartModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>Guided Cart</span>
+        </h4>
+    </div>
+    <div class="modal-body">This action will remove all items in the <b>Added Items</b> cart.</div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button type="button" class="btn btn-sm btn-success" (click)="onConfirm()">
+            <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+            Confirm
+        </button>
+    </div>
+</ng-template>

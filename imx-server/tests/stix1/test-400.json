@@ -1,0 +1,4 @@
+{
+    "format": "ais",
+    "data": "[{\"type\":\"main\",\"guid\":\"A-841952\",\"attribs\":{\"doctitle\":\"Fashion giant Chanel hit in wave of Salesforce data theft attacks\",\"docid\":\"TPG-841952\",\"overview\":\"French fashion giant Chanel is the latest company to suffer a data breach in an ongoing wave of Salesforce data theft attacks. [...]\",\"produced\":\"2025-08-04\",\"intent\":\"Indicators\",\"tlp\":\"AMBERSTRICT\",\"patterns\":[\"Initial Access [TA0001] (ENT)\"],\"consent\":\"EVERYONE\",\"org_name\":\"CISA\",\"org_country\":\"US\",\"org_admin\":\"US-DC\",\"org_sector\":\"Government National\",\"org_source\":\"NONFED\",\"proprietary\":\"false\"}}]"
+}

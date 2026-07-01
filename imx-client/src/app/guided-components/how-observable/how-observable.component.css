@@ -1,0 +1,137 @@
+.angle-up {
+    margin-left: 0.03575rem;
+}
+
+.bottom {
+    height: 3.25rem;
+    width: 100%;
+}
+
+.bottom-absolute {
+    position: absolute;
+    bottom: 0;
+}
+
+.btn-angle-up {
+    padding-top: 0.25rem !important;
+}
+
+.btn-cart {
+    height: 35px;
+}
+
+.btn-circle {
+    padding-left: 0.65rem !important;
+    height: 33px !important;
+    width: 33px !important;
+    border-radius: 20px !important;
+    color: whitesmoke !important;
+    margin-left: 1rem;
+    margin-top: 0.6rem;
+}
+
+.cart {
+    background-color: rgb(246, 246, 246);
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+.cart-display-name {
+    float: left;
+    max-width: 16.5rem;
+    overflow-x: hidden;
+    height: 1.5rem;
+    overflow-y: hidden;
+}
+
+.cart-item {
+    border-bottom: 1px solid gray;
+    height: 1.5rem;
+    overflow-y: hidden;
+}
+
+.cart-title {
+    border-bottom: 1px solid black;
+}
+
+.cart-button {
+    float: right;
+    padding-left: 4.5px !important;
+    margin-top: 0.125rem;
+}
+
+.hint-box {
+    padding: 2px;
+    background-color: lightgray;
+    border-radius: 5px;
+}
+
+.hint {
+    font-size: small;
+}
+
+.observable-section {
+    margin-bottom: 10px;
+}
+
+.sides {
+    width: 16.2%;
+}
+
+.clear-button {
+    border: none;
+    background-color: inherit;
+    color: gray;
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    z-index: 1;
+}
+
+.clear-button:hover {
+    color: darkgray;
+}
+
+.clear-button-text {
+    margin-top: 10px;
+}
+
+/* Select Time Zone */
+.timezone-input-container {
+    position: relative;
+}
+
+.timezone-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    max-height: 280px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.12),
+        0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 6px 0;
+}
+
+.timezone-option {
+    padding: 9px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.timezone-option:hover {
+    background: #f3f4f6;
+}
+
+.timezone-option:active {
+    background: #e5e7eb;
+}
+/* End Select Time Zone */

@@ -1,0 +1,71 @@
+p {
+    font-size: small;
+}
+
+.cwe-section {
+    border-bottom: solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-circle {
+    padding-left: 0.65rem !important;
+    height: 33px !important;
+    width: 33px !important;
+    border-radius: 20px !important;
+    color: whitesmoke !important;
+    margin-left: 1rem;
+    margin-top: 0.6rem;
+}
+
+.btn-angle-up {
+    padding-top: 0.25rem !important;
+}
+
+.angle-up {
+    margin-left: 0.03575rem;
+}
+
+.bottom {
+    height: 3.25rem;
+    width: 100%;
+}
+
+.bottom-absolute {
+    position: absolute;
+    bottom: 0;
+}
+
+.warning-message {
+    font-size: 14px;
+    font-weight: 600;
+    color: #dc3545;
+}
+
+.added-item-dropdown {
+    min-width: 25rem;
+}
+
+select option:hover {
+    background-color: #999;
+    color: #fff;
+}
+
+select option:checked {
+    background-color: #999;
+    color: #fff;
+}
+
+input::placeholder {
+    color: #999 !important;
+}
+
+.input-header {
+    color: #6f6f6f;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+textarea:disabled {
+    color: #6f6f6f;
+    background-color: #ffffff;
+    cursor: not-allowed;
+}

@@ -1,0 +1,186 @@
+{
+  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/external-reference.json",
+  "$schema": "http://json-schema.org/draft/2020-12/schema#",
+  "title": "external-reference",
+  "description": "External references are used to describe pointers to information represented outside of STIX.",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "A human readable description"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "A URL reference to an external resource."
+    },
+    "hashes": {
+      "description": "Specifies a dictionary of hashes for the file.",
+      "allOf": [
+        {
+          "type": "object",
+          "allOf": [
+            {
+              "type": "object",
+              "minProperties": 1,
+              "patternProperties": {
+                "^[a-zA-Z0-9_-]{0,250}$": {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "object"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          ],
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]{3,250}$": {
+              "type": "string",
+              "description": "Custom hash key"
+            },
+            "^MD5$": {
+              "type": "string",
+              "description": "Specifies the MD5 message digest algorithm.",
+              "pattern": "^[a-fA-F0-9]{32}$"
+            },
+            "^SHA-1$": {
+              "type": "string",
+              "description": "Specifies the SHA-1 (secure-hash algorithm 1) cryptographic hash function.",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "^SHA-256$": {
+              "type": "string",
+              "description": "Specifies the SHA-256 cryptographic hash function (part of the SHA2 family).",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            },
+            "^SHA-512$": {
+              "type": "string",
+              "description": "Specifies the SHA-512 cryptographic hash function (part of the SHA2 family).",
+              "pattern": "^[a-fA-F0-9]{128}$"
+            },
+            "^SHA3-256$": {
+              "type": "string",
+              "description": "Specifies the SHA3-256 cryptographic hash function.",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            },
+            "^SHA3-512$": {
+              "type": "string",
+              "description": "Specifies the SHA3-512 cryptographic hash function.",
+              "pattern": "^[a-fA-F0-9]{128}$"
+            },
+            "^SSDEEP$": {
+              "type": "string",
+              "description": "Specifies the ssdeep fuzzy hashing algorithm.",
+              "pattern": "^[a-zA-Z0-9/+:.]{1,128}$"
+            },
+            "^TLSH$": {
+              "type": "string",
+              "description": "Specifies the TLSH locality-sensitive hashing algorithm.",
+              "pattern": "^[a-zA-Z0-9]{70}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "propertyNames": {
+            "pattern": "^MD5|SHA-1|SHA-256|SHA-512|SHA3-256|SHA3-512|SSDEEP|TLSH$"
+          }
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "source_name": {
+          "type": "string",
+          "description": "The source within which the external-reference is defined (system, registry, organization, etc.)",
+          "pattern": "^cve$"
+        },
+        "external_id": {
+          "type": "string",
+          "description": "An identifier for the external reference content.",
+          "pattern": "^CVE-\\d{4}-(0\\d{3}|[1-9]\\d{3,})$"
+        }
+      },
+      "required": [
+        "source_name",
+        "external_id"
+      ]
+    },
+    {
+      "properties": {
+        "source_name": {
+          "type": "string",
+          "description": "The source within which the external-reference is defined (system, registry, organization, etc.)",
+          "pattern": "^capec$"
+        },
+        "external_id": {
+          "type": "string",
+          "description": "An identifier for the external reference content.",
+          "pattern": "^CAPEC-\\d+$"
+        }
+      },
+      "required": [
+        "source_name",
+        "external_id"
+      ]
+    },
+    {
+      "properties": {
+        "source_name": {
+          "type": "string",
+          "description": "The source within which the external-reference is defined (system, registry, organization, etc.)",
+          "not": {
+            "pattern": "^((cve)|(capec))$"
+          }
+        },
+        "external_id": {
+          "type": "string",
+          "description": "An identifier for the external reference content.",
+          "not": {
+            "pattern": "^((CVE-\\d{4}-(0\\d{3}|[1-9]\\d{3,}))|(CAPEC-\\d+))$"
+          }
+        }
+      },
+      "required": [
+        "source_name"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "external_id"
+          ]
+        },
+        {
+          "required": [
+            "description"
+          ]
+        },
+        {
+          "required": [
+            "url"
+          ]
+        }
+      ]
+    }
+  ]
+}

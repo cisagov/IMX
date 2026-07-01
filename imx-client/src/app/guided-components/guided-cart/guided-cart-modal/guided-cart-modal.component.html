@@ -1,0 +1,56 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>{{ currentMode }} Items</span>
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body" [style]="'max-height: 70vh; overflow-y: auto;'">
+        <div class="w-100">
+            @for (type of categories | keyvalue; track type) {
+                @if (categories[type.key]?.length > 0) {
+                    <div class="cart-section mb-1 mb-3">
+                        <h5 class="mb-3">{{ type.key }} ({{ getCategoryLength(type.key) }})</h5>
+                        @for (object of categories[type.key]; track object; let i = $index) {
+                            <div class="cart-item ms-3">
+                                <div class="cart-item-details d-flex flex-column">
+                                    <div class="cart-item-details-header d-flex gap-2" (click)="object.type === 'impact' && toggleImpactDetails(i)">
+                                        <span class="cart-display-name" style="padding-top: 2px">{{ getName(object) }}</span>
+                                        @if (object.type === 'impact') {
+                                            <fa-icon class="cart-item-icon" [icon]="impactDetailsOpen[i] ? faChevronUp : faChevronDown" style="padding-top: .2rem;"></fa-icon>
+                                        }
+                                    </div>
+                                    @if (object.type === 'impact' && impactDetailsOpen[i]) {
+                                        <div class="impact-details">
+                                            <pre style="font-family: system-ui;">{{ formatExtensionObject(object.extensions[`${object.impact_category}-ext`]) }}</pre>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="cart-item-buttons">
+                                    <button class="btn btn-fa btn-outline-primary" (click)="editFromCart(object, type.key)" [disabled]="editMode">
+                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                    </button>
+                                    <button
+                                        class="btn btn-fa btn-outline-danger"
+                                        (click)="deleteFromCart(object, type.key, true)"
+                                        [disabled]="editMode"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-outline-secondary query-button" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+    </div>
+</div>

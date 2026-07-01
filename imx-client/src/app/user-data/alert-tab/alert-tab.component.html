@@ -1,0 +1,37 @@
+<div class="ps-3 pb-3 d-flex justify-content-between">
+    <div>
+        <button
+            class="btn btn-sm btn-outline-primary me-2"
+            [ngClass]="{ 'btn-primary': activeTable == 'history', 'btn-outline-primary': activeTable != 'history' }"
+            [disabled]="isLoading || activeTable == 'history'"
+            (click)="setTable('history')"
+        >
+            <fa-icon [icon]="faBell" class="pe-1"></fa-icon>
+            History
+        </button>
+        <button
+            class="btn btn-sm btn-outline-primary"
+            [ngClass]="{ 'btn-primary': activeTable == 'subscriptions', 'btn-outline-primary': activeTable != 'subscriptions' }"
+            [disabled]="isLoading || activeTable == 'subscriptions'"
+            (click)="setTable('subscriptions')"
+        >
+            <fa-icon [icon]="faCog" class="pe-1"></fa-icon>
+            Subscriptions
+        </button>
+    </div>
+</div>
+@if (!isLoading && stixService.imxServerConnectionError != '') {
+    <div class="col-12 text-center">
+        <p class="text-danger">**{{ stixService.imxServerConnectionError }}**</p>
+    </div>
+}
+@if (!isLoading && stixService.imxServerConnectionError == '' && activeTable == 'history') {
+    <div>
+        <app-alert-history></app-alert-history>
+    </div>
+}
+@if (!isLoading && stixService.imxServerConnectionError == '' && activeTable == 'subscriptions') {
+    <div>
+        <app-alert-subscriptions></app-alert-subscriptions>
+    </div>
+}

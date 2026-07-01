@@ -1,93 +1,110 @@
-# IMX
+# IMX - Indicator Messaging eXchange
 
+IMX is a tool used to create reports that cater to the STIX specification and it compliant with storing these reports within TAXII Servers.
 
+IMX itself is intended to be used along side a compatible TAXII Server.
 
-## Getting started
+## Tech Stack
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+| Layer | Technology |
+|---|---|
+| Frontend | Angular 20 |
+| Backend | Node.js |
+| STIX Processing | Python 3 / Flask |
+| Search & Storage | Elasticsearch |
+| Observability | Kibana |
+| Document Parsing | Apache Tika |
+| Authentication | Keycloak, OIDC (optional) |
+| Standards | STIX 2.x, TAXII 2.x |
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Prerequisites
 
-## Add your files
+The following must be installed before running IMX locally:
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+- **Node.js** 18.19 or later (and npm)
+- **Angular CLI** — install globally with `npm install -g @angular/cli`
+- **Python** 3.9 or later (and pip)
+- **Docker** and **Docker Compose**
+
+## Deployments
+
+The repo root contains a `docker-compose.yml` and `template.env` for standing up the full IMX stack. Before running, copy the template and fill in values for your environment:
 
 ```
-cd existing_repo
-git remote add origin <repository-url>
-git branch -M main
-git push -uf origin main
+cp template.env .env
 ```
 
-## Integrate with your tools
+Open `.env` and configure it as needed — at minimum set any auth credentials and service URLs relevant to your setup.
 
-* Set up project integrations
+## Local Deployment
 
-## Collaborate with your team
+### Local Testing
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+To run the full stack locally:
 
-## Test and Deploy
+```
+docker compose up -d
+```
 
-Use the built-in continuous integration in GitLab.
+This starts services in dependency order: Elasticsearch first, then Kibana, then IMX Server, then IMX Client. IMX Python and Apache Tika start independently. Once all containers are healthy, visit IMX at http://localhost:4200. Port mappings for each service are defined in `docker-compose.yml`.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+### Local Development
 
-***
+For active frontend development, bring up the backend services only and run the Angular client directly:
 
-# Editing this README
+```
+docker compose up -d --scale imx-client=0
+cd imx-client && npm install && npm start
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+This runs the Angular dev server at http://localhost:4200 with hot reload enabled.
 
-## Suggestions for a good README
+For IMX Server development, see [imx-server/README.md](imx-server/README.md) for instructions on running the server outside Docker. If running it containerized, restart it after changes with:
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+```
+docker compose restart imx-server
+```
 
-## Name
-Choose a self-explaining name for your project.
+## Setting up Authentication
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+There are a couple different options for setting up authentication of IMX. To do so you will need to update the IMX Client's env.json and the IMX Server env variables. Below are a few ways to can configure them:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### No Auth
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+This is only recommended for development use. To do so make sure that keycloak.enabled and oidc.enabled are set to false in the env.json and IMX Server's AUTH env variable is either empty or set to 'none'. This will allow you to use IMX without authentication and will show you as a 'dev-user' while using the application.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Keycloak Authentication
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+It is important to note that even though Keycloak itself supports OIDC and SAML, this does not use either of the two mechanisms. This uses a Keycloak provided NodeJS package called keycloak-js. This is for a few specific use cases in IMX, but also for a tighter integration with Keycloak rather than using OIDC or SAML. To use this authentication set the following in env.json and IMX Server env variables respectively:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- `env.json` - `oidc.enabled` - false
+- `env.json` - `keycloak.enabled` - true
+- `env.json` - `keycloak.clientId` - {TARGET KEYCLOAK CLIENT ID}
+- `env.json` - `keycloak.realm` - {TARGET KEYCLOAK REALM}
+- `env.json` - `keycloak.url` - {TARGET KEYCLOAK URL}
+- `env.json` - `keycloak.bearerTokenURLs` - {AN ARRAY WITH A LIST OF URLS TO SEND KEYCLOAK ACCESS TOKEN TO}
+- `ENV` - `KC_URL` - {TARGET KEYCLOAK URL}
+- `ENV` - `KC_REALM` - {TARGET KEYCLOAK REALM}
+- `ENV` - `KC_CERT` - {IF DESIRED TO BYPASS TLS VERIFICATION FOR KEYCLOAK SET TO "TEN"}
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### OIDC Authentication
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+For OIDC setup configure the env.json and IMX Server env variables respectively:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- `env.json` - `keycloak.enabled` - false
+- `env.json` - `oidc.enabled` - true
+- `env.json` - `oidc.apiRoot` - {TARGET OIDC PROVIDER API URL}
+- `env.json` - `oidc.bearerTokenURLs` - {AN ARRAY WITH A LIST OF URLS TO SEND OIDC ACCESS TOKEN TO}
+- `env.json` - `oidc.clientId` - {TARGET OIDC CLIENT ID}
+- `env.json` - `oidc.clientScope` - {SPACE DELIMITED LIST OF OIDC SCOPES}
+- `env.json` - `oidc.stsAuthority` - {TARGET OIDC PROVIDER URL}
+- `env.json` - `oidc.usernameField` - {TARGET OIDC FIELD FOR USERNAME}
+- `ENV` - `OIDC_URL` - {TARGET OIDC PROVIDER API URL}
+- `ENV` - `OIDC_USER_FIELD` - {TARGET OIDC FIELD FOR USERNAME}
+- `ENV` - `OIDC_CERT` - {IF DESIRED TO BYPASS TLS VERIFICATION FOR OIDC PROVIDER SET TO "TEN"}
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Copyright 2026 Cybersecurity and Infrastructure Security Agency (CISA)
+
+This software is released to the public domain under 17 U.S.C. § 105. The [Apache 2.0 License](LICENSE) applies to the extent permitted by applicable law, and for the benefit of international users.

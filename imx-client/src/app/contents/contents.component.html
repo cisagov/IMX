@@ -1,0 +1,223 @@
+<div class="row">
+    <div class="col-8">
+        <div>
+            <b>Contents</b>
+        </div>
+        <sub class="ps-2" *ngIf="!isParsingSuccessful"> * Please provide the id of the object that this Language Content applies to </sub>
+        <div>
+            <sub class="ps-2" *ngIf="isAddDisabled()"> Please provide the id of the object that this Language Content applies to </sub>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="float-end mt-2" *ngIf="!this.stixService.revoked && !this.stixService.revocation">
+            <button
+                class="btn btn-sm btn-primary add-button"
+                type="button"
+                *ngIf="!isAddingContents || !isParsingSuccessful"
+                (click)="addOrCancel()"
+                [disabled]="isAddDisabled() || !isParsingSuccessful"
+            >
+                Add
+            </button>
+            <button
+                class="btn btn-sm btn-outline-secondary cancel-button"
+                type="button"
+                *ngIf="isAddingContents && isParsingSuccessful"
+                (click)="addOrCancel()"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+<div class="form-group mt-2" *ngIf="this.stixService.contents.length > 0">
+    <accordion>
+        <accordion-group *ngFor="let content of this.stixService.contents" [heading]="content.lang" [panelClass]="'accordion-panel-class'">
+            <div class="row">
+                <div class="col-8">
+                    <pre>{{ getContentsDisplay(content) | json }}</pre>
+                </div>
+                <div class="col-4">
+                    <button
+                        *ngIf="!this.stixService.revoked && !this.stixService.revocation"
+                        class="btn btn-xl btn-danger"
+                        type="button"
+                        (click)="deleteContent(content)"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </accordion-group>
+    </accordion>
+</div>
+<div class="form-group mt-2" *ngIf="isAddingContents && !isAddDisabled() && isParsingSuccessful">
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group mb-2">
+                <span class="input-group-text"> Language </span>
+                <select
+                    type="text"
+                    class="form-control form-select"
+                    [(ngModel)]="this.currentContent.lang"
+                    name="lang"
+                    id="lang"
+                    [disabled]="isLangDisabled()"
+                >
+                    <option *ngFor="let item of langOptions" [value]="item.key">
+                        {{ item.value }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="input-group mb-2">
+                <span class="input-group-text"> Field Name </span>
+                <select
+                    type="text"
+                    class="form-control form-select"
+                    [(ngModel)]="currentContent.fieldName"
+                    name="fieldName"
+                    [disabled]="!this.currentContent.lang"
+                    id="fieldName"
+                >
+                    <option *ngFor="let item of fieldNameOptions" [value]="item.key">
+                        {{ item.label }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="input-group mb-2">
+                <span class="input-group-text"> Field Type </span>
+                <select
+                    type="text"
+                    class="form-control form-select"
+                    [(ngModel)]="currentContent.contentType"
+                    name="contentType"
+                    [disabled]="!this.currentContent.lang"
+                    id="contentType"
+                >
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
+                    <option value="list">List</option>
+                    <option value="dict">Dictionary</option>
+                </select>
+            </div>
+        </div>
+
+        <div
+            [ngClass]="{
+                'col-12': this.currentContent.contentType !== 'list' && this.currentContent.contentType !== 'dict',
+                'col-6': this.currentContent.contentType === 'list' || this.currentContent.contentType === 'dict',
+            }"
+            *ngIf="this.currentContent.lang"
+        >
+            <div
+                class="mb-2"
+                [ngClass]="{
+                    'input-section-offset': this.currentContent.contentType === 'list' || this.currentContent.contentType === 'dict',
+                    'input-group': this.currentContent.contentType !== 'dict',
+                }"
+            >
+                <ng-container [ngSwitch]="this.currentContent.contentType">
+                    <span class="input-group-text" *ngIf="this.currentContent.contentType !== 'dict'"> Field Content </span>
+                    <ng-container *ngSwitchCase="'text'">
+                        <input class="form-control" placeholder="Field Value" [(ngModel)]="this.currentContent.contentValue" type="text" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'number'">
+                        <input class="form-control" placeholder="Field Value" [(ngModel)]="this.currentContent.contentValue" type="number" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'date'">
+                        <input
+                            class="form-control"
+                            [owlDateTime]="contentPicker"
+                            [owlDateTimeTrigger]="contentPicker"
+                            [(ngModel)]="this.currentContent.contentValue"
+                        />
+                        <owl-date-time #contentPicker></owl-date-time>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'list'">
+                        <input [(ngModel)]="listItemValue" class="form-control" placeholder="Field Value" [type]="this.currentContent.contentType" />
+                        <div class="text-end">
+                            <button type="button" class="btn btn-sm btn-primary" (click)="addToList()" [disabled]="!listItemValue">
+                                Add to List
+                            </button>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'dict'">
+                        <div class="input-group">
+                            <span class="input-group-text"> Field Content: Key </span>
+                            <input class="form-control" [(ngModel)]="dictKey" placeholder="Key" type="text" />
+                        </div>
+                        <div class="input-group mt-2">
+                            <span class="input-group-text"> Field Content: Value </span>
+                            <input class="form-control" [(ngModel)]="dictValue" placeholder="Value" type="text" />
+                        </div>
+                        <div class="mt-2 text-end">
+                            <button class="btn btn-sm btn-primary" type="button" (click)="addDictItem()" [disabled]="!dictKey || !dictValue">
+                                Add Dict Item
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="col-6" *ngIf="this.currentContent.contentType === 'list' || this.currentContent.contentType === 'dict'">
+            <div class="text-underline">Items in {{ this.currentContent.contentType === 'list' ? 'List' : 'Dictionary' }}</div>
+            <div class="mt-1" *ngIf="this.currentContent.contentType === 'dict'">
+                <div *ngIf="dictItems.length < 1">None</div>
+                <div *ngIf="dictItems.length > 0" class="items-list-height">
+                    <div class="d-block" *ngFor="let dictItem of dictItems">
+                        <span class="badge bg-secondary">
+                            Key: {{ dictItem.key }}, Value: {{ dictItem.value }}
+                            <span class="badge badge-danger remove-comparison-expression-button" (click)="removeItem(dictItem.key)">
+                                <fa-icon [icon]="faTrash"></fa-icon>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-1" *ngIf="this.currentContent.contentType === 'list'">
+                <ng-container *ngFor="let listItem of listItems; let i = index">
+                    <span class="badge bg-secondary m-2">
+                        {{ listItem }}
+                        <span class="badge badge-danger remove-comparison-expression-button" (click)="removeItem(i)">
+                            <fa-icon [icon]="faTrash"></fa-icon>
+                        </span>
+                    </span>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="col text-start mt-2">
+            <ng-container *ngFor="let field of getFieldKeys()">
+                <span class="badge bg-secondary m-2">
+                    {{ field }}: {{ displayField(this.currentContent.fields[field]) }}
+                    <span class="badge badge-danger remove-comparison-expression-button" (click)="removeField(field)">
+                        <fa-icon [icon]="faTrash"></fa-icon>
+                    </span>
+                </span>
+            </ng-container>
+        </div>
+
+        <div class="col text-end mt-2 pe-0">
+            <button class="btn btn-sm btn-primary me-1" type="button" (click)="addField()" [disabled]="isAddFieldDisabled()">Add Field</button>
+        </div>
+    </div>
+    <hr />
+    <div class="col text-end mt-2 pe-0">
+        <button
+            class="btn btn-sm btn-success content-button"
+            type="button"
+            (click)="addNewContent()"
+            [disabled]="(!currentContent.fieldName || !currentContent.contentValue || !currentContent.lang) && !isLangDisabled()"
+        >
+            Add Content
+        </button>
+    </div>
+</div>

@@ -1,0 +1,87 @@
+.body .item-title {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 24px;
+    background-color: rgb(248, 249, 250);
+    padding: 20px;
+    margin-top: 50px;
+}
+
+.fa-trash {
+    padding-left: 7px;
+    padding-top: 6px;
+}
+
+.body .item-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    width: fit-content;
+}
+
+.body .item-label {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.body .item-label .item-label-title {
+    width: 100px;
+}
+
+.body .item-label .item-label-content {
+    width: 380px;
+}
+
+.body .item-action {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.body .item-list-wrapper {
+    width: 338px;
+}
+
+.body .media-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.body .media-list-item-wrapper {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    background-color: rgb(248, 249, 250);
+    border-radius: 5px;
+    padding: 5px 5px 5px 20px;
+    margin-bottom: 10px;
+}
+
+.body .media-list-item-type {
+    width: 300px;
+}
+
+.body .item-label-input {
+    width: 380px;
+}
+
+.body .add-button-active {
+    cursor: pointer;
+}
+
+.body .add-button-inactive {
+    color: rgb(204, 204, 204);
+}
+
+.left-col {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.empty-space {
+    width: 6.25vw;
+}

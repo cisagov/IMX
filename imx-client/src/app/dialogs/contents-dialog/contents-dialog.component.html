@@ -1,0 +1,282 @@
+<div>
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Contents</h2>
+        <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal" (click)="closeModal()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body extensions-modal-body">
+        <div class="col-md-12">
+            <div class="ps-2" *ngIf="isAddDisabled() || !isParsingSuccessful">
+                Please provide the Object Reference ID that this Language Content applies to.
+            </div>
+        </div>
+        <div *ngIf="isAddingContents && !isAddDisabled() && isParsingSuccessful" class="col-md-12">
+            <div class="row" id="content-dialog-form">
+                <div class="col-12">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">
+                            <b>Language</b>
+                        </span>
+                        <select type="text" class="form-control form-select" [(ngModel)]="currentContent.lang" id="lang">
+                            <option *ngFor="let item of langOptions" [value]="item.key">
+                                {{ item.value }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">
+                            <b>Property Name</b>
+                        </span>
+                        <select
+                            type="text"
+                            class="form-control form-select"
+                            [(ngModel)]="currentContent.fieldName"
+                            [disabled]="!currentContent.lang"
+                            id="fieldName"
+                        >
+                            <option *ngFor="let item of fieldNameOptions" [value]="item.key">
+                                {{ item.label }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">
+                            <b>Property Type</b>
+                        </span>
+                        <select
+                            type="text"
+                            class="form-control form-select"
+                            [(ngModel)]="currentContent.contentType"
+                            name="contentType"
+                            [disabled]="!this.currentContent.lang"
+                            id="contentType"
+                        >
+                            <option value="text">Text</option>
+                            <option value="number">Number</option>
+                            <option value="date">Date</option>
+                            <option value="list">List</option>
+                            <option value="dict">Dictionary</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div
+                        class="mb-3"
+                        [ngClass]="{
+                            'input-section-offset': this.currentContent.contentType === 'list' || this.currentContent.contentType === 'dict',
+                            'input-group': true,
+                        }"
+                    >
+                        <ng-container [ngSwitch]="this.currentContent.contentType">
+                            <span
+                                class="input-group-text"
+                                *ngIf="this.currentContent.contentType !== 'dict' && this.currentContent.contentType !== ''"
+                            >
+                                <b>Property Value</b>
+                            </span>
+                            <ng-container *ngSwitchCase="'text'">
+                                <input class="form-control" [(ngModel)]="this.currentContent.contentValue" type="text" id="contentValue" />
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'number'">
+                                <input class="form-control" [(ngModel)]="this.currentContent.contentValue" type="number" id="contentValue" />
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'date'">
+                                <input
+                                    class="form-control"
+                                    [owlDateTime]="contentPicker"
+                                    [owlDateTimeTrigger]="contentPicker"
+                                    [(ngModel)]="this.currentContent.contentValue"
+                                    id="contentValue"
+                                />
+                                <owl-date-time #contentPicker></owl-date-time>
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'list'">
+                                <input [(ngModel)]="listItemValue" class="form-control" [type]="currentContent.contentType" id="contentValue" />
+                                <div class="text-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-primary"
+                                        (click)="addToList()"
+                                        [disabled]="!listItemValue"
+                                        *ngIf="!editList"
+                                    >
+                                        Add to List
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-primary"
+                                        (click)="updateList()"
+                                        [disabled]="!listItemValue"
+                                        *ngIf="editList"
+                                    >
+                                        Update List Item
+                                    </button>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'dict'">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <b>Property Key</b>
+                                    </span>
+                                    <input class="form-control" [(ngModel)]="dictKey" type="text" id="contentKey" />
+                                    <span class="input-group-text">
+                                        <b>Property Value</b>
+                                    </span>
+                                    <input class="form-control" [(ngModel)]="dictValue" type="text" id="contentValue" />
+                                    <button class="btn btn-sm btn-primary" type="button" (click)="addDictItem()" [disabled]="!dictKey || !dictValue">
+                                        Add Dict Item
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+
+                <div
+                    class="col-12"
+                    *ngIf="
+                        (this.currentContent.contentType === 'list' && listItems.length > 0) ||
+                        (this.currentContent.contentType === 'dict' && getKeys(dictItems).length > 0)
+                    "
+                >
+                    <div class="mt-2 ps-2 h6">Added {{ this.currentContent.contentType === 'list' ? 'List' : 'Dict' }} Items:</div>
+                    <div class="added-properties-font" *ngIf="this.currentContent.contentType === 'dict'">
+                        <ol>
+                            <li *ngFor="let dictItem of dictItems | keyvalue" tabindex="0">
+                                <span class="text-start me-3">{{ dictItem.key }}: {{ dictItem.value }}</span>
+                                <span
+                                    ><img
+                                        src="./assets/pencil-square.svg"
+                                        width="16"
+                                        height="16"
+                                        role="button"
+                                        tabindex="0"
+                                        class="ms-2 center trash-can"
+                                        title="Edit"
+                                        alt="Edit"
+                                        (click)="editDictItem(dictItem.key, dictItem.value)"
+                                        (keydown.enter)="editDictItem(dictItem.key, dictItem.value)"
+                                    />
+                                </span>
+                                <span
+                                    ><img
+                                        src="./assets/trash.svg"
+                                        width="16"
+                                        height="16"
+                                        role="button"
+                                        tabindex="0"
+                                        class="ms-2 center trash-can"
+                                        title="Delete"
+                                        alt="Delete"
+                                        (click)="removeItem(dictItem.key)"
+                                        (keydown.enter)="removeItem(dictItem.key)"
+                                    />
+                                </span>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="added-properties-font" *ngIf="this.currentContent.contentType === 'list'">
+                        <ol>
+                            <li *ngFor="let listItem of listItems; let i = index" tabindex="0">
+                                <span class="text-start me-3">{{ listItem }}</span>
+                                <span
+                                    ><img
+                                        src="./assets/pencil-square.svg"
+                                        width="16"
+                                        height="16"
+                                        role="button"
+                                        tabindex="0"
+                                        class="ms-2 center trash-can"
+                                        title="Edit"
+                                        alt="Edit"
+                                        (click)="editListItem(i)"
+                                        (keydown.enter)="editListItem(i)"
+                                    />
+                                </span>
+                                <span
+                                    ><img
+                                        src="./assets/trash.svg"
+                                        width="16"
+                                        height="16"
+                                        role="button"
+                                        tabindex="0"
+                                        class="ms-2 center trash-can"
+                                        title="Delete"
+                                        alt="Delete"
+                                        (click)="removeItem(i)"
+                                        (keydown.enter)="removeItem(i)"
+                                    />
+                                </span>
+                            </li>
+                        </ol>
+                    </div>
+                    <hr />
+                </div>
+
+                <div class="col-6 mt-2 ps-4 h6">{{ getFieldKeys().length > 0 ? 'Added Properties:' : '' }}</div>
+                <div class="col-6 text-end">
+                    <button class="btn btn-sm btn-primary" type="button" (click)="addField()" [disabled]="isAddFieldDisabled()">
+                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                        Add Property
+                    </button>
+                </div>
+                <div class="col-10 text-start added-properties-font">
+                    <ol>
+                        <li *ngFor="let field of getFieldKeys()" tabindex="0">
+                            <span class="text-start me-3">{{ field }}: {{ displayField(this.currentContent.fields[field]) }}</span>
+                            <span
+                                ><img
+                                    src="./assets/pencil-square.svg"
+                                    width="16"
+                                    height="16"
+                                    role="button"
+                                    tabindex="0"
+                                    class="ms-2 center trash-can"
+                                    title="Edit"
+                                    alt="Edit"
+                                    (click)="editField(field)"
+                                    (keydown.enter)="editField(field)"
+                                />
+                            </span>
+                            <span
+                                ><img
+                                    src="./assets/trash.svg"
+                                    width="16"
+                                    height="16"
+                                    role="button"
+                                    tabindex="0"
+                                    class="ms-2 center trash-can"
+                                    title="Delete"
+                                    alt="Delete"
+                                    (click)="removeField(field)"
+                                    (keydown.enter)="removeField(field)"
+                                />
+                            </span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <hr />
+            <div class="col text-end mt-2 pe-0">
+                <button
+                    class="btn btn-sm btn-success content-button"
+                    type="button"
+                    (click)="addNewContent()"
+                    [disabled]="(!currentContent.fieldName || !currentContent.contentValue || !currentContent.lang) && !isLangDisabled()"
+                >
+                    <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                    Add Content
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

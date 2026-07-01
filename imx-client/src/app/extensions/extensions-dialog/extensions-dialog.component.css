@@ -1,0 +1,514 @@
+.dialog {
+    height: 100%;
+}
+
+.dialog .modal-body {
+    padding: 1rem 1rem;
+}
+
+.dialog .modal-header {
+    padding: 1rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dialog .modal-footer {
+    padding: 1rem 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.add-top {
+    margin-bottom: 0;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.add-bottom {
+    margin-top: 0;
+    border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.add-left {
+    margin-right: 0;
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.add-right {
+    margin-left: 0;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.add-both {
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.no-border-right {
+    border-right: none;
+}
+
+.no-border-left {
+    border-left: none;
+}
+
+.no-border-bottom {
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+p {
+    margin-bottom: 0px !important;
+    font-size: 15px !important;
+}
+
+.pb-no-span {
+    padding-bottom: 1.5px !important;
+}
+
+.add-indicator-pattern-button {
+    height: 31px;
+    padding-top: 2px;
+    font-size: 12pt;
+}
+
+.input-group-line {
+    margin-left: 15px;
+    width: 100%;
+}
+
+.btn-fa-sm {
+    margin-left: 5px;
+}
+
+.mt--2 {
+    margin-top: -2px;
+}
+
+.mt-2px {
+    margin-top: 1.5px;
+}
+
+.guided-div-border {
+    border-bottom: 1px solid black !important;
+    margin-bottom: 3px;
+}
+
+.guided-button {
+    width: 7500%;
+}
+
+.guided-input-border {
+    border-radius: 0% !important;
+    border-left: 1px solid black !important;
+    border-bottom: none;
+    border-top: none;
+    border-right: none;
+    margin-bottom: 3px !important;
+    margin-left: 3px !important;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.display-inline-flex {
+    display: inline-flex;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.me--15 {
+    margin-right: -15px !important;
+}
+
+.icon-height {
+    height: 18px;
+}
+
+.input-group-text {
+    background-color: white;
+    border-color: white;
+}
+
+.input-group-text,
+input.form-control {
+    padding: 4px 8px;
+    font-size: 14px;
+    height: 31px;
+}
+
+.inner-row {
+    padding: 8px 0px 34px;
+    font-size: 14px;
+    height: 31px;
+}
+
+.dropdown {
+    font-size: 14px;
+    height: 28px;
+}
+
+.cust-obj-add-button,
+.cancel-button {
+    font-size: 16px;
+    margin-right: -15px;
+}
+
+.btn-add {
+    margin-right: -15px;
+}
+
+.btn-link {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+
+.btn-link {
+    text-decoration: none !important;
+
+    color: #6f6f6f;
+    font-size: 14px !important;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
+}
+
+.btn-link:active {
+    text-decoration: none !important;
+
+    color: #6f6f6f;
+}
+
+@media (max-width: 1200px) {
+    .btn-add {
+        width: 130px;
+    }
+}
+
+@media (max-width: 992px) {
+    .btn-add {
+        width: 80px;
+    }
+}
+
+.add-selector-button {
+    height: 34px;
+    width: 100px;
+    font-size: 14px;
+    border-radius: 0%;
+    padding: 0;
+}
+
+.cancel-button {
+    width: 80px;
+}
+
+.input-group-text,
+input.form-control,
+select.form-control {
+    padding: 4px 8px;
+    font-size: 14px;
+    height: 31px;
+}
+
+.accordion-panel-class {
+    padding: 0;
+}
+
+.string-array-input-header {
+    margin-top: 45px;
+}
+
+.pattern-builder-modal > .modal-dialog,
+.pattern-builder-modal > .modal-dialog > .modal-content {
+    width: 80vw;
+    max-width: 80vw;
+}
+
+.pattern-builder-modal-guided > .modal-dialog,
+.pattern-builder-modal-guided > .modal-dialog > .modal-content {
+    width: 80vw;
+    max-width: 80vw;
+    margin-left: 125px;
+}
+
+.custom-obj-modal > .modal-dialog,
+.custom-obj-modal > .modal-dialog > .modal-content {
+    width: 95vw;
+    max-width: 95vw;
+    height: 90vh;
+    max-height: 90vh;
+}
+
+.comparison-expression-builder {
+    min-height: 200px;
+    width: 90%;
+    margin-left: 5%;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding-top: 70px;
+    color: #000;
+    border-radius: 15px;
+    border-style: dashed;
+}
+
+.comparison-expression-separator {
+    border-right: 1px solid #bbb;
+    height: 50px;
+    width: 1px;
+}
+
+.section-separator {
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 0.2px;
+    width: 100%;
+}
+
+.stix-pattern-builder-modal-body {
+    max-height: 1000px;
+}
+
+.stix-pattern-builder-steps {
+    text-decoration: underline;
+}
+
+.comparison-operator-dropdown {
+    width: 150px;
+}
+
+.remove-comparison-expression-button {
+    cursor: pointer;
+}
+
+.date-input {
+    width: 200px;
+}
+
+.number-input {
+    width: 50px;
+}
+
+.qualifier-trailing-label {
+    font-size: 12pt;
+}
+
+.cdk-overlay-container {
+    z-index: 9000;
+}
+
+.tooltipright {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: -5px !important;
+}
+
+.tooltipright .toolttext {
+    visibility: hidden;
+
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -50%;
+    margin-left: 12px;
+    left: 100%;
+}
+
+.toolttext {
+    min-width: 200px;
+}
+
+.tooltipright:hover .toolttext {
+    visibility: visible;
+}
+
+.tooltipright:empty .toolttext {
+    visibility: hidden;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper {
+    padding: 30px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper .tooltip-content {
+    margin-top: 15px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.tooltip-wrapper tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+.tooltip-wrapper {
+    padding: 30px;
+}
+
+.tooltip-wrapper .tooltip-content {
+    margin-top: 15px;
+}
+
+.tooltip-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tooltip-wrapper td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.tooltip-wrapper tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+.tab {
+    padding-left: 50px;
+}
+
+.bump {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+button.close.expression {
+    margin-left: 5px;
+    color: white;
+    margin-top: -3px;
+}
+
+.btn-windows-key {
+    font-size: 14px;
+}
+
+.d-inline .badge.stix_pattern {
+    white-space: pre-wrap;
+}
+
+.stix-pattern-builder-modal-body .panel .panel-heading.card-header {
+    padding: 0.35rem 1.25rem;
+}
+
+.warning-message {
+    font-size: 14px;
+    font-weight: 600;
+    color: #dc3545;
+}
+
+.added-items-font {
+    font-size: 14px;
+}
+
+#questions li:hover .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#questions li:focus {
+    outline: none;
+}
+
+#questions img:focus {
+    outline: 2px dashed #80bdff;
+}
+
+#questions li:focus-within .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#custom-obj li:hover .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#custom-obj li:focus {
+    outline: none;
+}
+
+#custom-obj li:focus-within .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#collection li:hover .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#collection li:focus {
+    outline: none;
+}
+
+#collection li:focus-within .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.trash-can {
+    display: none;
+}
+
+.dropdown-toggle {
+    width: 300px;
+}
+
+.m-1 {
+    height: auto;
+    min-height: 31px;
+}
+
+#file-upload.input-group {
+    height: 31px;
+}
+
+#file-upload-label.custom-file-label,
+#file-upload-label.custom-file-label::after {
+    height: 31px;
+    padding-top: 3px;
+}
+
+.file-upload-btn-width {
+    width: 100px;
+}
+
+input[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+    color: #495057;
+}
+
+.input-header {
+    font-weight: bold;
+    color: #6f6f6f;
+}

@@ -1,0 +1,2237 @@
+<ngb-toast
+    *ngIf="showDuplicatedObjectToast"
+    header="Duplicated Content"
+    [autohide]="true"
+    class="bg-warning duplicated-objects-toast"
+    [delay]="10000"
+>
+    <div class="d-flex">
+        <div>{{ duplicates.length }} duplicated content found.</div>
+        &nbsp;
+        <span class="ms-auto"
+            >Click<img src="./assets/merge-cells.svg" alt="" width="25" height="25" class="ms-1 me-1" title="Duplicated Objects" />to&nbsp;view.</span
+        >
+    </div>
+</ngb-toast>
+
+<div class="container-fluid ps-0 pe-0" id="editor-container">
+    <div *ngIf="addingStixToBundle" class="adding-items-overlay">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted">Adding items to bundle...</p>
+        </div>
+    </div>
+
+    <div *ngIf="fullScreenMode">
+        <app-stix-viewer class="full-width" [bundle]="getStixPreview()" [class]="{ 'full-screen': fullScreenMode }"> </app-stix-viewer>
+    </div>
+
+    <div class="main-bg">
+        <ng-container *ngIf="this.stixService.hasObjectsToLoad">{{ this.importObjects(saveModal) }}</ng-container>
+        <ng-container *ngIf="this.deletedCISAIdentity">{{ this.openModal(CISAIdentityModal) }}</ng-container>
+        <ng-container *ngIf="this.stixService.uploadError.length > 0">{{ this.generateUploadError() }}</ng-container>
+        <ng-container *ngIf="!opened && this.stixService.promptDelete.length > 0">
+            {{ this.promptDelete(deleteModal) }}
+        </ng-container>
+        @if (!guidedUI) {
+            <div class="arrow arrow d-flex align-items-center" (click)="enableSidebar()">
+                <fa-icon *ngIf="!expandSidebar" class="sidebar-icon" [icon]="faRight"></fa-icon>
+            </div>
+            <div class="sidebar-bg" [ngClass]="{ 'expanded-side': expandSidebar }">
+                <fa-icon [icon]="faRight" class="sidebar-icon expand-right-arrow"></fa-icon>
+            </div>
+            <div
+                class="sidebar cursor-pointer"
+                [ngClass]="{ 'expanded-side': expandSidebar }"
+                (mouseenter)="enableSidebar()"
+                (mouseleave)="disableSidebar()"
+            >
+                <div class="d-flex flex-column sidebar-content justify-content-center align-items-center">
+                    <div
+                        title="Add Object"
+                        id="add-object-btn"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        (click)="openObjectMenu($event)"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faPlus" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Add Object </span>
+                    </div>
+                    <div
+                        title="TLP"
+                        id="expand-tlp-btn"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        (click)="expandTlpDropdown($event)"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faTrafficLight" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> TLP </span>
+                        <fa-icon *ngIf="expandSidebar && !tlpExpanded" [icon]="faCaretDown" class="sidebar-icon ms-auto"></fa-icon>
+                        <fa-icon *ngIf="expandSidebar && tlpExpanded" [icon]="faCaretUp" class="sidebar-icon ms-auto"></fa-icon>
+                    </div>
+                    <div
+                        title="Add TLP"
+                        id="add-tlp-btn"
+                        (click)="openTlpMenu($event)"
+                        *ngIf="expandSidebar && tlpExpanded"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <span class="sidebar-label ms-5" style="font-size: 13px"> Add TLP </span>
+                    </div>
+                    <div
+                        title="Remove TLP"
+                        id="remove-tlp-btn"
+                        (click)="removeTlpMenu($event, removeTlpModal)"
+                        *ngIf="expandSidebar && tlpExpanded && hasTlp()"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <span class="sidebar-label ms-5" style="font-size: 13px"> Remove TLP </span>
+                    </div>
+                    <div
+                        title="ACS"
+                        id="add-acs-btn"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        (click)="openAcsMenu($event)"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faMarker" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> ACS Marking </span>
+                    </div>
+                    <div
+                        title="Create Relationship"
+                        id="add-relationship-btn"
+                        (click)="openRemoveMultiObjects()"
+                        [ngClass]="{
+                            'justify-content-center': !expandSidebar,
+                            '': expandSidebar,
+                            'expand-icon': expandSidebar,
+                            'disabled-sidebar': selectedObjects.length < 1,
+                        }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faTrash" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Remove Object </span>
+                    </div>
+                    <div
+                        title="Create Relationship"
+                        id="add-relationship-btn"
+                        (click)="openRelationshipMenu($event)"
+                        [ngClass]="{
+                            'justify-content-center': !expandSidebar,
+                            '': expandSidebar,
+                            'expand-icon': expandSidebar,
+                            'disabled-sidebar': selectedObjects.length != 2,
+                        }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faLink" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Create Relationship </span>
+                    </div>
+                    <div style="height: 45px"></div>
+                    <div
+                        title="Analyst1"
+                        id="open-a1-btn"
+                        (click)="openAnalyst1Menu($event)"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <span class="sidebar-text">
+                            <b> A1 </b>
+                        </span>
+                        <span class="sidebar-label"> Analyst1 </span>
+                    </div>
+                    <div
+                        title="VirusTotal"
+                        id="open-vt-btn"
+                        (click)="openVirusTotalMenu($event, saveModal)"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <span class="sidebar-text">
+                            <b> VT </b>
+                        </span>
+                        <span class="sidebar-label"> VirusTotal </span>
+                    </div>
+                    @if (!envService.env.aeSetting) {
+                        <div
+                            title="MISP"
+                            id="open-vt-btn"
+                            (click)="openMispDialog($event, saveModal)"
+                            [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                            class="d-flex sidebar-item align-items-center"
+                        >
+                            <span class="sidebar-text">
+                                <b> M </b>
+                            </span>
+                            <span class="sidebar-label"> MISP </span>
+                        </div>
+                    }
+                    <div
+                        title="Tools"
+                        id="expand-tools-btn"
+                        (click)="clickTool($event)"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faTools" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Tools </span>
+                        <fa-icon *ngIf="expandSidebar && !toolExpanded" [icon]="faCaretDown" class="sidebar-icon ms-auto"></fa-icon>
+                        <fa-icon *ngIf="expandSidebar && toolExpanded" [icon]="faCaretUp" class="sidebar-icon ms-auto"></fa-icon>
+                    </div>
+                    <div
+                        title="Raw Data"
+                        id="open-raw-btn"
+                        (click)="openRawDataMenu($event, saveModal)"
+                        *ngIf="expandSidebar && toolExpanded"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <span class="sidebar-label ms-5" style="font-size: 13px"> Raw Data Import </span>
+                    </div>
+                    <div style="height: 45px"></div>
+                    <div
+                        title="Save Bundle"
+                        id="open-save-btn"
+                        (click)="openSaveBundleMenu($event, saveModal)"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faSave" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Save Bundle </span>
+                    </div>
+                    <div
+                        title="Download Bundle"
+                        id="download-bundle-btn"
+                        (click)="downloadBundleItem($event)"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faDownload" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Download Bundle </span>
+                    </div>
+                    <div
+                        title="Reset Bundle"
+                        id="open-reset-btn"
+                        (click)="openResetMenu($event, saveModal)"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faUndo" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Reset Bundle </span>
+                    </div>
+                    <div
+                        title="Publish Bundle"
+                        id="open-publish-btn"
+                        (click)="openPublishMenu($event, publishModal)"
+                        [ngClass]="{
+                            'justify-content-center': !expandSidebar,
+                            '': expandSidebar,
+                            'expand-icon': expandSidebar,
+                            'disabled-sidebar': loadingPublishModal,
+                            'cursor-wait': loadingPublishModal,
+                        }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        @if (!loadingPublishModal) {
+                            <fa-icon [icon]="faUpload" class="sidebar-icon"></fa-icon>
+                        } @else {
+                            <div class="sidebar-icon">
+                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            </div>
+                        }
+                        <span class="sidebar-label"> Publish Bundle </span>
+                    </div>
+                    <div
+                        title="Upload File"
+                        id="upload-file-btn"
+                        (click)="openFileUpload($event)"
+                        [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                        class="d-flex sidebar-item align-items-center"
+                    >
+                        <fa-icon [icon]="faFileUpload" class="sidebar-icon"></fa-icon>
+                        <span class="sidebar-label"> Upload File </span>
+                        <input
+                            style="display: none"
+                            #fileInput
+                            type="file"
+                            [(ngModel)]="selectedFile"
+                            class="bottom-bump w-100"
+                            accept=".json"
+                            id="file1"
+                            name="upload"
+                            (change)="onFileChanged($event)"
+                            multiple
+                        />
+                    </div>
+                </div>
+            </div>
+        }
+        <div id="editor" class="container-fluid main-panel pb-4" style="height: 100%">
+            <div class="row">
+                <div class="col ps-0">
+                    <div
+                        class="prod-bg header-block p-5"
+                        [ngClass]="{ 'dev-bg': environment.environment == 'ten-dev' || environment.environment == 'dev' }"
+                    >
+                        <div class="d-flex flex-column h-100 justify-content-between">
+                            <div>
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="bundle-header text-white fw-bold">
+                                            {{ stixService.reportName ? stixService.reportName : 'Unnamed Report' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row mt-3"></div>
+                            </div>
+                        </div>
+                        <div style="position: relative; bottom: 0">
+                            <div class="row mb-2">
+                                <div class="col d-flex flex-row-reverse">
+                                    <span id="open-visualizer" (click)="openVisualizer()" class="cursor-pointer badge rounded-pill visualizer-btn">
+                                        Visualizer
+                                    </span>
+                                    <span
+                                        id="edit-report-name"
+                                        *ngIf="autoCheck === 'false'"
+                                        (click)="switchAutoCheck()"
+                                        class="cursor-pointer badge rounded-pill me-2 visualizer-btn"
+                                    >
+                                        Reference Check <b>Disabled</b>
+                                    </span>
+                                    <span
+                                        id="edit-report-name"
+                                        *ngIf="autoCheck === 'true'"
+                                        (click)="switchAutoCheck()"
+                                        class="cursor-pointer badge rounded-pill me-2 visualizer-btn"
+                                    >
+                                        Reference Check <b>Enabled</b>
+                                    </span>
+                                    <span
+                                        id="expand-objects"
+                                        *ngIf="!objectsExpanded"
+                                        (click)="expandCollapse()"
+                                        class="cursor-pointer badge rounded-pill me-2 visualizer-btn"
+                                    >
+                                        Expand All Objects
+                                    </span>
+                                    <span
+                                        id="collapse-objects"
+                                        *ngIf="objectsExpanded"
+                                        (click)="expandCollapse()"
+                                        class="cursor-pointer badge rounded-pill me-2 visualizer-btn"
+                                    >
+                                        Collapse All Objects
+                                    </span>
+                                    @if (!guidedUI) {
+                                        <span
+                                            id="edit-report-name"
+                                            (click)="openReport()"
+                                            class="cursor-pointer badge rounded-pill me-2 visualizer-btn"
+                                        >
+                                            Edit Report Name
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <div class="container-fluid ps-5 pe-5">
+                        <div class="row dashboard-card control-panel">
+                            @if (!guidedUI) {
+                                <div class="col-6 d-flex justify-content-start align-items-center">
+                                    <input
+                                        type="text"
+                                        class="form-control control-form control-form-sm ms-2"
+                                        (keydown.shift.enter)="search('shift+enter')"
+                                        (keydown.enter)="search('enter')"
+                                        (keydown.escape)="clearSearch()"
+                                        placeholder="Type to Search..."
+                                        [(ngModel)]="searchText"
+                                        (ngModelChange)="clearSearchResults()"
+                                    />
+                                </div>
+                                <div class="col-6 d-flex justify-content-end align-items-center">
+                                    <select
+                                        class="form-select select-form form-select-sm control-form-sm group-select"
+                                        id="APIRoots"
+                                        name="isGroupByTLP"
+                                        (change)="selectGroupByTLP($event)"
+                                        [ngModel]="isGroupByTLP"
+                                    >
+                                        <option default value="false">By Type</option>
+                                        <option value="true">By TLP</option>
+                                    </select>
+                                </div>
+                            } @else {
+                                <div class="col-12 d-flex justify-content-start align-items-center">
+                                    <input
+                                        type="text"
+                                        class="form-control control-form control-form-sm ms-2"
+                                        (keydown.shift.enter)="search('shift+enter')"
+                                        (keydown.enter)="search('enter')"
+                                        (keydown.escape)="clearSearch()"
+                                        placeholder="Type to Search..."
+                                        [(ngModel)]="searchText"
+                                        (ngModelChange)="clearSearchResults()"
+                                    />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!guidedUI) {
+                <!-- Group By Objects -->
+                <ng-container *ngIf="!isGroupByTLP">
+                    <ng-container *ngFor="let stixObject of stixObjects; let i = index">
+                        <ng-container *ngFor="let object of stixObject.objects; let j = index">
+                            <div class="row" *ngIf="(filteredBundle | bundlefilter: object.type).length > 0">
+                                <div class="col">
+                                    <div class="container-fluid ps-5 pe-5">
+                                        <div class="row dashboard-card main-card">
+                                            <div class="col d-flex flex-column ps-4 pe-4">
+                                                <div class="pt-3 pb-3 card-title card-header">
+                                                    <div
+                                                        (click)="toggleObjectTypeToShow(object.type, true)"
+                                                        class="d-flex justify-content-between cursor-pointer mb-3 align-items-center"
+                                                    >
+                                                        <div class="ms-2">
+                                                            {{ object.displayName }}
+                                                            <span class="ms-2">
+                                                                {{ (filteredBundle | bundlefilter: object.type).length }}
+                                                            </span>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            class="btn"
+                                                            [class]="{
+                                                                rotate: !showObjectType(object.type),
+                                                                'rotate-back': showObjectType(object.type),
+                                                            }"
+                                                        >
+                                                            <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <table
+                                                    *ngIf="showObjectType(object.type)"
+                                                    class="table table-striped table-hover table-responsive object-table"
+                                                >
+                                                    <thead>
+                                                        <th scope="col" class="pt-3 pb-3">Select</th>
+                                                        <th scope="col" class="pt-3 pb-3">Object</th>
+                                                        <th scope="col" class="pt-3 pb-3">Marking Ref</th>
+                                                        @if (!guidedUI) {
+                                                            <th scope="col" class="pt-3 pb-3">Integrations</th>
+                                                        }
+                                                        <th scope="col" class="pt-3 pb-3">Refs</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ng-container
+                                                            *ngFor="
+                                                                let component of filteredBundle | bundlefilter: object.type;
+                                                                let k = index;
+                                                                let c = count
+                                                            "
+                                                        >
+                                                            <tr
+                                                                (click)="openJson($event, component, object.displayName)"
+                                                                class="cursor-pointer object-table"
+                                                                [ngClass]="{ highlight: highlightSearch(component) }"
+                                                            >
+                                                                <td [ngClass]="{ highlight: highlightSearch(component) }" style="width: 100px">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        class="select-item checkbox"
+                                                                        (click)="$event.stopPropagation()"
+                                                                        (change)="updateSelectedObjects(component.id)"
+                                                                    />
+                                                                </td>
+                                                                <td
+                                                                    id="{{ getComponentId(component, i, j, k) }}"
+                                                                    class="w-75 text-break"
+                                                                    [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                >
+                                                                    <span [innerHtml]="getComponentDisplay(component)"></span>
+                                                                </td>
+                                                                <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                    <span *ngFor="let objMark of getTlp(component)">
+                                                                        <span *ngIf="objMark.type === 'tlpv1'" class="me-1"
+                                                                            ><span class="marking-badge {{ getTlpStyle(objMark) }}">{{
+                                                                                objMark.name
+                                                                            }}</span>
+                                                                            <span class="tlpv1">v1.0</span></span
+                                                                        >
+                                                                        <span
+                                                                            *ngIf="objMark.type !== 'tlpv1'"
+                                                                            class="me-1 marking-badge {{ getTlpStyle(objMark) }}"
+                                                                            >{{ formalDeterminationView(objMark.name) }}</span
+                                                                        >
+                                                                    </span>
+                                                                </td>
+                                                                @if (!guidedUI) {
+                                                                    <td
+                                                                        (click)="$event.stopPropagation()"
+                                                                        class="d-flex justify-content-center"
+                                                                        [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                    >
+                                                                        @if (isIntegrationEligible(component)) {
+                                                                            <div class="dropdown">
+                                                                                <div
+                                                                                    class="integration-trigger"
+                                                                                    role="button"
+                                                                                    data-bs-toggle="dropdown"
+                                                                                    aria-expanded="false"
+                                                                                    aria-label="Integrations"
+                                                                                    title="Integrations"
+                                                                                >
+                                                                                    <fa-icon [icon]="faPlug" class="pe-1"></fa-icon>
+                                                                                    <fa-icon [icon]="faCaretDown" style="font-size: 0.65em"></fa-icon>
+                                                                                </div>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li>
+                                                                                        <a
+                                                                                            class="dropdown-item pointer"
+                                                                                            (click)="
+                                                                                                onIntegrationAction(
+                                                                                                    $event,
+                                                                                                    'vt',
+                                                                                                    component,
+                                                                                                    object.displayName
+                                                                                                )
+                                                                                            "
+                                                                                            >Get VirusTotal Insights</a
+                                                                                        >
+                                                                                    </li>
+                                                                                    @if (!envService.env.aeSetting) {
+                                                                                        <li>
+                                                                                            <a
+                                                                                                class="dropdown-item pointer"
+                                                                                                (click)="
+                                                                                                    onIntegrationAction(
+                                                                                                        $event,
+                                                                                                        'misp',
+                                                                                                        component,
+                                                                                                        object.displayName,
+                                                                                                        saveModal
+                                                                                                    )
+                                                                                                "
+                                                                                                >Get MISP Events</a
+                                                                                            >
+                                                                                        </li>
+                                                                                    }
+                                                                                </ul>
+                                                                            </div>
+                                                                        }
+                                                                    </td>
+                                                                }
+                                                                <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                    <div
+                                                                        *ngIf="
+                                                                            !isDuplicated(component.id) &&
+                                                                            !isReferenced(component.id) &&
+                                                                            !objCheckMap.get(component.id)
+                                                                        "
+                                                                        (click)="checkDupeAndRef(component, $event)"
+                                                                        class="ms-2"
+                                                                        style="width: 25px; height: 25px"
+                                                                    >
+                                                                        <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                                    </div>
+                                                                    <div
+                                                                        *ngIf="objCheckMap.get(component.id)"
+                                                                        class="spinner-border text-primary ms-2"
+                                                                        style="width: 25px; height: 25px"
+                                                                    >
+                                                                        <span class="visually-hidden">Loading...</span>
+                                                                    </div>
+                                                                    <img
+                                                                        *ngIf="isDuplicated(component.id) && !objCheckMap.get(component.id)"
+                                                                        (click)="viewDuplicates($event, component)"
+                                                                        src="./assets/merge-cells.svg"
+                                                                        alt=""
+                                                                        width="25"
+                                                                        height="25"
+                                                                        class="ms-2"
+                                                                        title="Duplicated Objects"
+                                                                    />
+                                                                    <img
+                                                                        *ngIf="isReferenced(component.id) && !objCheckMap.get(component.id)"
+                                                                        (click)="viewReferences($event, component)"
+                                                                        src="./assets/reference.svg"
+                                                                        alt=""
+                                                                        width="25"
+                                                                        height="25"
+                                                                        class="ms-2"
+                                                                        title="Referenced Objects"
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+
+                <!-- Group By TLP -->
+                <ng-container *ngIf="isGroupByTLP">
+                    <ng-container *ngFor="let tlp of tlpOptions">
+                        <div
+                            class="row"
+                            *ngIf="
+                                (tlp.key === 'UNASSIGNED' && unassignedObjMarkingRefObjs?.length > 0) ||
+                                (tlp.key !== 'UNASSIGNED' && tlpCount(tlp) > 0)
+                            "
+                        >
+                            <div class="col">
+                                <div class="container-fluid ps-5 pe-5">
+                                    <div class="row dashboard-card main-card">
+                                        <div class="col d-flex flex-column ps-4 pe-4">
+                                            <div class="pt-3 pb-3 card-title card-header">
+                                                <div
+                                                    class="d-flex justify-content-between cursor-pointer mb-3 align-items-center"
+                                                    (click)="toggleTlpTypeToShow(tlp.key)"
+                                                >
+                                                    <div class="ms-2">
+                                                        <span *ngIf="tlp.key === 'UNASSIGNED'"> Unassigned </span>
+                                                        <span class="ms-2" *ngIf="tlp.key === 'UNASSIGNED'">
+                                                            {{ unassignedObjMarkingRefObjs?.length }}
+                                                        </span>
+                                                        <span
+                                                            class="badge me-2"
+                                                            [class]="stixService.getTlpStyle(tlpShown(tlp)?.tlp?.key)"
+                                                            *ngIf="tlp.key !== 'UNASSIGNED'"
+                                                        >
+                                                            {{ tlpShown(tlp).tlp.key }}
+                                                        </span>
+                                                        <span *ngIf="tlp.key !== 'UNASSIGNED'">
+                                                            {{ tlpCount(tlp) }}
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        class="btn"
+                                                        [class]="{ rotate: !expandTlp(tlp.key), 'rotate-back': expandTlp(tlp.key) }"
+                                                    >
+                                                        <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <ng-container *ngIf="expandTlp(tlp.key)">
+                                                <table class="table table-striped table-hover table-responsive object-table">
+                                                    <thead>
+                                                        <th scope="col" class="pt-3 pb-3">Select</th>
+                                                        <th scope="col" class="pt-3 pb-3">Object</th>
+                                                        <th scope="col" class="pt-3 pb-3">Type</th>
+                                                        <th scope="col" class="pt-3 pb-3">Marking Ref</th>
+                                                        <th scope="col" class="pt-3 pb-3">Integrations</th>
+                                                        <th scope="col" class="pt-3 pb-3">Refs</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ng-container *ngFor="let component of bundleObjectType(tlp); let k = index">
+                                                            <ng-container *ngIf="stixService.isCustomObject(component)">
+                                                                <tr
+                                                                    (click)="openJson($event, component, 'custom', true)"
+                                                                    class="cursor-pointer object-table"
+                                                                    [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                >
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }" style="width: 100px">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            class="select-item checkbox"
+                                                                            (click)="$event.stopPropagation()"
+                                                                            (change)="updateSelectedObjects(component.id)"
+                                                                        />
+                                                                    </td>
+                                                                    <td
+                                                                        id="{{ getComponentDisplay(component) + '-' + component.id }}"
+                                                                        style="width: 60%"
+                                                                        class="text-break"
+                                                                        [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                    >
+                                                                        <span> {{ getComponentDisplay(component) }}</span>
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <span>
+                                                                            {{ pascalCase(component.type) }}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <span *ngFor="let objMark of getTlp(component)">
+                                                                            <span *ngIf="objMark.type === 'tlpv1'" class="me-1"
+                                                                                ><span class="marking-badge {{ getTlpStyle(objMark) }}">{{
+                                                                                    objMark.name
+                                                                                }}</span>
+                                                                                <span class="tlpv1">v1.0</span></span
+                                                                            >
+                                                                            <span
+                                                                                *ngIf="objMark.type !== 'tlpv1'"
+                                                                                class="me-1 marking-badge {{ getTlpStyle(objMark) }}"
+                                                                                >{{ formalDeterminationView(objMark.name) }}</span
+                                                                            >
+                                                                        </span>
+                                                                    </td>
+                                                                    <td
+                                                                        (click)="$event.stopPropagation()"
+                                                                        class="d-flex justify-content-center"
+                                                                        [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                    >
+                                                                        @if (isIntegrationEligible(component)) {
+                                                                            <div class="dropdown">
+                                                                                <div
+                                                                                    class="integration-trigger"
+                                                                                    role="button"
+                                                                                    data-bs-toggle="dropdown"
+                                                                                    aria-expanded="false"
+                                                                                    aria-label="Integrations"
+                                                                                    title="Integrations"
+                                                                                >
+                                                                                    <fa-icon [icon]="faPlug" class="pe-1"></fa-icon>
+                                                                                    <fa-icon [icon]="faCaretDown" style="font-size: 0.65em"></fa-icon>
+                                                                                </div>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li>
+                                                                                        <a
+                                                                                            class="dropdown-item pointer"
+                                                                                            (click)="
+                                                                                                onIntegrationAction(
+                                                                                                    $event,
+                                                                                                    'vt',
+                                                                                                    component,
+                                                                                                    component.type
+                                                                                                )
+                                                                                            "
+                                                                                            >Get VirusTotal Insights</a
+                                                                                        >
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        }
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <div
+                                                                            *ngIf="
+                                                                                !isDuplicated(component.id) &&
+                                                                                !isReferenced(component.id) &&
+                                                                                !objCheckMap.get(component.id)
+                                                                            "
+                                                                            (click)="checkDupeAndRef(component, $event)"
+                                                                            class="ms-2"
+                                                                            style="width: 25px; height: 25px"
+                                                                        >
+                                                                            <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                                        </div>
+                                                                        <div
+                                                                            *ngIf="objCheckMap.get(component.id)"
+                                                                            class="spinner-border text-primary ms-2"
+                                                                            style="width: 25px; height: 25px"
+                                                                        >
+                                                                            <span class="visually-hidden">Loading...</span>
+                                                                        </div>
+                                                                        <img
+                                                                            *ngIf="isDuplicated(component.id) && !objCheckMap.get(component.id)"
+                                                                            (click)="viewDuplicates($event, component)"
+                                                                            src="./assets/merge-cells.svg"
+                                                                            alt=""
+                                                                            width="25"
+                                                                            height="25"
+                                                                            class="ms-2"
+                                                                            title="Duplicated Objects"
+                                                                        />
+                                                                        <img
+                                                                            *ngIf="isReferenced(component.id) && !objCheckMap.get(component.id)"
+                                                                            (click)="viewReferences($event, component)"
+                                                                            src="./assets/reference.svg"
+                                                                            alt=""
+                                                                            width="25"
+                                                                            height="25"
+                                                                            class="ms-2"
+                                                                            title="Referenced Objects"
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="!stixService.isCustomObject(component)">
+                                                                <tr
+                                                                    (click)="openJson($event, component, component.type)"
+                                                                    class="cursor-pointer object-table"
+                                                                    [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                >
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }" style="width: 100px">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            class="select-item checkbox"
+                                                                            (click)="$event.stopPropagation()"
+                                                                            (change)="updateSelectedObjects(component.id)"
+                                                                        />
+                                                                    </td>
+                                                                    <td
+                                                                        id="{{ getComponentDisplay(component) + '-' + component.id }}"
+                                                                        style="width: 60%"
+                                                                        class="text-break"
+                                                                        [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                    >
+                                                                        <span> {{ getComponentDisplay(component) }}</span>
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <span>
+                                                                            {{ pascalCase(component.type) }}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <span *ngFor="let objMark of getTlp(component)">
+                                                                            <span *ngIf="objMark.type === 'tlpv1'" class="me-1"
+                                                                                ><span class="marking-badge {{ getTlpStyle(objMark) }}">{{
+                                                                                    objMark.name
+                                                                                }}</span>
+                                                                                <span class="tlpv1">v1.0</span></span
+                                                                            >
+                                                                            <span
+                                                                                *ngIf="objMark.type !== 'tlpv1'"
+                                                                                class="me-1 marking-badge {{ getTlpStyle(objMark) }}"
+                                                                                >{{ formalDeterminationView(objMark.name) }}</span
+                                                                            >
+                                                                        </span>
+                                                                    </td>
+                                                                    <td
+                                                                        (click)="$event.stopPropagation()"
+                                                                        class="d-flex justify-content-center"
+                                                                        [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                    >
+                                                                        @if (isIntegrationEligible(component)) {
+                                                                            <div class="dropdown">
+                                                                                <div
+                                                                                    class="integration-trigger"
+                                                                                    role="button"
+                                                                                    data-bs-toggle="dropdown"
+                                                                                    aria-expanded="false"
+                                                                                    aria-label="Integrations"
+                                                                                    title="Integrations"
+                                                                                >
+                                                                                    <fa-icon [icon]="faPlug" class="pe-1"></fa-icon>
+                                                                                    <fa-icon [icon]="faCaretDown" style="font-size: 0.65em"></fa-icon>
+                                                                                </div>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li>
+                                                                                        <a
+                                                                                            class="dropdown-item pointer"
+                                                                                            (click)="
+                                                                                                onIntegrationAction(
+                                                                                                    $event,
+                                                                                                    'vt',
+                                                                                                    component,
+                                                                                                    component.type
+                                                                                                )
+                                                                                            "
+                                                                                            >Get VirusTotal Insights</a
+                                                                                        >
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        }
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <div
+                                                                            *ngIf="
+                                                                                !isDuplicated(component.id) &&
+                                                                                !isReferenced(component.id) &&
+                                                                                !objCheckMap.get(component.id)
+                                                                            "
+                                                                            (click)="checkDupeAndRef(component, $event)"
+                                                                            class="ms-2"
+                                                                            style="width: 25px; height: 25px"
+                                                                        >
+                                                                            <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                                        </div>
+                                                                        <div
+                                                                            *ngIf="objCheckMap.get(component.id)"
+                                                                            class="spinner-border text-primary ms-2"
+                                                                            style="width: 25px; height: 25px"
+                                                                        >
+                                                                            <span class="visually-hidden">Loading...</span>
+                                                                        </div>
+                                                                        <img
+                                                                            *ngIf="isDuplicated(component.id) && !objCheckMap.get(component.id)"
+                                                                            (click)="viewDuplicates($event, component)"
+                                                                            src="./assets/merge-cells.svg"
+                                                                            alt=""
+                                                                            width="25"
+                                                                            height="25"
+                                                                            class="ms-2"
+                                                                            title="Duplicated Objects"
+                                                                        />
+                                                                        <img
+                                                                            *ngIf="isReferenced(component.id) && !objCheckMap.get(component.id)"
+                                                                            (click)="viewReferences($event, component)"
+                                                                            src="./assets/reference.svg"
+                                                                            alt=""
+                                                                            width="25"
+                                                                            height="25"
+                                                                            class="ms-2"
+                                                                            title="Referenced Objects"
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+                                                            </ng-container>
+                                                        </ng-container>
+                                                    </tbody>
+                                                </table>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+
+                <!-- Custom Objects -->
+                <ng-container *ngIf="this.customBundle.length > 0 && !isGroupByTLP">
+                    <div class="row pb-4">
+                        <div class="col">
+                            <div class="container-fluid ps-5 pe-5">
+                                <div class="row dashboard-card main-card">
+                                    <div class="col d-flex flex-column ps-4 pe-4">
+                                        <div class="pt-3 pb-3 card-title card-header">
+                                            <div
+                                                (click)="toggleObjectTypeToShow('custom', true)"
+                                                class="d-flex justify-content-between cursor-pointer mb-3 align-items-center"
+                                            >
+                                                <div class="ms-2">
+                                                    Custom Objects
+                                                    <span class="ms-2">
+                                                        {{ this.customBundle.length }}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    class="btn"
+                                                    [class]="{ rotate: !showObjectType('custom'), 'rotate-back': showObjectType('custom') }"
+                                                >
+                                                    <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <table *ngIf="showObjectType('custom')" class="table table-striped table-hover table-responsive object-table">
+                                            <thead>
+                                                <th scope="col" class="pt-3 pb-3">Select</th>
+                                                <th scope="col" class="pt-3 pb-3">Object</th>
+                                                <th scope="col" class="pt-3 pb-3">Marking Ref</th>
+                                                <th scope="col" class="pt-3 pb-3">Refs</th>
+                                            </thead>
+                                            <tbody>
+                                                <ng-container *ngFor="let component of this.customBundle; let k = index">
+                                                    <tr
+                                                        (click)="openJson($event, component, 'Custom', true)"
+                                                        class="cursor-pointer object-table"
+                                                        [ngClass]="{ highlight: highlightSearch(component) }"
+                                                    >
+                                                        <td [ngClass]="{ highlight: highlightSearch(component) }" style="width: 100px">
+                                                            <input
+                                                                type="checkbox"
+                                                                class="select-item checkbox"
+                                                                (click)="$event.stopPropagation()"
+                                                                (change)="updateSelectedObjects(component.id)"
+                                                            />
+                                                        </td>
+                                                        <td
+                                                            id="{{ getComponentId(component, -2, -2, k) }}"
+                                                            class="w-75 text-break"
+                                                            [ngClass]="{ highlight: highlightSearch(component) }"
+                                                        >
+                                                            <span> {{ getComponentDisplay(component) }}</span>
+                                                        </td>
+                                                        <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                            <span *ngFor="let objMark of getTlp(component)">
+                                                                <span *ngIf="objMark.type === 'tlpv1'" class="me-1"
+                                                                    ><span class="marking-badge {{ getTlpStyle(objMark) }}">{{ objMark.name }}</span>
+                                                                    <span class="tlpv1">v1.0</span></span
+                                                                >
+                                                                <span
+                                                                    *ngIf="objMark.type !== 'tlpv1'"
+                                                                    class="me-1 marking-badge {{ getTlpStyle(objMark) }}"
+                                                                    >{{ formalDeterminationView(objMark.name) }}</span
+                                                                >
+                                                            </span>
+                                                        </td>
+                                                        <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                            <div
+                                                                *ngIf="
+                                                                    !isDuplicated(component.id) &&
+                                                                    !isReferenced(component.id) &&
+                                                                    !objCheckMap.get(component.id)
+                                                                "
+                                                                (click)="checkDupeAndRef(component, $event)"
+                                                                class="ms-2"
+                                                                style="width: 25px; height: 25px"
+                                                            >
+                                                                <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                            </div>
+                                                            <div
+                                                                *ngIf="objCheckMap.get(component.id)"
+                                                                class="spinner-border text-primary ms-2"
+                                                                style="width: 25px; height: 25px"
+                                                            >
+                                                                <span class="visually-hidden">Loading...</span>
+                                                            </div>
+                                                            <img
+                                                                *ngIf="isDuplicated(component.id) && !objCheckMap.get(component.id)"
+                                                                (click)="viewDuplicates($event, component)"
+                                                                src="./assets/merge-cells.svg"
+                                                                alt=""
+                                                                width="25"
+                                                                height="25"
+                                                                class="ms-2"
+                                                                title="Duplicated Objects"
+                                                            />
+                                                            <img
+                                                                *ngIf="isReferenced(component.id) && !objCheckMap.get(component.id)"
+                                                                (click)="viewReferences($event, component)"
+                                                                src="./assets/reference.svg"
+                                                                alt=""
+                                                                width="25"
+                                                                height="25"
+                                                                class="ms-2"
+                                                                title="Referenced Objects"
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            } @else {
+                <ng-container>
+                    @for (type of guidedService.filteredCategories | keyvalue; track type.key; let i = $index) {
+                        @if (type.key !== 'MISCELLANEOUS') {
+                            <ng-container>
+                                @if (guidedService.filteredCategories[type.key]?.length > 0) {
+                                    <ng-container>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="container-fluid ps-5 pe-5">
+                                                    <div class="row dashboard-card main-card">
+                                                        <div class="col d-flex flex-column ps-4 pe-4">
+                                                            <div class="pt-3 pb-3 card-title card-header">
+                                                                <div
+                                                                    (click)="toggleObjectTypeToShow(type.key, true)"
+                                                                    class="d-flex justify-content-between cursor-pointer mb-3 align-items-center"
+                                                                >
+                                                                    <div class="ms-2">
+                                                                        {{ type.key }}
+                                                                        <span class="ms-2">
+                                                                            {{ guidedService.getCategoryLength(type.key) }}
+                                                                        </span>
+                                                                    </div>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="btn"
+                                                                        [class]="{
+                                                                            rotate: !showObjectType(type.key),
+                                                                            'rotate-back': showObjectType(type.key),
+                                                                        }"
+                                                                    >
+                                                                        <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <table
+                                                                *ngIf="showObjectType(type.key)"
+                                                                class="table table-striped table-hover table-responsive object-table"
+                                                            >
+                                                                <thead>
+                                                                    <th scope="col" class="pt-3 pb-3">Select</th>
+                                                                    <th scope="col" class="pt-3 pb-3">Object</th>
+                                                                    <th scope="col" class="pt-3 pb-3">Marking Ref</th>
+                                                                    <th scope="col" class="pt-3 pb-3">Refs</th>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <ng-container
+                                                                        *ngFor="
+                                                                            let component of guidedService.filteredCategories[type.key];
+                                                                            let k = index;
+                                                                            let c = count
+                                                                        "
+                                                                    >
+                                                                        <tr
+                                                                            (click)="openJson($event, component, type.key)"
+                                                                            class="cursor-pointer object-table"
+                                                                            [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                        >
+                                                                            <td
+                                                                                [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                                style="width: 100px"
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    class="select-item checkbox"
+                                                                                    (click)="$event.stopPropagation()"
+                                                                                    (change)="updateSelectedObjects(component.id)"
+                                                                                />
+                                                                            </td>
+                                                                            <td
+                                                                                class="w-75 text-break"
+                                                                                [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                            >
+                                                                                <span [innerHtml]="getComponentDisplay(component)"></span>
+                                                                            </td>
+                                                                            <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                                <span *ngFor="let objMark of getTlp(component)">
+                                                                                    <span *ngIf="objMark.type === 'tlpv1'" class="me-1"
+                                                                                        ><span class="marking-badge {{ getTlpStyle(objMark) }}">{{
+                                                                                            objMark.name
+                                                                                        }}</span>
+                                                                                        <span class="tlpv1">v1.0</span></span
+                                                                                    >
+                                                                                    <span
+                                                                                        *ngIf="objMark.type !== 'tlpv1'"
+                                                                                        class="me-1 marking-badge {{ getTlpStyle(objMark) }}"
+                                                                                        >{{ formalDeterminationView(objMark.name) }}</span
+                                                                                    >
+                                                                                </span>
+                                                                            </td>
+                                                                            <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                                <div
+                                                                                    *ngIf="
+                                                                                        !isDuplicated(component.id) &&
+                                                                                        !isReferenced(component.id) &&
+                                                                                        !objCheckMap.get(component.id)
+                                                                                    "
+                                                                                    (click)="checkDupeAndRef(component, $event)"
+                                                                                    class="ms-2"
+                                                                                    style="width: 25px; height: 25px"
+                                                                                >
+                                                                                    <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                                                </div>
+                                                                                <div
+                                                                                    *ngIf="objCheckMap.get(component.id)"
+                                                                                    class="spinner-border text-primary ms-2"
+                                                                                    style="width: 25px; height: 25px"
+                                                                                >
+                                                                                    <span class="visually-hidden">Loading...</span>
+                                                                                </div>
+                                                                                <img
+                                                                                    *ngIf="
+                                                                                        isDuplicated(component.id) && !objCheckMap.get(component.id)
+                                                                                    "
+                                                                                    (click)="viewDuplicates($event, component)"
+                                                                                    src="./assets/merge-cells.svg"
+                                                                                    alt=""
+                                                                                    width="25"
+                                                                                    height="25"
+                                                                                    class="ms-2"
+                                                                                    title="Duplicated Objects"
+                                                                                />
+                                                                                <img
+                                                                                    *ngIf="
+                                                                                        isReferenced(component.id) && !objCheckMap.get(component.id)
+                                                                                    "
+                                                                                    (click)="viewReferences($event, component)"
+                                                                                    src="./assets/reference.svg"
+                                                                                    alt=""
+                                                                                    width="25"
+                                                                                    height="25"
+                                                                                    class="ms-2"
+                                                                                    title="Referenced Objects"
+                                                                                />
+                                                                            </td>
+                                                                        </tr>
+                                                                    </ng-container>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                }
+                            </ng-container>
+                        }
+                    }
+
+                    <ng-container>
+                        @if (guidedService.filteredCategories['MISCELLANEOUS']?.length > 0) {
+                            <ng-container>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="container-fluid ps-5 pe-5">
+                                            <div class="row dashboard-card main-card">
+                                                <div class="col d-flex flex-column ps-4 pe-4">
+                                                    <div class="pt-3 pb-3 card-title card-header">
+                                                        <div
+                                                            (click)="toggleObjectTypeToShow('MISCELLANEOUS', true)"
+                                                            class="d-flex justify-content-between cursor-pointer mb-3 align-items-center"
+                                                        >
+                                                            <div class="ms-2">
+                                                                {{ 'MISCELLANEOUS' }}
+                                                                <span class="ms-2">
+                                                                    {{ guidedService.getCategoryLength('MISCELLANEOUS') }}
+                                                                </span>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                class="btn"
+                                                                [class]="{
+                                                                    rotate: !showObjectType('MISCELLANEOUS'),
+                                                                    'rotate-back': showObjectType('MISCELLANEOUS'),
+                                                                }"
+                                                            >
+                                                                <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <table
+                                                        *ngIf="showObjectType('MISCELLANEOUS')"
+                                                        class="table table-striped table-hover table-responsive object-table"
+                                                    >
+                                                        <thead>
+                                                            <th scope="col" class="pt-3 pb-3">Select</th>
+                                                            <th scope="col" class="pt-3 pb-3">Object</th>
+                                                            <th scope="col" class="pt-3 pb-3">Marking Ref</th>
+                                                            <th scope="col" class="pt-3 pb-3">Refs</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <ng-container
+                                                                *ngFor="
+                                                                    let component of guidedService.filteredCategories['MISCELLANEOUS'];
+                                                                    let k = index;
+                                                                    let c = count
+                                                                "
+                                                            >
+                                                                <tr
+                                                                    (click)="openJson($event, component, 'MISCELLANEOUS')"
+                                                                    class="cursor-pointer object-table"
+                                                                    [ngClass]="{ highlight: highlightSearch(component) }"
+                                                                >
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }" style="width: 100px">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            class="select-item checkbox"
+                                                                            (click)="$event.stopPropagation()"
+                                                                            (change)="updateSelectedObjects(component.id)"
+                                                                        />
+                                                                    </td>
+                                                                    <td class="w-75 text-break" [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <span [innerHtml]="getComponentDisplay(component)"></span>
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <span *ngFor="let objMark of getTlp(component)">
+                                                                            <span *ngIf="objMark.type === 'tlpv1'" class="me-1"
+                                                                                ><span class="marking-badge {{ getTlpStyle(objMark) }}">{{
+                                                                                    objMark.name
+                                                                                }}</span>
+                                                                                <span class="tlpv1">v1.0</span></span
+                                                                            >
+                                                                            <span
+                                                                                *ngIf="objMark.type !== 'tlpv1'"
+                                                                                class="me-1 marking-badge {{ getTlpStyle(objMark) }}"
+                                                                                >{{ formalDeterminationView(objMark.name) }}</span
+                                                                            >
+                                                                        </span>
+                                                                    </td>
+                                                                    <td [ngClass]="{ highlight: highlightSearch(component) }">
+                                                                        <div
+                                                                            *ngIf="
+                                                                                !isDuplicated(component.id) &&
+                                                                                !isReferenced(component.id) &&
+                                                                                !objCheckMap.get(component.id)
+                                                                            "
+                                                                            (click)="checkDupeAndRef(component, $event)"
+                                                                            class="ms-2"
+                                                                            style="width: 25px; height: 25px"
+                                                                        >
+                                                                            <fa-icon [icon]="faSearch" class="pe-1"></fa-icon>
+                                                                        </div>
+                                                                        <div
+                                                                            *ngIf="objCheckMap.get(component.id)"
+                                                                            class="spinner-border text-primary ms-2"
+                                                                            style="width: 25px; height: 25px"
+                                                                        >
+                                                                            <span class="visually-hidden">Loading...</span>
+                                                                        </div>
+                                                                        <img
+                                                                            *ngIf="isDuplicated(component.id) && !objCheckMap.get(component.id)"
+                                                                            (click)="viewDuplicates($event, component)"
+                                                                            src="./assets/merge-cells.svg"
+                                                                            alt=""
+                                                                            width="25"
+                                                                            height="25"
+                                                                            class="ms-2"
+                                                                            title="Duplicated Objects"
+                                                                        />
+                                                                        <img
+                                                                            *ngIf="isReferenced(component.id) && !objCheckMap.get(component.id)"
+                                                                            (click)="viewReferences($event, component)"
+                                                                            src="./assets/reference.svg"
+                                                                            alt=""
+                                                                            width="25"
+                                                                            height="25"
+                                                                            class="ms-2"
+                                                                            title="Referenced Objects"
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+                                                            </ng-container>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        }
+                    </ng-container>
+                </ng-container>
+            }
+        </div>
+    </div>
+
+    <ng-template #publishModal let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="publish-modal-title">
+                @if (!publishMisp) {
+                    <span *ngIf="modalCurrentStep !== 4">Publish Bundle</span>
+                    <span *ngIf="modalCurrentStep === 4">Bundle Submitted!</span>
+                } @else if (publishMisp && !mispObj) {
+                    <span>Export to MISP</span>
+                } @else if (publishMisp && mispObj) {
+                    <span> Successfully Exported To MISP </span>
+                }
+            </h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body" [ngClass]="{ 'pb-0': publishMisp, 'pt-0': publishMisp }">
+            <div id="modal-step-0" *ngIf="modalCurrentStep === 0">
+                <h5>STIX Required Window</h5>
+                <p>Prior to submission, your Taxii Server selection requires the following fields:</p>
+                <div *ngFor="let field of required">
+                    <div *ngIf="field.showInPopup">
+                        <h6>{{ field.label }}:</h6>
+                        <div [ngSwitch]="field.label">
+                            <div *ngSwitchCase="'ACS Markings'">
+                                <div class="d-flex justify-content-left align-items-center">
+                                    <button type="button" class="btn btn-success ms-2 btn-100" style="height: 30px" (click)="openStixConfig()">
+                                        <fa-icon [icon]="faPlusSquare" class="pe-1"></fa-icon>
+                                        Apply ACS Marking
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group" *ngIf="modalCurrentStep > 0 && modalCurrentStep < 5">
+                <h5>Report Name*:</h5>
+                <input
+                    class="form-control input-sm search-bar report-name-input"
+                    placeholder="Enter a name for your bundle."
+                    [(ngModel)]="this.reportName"
+                />
+            </div>
+            <br />
+            <div id="modal-step-1" *ngIf="modalCurrentStep === 1"></div>
+            <div id="modal-step-2" *ngIf="modalCurrentStep === 2">
+                <h5>TAXII Repository Information</h5>
+                <p>Select the API Root and Collection you would like to publish to.</p>
+                <div *ngIf="!stixService.isLoading && (taxiiServerType === 'default' || taxiiServerType === 'ais' || this.taxiiServerType === 'cma')">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text input-sm" id="taxii-api-root">API Roots</span>
+                        <div ngbDropdown class="d-inline-block">
+                            <button
+                                class="btn btn-outline-primary"
+                                style="height: 31px"
+                                id="sortMenu"
+                                ngbDropdownToggle
+                                [disabled]="stixService?.apiRoots2?.length === 0"
+                            >
+                                <span *ngIf="taxiiServer?.apiRoot">
+                                    {{ taxiiServer?.apiRoot }}
+                                </span>
+                            </button>
+                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                <button
+                                    class="dropdown-item"
+                                    *ngFor="let apiRoot of this.apiRootsPublishTo()"
+                                    (click)="selectApiRoot(apiRoot)"
+                                    title="{{ apiRoot?.description }}"
+                                >
+                                    {{ apiRoot.title }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text input-sm" id="taxii-collection-id">Collections</span>
+                        <div ngbDropdown class="d-inline-block">
+                            <button
+                                class="btn btn-outline-primary"
+                                style="height: 31px"
+                                id="sortMenu"
+                                ngbDropdownToggle
+                                [disabled]="!taxiiServer.apiRoot"
+                            >
+                                <span *ngIf="selectedCollection">
+                                    {{ selectedCollection?.title }}
+                                </span>
+                            </button>
+                            <div
+                                *ngIf="this.selectedAPIRoot && collectionsCanWriteTo()"
+                                ngbDropdownMenu
+                                class="dropdown-menu collections-dropdown"
+                                aria-labelledby="sortMenu"
+                            >
+                                <ng-container *ngFor="let collection of taxiiServer.availableCollections">
+                                    <button
+                                        *ngIf="collection.can_write"
+                                        class="dropdown-item"
+                                        (click)="onCollectionChanged(collection)"
+                                        title="{{ collection?.description }}"
+                                    >
+                                        {{ collection.title }}
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!stixService.isLoading && taxiiServerType === 'ais2'">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text input-sm" id="taxii-api-root">API Roots</span>
+                        <div ngbDropdown class="d-inline-block">
+                            <button class="btn btn-outline-primary" style="height: 31px" id="sortMenu" ngbDropdownToggle>AIS Ingest</button>
+                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                <button class="dropdown-item" title="zzz">AIS Ingest</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text input-sm" id="taxii-collection-id">Collections</span>
+                        <div ngbDropdown class="d-inline-block">
+                            <button class="btn btn-outline-primary" style="height: 31px" id="sortMenu" ngbDropdownToggle>
+                                AIS Ingest Collection
+                            </button>
+                            <div ngbDropdownMenu class="dropdown-menu collections-dropdown" aria-labelledby="sortMenu">
+                                <button class="dropdown-item" title="Automatically sorts STIX into collections">AIS Ingest Collection</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!stixService.isLoading && taxiiServerType === 'custom'">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text input-sm" id="taxii-api-root">API Roots</span>
+                        <div ngbDropdown class="d-inline-block">
+                            <button
+                                class="btn btn-outline-primary"
+                                style="height: 31px"
+                                id="sortMenu"
+                                ngbDropdownToggle
+                                [disabled]="stixService.isLoading || stixService?.apiRoots2?.length === 0"
+                            >
+                                <span *ngIf="selectedAPIRoot">
+                                    {{ selectedAPIRoot?.title }}
+                                </span>
+                            </button>
+                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                <button
+                                    class="dropdown-item"
+                                    *ngFor="let apiRoot of apiRootsPublishTo()"
+                                    (click)="onAPIRootChanged(apiRoot)"
+                                    title="{{ apiRoot?.description }}"
+                                >
+                                    {{ apiRoot['title'] }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text input-sm" id="taxii-collection-id">Collections</span>
+                        <div ngbDropdown class="d-inline-block">
+                            <button
+                                class="btn btn-outline-primary"
+                                style="height: 31px"
+                                id="sortMenu"
+                                ngbDropdownToggle
+                                [disabled]="!selectedAPIRoot"
+                            >
+                                <span *ngIf="selectedCollection">
+                                    {{ selectedCollection?.title }}
+                                </span>
+                            </button>
+                            <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                                <ng-container *ngFor="let collection of taxiiServer.availableCollections">
+                                    <button
+                                        *ngIf="collection.can_write"
+                                        class="dropdown-item"
+                                        (click)="onCollectionChanged(collection)"
+                                        data-bs-toggle="tooltip"
+                                        data-placement="top"
+                                        title="{{ collection?.description }}"
+                                    >
+                                        {{ collection?.title }}
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="stixService.isLoading">
+                    <div class="spinner mx-auto"></div>
+                    <div class="text-center">Loading API Roots and Collections...</div>
+                </div>
+            </div>
+            <div id="modal-step-3" *ngIf="modalCurrentStep === 3">
+                <h5>All Ready?</h5>
+                <p>
+                    Everything's ready to go. Click "Publish" to post your STIX document to the aforementioned TAXII server. Having second thoughts,
+                    click "Continue Editing" to return to the Publish STIX page.
+                </p>
+                <div>
+                    <div>TAXII Server URL: {{ constructTaxiiServerURL() }}</div>
+                    <div *ngIf="taxiiServerType === 'custom'">TAXII Server Username: {{ taxiiServer.username }}</div>
+                </div>
+            </div>
+            <div id="modal-step-4" *ngIf="modalCurrentStep === 4">
+                <ol>
+                    <li class="mt-3">
+                        <b>Download</b> your STIX bundle to reference your object IDs for the future by clicking the “download” button below.
+                    </li>
+                    <li class="mt-2">
+                        Once the user closes this pop-up window, the <b>notification in the top right indicates the status of the submission</b>:
+                        <ul>
+                            <li><span class="text-success">Green</span> is a successful submission</li>
+                            <li>
+                                <span class="text-warning">Yellow</span> and <span class="text-danger">red</span> indicate errors in submission.
+                                Expand the message, download the output and bundle, and email to your administrator
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="mt-2">To edit or publish new bundles, ensure the bundle editor is clear by <b>clicking “reset”.</b></li>
+                    <li class="mt-3">
+                        <ng-container>
+                            <div class="row ps-3 pb-1">
+                                If you would like to save or download your bundle, please select one of the buttons in the lower right of the modal.
+                            </div>
+                        </ng-container>
+                    </li>
+                </ol>
+            </div>
+            <div id="modal-step-5" *ngIf="modalCurrentStep === 5 || modalCurrentStep == 6">
+                <div class="container misp-wrapper">
+                    <div class="row">
+                        @if (this.modalCurrentStep == 5) {
+                            <div class="col-3">
+                                <!-- Title -->
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <span class="input-header"> Report Title </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <input type="text" [(ngModel)]="this.mispTitle" placeholder="Title" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Producer -->
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <span class="input-header"> Producer </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <input
+                                                    type="text"
+                                                    disabled
+                                                    [(ngModel)]="this.mispProducer"
+                                                    placeholder="Producer"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="col-9">
+                            <ngx-monaco-editor
+                                class="json-editor pt-3 pb-3 pe-2 ps-2"
+                                style="width: 100%; display: block; height: 75vh !important"
+                                readonly
+                                [options]="editorOptions"
+                                [(ngModel)]="mispJson"
+                            ></ngx-monaco-editor>
+                        </div>
+                        @if (this.modalCurrentStep == 6) {
+                            <div class="col-3">
+                                <!-- MISP Server -->
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <span class="input-header"> MISP URL </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <button
+                                                    class="btn btn-outline-secondary dropdown-toggle form-control"
+                                                    style="border-color: #dee2e6 !important; height: 35px"
+                                                    type="button"
+                                                    data-bs-toggle="dropdown"
+                                                    aria-expanded="false"
+                                                    [disabled]="!enableMispExport()"
+                                                >
+                                                    Choose MISP Server
+                                                </button>
+                                                @if (mispServers && mispServers.length > 0) {
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        @for (misp of mispServers; track misp) {
+                                                            <div (click)="selectMisp(misp)" class="dropdown-item">{{ misp.url }}</div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- MISP URL -->
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <span class="input-header"> MISP URL </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <input
+                                                    type="text"
+                                                    [(ngModel)]="this.mispUrl"
+                                                    placeholder="URL"
+                                                    class="form-control"
+                                                    [disabled]="!enableMispExport()"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- MISP API KEY -->
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <span class="input-header"> MISP API Key </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <input
+                                                    type="text"
+                                                    [(ngModel)]="this.mispApi"
+                                                    placeholder="API Key"
+                                                    class="form-control"
+                                                    [disabled]="!enableMispExport()"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SAVE MISP -->
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <div class="form-check form-check d-flex">
+                                            <input class="form-check-input me-2" type="checkbox" [(ngModel)]="saveMisp" id="flexCheckDefault" />
+                                            <label
+                                                style="font-size: 12.5px; color: #6c757d !important"
+                                                class="form-check-label"
+                                                for="flexCheckDefault"
+                                            >
+                                                Save MISP Server
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="modal-step-6" *ngIf="modalCurrentStep === 7">
+                <div class="container misp-wrapper" style="height: 75vh !important">
+                    <div class="row">
+                        <div class="col">
+                            <div class="misp-card main-card mb-3 cursor-pointer">
+                                <div class="d-flex flex-column ps-4 pe-4 pb-3 pt-3">
+                                    <div class="p-3 card-title card-header">
+                                        <div (click)="toggleMisp()" class="d-flex justify-content-between cursor-pointer align-items-center">
+                                            <div class="ms-2 d-flex align-items-center flex-wrap flex-row">
+                                                <div>
+                                                    <span class="me-2">
+                                                        {{ mispTitle }}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    @for (tag of mispObj['Event'].Tag; track tag.id) {
+                                                        <span class="badge bg-secondary me-2">
+                                                            {{ tag.name }}
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="d-flex align-items-center me-3 misp-metadata">
+                                                    <div class="metadata-column">
+                                                        <div class="metadata-label">Date</div>
+                                                        <div class="metadata-value">
+                                                            {{ mispObj['Event'].date }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="metadata-column ms-5">
+                                                        <div class="metadata-label">Attributes</div>
+                                                        <div class="metadata-value">
+                                                            {{ mispObj['Event'].attribute_count }}
+                                                        </div>
+                                                    </div>
+                                                    <div (click)="openMispLink($event)" class="metadata-column ms-5">
+                                                        <fa-icon [icon]="faExternalLink"></fa-icon>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn" [ngClass]="{ rotate: expandMisp, 'rotate-back': !expandMisp }">
+                                                    <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        @if (expandMisp) {
+                                            <div class="card-body pt-2">
+                                                <ngx-monaco-editor
+                                                    class="json-editor pt-3 pb-3 pe-2 ps-2"
+                                                    style="width: 100%; display: block; height: 65vh !important"
+                                                    readonly
+                                                    [options]="editorOptions"
+                                                    [(ngModel)]="mispJson"
+                                                ></ngx-monaco-editor>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px; overflow: auto">
+            <div class="container-fluid">
+                <div *ngIf="this.stixService.apiRootProcessingError != '' && !publishMisp" class="pt-1 ps-3">
+                    <p style="font-weight: bold">
+                        Failed to connect to
+                        {{
+                            this.stixService.taxiiServer.url == aisUrl
+                                ? this.stixService.prod
+                                    ? 'https://ais2.cisa.dhs.gov/taxii2/'
+                                    : 'https://ais2-pfte.taxii.cisa.dhs.gov/taxii2'
+                                : this.stixService.taxiiServer.url
+                        }}
+                    </p>
+                    <p style="text-align: left">
+                        {{ this.stixService.apiRootProcessingError }}
+                        <ng-container *ngIf="this.stixService.apiRootProcessingErrorURL != ''"
+                            ><br />URL: {{ this.stixService.apiRootProcessingErrorURL }}</ng-container
+                        >
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                (click)="decreaseCurrentStep()"
+                *ngIf="(modalCurrentStep == 1 && required.length > 0) || (modalCurrentStep > 2 && modalCurrentStep !== 4)"
+                [disabled]="isPublishing"
+            >
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Previous
+            </button>
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                (click)="modal.close(false)"
+                [disabled]="isPublishing"
+                *ngIf="modalCurrentStep !== 4 && modalCurrentStep !== 7"
+            >
+                <fa-icon [icon]="faEdit" class="pe-1"></fa-icon>
+                Continue Editing
+            </button>
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                (click)="modal.close(false)"
+                [disabled]="isPublishing"
+                *ngIf="modalCurrentStep === 7"
+            >
+                <fa-icon [icon]="faEdit" class="pe-1"></fa-icon>
+                Close
+            </button>
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-success"
+                (click)="switchToMisp()"
+                *ngIf="modalCurrentStep == 2 && environment.analyst1.enabled"
+                [disabled]="isPublishing"
+            >
+                <fa-icon [icon]="faUpload" class="pe-1"></fa-icon>
+                Export to MISP
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                (click)="increaseCurrentStep()"
+                *ngIf="modalCurrentStep < modalStepCount"
+                [disabled]="isNextDisabled()"
+            >
+                <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                Next
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.close(false)" *ngIf="modalCurrentStep === 4">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button type="button" class="btn btn-wsm btn-outline-success" (click)="saveBundleModal(saveModal, false)" *ngIf="modalCurrentStep === 4">
+                <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                Submitted Bundle
+            </button>
+            <button type="button" class="btn btn-wsm btn-outline-success" (click)="downloadBundle()" *ngIf="modalCurrentStep === 4">
+                <fa-icon [icon]="faDownload" class="pe-1"></fa-icon>
+                Submitted Bundle
+            </button>
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-success"
+                (click)="publishBundle(true)"
+                *ngIf="modalCurrentStep === modalStepCount"
+                [disabled]="isPublishing"
+            >
+                <fa-icon [icon]="faUpload" class="pe-1"></fa-icon>
+                <span *ngIf="!isPublishing">Publish</span>
+                <span *ngIf="isPublishing">
+                    <div class="spinner-grow text-light query-loading-icon"></div>
+                </span>
+            </button>
+            @if (modalCurrentStep === 5) {
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    (click)="convertStixToMisp()"
+                    [disabled]="!mispTitle || !mispProducer || loadingMisp"
+                >
+                    <fa-icon [icon]="faRetweet" class="pe-1"></fa-icon>
+                    @if (loadingMisp) {
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    } @else {
+                        Convert
+                    }
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" (click)="downloadMisp()" [disabled]="!enableMispExport() || loadingMisp">
+                    <fa-icon [icon]="faDownload" class="pe-1"></fa-icon>
+                    @if (loadingMisp) {
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    } @else {
+                        Download
+                    }
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" (click)="submitMisp()" [disabled]="!enableMispExport() || loadingMisp">
+                    <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                    @if (loadingMisp) {
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    } @else {
+                        Next
+                    }
+                </button>
+            } @else if (modalCurrentStep == 6) {
+                <button type="button" class="btn btn-sm btn-outline-success" (click)="downloadMisp()" [disabled]="!enableMispExport() || loadingMisp">
+                    <fa-icon [icon]="faDownload" class="pe-1"></fa-icon>
+                    @if (loadingMisp) {
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    } @else {
+                        Download
+                    }
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    (click)="exportMisp()"
+                    [disabled]="!enableMispExport() || loadingMisp || !mispUrl || !mispApi"
+                >
+                    <fa-icon [icon]="faUpload" class="pe-1"></fa-icon>
+                    @if (loadingMisp) {
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    } @else {
+                        Export
+                    }
+                </button>
+            }
+        </div>
+    </ng-template>
+
+    <!--------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+    <ng-template #CISAIdentityModal let-modal>
+        <div class="modal-header">
+            <h2 class="modal-title" id="modal-title">Warning</h2>
+        </div>
+        <div class="modal-body">
+            <div>
+                You have removed the default CISA identity from the current bundle. The identity will still be available within forms and can be added
+                back to the bundle through the "Available Identities" section of the Identity form. The identity will also be automatically added on
+                bundle reset or if the bundle is empty when loading the page.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-success" aria-label="Confirm" (click)="modal.dismiss('Cross click')">
+                <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                Confirm
+            </button>
+        </div>
+    </ng-template>
+
+    <ng-template #removeTlpModal let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="modal-title">Remove All TLP</h4>
+        </div>
+        <div class="modal-body">
+            <div>Confirm you would like to remove all TLP's assigned in the bundle</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-success" aria-label="Confirm" (click)="confirmRemoveTlp()">
+                <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                Confirm
+            </button>
+        </div>
+    </ng-template>
+
+    <ng-template #saveModal let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="save-modal-title">
+                <span *ngIf="importingObjects && !savingBundle">Import STIX Objects</span>
+                <span *ngIf="!importingObjects && !isReset && !loadingBundle">Save STIX Bundle</span>
+                <span *ngIf="loadingBundle">Load STIX Bundle</span>
+                <span *ngIf="!importingObjects && !savingBundle && isReset">Reset STIX Objects</span>
+            </h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body pb-0">
+            <div *ngIf="!savingBundle && !isReset && !importingObjects && !loadingBundle">
+                <app-saved-bundles-table class="w-100" [mode]="'saving'" (bundleStatus)="updateSaveModal($event)"></app-saved-bundles-table>
+            </div>
+            <div *ngIf="(savingBundle || isReset || importingObjects) && !loadingBundle" class="pt-2">
+                <ng-container *ngIf="importingObjects && !savingBundle">
+                    Preview objects ready to load displayed below. Choose how you would like to handle the existing objects:<br />
+                    (1) Discard the bundle entirely, (2) Merge the objects you are importing into the current bundle, or (3) Save the current bundle
+                    for later use.
+                    <br />
+                </ng-container>
+                <ng-container *ngIf="savingBundle">
+                    <div class="row ps-3 pb-1">
+                        If you would like to save your bundle, please enter a name below. If you would instead like to discard/reset the bundle please
+                        confirm so.
+                    </div>
+                    <div *ngIf="!savingModalData.isNew && !savingModalData.isChangingName" class="row ps-3 pb-2 text-danger">
+                        ** A bundle with a same name has been found. This will overwrite the saved bundle **
+                    </div>
+                    <div class="row ms-0 input-border">
+                        <input
+                            class="form-control"
+                            style="font-size: x-large; font-weight: 400"
+                            type="text"
+                            [disabled]="true"
+                            [(ngModel)]="savingModalData.name"
+                        />
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="!importingObjects && !savingBundle"> Confirm you would like to discard the bundle to reset.<br /> </ng-container>
+                <br />
+                <ul class="nav nav-underline" *ngIf="!savingBundle && isUploading">
+                    <li class="nav-item" (click)="activeTab = 'jsonViewer'">
+                        <a class="nav-link active" style="cursor: pointer" [ngClass]="{ active: activeTab === 'jsonViewer' }">JSON</a>
+                    </li>
+                    <li *ngIf="!guidedUI && isUploading" style="cursor: pointer" class="nav-item" (click)="activeTab = 'visualViewer'">
+                        <a class="nav-link" [ngClass]="{ active: activeTab === 'visualViewer' }">Visual</a>
+                    </li>
+                </ul>
+                <pre *ngIf="activeTab === 'jsonViewer' && !savingBundle && isUploading" class="preview-bundle">{{
+                    previewObjectsToLoad() | json
+                }}</pre>
+                <app-stix-viewer *ngIf="activeTab === 'visualViewer' && !savingBundle && isUploading" class="nav-link" [preview]="true">
+                </app-stix-viewer>
+            </div>
+            <div *ngIf="loadingBundle" class="pt-2">
+                Selected Bundle:
+                <select
+                    class="col-4 form-control form-select"
+                    style="font-size: large; font-weight: 500"
+                    type="text"
+                    [(ngModel)]="selectedBundle"
+                    [disabled]="true"
+                >
+                    <option *ngFor="let bundle of this.stixService.savedBundles" [value]="bundle.name">{{ bundle.name }}</option>
+                </select>
+                <br />
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.close(false)">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button
+                *ngIf="savingBundle || loadingBundle"
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                (click)="savingBundle = false; loadingBundle = false"
+            >
+                <fa-icon [icon]="faArrowLeft" class="pe-1"></fa-icon>
+                Previous
+            </button>
+            <button
+                *ngIf="loadingBundle"
+                type="button"
+                class="btn btn-sm btn-outline-success"
+                (click)="sendBundle()"
+                [disabled]="this.selectedBundle == ''"
+            >
+                <fa-icon [icon]="faFileDownload" class="pe-1"></fa-icon>
+                Load Bundle
+            </button>
+            <ng-container *ngIf="importingObjects && !savingBundle && !loadingBundle">
+                <button *ngIf="!isDiscarding" type="button" class="btn btn-sm btn-outline-warning" (click)="discardBundle()">
+                    <fa-icon [icon]="faBackspace" class="pe-1"></fa-icon>
+                    Discard Bundle
+                </button>
+                <button *ngIf="isDiscarding" type="button" class="btn btn-sm btn-outline-warning" [disabled]="true">Discarding...</button>
+                <button
+                    *ngIf="!isMerging"
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="mergeBundle(this.stixService.objectsToLoad)"
+                    style="width: 175px !important"
+                >
+                    <fa-icon [icon]="faMerge" class="pe-1"></fa-icon>
+                    Merge into Bundle
+                </button>
+                <button *ngIf="isMerging" type="button" class="btn btn-sm btn-outline-primary" [disabled]="true">Merging...</button>
+            </ng-container>
+            <ng-container *ngIf="savingBundle">
+                <button
+                    *ngIf="savingModalData.destination == 'local' && savingModalData.isNew == false"
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    (click)="overwriteBundle()"
+                >
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Locally
+                </button>
+                <button
+                    *ngIf="savingModalData.destination == 'local' && savingModalData.isNew == true"
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    (click)="saveBundle('local')"
+                >
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Locally
+                </button>
+                <button
+                    *ngIf="savingModalData.destination == 'profile' && savingModalData.isNew == true"
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    (click)="saveBundle('profile')"
+                >
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Profile
+                </button>
+                <button
+                    *ngIf="savingModalData.destination == 'profile' && savingModalData.isNew == false"
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    (click)="overwriteBundle()"
+                >
+                    <fa-icon [icon]="faSave" class="pe-1"></fa-icon>
+                    Profile
+                </button>
+            </ng-container>
+            <ng-container *ngIf="!importingObjects && !savingBundle && isReset">
+                <button type="button" class="btn btn-sm btn-outline-warning" (click)="discard()">
+                    <fa-icon [icon]="faBackspace" class="pe-1"></fa-icon>
+                    Discard Bundle
+                </button>
+            </ng-container>
+        </div>
+    </ng-template>
+
+    <ng-template #loadModal let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="load-modal-title">Load STIX Bundles</h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div *ngIf="!loadingBundle" class="pt-2">
+                <app-saved-bundles-table class="w-100" [mode]="'loading'" (bundleStatus)="updateLoadModal($event)"></app-saved-bundles-table>
+            </div>
+            <div *ngIf="loadingBundle" class="pt-2">
+                Selected Bundle:
+                <select
+                    class="col-4 form-control form-select"
+                    style="font-size: large; font-weight: 500"
+                    type="text"
+                    [(ngModel)]="selectedBundle"
+                    [disabled]="true"
+                >
+                    <option *ngFor="let bundle of this.stixService.savedBundles" [value]="bundle.name">{{ bundle.name }}</option>
+                </select>
+                <br />
+                <ul class="nav nav-underline">
+                    <li class="nav-item" (click)="activeTab = 'jsonViewer'">
+                        <a class="nav-link active" [ngClass]="{ active: activeTab === 'jsonViewer' }">JSON</a>
+                    </li>
+                </ul>
+                <pre *ngIf="activeTab === 'jsonViewer'" class="preview-bundle">{{ getStixPreview() | json }}</pre>
+                <app-stix-viewer *ngIf="activeTab === 'visualViewer'" class="nav-link" [bundle]="getStixPreview()"> </app-stix-viewer>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.close(false)">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button
+                *ngIf="loadingBundle"
+                type="button"
+                class="btn btn-sm btn-outline-success"
+                (click)="sendBundle()"
+                [disabled]="this.selectedBundle == ''"
+            >
+                <fa-icon [icon]="faFileDownload" class="pe-1"></fa-icon>
+                Load Bundle
+            </button>
+        </div>
+    </ng-template>
+
+    <ng-template #deleteModal let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="load-modal-title">Load STIX Bundles</h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div *ngIf="!loadingBundle" class="pt-2">
+                <app-saved-bundles-table class="w-100" [mode]="'loading'" (bundleStatus)="updateLoadModal($event)"></app-saved-bundles-table>
+            </div>
+            <div *ngIf="loadingBundle" class="pt-2">
+                Selected Bundle:
+                <select
+                    class="col-4 form-control form-select"
+                    style="font-size: large; font-weight: 500"
+                    type="text"
+                    [(ngModel)]="selectedBundle"
+                    [disabled]="true"
+                >
+                    <option *ngFor="let bundle of this.stixService.savedBundles" [value]="bundle.name">{{ bundle.name }}</option>
+                </select>
+                <br />
+                <ul class="nav nav-underline">
+                    <li class="nav-item" (click)="activeTab = 'jsonViewer'">
+                        <a class="nav-link active" [ngClass]="{ active: activeTab === 'jsonViewer' }">JSON</a>
+                    </li>
+                </ul>
+                <pre *ngIf="activeTab === 'jsonViewer'" class="preview-bundle">{{ getStixPreview() | json }}</pre>
+                <app-stix-viewer *ngIf="activeTab === 'visualViewer'" class="nav-link" [bundle]="getStixPreview()"> </app-stix-viewer>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.close(false)">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button
+                *ngIf="loadingBundle"
+                type="button"
+                class="btn btn-sm btn-outline-success"
+                (click)="sendBundle()"
+                [disabled]="this.selectedBundle == ''"
+            >
+                <fa-icon [icon]="faFileDownload" class="pe-1"></fa-icon>
+                Load Bundle
+            </button>
+        </div>
+    </ng-template>
+
+    <ng-template #editedParent let-modal>
+        <div class="modal-header">
+            <h2 class="modal-title" id="modal-title">References to Object Detected</h2>
+        </div>
+        <div class="modal-body">
+            <div>
+                References to the edited object's previous ID was detected in one or more object. Please confirm whether these references should be
+                updated. Declining will prompt a choice of deleting each referencing object.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-success" aria-label="Update" (click)="this.updateReferences(); dismissModal()">
+                <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                Update References
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="this.origID = ''; modal.close()">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Decline
+            </button>
+        </div>
+    </ng-template>
+</div>

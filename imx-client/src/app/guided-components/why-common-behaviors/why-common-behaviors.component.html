@@ -1,0 +1,114 @@
+<div class="d-flex flex-column justify-content-start align-items-center mb-3">
+    <div class="d-flex flex-row justify-content-around align-items-end w-100">
+        <div class="d-flex align-items-end">
+            <fa-icon class="title-main-size4 pe-3" [icon]="faPuzzle"></fa-icon>
+            <span class="title-main-size3">WHY?</span>
+        </div>
+
+        <div class="title-sub-size1-2 mb-3">What behaviors and resources are common to this attack?</div>
+    </div>
+
+    <div class="horizonal-rule-top"></div>
+    <div class="d-flex justify-content-center align-items-start outter-wrapper-min-height">
+        <div class="mt-5 d-flex flex-column justify-content-start gr-help-section me-3">
+            <span class="d-flex align-items-center pointer need-help-inline" (click)="showAssistanceTrigger()">
+                <fa-icon class="faQuestionCircle me-1" [icon]="faQuestionCircle"></fa-icon>
+                Need Help?
+            </span>
+            <div class="gr-help-section-title">Behavioral Details</div>
+            <div class="gr-help-section-content">
+                <p>What common details did you observe that may indicate that this event could have been orchestrated by a single organization?</p>
+                <p><b>Name</b>: a name is added to identify this set of behaviors. It does not have identify a potential organizations.</p>
+                <p><b>Resource Level</b>: if known.</p>
+                <p><b>Primary Motivation</b>: if known.</p>
+                <p><b>Secondary Motivations</b>: if known.</p>
+                <p><b>Aliases</b>: any alternate names that could be used to identify this set of behaviors.</p>
+                <p><b>Goals</b>: if known.</p>
+            </div>
+        </div>
+        <div class="d-flex flex-column align-items-left gr-outter-wrapper mt-5" style="position: relative">
+            <div class="col-12 total-cart-wrapper observable-section px-4 p-2 mt-1">
+                <div class="col-8 float-start"></div>
+                <app-total-guided-cart class="float-end" (redirectCart)="redirectCart($event)" (syncCart)="syncCart($event)"></app-total-guided-cart>
+            </div>
+            <div class="px-2">
+                <div class="row mt-2">
+                    <div class="col-6 ps-5 pe-4 h5">
+                        Name<br />
+                        <input
+                            class="form-control my-2 gr-input-wrapper-small"
+                            type="text"
+                            [(ngModel)]="currentName"
+                            placeholder="Enter Name"
+                            (input)="checkCart()"
+                        />
+                    </div>
+                    <div class="col-6 ps-4 pe-5 h5">
+                        Aliases
+                        <input
+                            class="form-control my-2 gr-input-wrapper-small"
+                            type="text"
+                            [(ngModel)]="currentAliases"
+                            placeholder="Enter Alias1, Alias2..."
+                            [disabled]="!currentName"
+                        />
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-6 ps-5 pe-4 h5">
+                        Resource Level
+                        <select
+                            class="form-control form-select my-2 gr-input-wrapper-small"
+                            type="text"
+                            [(ngModel)]="currentResourceLevel"
+                            [disabled]="!currentName"
+                        >
+                            @for (option of resourceLevelOptions; track option) {
+                                <option [value]="option.key">{{ option.value }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-6 ps-4 pe-5 h5">
+                        Goals
+                        <input
+                            class="form-control my-2 gr-input-wrapper-small"
+                            type="text"
+                            [(ngModel)]="currentGoals"
+                            placeholder="Enter Goal1, Goal2..."
+                            [disabled]="!currentName"
+                        />
+                    </div>
+                </div>
+                <div class="row mt-4 mb-4">
+                    <div class="col-6 ps-5 pe-4 h5">
+                        Primary Motivation<br />
+                        <select
+                            class="form-control form-select my-2 gr-input-wrapper-small"
+                            type="text"
+                            [(ngModel)]="currentPrimaryMotivation"
+                            [disabled]="!currentName"
+                        >
+                            @for (option of motivationOptions; track option) {
+                                <option [value]="option.key">{{ option.value }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-6 ps-4 pe-5 h5">
+                        Secondary Motivations
+                        <select
+                            class="form-control form-select my-2 gr-input-wrapper-small"
+                            type="text"
+                            [(ngModel)]="currentSecondaryMotivations"
+                            multiple
+                            [disabled]="!currentName"
+                        >
+                            @for (option of motivationOptions; track option) {
+                                <option [value]="option.key">{{ option.value }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

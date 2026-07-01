@@ -1,0 +1,331 @@
+<form (ngSubmit)="addComponent()" [formGroup]="form">
+    <div class="row">
+        <div class="col-12">
+            @if (errorMessage) {
+                <div class="row ps-2 pe-2">
+                    <div class="col-12 text-center mb-1 warning-message">{{ errorMessage }}</div>
+                </div>
+            }
+            @if (showObjectMarkingReference()) {
+                <div class="row pe-2" [ngClass]="{ 'ps-2 mb-2': stixService.guidedUI }" style="padding-top: 0">
+                    <hr class="section-separator" style="margin-top: 8px" />
+                    @if (hasObjectMarkingReferences) {
+                        <app-string-array
+                            [key]="'object_marking_refs'"
+                            (stringArrayOutput)="setObjectMarkingReferences($event)"
+                            [class]="topColumnProperties"
+                        ></app-string-array>
+                    }
+                    @if (ifLabels()) {
+                        <app-string-array [key]="'labels'" (stringArrayOutput)="setLabels($event)" [class]="topColumnProperties"></app-string-array>
+                    }
+                    @if (!stixService.guidedUI) {
+                        <hr class="section-separator" style="margin-bottom: 4px; margin-top: 1rem" />
+                    }
+                </div>
+            }
+            @if (!showObjectMarkingReference() && stixService.guidedUI) {
+                <div class="row pe-2" [ngClass]="{ 'ps-2': stixService.guidedUI }" style="padding-top: 0">
+                    <hr class="section-separator" style="margin-top: 8px; margin-bottom: 16px" />
+                </div>
+            }
+            <div class="row">
+                <div class="col-12">
+                    <div class="row pe-4">
+                        @if (!stixService.guidedUI) {
+                            <div class="col-2 mt-3 mb-3 side-bar position-sticky">
+                                @for (question of questions; track question; let i = $index) {
+                                    <div class="row">
+                                        @if ((question.key === 'revoked' && !stixService.newObject) || question.key !== 'revoked') {
+                                            <div
+                                                class="col text-start sidebar-item p-1"
+                                                id="{{ question.key }}_sidebar"
+                                                (click)="scrollTo(question.key)"
+                                            >
+                                                {{ question.label }}
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                @if (this.question_type === 'incident') {
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('determination')">Determination</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('investigation')">Investigation Status</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('criticality')">Criticality</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('recoverability')">Recoverability</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('detection')">Detection Methods</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('incidentTypes')">Incident Types</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('impactRefs')">Impact Refs</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('eventRefs')">Event Refs</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('taskRefs')">Task Refs</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('score')">Scores</div>
+                                    </div>
+                                }
+                                @if (hasGranularMarkings) {
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('granularMarkings')">Granular Markings</div>
+                                    </div>
+                                }
+                                @if (hasExternalReferences) {
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('externalReferences')">
+                                            External References
+                                        </div>
+                                    </div>
+                                }
+                                @if (hasExtensions) {
+                                    <div class="row">
+                                        <div class="col text-start sidebar-item p-1" (click)="scrollTo('extensions')">Extensions</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        <div [ngClass]="{ 'ps-5 main-table mt-5 mb-5 col-10': !stixService.guidedUI, 'col-12': stixService.guidedUI }">
+                            <div class="row" [ngClass]="{ 'ps-3': !stixService.guidedUI }">
+                                @for (question of questions; track question) {
+                                    <div
+                                        [ngClass]="{ 'ps-2 pe-2 pb-2 w-100 display-flex': stixService.guidedUI, 'p-0': !stixService.guidedUI }"
+                                        [class]="questionWrapperClass(question)"
+                                    >
+                                        @if (
+                                            stixService.guidedUI &&
+                                            showFavIconType(question) === 'plus' &&
+                                            !(stixService.newObject && question.key === 'revoked')
+                                        ) {
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-sm btn-outline-danger d-flex justify-content-center ms-0 me-2"
+                                                title="Click to add favorite"
+                                                (click)="updateFav(question)"
+                                            >
+                                                <fa-icon
+                                                    [icon]="faHeart"
+                                                    (click)="updateFav(question)"
+                                                    alt=""
+                                                    width="30px"
+                                                    height="20"
+                                                    class="d-inline-block align-top"
+                                                ></fa-icon>
+                                            </button>
+                                        }
+                                        @if (
+                                            stixService.guidedUI &&
+                                            showFavIconType(question) === 'minus' &&
+                                            !(stixService.newObject && question.key === 'revoked')
+                                        ) {
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-sm btn-danger d-flex justify-content-center ms-0 me-2"
+                                                title="Click to remove favorite"
+                                                (click)="updateFav(question)"
+                                            >
+                                                <img
+                                                    src="./assets/heart-circle-minus-solid.svg"
+                                                    (click)="updateFav(question)"
+                                                    alt=""
+                                                    width="30px"
+                                                    height="20"
+                                                    class="d-inline-block align-top fav-color ms-1"
+                                                />
+                                            </button>
+                                        }
+                                        @if (!(stixService.newObject && question.key === 'revoked')) {
+                                            <app-question
+                                                id="{{ question.key }}Row"
+                                                (change)="isAddEnabled()"
+                                                (input)="isAddEnabled()"
+                                                (isAddEnabled)="isAddEnabled()"
+                                                (checkDuplicates)="checkDuplicatesCallback()"
+                                                [ngClass]="{ 'w-100': stixService.guidedUI }"
+                                                [question]="question"
+                                                [form]="form"
+                                                [componentMap]="componentMap"
+                                                [displayName]="displayName"
+                                            ></app-question>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            @if (this.question_type === 'incident') {
+                                <div class="row ps-3">
+                                    <div class="col-12 ps-0 pe-5" style="float: left; margin-bottom: 14px">
+                                        <incident-core-extension class="w-100"></incident-core-extension>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (this.question_type === 'malware') {
+                                <div class="row ps-3">
+                                    <div class="col-12 ps-0 pe-5" style="float: left; margin-bottom: 14px">
+                                        <malware-corpus class="w-100"></malware-corpus>
+                                    </div>
+                                </div>
+                            }
+                            @if (!stixService.guidedUI && hasGranularMarkings) {
+                                <div class="row ps-3 pe-0 pb-3" id="granularMarkingsRow">
+                                    <div style="float: left" class="pe-2 ps-0">
+                                        <app-granular-markings class="w-100" [ngClass]="{ 'mt-2': stixService.guidedUI }"></app-granular-markings>
+                                    </div>
+                                </div>
+                            }
+                            @if (!stixService.guidedUI && hasExternalReferences) {
+                                <div class="row ps-3 pe-0 pb-3" id="externalReferencesRow">
+                                    <div style="float: left" class="pe-2 ps-0">
+                                        <app-external-references class="w-100" [ngClass]="{ 'mt-2': stixService.guidedUI }"></app-external-references>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (!stixService.guidedUI) {
+                                <div class="row ps-3 pe-0 pb-1" id="extensionsRow">
+                                    @if (hasExtensions) {
+                                        <div class="pe-2 ps-0">
+                                            <app-extensions class="w-100" [ngClass]="{ 'mt-2': stixService.guidedUI }"></app-extensions>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @if (stixService.toplevel && stixService.toplevel.length > 0) {
+                                <div class="row ps-3 pe-0 pb-1 pt-3" id="toplevelRow">
+                                    <div class="pe-2 ps-0">
+                                        <app-toplevel-property class="w-100"></app-toplevel-property>
+                                    </div>
+                                </div>
+                            }
+                            @if (isIdentity() && storedIdentities && storedIdentities?.arr?.length > 0) {
+                                <div class="row ps-3 pe-0 pb-1 pt-3" id="identitiesRow">
+                                    <div style="float: left" class="pe-2 ps-0">
+                                        <app-identity
+                                            (editObject)="callEditObject($event)"
+                                            (revokeObject)="callRevokeObject($event)"
+                                            (setMainIdentity)="callSetMain($event)"
+                                            (removeObject)="callRemoveObject($event)"
+                                            (addCISAIdentity)="callAddCisa($event)"
+                                            [getJsonDisplayForComponent]="getJsonDisplayForComponent"
+                                            [compareIdentity]="compareIdentity"
+                                            [storedIdentities]="storedIdentities"
+                                            [cisaId]="cisaId"
+                                        ></app-identity>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @if (!stixService.guidedUI) {
+                            <hr class="section-separator mt-0 mb-3" />
+                        }
+                    </div>
+                </div>
+            </div>
+            @if (stixService.guidedUI) {
+                <div class="row pe-2 pb-3" [ngClass]="{ 'ps-2': stixService.guidedUI }">
+                    @if (!stixService.guidedUI) {
+                        <hr class="section-separator" style="margin-top: 4px" />
+                    }
+                    @if (hasGranularMarkings) {
+                        <div style="float: left">
+                            <app-granular-markings class="w-100" [ngClass]="{ 'mt-2': stixService.guidedUI }"></app-granular-markings>
+                        </div>
+                    }
+                </div>
+            }
+            @if (stixService.guidedUI) {
+                <div class="row pe-2 pb-3" [ngClass]="{ 'ps-2': stixService.guidedUI }">
+                    @if (hasExternalReferences) {
+                        <div style="float: left">
+                            <app-external-references class="w-100" [ngClass]="{ 'mt-2': stixService.guidedUI }"></app-external-references>
+                        </div>
+                    }
+                </div>
+            }
+            @if (stixService.guidedUI) {
+                <div class="row pe-2 pb-1" [ngClass]="{ 'ps-2': stixService.guidedUI }">
+                    @if (hasExtensions) {
+                        <div>
+                            <app-extensions class="w-100" [ngClass]="{ 'mt-2': stixService.guidedUI }"></app-extensions>
+                        </div>
+                    }
+                    <hr [class]="questionWrapperClass(null, true)" class="section-separator" style="margin-bottom: 8px" />
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row" [ngClass]="{ 'add-to-bundle': !stixService.guidedUI }">
+        <div class="col text-end p-0 pe-2">
+            @if (isDuplicated) {
+                <button
+                    [class]="{ 'move-out-of-view': stixService.guidedUI, 'me-2': duplicateCount <= 9, 'me-3': duplicateCount > 9 }"
+                    [title]="duplicateCount === 1 ? '1 duplicated object' : duplicateCount + ' duplicated objects'"
+                    type="button"
+                    class="btn btn-lg btn-warning component-button text position-relative"
+                    (click)="onViewDuplicates($event)"
+                    style="width: 185px !important; overflow: visible"
+                >
+                    <fa-icon [icon]="faAlert" class="pe-1"></fa-icon>
+                    View Duplicates
+                    @if (duplicateCount > 0) {
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">
+                            {{ duplicateCount }}
+                        </span>
+                    }
+                </button>
+            }
+            <button
+                [class]="{ 'move-out-of-view': stixService.guidedUI }"
+                type="button"
+                class="btn btn-lg btn-secondary component-button text me-2"
+                (click)="cancel()"
+                style="width: 175px !important"
+            >
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+            <button
+                [class]="{ 'move-out-of-view': stixService.guidedUI }"
+                type="button"
+                class="btn btn-lg btn-success component-button text"
+                (click)="addObject(confirmChange)"
+                [disabled]="!addEnabled || !isFormDataChanged() || !isIceValid || !isMBEValid"
+                style="width: 175px !important; will-change: transform, opacity"
+            >
+                <fa-icon [icon]="faAddToBundle" class="pe-1"></fa-icon>
+                Add to Bundle
+            </button>
+        </div>
+    </div>
+</form>
+
+<ng-template #confirmChange let-modal>
+    <div class="modal-header d-flex justify-content-center flex-column">
+        <span class="card-title"> Confirm Changing Revoked Object </span>
+    </div>
+    <div class="modal-body d-flex justify-content-center">
+        <span class="text-center main-text">
+            This object is a revoked object. Please confirm you want <br />
+            to change a revoked object.
+        </span>
+    </div>
+    <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-outline" (click)="modalService.dismissAll()">Cancel</button>
+        <button class="btn btn-outline-success" (click)="addComponent()">Confirm</button>
+    </div>
+</ng-template>

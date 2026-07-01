@@ -1,0 +1,69 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="delete-modal-title">
+            <span> Remove {{ removingObjects.length }} STIX {{ removingObjects.length > 1 ? 'Objects' : 'Object' }} From Bundle? </span>
+        </h4>
+    </div>
+    <div class="modal-body" style="height: 75vh; overflow: auto">
+        @if (loading) {
+            <div class="container h-100 d-flex flex-column align-items-center justify-content-center">
+                <div class="row mt-4 mb-4">
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        } @else {
+            <div class="container">
+                @for (object of objects; track object.id; let ind = $index) {
+                    <div id="{{ object.id }}" (click)="toggleExpand(ind)" class="dashboard-card main-card mb-3 cursor-pointer">
+                        <div class="d-flex flex-column ps-4 pe-4 pb-2 pt-2">
+                            <div class="p-3 card-title card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="ms-2 d-flex align-items-center">
+                                        <span class="badge bg-primary me-3">
+                                            {{ getType(object.type) }}
+                                        </span>
+                                        <span class="hash-test">
+                                            {{ getComponentDisplay(object) }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn" [class]="{ rotate: !expand[ind], 'rotate-back': expand[ind] }">
+                                            <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (expand[ind]) {
+                                <div class="card-body pt-2" (click)="$event.stopPropagation()">
+                                    <ngx-monaco-editor
+                                        style="width: 100%; display: block; height: 300px !important"
+                                        readonly
+                                        [options]="editorOptions"
+                                        [ngModel]="getJson(object)"
+                                    ></ngx-monaco-editor>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <div class="d-flex justify-content-end">
+            <button type="button" (click)="close()" class="btn btn-sm btn-outline-secondary">
+                <fa-icon class="me-2" [icon]="faStop"></fa-icon>
+                Close
+            </button>
+            <button [disabled]="loading" (click)="confirm()" type="button" class="btn btn-sm btn-outline-danger ms-2">
+                <fa-icon class="me-2" [icon]="faTrash"></fa-icon>
+                Remove
+            </button>
+        </div>
+    </div>
+</div>

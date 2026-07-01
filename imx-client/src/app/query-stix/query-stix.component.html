@@ -1,0 +1,1321 @@
+<div class="container-fluid">
+    <div [class]="{ row: !analyst1View }">
+        <nav *ngIf="!analyst1View" id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="sidebar-sticky pt-3">
+                <div>
+                    <div class="text-center pt-5">
+                        <h5 class="text-center mt-3">TAXII Server</h5>
+                    </div>
+                </div>
+                <div class="mt-3" style="display: flex; align-items: center; justify-content: center" [class]="{ 'guided-toggle': globalSearch }">
+                    <span style="color: rgb(78, 77, 77)">Use global search</span>
+                    <ui-switch
+                        class="ms-3"
+                        size="small"
+                        [disabled]="stixService.taxiiServerType !== 'default'"
+                        [(ngModel)]="globalSearch"
+                        (change)="globalSearchToggle($event)"
+                    ></ui-switch>
+                </div>
+                <form [formGroup]="form" style="position: relative">
+                    <div *ngIf="stixService.isLoading" class="mt-4">
+                        <div class="spinner mx-auto"></div>
+                        <div class="text-center">Loading API Roots...</div>
+                    </div>
+                    <div
+                        *ngIf="!stixService.isLoading"
+                        class="form-group"
+                        style="padding-top: 10px; padding-right: 30px; padding-bottom: 0px; padding-left: 30px"
+                    >
+                        <label for="APIRoots" style="font-weight: normal">API Roots</label>
+                        <ng-container *ngIf="!globalSearch">
+                            <select
+                                class="form-control form-select"
+                                id="APIRoots"
+                                name="APIRoots"
+                                formControlName="APIRoots"
+                                (change)="onAPIRootChanged($event)"
+                                [(ngModel)]="currentApiRoot"
+                            >
+                                <option [value]="null" selected disabled></option>
+                                <option
+                                    *ngFor="let apiRoot of getAvailableAPIRoots(); let i = index"
+                                    [value]="apiRoot['api-root']"
+                                    title="{{ apiRoot['description'] }}"
+                                >
+                                    {{ apiRoot['title'] }}
+                                </option>
+                            </select>
+                        </ng-container>
+                        <ng-container *ngIf="globalSearch">
+                            <input class="form-control" style="calc(1.5em + .75rem + 2px)" readonly="true" />
+                        </ng-container>
+                    </div>
+                    <div
+                        *ngIf="!stixService.isLoading"
+                        class="form-group"
+                        style="padding-top: 0px; padding-right: 30px; padding-bottom: 10px; padding-left: 30px"
+                    >
+                        <label for="collections" style="font-weight: normal">Collections</label>
+                        <ng-container *ngIf="selectedAPIRoot != null && !globalSearch">
+                            <select
+                                class="form-control form-select"
+                                style="calc(1.5em + .75rem + 2px)"
+                                id="collections"
+                                [(ngModel)]="currentCollection"
+                                name="collections"
+                                formControlName="collections"
+                                (change)="onCollectionChanged($event)"
+                                [disabled]="selectedAPIRoot == null"
+                            >
+                                <option [value]="null" selected></option>
+                                <option
+                                    *ngFor="let collection of collections; let i = index"
+                                    [value]="collections[i].id"
+                                    data-bs-toggle="tooltip"
+                                    data-placement="top"
+                                    title="{{ collection.description }}"
+                                >
+                                    {{ collection.title }}
+                                </option>
+                            </select>
+                        </ng-container>
+                        <ng-container *ngIf="selectedAPIRoot == null || globalSearch">
+                            <input class="form-control" style="calc(1.5em + .75rem + 2px)" readonly="true" />
+                        </ng-container>
+                    </div>
+                </form>
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span style="font-weight: bold; font-size: 18px">Server Information</span>
+                </h6>
+                <ul class="nav flex-column mb-2" style="margin: 10px; background-color: #ffffff">
+                    <li class="nav-item" [ngClass]="{ active: activeMenuItem === 'discovery' }">
+                        <button class="nav-button nav-link" (click)="getServerDiscovery()">Server Discovery</button>
+                    </li>
+                    <li class="nav-item" [ngClass]="{ active: activeMenuItem === 'apiroot' }">
+                        <button
+                            class="nav-button nav-link"
+                            [disabled]="globalSearch"
+                            [ngClass]="{ disabled: globalSearch }"
+                            (click)="loadRequestedForm('isAPIRootInformation')"
+                        >
+                            API Root Information
+                        </button>
+                    </li>
+                    <li class="nav-item" [ngClass]="{ active: activeMenuItem === 'status' }">
+                        <button class="nav-button nav-link" (click)="loadRequestedForm('isStatus')">Status</button>
+                    </li>
+                </ul>
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span style="font-weight: bold; font-size: 18px">Collection Data</span>
+                </h6>
+                <ul class="nav flex-column mb-2" style="margin: 10px; background-color: #ffffff">
+                    <li class="nav-item" [ngClass]="{ active: activeMenuItem === 'collections' }">
+                        <button
+                            class="nav-button nav-link"
+                            [disabled]="globalSearch"
+                            [ngClass]="{ disabled: globalSearch }"
+                            (click)="loadRequestedForm('isCollections')"
+                        >
+                            Collections
+                        </button>
+                    </li>
+                    <li class="nav-item" [ngClass]="{ active: activeMenuItem === 'manifests' }">
+                        <button
+                            class="nav-button nav-link"
+                            [disabled]="globalSearch"
+                            [ngClass]="{ disabled: globalSearch }"
+                            (click)="loadRequestedForm('isManifests')"
+                        >
+                            Object Manifests
+                        </button>
+                    </li>
+                    <li class="nav-item" [ngClass]="{ active: activeMenuItem === 'objects' }">
+                        <button class="nav-button nav-link" (click)="loadRequestedForm('isObjects')">Objects</button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <main role="main" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-0" [class]="{ 'analyst1-view': analyst1View }">
+            <app-messages></app-messages>
+            <div>
+                <div *ngIf="!analyst1View" style="margin-top: 69px">
+                    <div ngbDropdown class="row col-12 m-0 p-0">
+                        <div class="form-group col-md-12 ps-0" style="padding-right: 5px">
+                            <div class="row">
+                                <div
+                                    class="col-md-12 d-flex justify-content-end pe-0"
+                                    *ngIf="
+                                        (isObjects || isManifests || isServerDiscovery || isAPIRootInformation || isStatus || isCollections) &&
+                                        taxiiServerType !== 'custom'
+                                    "
+                                >
+                                    <button
+                                        type="button"
+                                        *ngIf="!showMainSearch"
+                                        class="btn btn-fa-sm btn-outline-secondary"
+                                        style="padding-left: 12px !important"
+                                        (click)="showMainSearch = !showMainSearch"
+                                    >
+                                        <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="col-md-1 d-flex justify-content-end pe-0" *ngIf="false && taxiiServerType === 'custom'">
+                                    <button
+                                        type="button"
+                                        *ngIf="showCustomServerConfig"
+                                        class="btn btn-fa-sm btn-outline-primary"
+                                        style="padding-left: 12px !important"
+                                        (click)="showCustomServerConfig = !showCustomServerConfig"
+                                    >
+                                        <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                        <!-- Collapse -->
+                                    </button>
+                                    <button
+                                        type="button"
+                                        *ngIf="!showCustomServerConfig"
+                                        class="btn btn-fa-sm btn-outline-secondary"
+                                        style="padding-left: 12px !important"
+                                        (click)="showCustomServerConfig = !showCustomServerConfig"
+                                    >
+                                        <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                        <!-- Expand -->
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div *ngIf="isObjects">
+                        <div class="row" *ngIf="screenWidth <= 767">
+                            <div *ngIf="taxiiServerType === 'custom'" class="col-md-12 d-flex justify-content-end">
+                                <button
+                                    type="button"
+                                    *ngIf="showMainSearch"
+                                    class="btn btn-fa-sm btn-outline-primary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                    <!-- Collapse -->
+                                </button>
+                                <button
+                                    type="button"
+                                    *ngIf="!showMainSearch"
+                                    class="btn btn-fa-sm btn-outline-secondary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                    <!-- Expand -->
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="!showMainSearch && screenWidth > 767">
+                            <div *ngIf="taxiiServerType === 'custom'" class="col-md-12 d-flex justify-content-end">
+                                <button
+                                    type="button"
+                                    *ngIf="showMainSearch"
+                                    class="btn btn-fa-sm btn-outline-primary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                    <!-- Collapse -->
+                                </button>
+                                <button
+                                    type="button"
+                                    *ngIf="!showMainSearch"
+                                    class="btn btn-fa-sm btn-outline-secondary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                    <!-- Expand -->
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="showMainSearch">
+                            <div class="form-group col-md-2 mb-1" style="height: 100%">
+                                <label for="type">
+                                    Object Type
+                                    <span class="icon-height tooltipright">
+                                        <fa-icon class="ps-1" [icon]="faInfoCircle"> </fa-icon>
+                                        <div class="toolttext" style="width: 250px">
+                                            <div class="tooltip-wrapper p-1">
+                                                <div [innerHTML]="tooltip"></div>
+                                            </div>
+                                        </div>
+                                    </span>
+                                </label>
+                                <select
+                                    class="form-control form-select custom-select"
+                                    multiple="true"
+                                    size="5"
+                                    id="type"
+                                    [(ngModel)]="queryParams.type"
+                                >
+                                    <option *ngFor="let typeOption of typeOptions" [value]="typeOption">
+                                        {{ typeOption }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-10">
+                                <div class="row">
+                                    <div class="form-group col-md-2 pe-0">
+                                        <label for="addedafter">Added After</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="addedafter"
+                                            id="addedafter"
+                                            [owlDateTimeTrigger]="dt5"
+                                            [owlDateTime]="dt5"
+                                            [(ngModel)]="queryParams.addedAfter"
+                                        />
+                                        <owl-date-time #dt5></owl-date-time>
+                                    </div>
+                                    <div class="form-group col-md-3 pe-0">
+                                        <label for="id">Object ID</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="id"
+                                            id="id"
+                                            [(ngModel)]="queryParams.id"
+                                        />
+                                    </div>
+                                    <div class="form-group col-md-2 pe-0">
+                                        <label for="limit">Limit</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="limit"
+                                            id="limit"
+                                            value=""
+                                            [(ngModel)]="queryParams.limit"
+                                        />
+                                    </div>
+                                    <div class="form-group col-md-2 pe-0">
+                                        <label for="omitrevoked" class="omitrevokedlabel">Omit revoked objects</label>
+                                        <input
+                                            type="checkbox"
+                                            class="omitrevoked"
+                                            name="omitrevoked"
+                                            [checked]="isOmitRevoked"
+                                            [(ngModel)]="isOmitRevoked"
+                                            (change)="onOmitRevokedChanged($event)"
+                                        />
+                                    </div>
+                                    <div class="form-group col-md-3 d-flex justify-content-end">
+                                        <button
+                                            type="button"
+                                            *ngIf="showMainSearch"
+                                            class="btn btn-fa-sm btn-outline-primary fa-double"
+                                            (click)="showMainSearch = !showMainSearch"
+                                        >
+                                            <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                            <!-- Collapse -->
+                                        </button>
+                                    </div>
+                                    <div *ngIf="taxiiServerType === 'custom' && screenWidth > 767" class="col-md-3 d-flex justify-content-end">
+                                        <button
+                                            type="button"
+                                            *ngIf="showMainSearch"
+                                            class="btn btn-fa-sm btn-outline-primary fa-double"
+                                            (click)="showMainSearch = !showMainSearch"
+                                        >
+                                            <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                            <!-- Collapse -->
+                                        </button>
+                                        <button
+                                            type="button"
+                                            *ngIf="!showMainSearch"
+                                            class="btn btn-sm btn-outline-secondary fa-double"
+                                            (click)="showMainSearch = !showMainSearch"
+                                        >
+                                            <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                            <!-- Expand -->
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-2 pe-0">
+                                        <label for="version">Version</label>
+                                        <select
+                                            class="form-control form-select input-sm"
+                                            id="version"
+                                            name="version"
+                                            [(ngModel)]="queryParams.version"
+                                            (ngModelChange)="onVersionChanged($event)"
+                                        >
+                                            <option value=""></option>
+                                            <option *ngFor="let specific_version of versions" [value]="specific_version">
+                                                {{ specific_version }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div *ngIf="isSpecificVersion" class="form-group col-md-3">
+                                        <ng-container>
+                                            <label for="specific_version">Specific Version</label>
+                                            <input
+                                                type="text"
+                                                class="form-control input-sm"
+                                                id="specific_version"
+                                                value=""
+                                                [(ngModel)]="queryParams.specific_version"
+                                            />
+                                        </ng-container>
+                                    </div>
+                                    <div class="form-group col-md-3 pe-0">
+                                        <label for="specification_version">Specification Version</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="specification_version"
+                                            id="specification_version"
+                                            value=""
+                                            [(ngModel)]="queryParams.specification_version"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="addFilters">
+                            <div class="row mb-2 mt-2">
+                                <div class="col-2">
+                                    <button
+                                        id="demo"
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary"
+                                        (click)="createFilterComponent()"
+                                        onload="createFilterComponent()"
+                                    >
+                                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                        Add Filter
+                                    </button>
+                                </div>
+                                <div class="col-10">
+                                    <ng-template #viewContainerRef></ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" [class]="{ 'mt-1': !showMainSearch }">
+                            <div
+                                *ngIf="!analyst1View"
+                                class="d-flex flex-row-reverse col-md-12 align-items-center"
+                                [ngClass]="{ 'mb-3': globalSearch }"
+                            >
+                                <button
+                                    class="btn btn-sm btn-primary btn-query"
+                                    (click)="getObjects(); !(isLoadingStix = isLoadingStix); exportObjects = []"
+                                    [disabled]="isLoadingRoots || isLoadingStix || isQueryDisabled()"
+                                >
+                                    <fa-icon [icon]="faPlay" class="pe-2"></fa-icon>
+                                    <span *ngIf="!isLoadingStix">Run</span>
+                                    <span *ngIf="isLoadingStix">
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Loading...</span>
+                                    </span>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="clear()" [disabled]="isLoadingRoots || isLoadingStix">
+                                    <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                    Clear
+                                </button>
+                                <button
+                                    *ngIf="isAdminUser"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    (click)="deleteSelectedObjects()"
+                                    [disabled]="isLoadingRoots || isLoadingStix"
+                                >
+                                    <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                                    Delete
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="showFilters()" [disabled]="isLoadingRoots || isLoadingStix">
+                                    <fa-icon [icon]="faFilter" class="pe-1"></fa-icon>
+                                    More Filters
+                                </button>
+                                <button
+                                    *ngIf="selectedObjects.length == 2"
+                                    class="btn btn-sm btn-primary"
+                                    (click)="createRelationship()"
+                                    style="width: fit-content"
+                                >
+                                    <fa-icon [icon]="faLink" class="pe-1"></fa-icon>
+                                    Create Relationship
+                                </button>
+                                <div class="cog-wrapper" *ngIf="!loadingExport && !disableExport && objectsQueryResults.length !== 0">
+                                    <button
+                                        class="btn btn-sm btn-outline-secondary"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        [disabled]="loadingExport || isLoadingRoots || isLoadingStix"
+                                    >
+                                        <fa-icon [icon]="faFileExport" class="pe-1"></fa-icon>
+                                        Export
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item d-flex" (click)="export(objectsQueryResults, 'JSON')"> JSON </a>
+                                        <a class="dropdown-item" (click)="export(objectsQueryResults, 'CSV')"> CSV </a>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-fa-sm btn-outline-secondary fa-cog" (click)="customizeColumns()">
+                                    <fa-icon [icon]="faCog"></fa-icon>
+                                </button>
+                                <div *ngIf="globalSearch" class="d-flex flex-row col-md-6 me-auto">
+                                    <label class="me-3" for="searchTerm"> Search </label>
+                                    <input
+                                        [disabled]="isLoadingRoots"
+                                        type="text"
+                                        class="form-control input=sm"
+                                        matInput
+                                        name="searchTerm"
+                                        id="searchTerm"
+                                        [(ngModel)]="globalSearchTerm"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-2 d-flex justify-content-between">
+                                <div class="col-md-8">
+                                    <h1 class="h3">Objects</h1>
+                                </div>
+                                <div *ngIf="queryParams.more" class="col-md-4 pe-0 d-flex justify-content-end">
+                                    <div class="pe-2 pt-1">{{ objectsQueryResults.length }} Objects Retrieved</div>
+                                    <button
+                                        *ngIf="!isLoadingStixNext"
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary next-button"
+                                        (click)="getNextObjects()"
+                                        title="More objects are available for this query. Click Next to see them."
+                                    >
+                                        <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                                        Next Page
+                                    </button>
+                                    <button *ngIf="isLoadingStixNext" type="button" disabled class="btn btn-sm btn-outline-primary next-button">
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Loading...</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 10px; overflow: auto">
+                            <div class="container-fluid">
+                                <div *ngIf="objectsQueryResults">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th *ngIf="!analyst1View" class="active">
+                                                    <input
+                                                        type="checkbox"
+                                                        class="select-all checkbox"
+                                                        name="select-all"
+                                                        [checked]="isAllCheckboxSelected"
+                                                        [(ngModel)]="isAllCheckboxSelected"
+                                                        (change)="checkAllCheckBox($event)"
+                                                    />
+                                                </th>
+                                                <th *ngIf="showColumn('Name')" scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('name', 'objects')">
+                                                        Name
+                                                        <fa-icon *ngIf="sortKey === 'name-des'" [icon]="faAngleDown"> </fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'name-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                    </span>
+                                                </th>
+                                                <th *ngIf="showColumn('Type')" scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('id', 'objects')">
+                                                        Type
+                                                        <fa-icon *ngIf="sortKey === 'id-des'" [icon]="faAngleDown"> </fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'id-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                    </span>
+                                                </th>
+                                                <th *ngIf="showColumn('Published')" scope="col">
+                                                    <div data-bs-toggle="tooltip" data-placement="right" title="Published values are in local time.">
+                                                        <span style="cursor: pointer" (click)="sort('published', 'objects')">
+                                                            Published ({{ localTimezone }})
+                                                            <fa-icon *ngIf="sortKey === 'published-des'" [icon]="faAngleDown"></fa-icon>
+                                                            <fa-icon *ngIf="sortKey === 'published-asc'" [icon]="faAngleUp"></fa-icon>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th *ngIf="showColumn('Created')" scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('created', 'objects')">
+                                                        Created ({{ localTimezone }})
+                                                        <fa-icon *ngIf="sortKey === 'created-des'" [icon]="faAngleDown"> </fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'created-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                    </span>
+                                                </th>
+                                                <th *ngIf="showColumn('Modified')" scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('modified', 'objects')">
+                                                        Modified ({{ localTimezone }})
+                                                        <fa-icon *ngIf="sortKey === 'modified-des'" [icon]="faAngleDown"></fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'modified-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                    </span>
+                                                </th>
+                                                <th *ngIf="showColumn('Actions')" scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody *ngIf="!loadingExport">
+                                            <ng-container *ngFor="let obj of objectsQueryResults; let i = index">
+                                                <tr>
+                                                    <td *ngIf="!analyst1View" class="active" style="font-weight: normal; width: 2%">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="select-item checkbox"
+                                                            [(ngModel)]="objectsQueryResults[i].checked"
+                                                            (change)="updateSelectedObjects(obj.id, obj.modified, obj.checked)"
+                                                        />
+                                                    </td>
+                                                    <td
+                                                        *ngIf="showColumn('Name')"
+                                                        style="
+                                                            cursor: pointer;
+                                                            color: #007bff;
+                                                            font-weight: normal;
+                                                            width: 24%;
+                                                            word-wrap: break-word;
+                                                        "
+                                                        class="row-name"
+                                                        (click)="changeShow(i)"
+                                                    >
+                                                        {{ getComponentDisplay(obj) }}
+                                                    </td>
+                                                    <td
+                                                        *ngIf="showColumn('Type')"
+                                                        style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%"
+                                                        (click)="changeShow(i)"
+                                                    >
+                                                        {{ obj.type ? obj.type.charAt(0).toUpperCase() + obj.type.slice(1) : 'NO TYPE' }}
+                                                    </td>
+                                                    <td
+                                                        *ngIf="showColumn('Published')"
+                                                        style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%"
+                                                        (click)="changeShow(i)"
+                                                    >
+                                                        {{ getPublished(obj) }}
+                                                    </td>
+                                                    <td
+                                                        *ngIf="showColumn('Created')"
+                                                        style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%"
+                                                        (click)="changeShow(i)"
+                                                    >
+                                                        {{ reformatDate(obj.created) }}
+                                                    </td>
+                                                    <td
+                                                        *ngIf="showColumn('Modified')"
+                                                        style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%"
+                                                        (click)="changeShow(i)"
+                                                    >
+                                                        {{ reformatDate(obj.modified) }}
+                                                    </td>
+                                                    <td *ngIf="showColumn('Actions')" style="width: 14%">
+                                                        <ng-container
+                                                            *ngIf="
+                                                                (!obj.revoked || obj.revoked == false) &&
+                                                                scoList.indexOf(obj.type) == -1 &&
+                                                                existingCISAIdentity == obj.created_by_ref &&
+                                                                obj.type !== 'marking-definition'
+                                                            "
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-fa btn-primary"
+                                                                (click)="editObject(obj)"
+                                                                title="Click to create a new version of this STIX object."
+                                                            >
+                                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                                            </button>
+                                                            <button
+                                                                *ngIf="!analyst1View"
+                                                                type="button"
+                                                                class="btn btn-fa btn-warning"
+                                                                (click)="revokeObject(obj)"
+                                                                title="Click to revoke this STIX object."
+                                                            >
+                                                                <fa-icon [icon]="faFileArchive"></fa-icon>
+                                                            </button>
+                                                        </ng-container>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-success"
+                                                            (click)="addObject(obj)"
+                                                            title="Click to add this STIX object to bundle."
+                                                        >
+                                                            <fa-icon [icon]="faAddToBundle"></fa-icon>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="expanded-panel" *ngIf="rownumber == i">
+                                                    <td colspan="7">
+                                                        <button
+                                                            *ngIf="obj.type === 'report'"
+                                                            type="button"
+                                                            class="btn btn-success"
+                                                            (click)="createBundle(obj)"
+                                                            title="Click to create a bundle from the object_refs of this Report"
+                                                        >
+                                                            Create Bundle from Report
+                                                        </button>
+                                                        <pre class="preview-json-window">{{ obj | json }}</pre>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div *ngIf="objectsQueryError">
+                                    <span style="font-weight: bold; text-align: left">Unable to get query results:</span>
+                                    <p *ngIf="objectsQueryError.includes('No objects were returned')">{{ objectsQueryError }}</p>
+                                    <p *ngIf="!objectsQueryError.includes('No objects were returned')" class="warning-message">
+                                        {{ objectsQueryError }}
+                                    </p>
+                                    <ng-container *ngIf="objectsQueryErrorURL != ''"><br />URL: {{ objectsQueryErrorURL }}</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="isManifests">
+                        <div class="row" *ngIf="screenWidth <= 767">
+                            <div *ngIf="taxiiServerType === 'custom'" class="col-md-12 d-flex justify-content-end">
+                                <button
+                                    type="button"
+                                    *ngIf="showMainSearch"
+                                    class="btn btn-fa-sm btn-outline-primary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                    <!-- Collapse -->
+                                </button>
+                                <button
+                                    type="button"
+                                    *ngIf="!showMainSearch"
+                                    class="btn btn-fa-sm btn-primary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                    <!-- Expand -->
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="!showMainSearch && screenWidth > 767">
+                            <div *ngIf="taxiiServerType === 'custom'" class="col-md-12 d-flex justify-content-end">
+                                <button
+                                    type="button"
+                                    *ngIf="showMainSearch"
+                                    class="btn btn-fa-sm btn-outline-primary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                    <!-- Collapse -->
+                                </button>
+                                <button
+                                    type="button"
+                                    *ngIf="!showMainSearch"
+                                    class="btn btn-fa-sm btn-primary fa-double"
+                                    (click)="showMainSearch = !showMainSearch"
+                                >
+                                    <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                    <!-- Expand -->
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="showMainSearch">
+                            <div class="form-group col-md-2 mb-1" style="height: 100%">
+                                <label for="type">
+                                    Object Type
+                                    <span class="icon-height tooltipright">
+                                        <fa-icon class="ps-1" [icon]="faInfoCircle"> </fa-icon>
+                                        <div class="toolttext" style="width: 250px">
+                                            <div class="tooltip-wrapper p-1">
+                                                <div [innerHTML]="tooltip"></div>
+                                            </div>
+                                        </div>
+                                    </span>
+                                </label>
+                                <select
+                                    class="form-control form-select custom-select"
+                                    multiple="true"
+                                    size="5"
+                                    id="type"
+                                    [(ngModel)]="queryParams.type"
+                                >
+                                    <option *ngFor="let typeOption of typeOptions" [value]="typeOption">
+                                        {{ typeOption }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-10">
+                                <div class="row">
+                                    <div class="form-group col-md-2 pe-0">
+                                        <label for="addedafter">Added After</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="addedafter"
+                                            id="addedafter"
+                                            [owlDateTimeTrigger]="dt"
+                                            [owlDateTime]="dt"
+                                            [(ngModel)]="queryParams.addedAfter"
+                                        />
+                                        <owl-date-time #dt></owl-date-time>
+                                    </div>
+                                    <div class="form-group col-md-3 pe-0">
+                                        <label for="id">Object ID</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="id"
+                                            id="id"
+                                            [(ngModel)]="queryParams.id"
+                                        />
+                                    </div>
+                                    <div class="form-group col-md-2 pe-0">
+                                        <label for="limit">Limit</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="limit"
+                                            id="limit"
+                                            value=""
+                                            [(ngModel)]="queryParams.limit"
+                                        />
+                                    </div>
+                                    <div class="form-group col-md-5 d-flex justify-content-end">
+                                        <button
+                                            type="button"
+                                            *ngIf="showMainSearch"
+                                            class="btn btn-fa-sm btn-outline-primary fa-double"
+                                            (click)="showMainSearch = !showMainSearch"
+                                        >
+                                            <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                            <!-- Collapse -->
+                                        </button>
+                                    </div>
+                                    <div *ngIf="taxiiServerType === 'custom' && screenWidth > 767" class="col-md-5 d-flex justify-content-end">
+                                        <button
+                                            type="button"
+                                            *ngIf="showMainSearch"
+                                            class="btn btn-fa-sm btn-outline-primary fa-double"
+                                            (click)="showMainSearch = !showMainSearch"
+                                        >
+                                            <fa-icon [icon]="faAngleDoubleDown"></fa-icon>
+                                            <!-- Collapse -->
+                                        </button>
+                                        <button
+                                            type="button"
+                                            *ngIf="!showMainSearch"
+                                            class="btn btn-fa-sm btn-primary fa-double"
+                                            (click)="showMainSearch = !showMainSearch"
+                                        >
+                                            <fa-icon [icon]="faAngleDoubleUp"></fa-icon>
+                                            <!-- Expand -->
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-2 pe-0">
+                                        <label for="version">Version</label>
+                                        <select
+                                            class="form-control form-select input-sm"
+                                            id="version"
+                                            name="version"
+                                            [(ngModel)]="queryParams.version"
+                                            (ngModelChange)="onVersionChanged($event)"
+                                        >
+                                            <option value=""></option>
+                                            <option *ngFor="let specific_version of versions" [value]="specific_version">
+                                                {{ specific_version }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div *ngIf="isSpecificVersion" class="form-group col-md-3 pe-0">
+                                        <ng-container>
+                                            <label for="specific_version">Specific Version</label>
+                                            <input
+                                                type="text"
+                                                class="form-control input-sm"
+                                                id="specific_version"
+                                                value=""
+                                                [(ngModel)]="queryParams.specific_version"
+                                            />
+                                        </ng-container>
+                                    </div>
+                                    <div class="form-group col-md-3 pe-0">
+                                        <label for="specification_version">Specification Version</label>
+                                        <input
+                                            [disabled]="isLoadingRoots"
+                                            type="text"
+                                            class="form-control input-sm"
+                                            matInput
+                                            name="specification_version"
+                                            id="specification_version"
+                                            value=""
+                                            [(ngModel)]="queryParams.specification_version"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="addFilters">
+                            <div class="row mb-2 mt-2">
+                                <div class="col-2">
+                                    <button
+                                        id="demo"
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary"
+                                        (click)="createFilterComponent()"
+                                        onload="createFilterComponent()"
+                                    >
+                                        <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                                        Add Filter
+                                    </button>
+                                </div>
+                                <div class="col-10">
+                                    <ng-template #viewContainerRef></ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" [ngClass]="{ 'mt-1': !showMainSearch }">
+                            <div class="d-flex flex-row-reverse col-md-12">
+                                <button
+                                    class="btn btn-sm btn-success btn-query"
+                                    (click)="getManifests(); !(isLoadingStix = isLoadingStix); exportObjects = []"
+                                    [disabled]="isLoadingRoots || isLoadingStix || isQueryDisabled()"
+                                >
+                                    <fa-icon [icon]="faPlay" class="pe-2"></fa-icon>
+                                    <span *ngIf="!isLoadingStix">Run</span>
+                                    <ng-template [ngIf]="isLoadingStix">
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Loading...</span>
+                                    </ng-template>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="clear()" [disabled]="isLoadingRoots || isLoadingStix">
+                                    <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                    Clear
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="showFilters()" [disabled]="isLoadingRoots || isLoadingStix">
+                                    <fa-icon [icon]="faFilter" class="pe-1"></fa-icon>
+                                    More Filters
+                                </button>
+                                <div *ngIf="!loadingExport && !disableExport && manifestsQueryResults.length !== 0" class="cog-wrapper">
+                                    <button
+                                        class="btn btn-sm btn-outline-secondary"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        [disabled]="loadingExport || isLoadingRoots || isLoadingStix"
+                                    >
+                                        <fa-icon [icon]="faFileExport" class="pe-1"></fa-icon>
+                                        Export
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item d-flex" (click)="export(manifestsQueryResults, 'JSON')"> JSON </a>
+                                        <a class="dropdown-item" (click)="export(manifestsQueryResults, 'CSV')"> CSV </a>
+                                    </div>
+                                </div>
+                                <button *ngIf="loadingExport" type="button" disabled class="btn btn-sm btn-outline-secondary">
+                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    <span class="sr-only">Loading...</span>
+                                </button>
+                            </div>
+                            <div class="col-md-12 mt-2 d-flex justify-content-between">
+                                <div class="col-md-8">
+                                    <h1 class="h3">Object Manifests</h1>
+                                </div>
+                                <div *ngIf="queryParams.more" class="col-md-4 pe-0 d-flex justify-content-end">
+                                    <div class="pe-2 pt-1">{{ manifestsQueryResults.length }} Manifests Retrieved</div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-primary next-button"
+                                        (click)="getNextManifests()"
+                                        title="More object manifests are available for this query. Click Next to see them."
+                                    >
+                                        <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                                        Next Page
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 20px; overflow: auto">
+                            <div class="container-fluid">
+                                <div *ngIf="manifestsQueryResults">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('id', 'manifests')">
+                                                        Identifier
+                                                        <fa-icon *ngIf="sortKey === 'id-des'" [icon]="faAngleDown"> </fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'id-asc'" [icon]="faAngleUp"></fa-icon>
+                                                    </span>
+                                                </th>
+                                                <th scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('date_added', 'manifests')">
+                                                        Date Added ({{ localTimezone }})
+                                                        <fa-icon *ngIf="sortKey === 'date_added-des'" [icon]="faAngleDown"> </fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'date_added-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                    </span>
+                                                </th>
+                                                <th scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('version', 'manifests')">
+                                                        Version
+                                                        <fa-icon *ngIf="sortKey === 'version-des'" [icon]="faAngleDown"> </fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'version-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                    </span>
+                                                </th>
+                                                <th scope="col">
+                                                    <span style="cursor: pointer" (click)="sort('media', 'manifests')">
+                                                        Media Type
+                                                        <fa-icon *ngIf="sortKey === 'media-des'" [icon]="faAngleDown"> </fa-icon>
+                                                        <fa-icon *ngIf="sortKey === 'media-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                    </span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let obj of manifestsQueryResults; let i = index">
+                                                <tr>
+                                                    <th style="font-weight: normal; width: 34%" (click)="changeShow(i)">
+                                                        {{ obj.id }}
+                                                    </th>
+                                                    <th style="font-weight: normal; width: 22%" (click)="changeShow(i)">
+                                                        {{ reformatDate(obj.date_added) }}
+                                                    </th>
+                                                    <th style="font-weight: normal; width: 22%" (click)="changeShow(i)">
+                                                        {{ obj.version }}
+                                                    </th>
+                                                    <th style="font-weight: normal; width: 22%" (click)="changeShow(i)">
+                                                        {{ obj.media_type }}
+                                                    </th>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div *ngIf="manifestsQueryError">
+                                    <span style="font-weight: bold; text-align: left">Unable to get query results:</span>
+                                    <p class="warning-message">{{ manifestsQueryError }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="isServerDiscovery" style="margin-top: 20px; overflow: auto">
+                        <h1 class="h3" style="display: flex; align-items: center; justify-content: center">Server Discovery</h1>
+                        <div class="row">
+                            <div class="container-fluid border">
+                                <div *ngIf="serverDiscoveryResults" style="padding-top: 10px">
+                                    <pre>{{ serverDiscoveryResults | json }}</pre>
+                                </div>
+                                <div *ngIf="serverDiscoveryQueryError" style="padding-top: 10px">
+                                    <span style="font-weight: bold; text-align: left">Unable to get query results:</span>
+                                    <p class="warning-message">{{ serverDiscoveryQueryError }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="isAPIRootInformation" style="margin-top: 20px">
+                        <div class="row">
+                            <div class="float-start col-md-4">
+                                <button
+                                    class="btn btn-sm btn-success btn-query"
+                                    (click)="getAPIRoot()"
+                                    [disabled]="isLoadingRoots || isLoadingStix || isQueryDisabled()"
+                                >
+                                    <fa-icon [icon]="faPlay" class="pe-2"></fa-icon>
+                                    <span *ngIf="!isLoadingStix">Run</span>
+                                    <span *ngIf="isLoadingStix">
+                                        <div class="spinner-grow text-light query-loading-icon" role="status"></div>
+                                    </span>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="clear()" [disabled]="isLoadingRoots || isLoadingStix">
+                                    <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                    Clear
+                                </button>
+                            </div>
+                            <div class="col-md-4" style="display: flex; align-items: center; justify-content: center">
+                                <h1 class="h3">API Root Information</h1>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 20px; overflow: auto">
+                            <div class="container-fluid border">
+                                <div *ngIf="APIRootInformationResults" style="padding-top: 10px">
+                                    <pre>{{ APIRootInformationResults | json }}</pre>
+                                </div>
+                                <div *ngIf="APIRootInformationQueryError" style="padding-top: 10px">
+                                    <span style="font-weight: bold; text-align: left">Unable to get query results:</span>
+                                    <p class="warning-message">{{ APIRootInformationQueryError }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="isStatus">
+                        <div class="row">
+                            <div class="form-group col-md-10">
+                                <div class="row">
+                                    <div class="form-group col-md-4 pe-0">
+                                        <label for="matchid">Status ID</label>
+                                        <input
+                                            type="text"
+                                            class="form-control input-sm"
+                                            name="statusid"
+                                            id="statusid"
+                                            rows="1"
+                                            [(ngModel)]="statusid"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="float-start col-md-4">
+                                <button
+                                    class="btn btn-sm btn-success btn-query"
+                                    (click)="getStatus()"
+                                    [disabled]="isLoadingRoots || isLoadingStix || isQueryDisabled()"
+                                >
+                                    <fa-icon [icon]="faPlay" class="pe-2"></fa-icon>
+                                    <span *ngIf="!isLoadingStix">Run</span>
+                                    <span *ngIf="isLoadingStix">
+                                        <div class="spinner-grow text-light query-loading-icon" role="status"></div>
+                                    </span>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="clear()" [disabled]="isLoadingRoots || isLoadingStix">
+                                    <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                    Clear
+                                </button>
+                            </div>
+                            <div *ngIf="!showStatusTable" class="col-md-4" style="display: flex; align-items: center; justify-content: center">
+                                <h1 class="h3">Status</h1>
+                            </div>
+                        </div>
+                        <div class="row w-100" style="margin-top: 20px; overflow: auto">
+                            <div *ngIf="showStatusTable || isLoadingStatus" class="status-table w-100" style="margin-top: 10px; overflow: auto">
+                                <div class="container-fluid">
+                                    <div *ngIf="statusTable.length !== 0 || isLoadingStatus">
+                                        <ng-container *ngIf="isLoadingStatus">
+                                            <tr>
+                                                <td class="row-name">
+                                                    Loading...
+                                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <table class="table mb-0" *ngIf="!isLoadingStatus">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">
+                                                        <span style="cursor: pointer" (click)="sort('status', 'status')">
+                                                            Status
+                                                            <fa-icon *ngIf="sortKey === 'status-des'" [icon]="faAngleDown"> </fa-icon>
+                                                            <fa-icon *ngIf="sortKey === 'status-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                        </span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <span style="cursor: pointer" (click)="sort('root_collection', 'status')">
+                                                            Root/Collection
+                                                            <fa-icon *ngIf="sortKey === 'root_collection-des'" [icon]="faAngleDown"> </fa-icon>
+                                                            <fa-icon *ngIf="sortKey === 'root_collection-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                        </span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <span style="cursor: pointer" (click)="sort('request_timestamp', 'status')">
+                                                            Timestamp
+                                                            <fa-icon *ngIf="sortKey === 'request_timestamp-des'" [icon]="faAngleDown"> </fa-icon>
+                                                            <fa-icon *ngIf="sortKey === 'request_timestamp-asc'" [icon]="faAngleUp"> </fa-icon>
+                                                        </span>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <ng-container *ngFor="let obj of statusTable; let i = index">
+                                                    <tr>
+                                                        <td
+                                                            style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%"
+                                                            class="row-name"
+                                                            (click)="changeStatusShow(i)"
+                                                        >
+                                                            <fa-icon
+                                                                *ngIf="obj.res.status == 'complete'"
+                                                                [icon]="faCheck"
+                                                                class="color-green"
+                                                            ></fa-icon>
+                                                            <fa-icon
+                                                                *ngIf="obj.res.status != 'complete' && obj.res.status != 'pending'"
+                                                                [icon]="faStop"
+                                                                class="color-red"
+                                                            ></fa-icon>
+                                                            <fa-icon
+                                                                *ngIf="obj.res.status == 'pending'"
+                                                                [icon]="faClock"
+                                                                class="color-yellow"
+                                                            ></fa-icon>
+                                                            {{ obj.res.status }}
+                                                        </td>
+                                                        <td
+                                                            style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%"
+                                                            class="row-name"
+                                                            (click)="changeStatusShow(i)"
+                                                        >
+                                                            {{ obj.root_collection }}
+                                                        </td>
+                                                        <td
+                                                            style="cursor: pointer; color: #007bff; font-weight: normal; width: 12%"
+                                                            class="row-name"
+                                                            (click)="changeStatusShow(i)"
+                                                        >
+                                                            {{ obj.res.request_timestamp }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="expanded-panel" *ngIf="statusRowNumber == i">
+                                                        <td colspan="5">
+                                                            <pre class="preview-json-window">{{ statusQueryResults | json }}</pre>
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
+                                            </tbody>
+                                        </table>
+                                        <div class="footer mb-3" [ngClass]="{ 'footer-no-bottom': totalStatusPages == 1 }">
+                                            <div *ngIf="totalStatusPages != 1 && !isLoadingStatus" class="span-footer float-start">
+                                                <span>Page: {{ currentStatusPage }}/{{ totalStatusPages }}</span>
+                                            </div>
+                                            <div class="buttons-footer">
+                                                <button
+                                                    *ngIf="currentStatusPage > 1 && !isLoadingStatus"
+                                                    class="btn btn-fa-sm btn-outline-primary ms-1 btn-status"
+                                                    (click)="nextPage('left')"
+                                                >
+                                                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                                                </button>
+                                                <button
+                                                    *ngIf="currentStatusPage < totalStatusPages && !isLoadingStatus"
+                                                    class="btn btn-fa-sm btn-outline-primary ms-1 btn-status"
+                                                    (click)="nextPage('right')"
+                                                >
+                                                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="statusTable.length === 0 && !isLoadingStatus">
+                                        <span style="font-weight: bold; text-align: left">No Status IDs saved for user</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="!showStatusTable" class="container-fluid border">
+                                <div *ngIf="statusQueryResults" style="padding-top: 10px">
+                                    <pre>{{ statusQueryResults | json }}</pre>
+                                </div>
+                                <div *ngIf="statusQueryError" style="padding-top: 10px">
+                                    <span style="font-weight: bold; text-align: left">Unable to get query results:</span>
+                                    <p class="warning-message">{{ statusQueryError }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="isCollections" style="margin-top: 20px">
+                        <div class="row">
+                            <div class="float-start col-md-4">
+                                <button
+                                    class="btn btn-sm btn-success btn-query"
+                                    (click)="getCollections()"
+                                    [disabled]="isLoadingRoots || isLoadingStix || isQueryDisabled()"
+                                >
+                                    <fa-icon [icon]="faPlay" class="pe-2"></fa-icon>
+                                    <span *ngIf="!isLoadingStix">Run</span>
+                                    <span *ngIf="isLoadingStix">
+                                        <div class="spinner-grow text-light query-loading-icon" role="status"></div>
+                                    </span>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="clear()" [disabled]="isLoadingRoots || isLoadingStix">
+                                    <fa-icon [icon]="faUndo" class="pe-1"></fa-icon>
+                                    Clear
+                                </button>
+                            </div>
+                            <div class="col-md-4" style="display: flex; align-items: center; justify-content: center">
+                                <h1 class="h3">Collections</h1>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 20px; overflow: auto">
+                            <div class="container-fluid border">
+                                <div *ngIf="collectionsResults" style="padding-top: 10px">
+                                    <pre>{{ collectionsResults | json }}</pre>
+                                </div>
+                                <div *ngIf="collectionsQueryError" style="padding-top: 10px">
+                                    <span style="font-weight: bold; text-align: left">Unable to get query results:</span>
+                                    <p class="warning-message">{{ collectionsQueryError }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px; overflow: auto">
+                    <div class="container-fluid">
+                        <pre
+                            *ngIf="
+                                (noResults && activeMenuItem !== 'status') ||
+                                (this.selectedAPIRoot == null && activeMenuItem !== 'status' && activeMenuItem !== 'discovery')
+                            "
+                        >
+                            <div class="container" style="text-align: center;">
+                                <p *ngIf="objectsQueryResults.length === 0" style="font-weight: bold;">No results</p>
+                                <p *ngIf="!analyst1View && !globalSearch">Select API Root and Collection on the left menu. TAXII Server can be configured from the Server Config page (Cog in Nav Menu).</p>
+                                <p *ngIf="analyst1View">Type search criteria above and click Search to view results</p>
+                            </div>
+                        </pre>
+                        <div *ngIf="apiRootProcessingError != ''" style="padding-top: 10px">
+                            <span style="font-weight: bold; text-align: left">Unable to get query results:</span>
+                            <p>{{ this.stixService.apiRootProcessingError }}</p>
+                            <ng-container *ngIf="this.stixService.apiRootProcessingErrorURL != ''"
+                                ><br />URL: {{ this.stixService.apiRootProcessingErrorURL }}</ng-container
+                            >
+                        </div>
+                        <div
+                            *ngIf="this.activeMenuItem == '' && this.selectedAPIRoot != null && this.latency_collection_display.length > 0"
+                            class="latency"
+                        >
+                            <div class="tooltip-wrapper">
+                                <h2>Latency Data</h2>
+                                <div class="pb-2">Below is the average query response time for each collection on the selected API Root.</div>
+                                <div>
+                                    <table>
+                                        <tr class="latency_tr">
+                                            <th class="latency_th">Collection</th>
+                                            <th class="latency_th">Latency (ms)</th>
+                                        </tr>
+                                        <ng-container *ngFor="let latency_coll of this.latency_collection_display">
+                                            <tr class="latency_tr">
+                                                <td class="latency_td">{{ latency_coll.label }}</td>
+                                                <td class="latency_td">{{ latency_coll.message }}</td>
+                                            </tr>
+                                        </ng-container>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="stixService.isLoading">
+                    <div class="spinner mx-auto"></div>
+                    <div class="text-center">Loading API Roots...</div>
+                </div>
+
+                <div *ngIf="isLoadingStix">
+                    <div class="spinner mx-auto"></div>
+                    <div class="text-center">Loading...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

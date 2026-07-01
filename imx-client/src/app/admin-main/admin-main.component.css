@@ -1,0 +1,96 @@
+.btn-warning {
+    color: black !important;
+}
+
+.add-button {
+    margin-top: 20px;
+}
+
+.body {
+    padding: 50px 50px;
+}
+
+.body .nav-item {
+    cursor: pointer;
+}
+
+.body .action-button {
+    cursor: pointer;
+}
+
+.body .action-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.body .table-wrapper {
+    padding: 30px 0px;
+}
+
+.body .table-wrapper .table-header {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 24px;
+    padding-bottom: 10px;
+}
+
+.body .table-wrapper .item-row {
+    background-color: rgb(248, 249, 250);
+    margin-bottom: 10px;
+}
+
+.body .table-wrapper .item-row-spacer {
+    background-color: white;
+    height: 10px;
+}
+
+.body .table-wrapper .item-row .item-action-icons {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.body .item-role-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.body .item-role {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    border-radius: 5px;
+    padding: 2px 5px;
+    width: 100px;
+}
+
+.body .error-message {
+    position: absolute;
+    top: 10%;
+    left: 25%;
+    width: 50%;
+}
+
+.body .api-root-menu {
+    width: 380px;
+}
+
+.body .kibana-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+}
+
+.admin {
+    margin-top: 15px;
+}
+
+.active-tab {
+    background: rgba(199, 199, 199, 0.2);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

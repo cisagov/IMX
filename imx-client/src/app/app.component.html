@@ -1,0 +1,392 @@
+@if (!fullScreenMode) {
+    <nav
+        class="navbar navbar-expand-lg navbar-dark sticky-top container-fluid"
+        [class]="{ 'dev-bg': environment.environment == 'ten-dev' || environment.environment == 'dev' }"
+    >
+        <a class="navbar-brand" [routerLink]="['/home']">
+            <img src="./assets/IMX_Icon_White_NoBackground_resized.png" alt="" width="50" height="31" class="d-inline-block align-top" />
+            <span style="margin-left: 20px">{{ siteTitle }}</span>
+        </a>
+        <button
+            class="navbar-toggler navbar-toggler-right btn-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarToggler"
+            aria-controls="navbarToggler"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+            @if (envService.apiInit) {
+                <ul class="navbar-nav ms-auto float-end" style="margin-right: 0px">
+                    @if (isAuthenticated) {
+                        <li class="nav-item d-flex">
+                            <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" [routerLink]="['/', editorType]">
+                                <fa-icon [icon]="faEdit" class="faCog me-1"></fa-icon>
+                                <span class="me-2" [ngClass]="{ currentPage: currentPage === 'Bundle Editor' }"> Editor </span>
+                            </a>
+                            @if (environment.guidedUI) {
+                                <div class="guided-toggle-wrapper" [class]="{ 'guided-toggle': editorType === 'guided' }">
+                                    <ui-switch
+                                        size="small"
+                                        [(ngModel)]="isGuided"
+                                        [disabled]="currentPage !== 'Bundle Editor'"
+                                        (change)="changeEditor($event)"
+                                    ></ui-switch>
+                                    @if (editorType === 'guided') {
+                                        <div class="guided-text">Guided</div>
+                                    }
+                                </div>
+                            }
+                        </li>
+                    }
+                    @if (isAuthenticated) {
+                        <li class="nav-item">
+                            <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/query-stix">
+                                <fa-icon [icon]="faSearch" class="faCog me-1"></fa-icon>
+                                <span class="" [ngClass]="{ currentPage: currentPage === 'Search' }"> Search </span>
+                            </a>
+                        </li>
+                    }
+                    @if (isAuthenticated) {
+                        <li class="nav-item">
+                            <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/my-profile">
+                                <fa-icon [icon]="faUser" class="faCog me-1"></fa-icon>
+                                <span class="" [ngClass]="{ currentPage: currentPage === 'Profile' }"> My Profile </span>
+                            </a>
+                        </li>
+                    }
+                    @if (isAuthenticated && showAdmin) {
+                        <li class="nav-item">
+                            <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/admin-main">
+                                <fa-icon [icon]="faUserTie" class="faCog me-1"></fa-icon>
+                                <span class="" [ngClass]="{ currentPage: currentPage === 'Admin Main' }"> Admin </span>
+                            </a>
+                        </li>
+                    }
+                    @if (isAuthenticated) {
+                        <li class="nav-item position-relative">
+                            <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/config">
+                                <fa-icon [icon]="faCog" class="faCog me-1"></fa-icon>
+                                <span class="" [ngClass]="{ currentPage: currentPage === 'Config' }"> Server </span>
+                            </a>
+                        </li>
+                    }
+
+                    <div class="btn-group cog-wrapper">
+                        <button
+                            class="btn my-2 my-sm-0 nav-link navbar-link"
+                            style="margin-top: 0.5rem !important"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <fa-icon [icon]="faEllipsis" class="faCog mt-1"></fa-icon>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item d-flex" (click)="redirectToAlerts()">
+                                Notifications
+                                @if (!stixService.loadingAlerts && stixService.unreadAlerts !== 0) {
+                                    <span class="badge rounded-circle bg-primary notification-badge ms-1">{{ stixService.unreadAlerts }}</span>
+                                }
+                            </a>
+                            @if (this.envService.env.oidc.enabled) {
+                                <a class="dropdown-item" (click)="logout()">Log Out</a>
+                            }
+                            @if (this.envService.env.keycloak.enabled) {
+                                <a class="dropdown-item" (click)="logout()">Log Out</a>
+                                <a class="dropdown-item" (click)="resetPassword()">Reset Password</a>
+                            }
+                        </div>
+                    </div>
+                </ul>
+            }
+        </div>
+    </nav>
+}
+
+@for (toast of announcementService.toasts; track toast) {
+    <ngb-toast
+        aria-live="polite"
+        aria-atomic="true"
+        [class]="{
+            'bg-danger': toast.type === 'error',
+            'bg-success': toast.type === 'success',
+            'bg-warning': toast.type === 'warn' || toast.type === 'upload-error',
+            'text-white': toast.type !== 'warn',
+            'text-dark': toast.type === 'warn' || toast.type === 'upload-error',
+            'bg-secondary': toast.type !== 'error' && toast.type !== 'success' && toast.type !== 'warn',
+        }"
+        class="annoucement-toast"
+        [autohide]="toast.autohide"
+        [delay]="toast.delay"
+        (hidden)="announcementService.remove(toast)"
+        id="toast-{{ toast.type }}"
+        (keydown)="selectAll($event)"
+    >
+        <ng-template ngbToastHeader>
+            @if (toast.type === 'success') {
+                <fa-icon [icon]="faCheckCircle" class="me-2"></fa-icon>
+            }
+            @if (toast.type === 'error') {
+                <fa-icon [icon]="faTimesCircle" class="me-2"></fa-icon>
+            }
+            @if (toast.type === 'warn' || toast.type === 'upload-error') {
+                <fa-icon [icon]="faExclamationTriangle" class="me-2"></fa-icon>
+            }
+            @if (toast.type !== 'success' && toast.type !== 'error' && toast.type !== 'warn' && toast.type !== 'upload-error') {
+                <fa-icon [icon]="faInfoCircle" class="me-2"></fa-icon>
+            }
+            <b class="me-auto">{{ toast.heading }}</b>
+            @if (toast.type === 'upload-error' && toast.minimized) {
+                <span class="hover-pointer ms-2" (click)="toast.minimized = false; $event.stopPropagation()">
+                    <fa-icon [icon]="faAngleDown"></fa-icon>
+                </span>
+            }
+        </ng-template>
+        @if (!toast.minimized) {
+            @if (toast.isBodyJson) {
+                <div class="hover-pointer text-center" (click)="toast.isJsonBodyExpanded = !toast.isJsonBodyExpanded">
+                    <span class="expand-for-details-title">Click to Show Details</span>
+                    <span class="expand-for-details-icon float-end">
+                        @if (toast.isJsonBodyExpanded) {
+                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                        }
+                        @if (!toast.isJsonBodyExpanded) {
+                            <fa-icon [icon]="faAngleLeft"></fa-icon>
+                        }
+                    </span>
+                </div>
+                @if (toast.isJsonBodyExpanded) {
+                    <hr [ngClass]="{ 'bg-white': toast.type !== 'warn', 'bg-dark': toast.type === 'warn' }" />
+                }
+            }
+            <div class="toast-scroll-content">
+                @if (toast.isBodyJson) {
+                    @if (toast.isJsonBodyExpanded) {
+                        <pre class="toast-code-previewer">{{ toast.body | json }}</pre>
+                    }
+                }
+                @if (!toast.isBodyJson) {
+                    <div class="py-1">
+                        {{ toast.body }}
+                    </div>
+                }
+            </div>
+            @if (toast.isGitLabIssue) {
+                <div class="pt-3">
+                    <a class="version-number" [href]="toast.gitlabIssueUrl" target="_blank">Your Support Request</a>
+                </div>
+            }
+            <!-- Toast Footer -->
+            <div class="toast-footer d-flex justify-content-end align-items-center" style="clear: both">
+                @if (toast.actionButton) {
+                    <button
+                        type="button"
+                        class="btn btn-sm me-2"
+                        [ngClass]="{ 'btn-dark': toast.type === 'warn', 'btn-light': toast.type !== 'warn' }"
+                        (click)="toast.actionButton.callback(toast)"
+                    >
+                        {{ toast.actionButton.label }}
+                    </button>
+                }
+                @if (toast.isJsonBodyExpanded || toast.type === 'upload-error') {
+                    <button
+                        class="btn btn-sm me-2"
+                        [ngClass]="{ 'btn-outline-light': toast.type !== 'warn', 'btn-outline-dark': toast.type === 'warn' }"
+                        (click)="announcementService.downloadJson(toast.body, toast.filename, toast.id)"
+                    >
+                        @if (!toast.isJsonDownloading) {
+                            <span>Download Output</span>
+                        }
+                        @if (toast.isJsonDownloading) {
+                            <span>
+                                <div class="spinner-grow text-light announcement-download-icon" role="status"></div>
+                            </span>
+                        }
+                    </button>
+                }
+                <button
+                    class="btn btn-sm"
+                    [ngClass]="{ 'btn-outline-dark': toast.type === 'warn', 'btn-outline-light': toast.type !== 'warn' }"
+                    (click)="toast.type === 'upload-error' ? (toast.minimized = true) : announcementService.remove(toast)"
+                >
+                    {{ toast.type === 'upload-error' ? 'Minimize' : 'Close' }}
+                </button>
+                @if (announcementService.toasts.length > 1) {
+                    <button
+                        class="btn btn-sm ms-2"
+                        [ngClass]="{
+                            'btn-outline-dark': toast.type === 'warn' || toast.type === 'upload-error',
+                            'btn-outline-light': toast.type !== 'warn' && toast.type !== 'upload-error',
+                        }"
+                        (click)="announcementService.toasts = []"
+                    >
+                        Close All
+                    </button>
+                }
+            </div>
+        }
+    </ngb-toast>
+}
+
+<div class="row" id="wrapper">
+    @if (!initComplete) {
+        <div class="mt-4">
+            <div style="margin-top: 49px" class="row-name ps-3 pt-3 text-center">
+                Loading...
+                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+            </div>
+        </div>
+    }
+    @if (initComplete && envService.apiError) {
+        <div class="mt-4 text-center text-danger">
+            ** THERE WAS AN ERROR INTIALIZING THE IMX APPLICATION. PLEASE REACH OUT TO THE DEVELOPMENT TEAM FOR SUPPORT **
+        </div>
+    }
+    @if (initComplete && !envService.apiError) {
+        <div class="wrapper col-sm-9 col-md-12" id="wrapper">
+            <router-outlet></router-outlet>
+        </div>
+    }
+</div>
+
+@if (!fullScreenMode && !hideHelp) {
+    <div class="help-icon">
+        <div class="dropdown">
+            <button class="btn d-flex align-items-center" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="currentColor"
+                    class="bi bi-question-circle me-1"
+                    viewBox="0 0 16 16"
+                >
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                    <path
+                        d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"
+                    />
+                </svg>
+                Help
+            </button>
+            <div class="dropdown-menu" style="transform: translate3d(0px, -180px, 0px)" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" routerLink="/config">TAXII Server: {{ this.getServerDisplay() }}</a>
+                @if (environment.isSupportEnabled) {
+                    <a (click)="openSupportModal(supportModal, 'Request a New Feature')" class="dropdown-item">Request Feature</a>
+                }
+                @if (environment.isSupportEnabled) {
+                    <a (click)="openSupportModal(supportModal, 'Submit an Issue')" class="dropdown-item">Request Support</a>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<ng-template #changelogModal let-modal>
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">IMX Change Log</h2>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body" id="changelog">
+        @for (version of this.changelogkeys; track version; let i = $index) {
+            @if (version != 'Instructions' && version != 'template') {
+                <div ngbDropdown>
+                    <button class="btn btn-outline-primary" id="sortMenu" ngbDropdownToggle (click)="isDropdownOpen = !isDropdownOpen">
+                        <span>Version: {{ current_version.version }}</span>
+                        @if (isDropdownOpen) {
+                            <fa-icon class="ps-1" [icon]="faAngleLeft"></fa-icon>
+                        }
+                        @if (!isDropdownOpen) {
+                            <fa-icon class="ps-1" [icon]="faAngleDown"></fa-icon>
+                        }
+                    </button>
+                    <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="sortMenu">
+                        @for (version of note_versions; track version) {
+                            <button class="dropdown-item" (click)="versionChanged(version)">Version: {{ version }}</button>
+                        }
+                    </div>
+                </div>
+                @if (current_version.releaseDate) {
+                    <div class="changelog-date pb-1 ps-1">
+                        Released on
+                        {{ current_version.releaseDate }}
+                    </div>
+                }
+                @if (current_version.description) {
+                    <div class="changelog-description pb-2 ps-1">
+                        {{ current_version.description }}
+                    </div>
+                }
+                @if (current_version.newFeatures && current_version.newFeatures.length > 0) {
+                    <div class="ps-4">
+                        @for (feature of current_version.newFeatures; track feature) {
+                            <li>
+                                <h6 style="display: inline">{{ feature.title }}</h6>
+                                <p>{{ feature.description }}</p>
+                            </li>
+                        }
+                    </div>
+                }
+            }
+        }
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-md btn-outline-secondary" (click)="modal.dismiss()">
+            <fa-icon [icon]="faBan"></fa-icon>
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #supportModal let-modal>
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">
+            {{ supportLabel }}
+        </h2>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body" id="changelog">
+        <div class="row">
+            <div class="col">
+                <form>
+                    <div class="form-group">
+                        <label for="supportDescription">Description</label>
+                        <textarea
+                            class="form-control"
+                            name="description"
+                            id="supportDescription"
+                            rows="3"
+                            [(ngModel)]="supportRequest.description"
+                        ></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-md btn-outline-secondary" (click)="modal.dismiss()">
+            <fa-icon [icon]="faBan"></fa-icon>
+            Cancel
+        </button>
+        <button type="button" class="btn btn-md btn-outline-success" [disabled]="isSupportSubmitDisabled()" (click)="submitSupportRequest()">
+            <fa-icon [icon]="faPaperPlane"></fa-icon>
+            Submit
+            @if (support.loading) {
+                <div class="spinner-grow text-light announcement-download-icon" role="status"></div>
+            }
+        </button>
+    </div>
+</ng-template>
+
+<app-config #config style="display: none"></app-config>

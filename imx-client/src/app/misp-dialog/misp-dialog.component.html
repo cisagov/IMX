@@ -1,0 +1,95 @@
+<div class="dialog">
+    @if (isLoading) {
+        <div class="position-absolute top-50 start-50 translate-middle" style="z-index: 5">
+            <div class="spinner mx-auto" style="border: 10px solid white; border-top: 10px solid #3498db"></div>
+            <div class="text-center">Searching...</div>
+        </div>
+    }
+    @if (hasResult) {
+        <div class="modal-header justify-content-between">
+            <h4 class="modal-title" id="misp-modal-title">
+                <span>MISP Result</span>
+            </h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+    }
+
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto">
+        @if (!hasResult) {
+            <div class="container mt-5">
+                <div class="row mt-5">
+                    <div class="col d-flex justify-content-center">
+                        <div>
+                            <span class="title-text"> MISP </span>
+                            <span class="title-text" style="font-size: 40px; color: #8d9498"> Threat Sharing </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-5 d-flex justify-content-center">
+                    <div class="col-9">
+                        <div class="form-group ms-2 mt-2">
+                            <label class="dialogLabel mb-1">MD5, SHA-1, SHA-256, IPv4, Or IPv6 (max 100 indicators)</label>
+                            <textarea
+                                class="form-control ps-3 pe-3 pt-3 pb-3"
+                                wrap="soft"
+                                matInput
+                                cdkTextareaAutosize
+                                cdkAutosizeMinRows="1"
+                                cdkAutosizeMaxRows="7"
+                                [(ngModel)]="textBody"
+                                placeholder="Enter MD5, SHA-1, SHA-256 (one per line), or paste any text to auto-extract indicators"
+                                [disabled]="isLoading"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        } @else {
+            <app-misp-result [results]="results"></app-misp-result>
+        }
+    </div>
+
+    <div class="modal-footer justify-content-between">
+        <div>
+            <button type="button" class="btn btn-sm btn-outline-secondary query-button" (click)="onX()">
+                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                Cancel
+            </button>
+        </div>
+        <div>
+            @if (!hasResult) {
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary ms-2 query-button"
+                    [disabled]="!textBody || isLoading"
+                    (click)="onParse()"
+                >
+                    <fa-icon [icon]="faPlay" class="pe-1"></fa-icon>
+                    @if (!isLoading) {
+                        Search
+                    } @else if (isLoading) {
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    }
+                </button>
+            }
+
+            @if (hasResult) {
+                <button [disabled]="isLoading" type="button" class="btn btn-sm btn-outline-secondary query-button ms-2" (click)="back()">
+                    <fa-icon [icon]="faAngleLeft" class="pe-1"></fa-icon>
+                    Previous
+                </button>
+                <button
+                    [disabled]="mispResultComponent?.results?.length == 0"
+                    type="button"
+                    class="btn btn-sm btn-outline-primary query-button ms-2"
+                    (click)="import()"
+                >
+                    <fa-icon [icon]="faCheck" class="pe-1"></fa-icon>
+                    Import
+                </button>
+            }
+        </div>
+    </div>
+</div>

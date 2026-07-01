@@ -1,0 +1,45 @@
+.dashboard-card.main-card {
+    border-radius: 0.5rem;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(69, 65, 78, 0.1);
+    border: 1px solid #e9ecef;
+}
+
+.hash-text {
+    font-weight: 500;
+    color: #3c3d40;
+    word-break: break-all;
+    font-family: 'Source Sans Pro', Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.sidebar-icon {
+    color: #8d9498;
+    font-size: 20px;
+}
+
+.badge {
+    font-family: 'Source Sans Pro', Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+}
+
+.badge.bg-success {
+    background-color: #28a745 !important;
+    color: white;
+    font-size: 14px;
+    padding: 0.35rem 0.65rem;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: white;
+    font-size: 14px;
+    padding: 0.35rem 0.65rem;
+}
+
+.badge {
+    font-size: 14px;
+    font-weight: 500;
+}

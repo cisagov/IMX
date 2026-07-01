@@ -1,0 +1,80 @@
+const axios = require('axios');
+const https = require("node:https");
+
+const getKeycloakUsers = function(authHeader) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let axiosData = {
+                headers: {
+                    Authorization: authHeader
+                }
+            }
+
+            if (process.env.KC_CERT === 'TEN'){
+                axiosData['httpsAgent'] = new https.Agent({ rejectUnauthorized: false })
+            }
+
+            const url = `${process.env.KC_URL}admin/realms/${process.env.KC_REALM}/users`;
+
+            axios.get(url, axiosData)
+                .then(async (res) => {
+                    try {
+                        const users = [];
+
+                        for (let user of res.data) {
+                            const roles = await getKeycloakUserRoles(user, axiosData);
+
+                            users.push({
+                                user: user.username,
+                                roles: roles,
+                                id: user.id
+                            });
+                        }
+
+                        return resolve(users);
+                    } catch (err) {
+                        console.error("Failed to retrieve all users for admin: ", err);
+                        return reject(err);
+                    }
+                })
+                .catch((err) => {
+                    console.error("Failed to retrieve all users for admin: ", err);
+                    return reject(err);
+                })
+
+            } catch (e) {
+                return reject(e);
+        }
+    })
+}
+
+const getKeycloakUserRoles = function(user, header) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const url = `${process.env.KC_URL}admin/realms/${process.env.KC_REALM}/users/${user.id}/role-mappings/realm`;
+
+            const result = await axios.get(url, header);
+
+            const roles = result.data;
+
+            const userRoles = [];
+
+            const rolesToExclude = new Set(['uma_authorization', 'default-roles-tie', 'offline_access'])
+
+            roles.forEach(role => {
+                if (rolesToExclude.has(role.name))
+                    return;
+
+                userRoles.push(role.name);
+            })
+
+            return resolve(userRoles);
+
+        } catch (e) {
+            console.error(`Failed to retrieve roles for user: ${user.username}`, err);
+            return reject(e);
+        }
+    })
+}
+
+module.exports = { getKeycloakUsers }

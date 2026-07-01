@@ -1,0 +1,661 @@
+<div class="body admin" style="padding-left: 105px">
+    <div class="sidebar-bg" [ngClass]="{ 'expanded-side': expandSidebar }">
+        <fa-icon [icon]="faRight" class="sidebar-icon expand-right-arrow"></fa-icon>
+    </div>
+    <div class="sidebar cursor-pointer" [ngClass]="{ 'expanded-side': expandSidebar }" (mouseenter)="enableSidebar()" (mouseleave)="disableSidebar()">
+        <div class="d-flex flex-column sidebar-content justify-content-center align-items-center">
+            <div
+                title="API Roots"
+                id="api-roots-btn"
+                tabindex="0"
+                (click)="setTab('apiRoots')"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    'active-tab': activeTab === 'apiRoots',
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faServer" class="sidebar-icon"></fa-icon>
+
+                <span class="sidebar-label"> API Roots </span>
+            </div>
+            <div
+                title="Collections"
+                id="collections-btn"
+                tabindex="0"
+                (click)="setTab('collections')"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    'active-tab': activeTab === 'collections',
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faBook" class="sidebar-icon"></fa-icon>
+
+                <span class="sidebar-label"> Collections </span>
+            </div>
+            <div style="height: 45px"></div>
+            <div
+                title="Roles"
+                id="expand-roles-btn"
+                (click)="clickRoles($event)"
+                [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faUserFriends" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Roles </span>
+                <fa-icon *ngIf="expandSidebar && !roleExpanded" [icon]="faCaretDown" class="sidebar-icon ms-auto"></fa-icon>
+                <fa-icon *ngIf="expandSidebar && roleExpanded" [icon]="faCaretUp" class="sidebar-icon ms-auto"></fa-icon>
+            </div>
+
+            <div
+                title="Roles"
+                tabindex="0"
+                id="roles-btn"
+                (click)="setTab('roles')"
+                *ngIf="expandSidebar && roleExpanded"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    'active-tab': activeTab === 'roles',
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <span class="sidebar-label ms-5"> Root/Collection </span>
+            </div>
+            <div
+                title="Groups"
+                id="groups-btn"
+                tabindex="0"
+                (click)="setTab('groups')"
+                *ngIf="expandSidebar && roleExpanded"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    'active-tab': activeTab === 'groups',
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <span class="sidebar-label ms-5"> Marking Based </span>
+            </div>
+            <div
+                title="Users"
+                id="users-btn"
+                tabindex="0"
+                (click)="setTab('users')"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    'active-tab': activeTab === 'users',
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faUser" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Users </span>
+            </div>
+            <div style="height: 45px"></div>
+            <div
+                title="Disable Taxii Server"
+                id="disable-taxii-btn"
+                (click)="setTab('taxii-settings')"
+                tabindex="0"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    'active-tab': activeTab === 'taxii-settings',
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <fa-icon [icon]="faStop" class="sidebar-icon"></fa-icon>
+                <span class="sidebar-label"> Disable TAXII Server </span>
+            </div>
+
+            <div style="height: 45px"></div>
+            <div
+                title="Kibana"
+                id="kibana-btn"
+                (click)="setTab('kibana-dashboard')"
+                tabindex="0"
+                [ngClass]="{
+                    'justify-content-center': !expandSidebar,
+                    'active-tab': activeTab === 'kibana-dashboard',
+                    '': expandSidebar,
+                    'expand-icon': expandSidebar,
+                }"
+                class="d-flex sidebar-item align-items-center"
+            >
+                <span class="sidebar-text">
+                    <b> KD </b>
+                </span>
+                <span class="sidebar-label"> Kibana Dashboard </span>
+            </div>
+        </div>
+    </div>
+
+    @if (activeTab === 'collections' && !currentCollection) {
+        <div>
+            <div class="action-bar mt-3">
+                <div class="api-root-menu d-flex align-items-center ms-5">
+                    <label for="APIRoots" style="width: 150px; font-weight: normal; margin-top: 10px">API Roots</label>
+                    <select class="form-control form-select" id="APIRoots" name="APIRoots" (change)="onAPIRootChanged($event)">
+                        <option value="">Select an API Root</option>
+                        <option value="--unassigned--">{{ unassignedCollection }}</option>
+                        @for (apiRoot of apiRoots; track apiRoot; let i = $index) {
+                            <option [value]="apiRoot?.fragment" title="{{ apiRoot?.apiRoot?.description }}">{{ apiRoot?.apiRoot?.title }}</option>
+                        }
+                    </select>
+                </div>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-primary"
+                    style="margin-top: 5.5px"
+                    (click)="addCollection()"
+                    title="Click to create a new collection."
+                    [disabled]="!currentApiRoot"
+                >
+                    <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                    Add Collection
+                </button>
+            </div>
+            @if (collectionsShown?.length > 0) {
+                <div class="table-wrapper ms-5" style="padding-right: 70px">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">
+                                    <span style="cursor: pointer" (click)="sort('title', 'collections')">
+                                        Title
+                                        @if (sortKey === 'title-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'title-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col">
+                                    <span style="cursor: pointer" (click)="sort('id', 'collections')">
+                                        ID
+                                        @if (sortKey === 'id-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'id-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col">
+                                    <span style="cursor: pointer" (click)="sort('can_read', 'collections')">
+                                        Can Read
+                                        @if (sortKey === 'can_read-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'can_read-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col">
+                                    <span style="cursor: pointer" (click)="sort('can_write', 'collections')">
+                                        Can Write
+                                        @if (sortKey === 'can_write-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'can_write-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col">
+                                    <span style="cursor: pointer" (click)="sort('alias', 'collections')">
+                                        Alias
+                                        @if (sortKey === 'alias-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'alias-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Media Types</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (collection of collectionsShown; track collection) {
+                                <tr>
+                                    <td style="font-weight: normal; width: 14%">
+                                        {{ collection?.title }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 14%">
+                                        {{ collection?.id }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 10%">
+                                        {{ collection?.can_read }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 10%">
+                                        {{ collection?.can_write }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 14%">
+                                        {{ collection?.alias }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 14%">
+                                        {{ collection?.description }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 14%">
+                                        @for (media of collection?.media_types; track media) {
+                                            <div>
+                                                {{ media }}
+                                            </div>
+                                        }
+                                    </td>
+                                    <td style="font-weight: normal; width: 22%">
+                                        <div class="item-action-icons">
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa btn-warning me-1"
+                                                (click)="editCollection(collection)"
+                                                title="Click to edit."
+                                            >
+                                                <fa-icon [icon]="faList"></fa-icon>
+                                            </button>
+                                            <button
+                                                (click)="removeObject('collection', collection)"
+                                                class="btn btn-fa btn-danger me-1"
+                                                title="Click to remove."
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
+
+    @if (activeTab === 'users' && !adminService.currentUser) {
+        <div class="ms-5">
+            <app-admin-users-page></app-admin-users-page>
+        </div>
+    }
+
+    @if (activeTab === 'apiRoots' && !currentApiRoot) {
+        <div>
+            <div class="action-bar">
+                <div></div>
+                <button type="button" class="btn btn-sm btn-primary me-1 add-button" (click)="addApiRoot()" title="Click to create a new API Root.">
+                    <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+                    Add API Root
+                </button>
+            </div>
+            <div class="table-wrapper ms-5">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <span style="cursor: pointer" (click)="sort('fragment', 'api-roots')">
+                                    URL
+                                    @if (sortKey === 'fragment-des') {
+                                        <fa-icon [icon]="faAngleDown"></fa-icon>
+                                    }
+                                    @if (sortKey === 'fragment-asc') {
+                                        <fa-icon [icon]="faAngleUp"></fa-icon>
+                                    }
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span style="cursor: pointer" (click)="sort('title', 'api-roots')">
+                                    Title
+                                    @if (sortKey === 'title-des') {
+                                        <fa-icon [icon]="faAngleDown"></fa-icon>
+                                    }
+                                    @if (sortKey === 'title-asc') {
+                                        <fa-icon [icon]="faAngleUp"></fa-icon>
+                                    }
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span style="cursor: pointer" (click)="sort('max_content_length', 'api-roots')">
+                                    Max Content Length
+                                    @if (sortKey === 'max_content_length-des') {
+                                        <fa-icon [icon]="faAngleDown"></fa-icon>
+                                    }
+                                    @if (sortKey === 'max_content_length-asc') {
+                                        <fa-icon [icon]="faAngleUp"></fa-icon>
+                                    }
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span style="cursor: pointer" (click)="sort('versions', 'api-roots')">
+                                    Versions
+                                    @if (sortKey === 'versions-des') {
+                                        <fa-icon [icon]="faAngleDown"></fa-icon>
+                                    }
+                                    @if (sortKey === 'versions-asc') {
+                                        <fa-icon [icon]="faAngleUp"></fa-icon>
+                                    }
+                                </span>
+                            </th>
+                            <th scope="col" style="width: 50%">Collections</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (apiRoot of apiRoots; track apiRoot) {
+                            <tr>
+                                <td style="font-weight: normal; width: 12%">
+                                    {{ apiRoot?.fragment }}
+                                </td>
+                                <td style="font-weight: normal; width: 12%">
+                                    {{ apiRoot?.apiRoot?.title }}
+                                </td>
+                                <td style="font-weight: normal; width: 12%">
+                                    {{ apiRoot?.apiRoot?.max_content_length }}
+                                </td>
+                                <td style="font-weight: normal; width: 12%">
+                                    @for (ver of apiRoot?.apiRoot?.versions; track ver) {
+                                        <div>
+                                            {{ ver }}
+                                        </div>
+                                    }
+                                </td>
+                                <td style="font-weight: normal; width: 28%">
+                                    @if (apiRoot?.rws?.length === 1) {
+                                        <div class="p-2">
+                                            @if (apiRoot?.rws[0]?.cId) {
+                                                <div>
+                                                    {{ getCollectionInAPIRoot(apiRoot?.fragment, apiRoot?.rws[0]?.cId)?.title }}
+                                                </div>
+                                            }
+                                            <div class="d-flex">
+                                                <div>Readers:</div>
+                                                @for (r of apiRoot?.rws[0]?.readers; track r) {
+                                                    <div class="d-flex flex-column ps-2">
+                                                        {{ r }}
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="d-flex">
+                                                <div>Writers:</div>
+                                                @for (w of apiRoot?.rws[0]?.writers; track w) {
+                                                    <div class="d-flex flex-column ps-2">
+                                                        {{ w }}
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (apiRoot?.rws?.length > 1) {
+                                        <ngb-carousel [interval]="9999999" [animation]="false">
+                                            @for (rw of apiRoot?.rws; track rw) {
+                                                <ng-template ngbSlide>
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <div>
+                                                            @if (rw?.cId) {
+                                                                <div>
+                                                                    {{ getCollectionInAPIRoot(apiRoot?.fragment, rw?.cId)?.title }}
+                                                                </div>
+                                                            }
+                                                            <div class="d-flex">
+                                                                <div>Readers:</div>
+                                                                @for (r of rw?.readers; track r) {
+                                                                    <div class="d-flex flex-column ps-2">
+                                                                        {{ r }}
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            <div class="d-flex">
+                                                                <div>Writers:</div>
+                                                                @for (w of rw?.writers; track w) {
+                                                                    <div class="d-flex flex-column ps-2">
+                                                                        {{ w }}
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+                                            }
+                                        </ngb-carousel>
+                                    }
+                                </td>
+                                <td style="font-weight: normal; width: 22%; min-width: 120px">
+                                    <div class="item-action-icons">
+                                        <button
+                                            type="button"
+                                            class="btn btn-fa btn-warning me-1"
+                                            (click)="editApiRoot(apiRoot)"
+                                            title="Click to edit."
+                                        >
+                                            <fa-icon [icon]="faList"></fa-icon>
+                                        </button>
+                                        <button
+                                            (click)="removeObject('api-root', apiRoot)"
+                                            class="btn btn-fa btn-danger me-1"
+                                            title="Click to remove."
+                                        >
+                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if (activeTab === 'roles') {
+        <div>
+            <div class="action-bar mt-3">
+                <div class="d-flex">
+                    <div class="api-root-menu d-flex align-items-center ms-5">
+                        <label for="Role" style="width: 150px; font-weight: normal; margin-top: 10px">Roles</label>
+                        <select class="form-control form-select" id="Role" name="Role" [(ngModel)]="currentRole" (change)="onRoleChange($event)">
+                            <option value="null" disabled selected>Select a Role</option>
+                            @for (role of roles; track role; let i = $index) {
+                                <option [value]="role" [selected]="currentRole === role" title="{{ role }}">{{ role }}</option>
+                            }
+                        </select>
+                    </div>
+                    @if (currentRole) {
+                        <button class="btn btn-fa btn-danger ms-3" type="button" title="Remove this role." (click)="removeRole()">
+                            <fa-icon [icon]="faTrash"></fa-icon>
+                        </button>
+                    }
+                </div>
+                <div class="dropdown">
+                    <button
+                        class="btn btn-sm btn-primary"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        title="Click to create a new role or add collection."
+                    >
+                        <fa-icon [icon]="faPlusCircle" class="pe-1"></fa-icon>
+                        New
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" (click)="newRole()">New Role</a>
+                        @if (currentRole) {
+                            <a class="dropdown-item" (click)="addCollectionToRole()">New Collection</a>
+                        }
+                    </div>
+                </div>
+            </div>
+            @if (currentRole) {
+                <div class="table-wrapper ms-5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width: 14%">
+                                    <span style="cursor: pointer" (click)="sort('api_root', 'roles')">
+                                        API Root
+                                        @if (sortKey === 'api_root-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'api_root-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col" style="width: 18%">
+                                    <span style="cursor: pointer" (click)="sort('collection_id', 'roles')">
+                                        Collection
+                                        @if (sortKey === 'collection_id-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'collection_id-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col" style="width: 12%">
+                                    <span style="cursor: pointer" (click)="sort('can_read', 'roles')">
+                                        Can Read
+                                        @if (sortKey === 'can_read-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'can_read-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col" style="width: 12%">
+                                    <span style="cursor: pointer" (click)="sort('can_write', 'roles')">
+                                        Can Write
+                                        @if (sortKey === 'can_write-des') {
+                                            <fa-icon [icon]="faAngleDown"></fa-icon>
+                                        }
+                                        @if (sortKey === 'can_write-asc') {
+                                            <fa-icon [icon]="faAngleUp"></fa-icon>
+                                        }
+                                    </span>
+                                </th>
+                                <th scope="col" style="width: 6%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (roleDetail of roleDetails?.privileges; track roleDetail) {
+                                <tr>
+                                    <td style="font-weight: normal; width: 14%">
+                                        {{ getApiRootDetail(roleDetail?.api_root)?.apiRoot?.title }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 18%">
+                                        {{ getCollectionById(roleDetail?.collection_id)?.title }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 12%">
+                                        {{ getCollectionPerRolePermission(roleDetail, 'read') }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 12%">
+                                        {{ getCollectionPerRolePermission(roleDetail, 'write') }}
+                                    </td>
+                                    <td style="font-weight: normal; width: 6%">
+                                        <div class="item-action-icons">
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa btn-warning me-1"
+                                                (click)="editRole(currentRole, roleDetail)"
+                                                title="Click to edit."
+                                            >
+                                                <fa-icon [icon]="faList"></fa-icon>
+                                            </button>
+                                            <button
+                                                (click)="removeObject('role-collection', roleDetail)"
+                                                class="btn btn-fa btn-danger me-1"
+                                                title="Click to remove."
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
+
+    @if (activeTab === 'groups') {
+        <div class="ms-5">
+            <app-admin-marking-group></app-admin-marking-group>
+        </div>
+    }
+
+    @if (activeTab === 'kibana-dashboard') {
+        <div class="ms-5">
+            <div class="kibana-message">Please view dashboard on new tab.</div>
+        </div>
+    }
+
+    @if (activeTab === 'taxii-settings') {
+        <div class="ms-5">
+            <app-taxii-settings></app-taxii-settings>
+        </div>
+    }
+
+    @if (activeTab === 'taxii-sync') {
+        <div class="ms-5">
+            <app-taxii-sync></app-taxii-sync>
+        </div>
+    }
+
+    @if (currentCollection && activeTab === 'collections') {
+        <div class="ms-5">
+            <app-admin-collection
+                [collectionInput]="currentCollection"
+                [apiRootInput]="currentApiRoot"
+                [collectionsForAllApiRoots]="collections"
+                [apiRoots]="apiRoots"
+                (back)="backToMain($event)"
+            ></app-admin-collection>
+        </div>
+    }
+
+    @if (adminService.currentUser && activeTab === 'users') {
+        <div class="ms-5">
+            <app-admin-user [userInput]="adminService.currentUser" (back)="backToMain($event)"></app-admin-user>
+        </div>
+    }
+
+    @if (currentApiRoot && activeTab === 'apiRoots') {
+        <div class="ms-5">
+            <app-admin-api-root
+                [apiRootInput]="currentApiRoot"
+                [apiRootCollectionsInput]="getCollectionInAPIRoot(currentApiRoot.fragment)"
+                [collectionsForAllApiRoots]="collections"
+                (back)="backToMain($event)"
+            ></app-admin-api-root>
+        </div>
+    }
+
+    @if (errorMessages?.length > 0) {
+        <div class="row error-message">
+            <div class="col">
+                <div class="d-flex justify-content-center flex-column">
+                    @for (err of errorMessages; track err) {
+                        <div class="alert alert-danger" role="alert">
+                            {{ err }}
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

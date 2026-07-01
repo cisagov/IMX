@@ -1,0 +1,34 @@
+.content-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 25vw;
+    display: inline-block;
+}
+
+#content-dialog-form li:hover .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#content-dialog-form li:focus {
+    outline: none;
+}
+
+#content-dialog-form img:focus {
+    outline: 2px dashed #80bdff;
+}
+
+#content-dialog-form li:focus-within .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.trash-can {
+    display: none;
+}
+
+.added-properties-font {
+    font-size: 14px;
+    font-weight: 600;
+}

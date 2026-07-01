@@ -1,0 +1,59 @@
+.input-header {
+    font-weight: bold;
+    color: #6f6f6f;
+}
+
+.add-btn {
+    background-color: white;
+    border-color: #ced4da;
+    color: #495057;
+}
+
+.add-btn:hover {
+    background-color: #495057;
+    color: white;
+}
+
+.add-btn:active {
+    background-color: #495057 !important;
+    color: white !important;
+    border-color: #ced4da !important;
+}
+
+.add-left {
+    margin-right: 0 !important;
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.add-right {
+    margin-left: 0 !important;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.add-both {
+    border-radius: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.no-border-right {
+    border-right: 0px transparent !important;
+}
+
+.no-border-left {
+    border-left: 0px transparent !important;
+}
+
+.note-items:hover {
+    cursor: pointer;
+    background-color: #f1f1f1;
+}
+
+.selected-note {
+    background-color: #f1f1f1;
+}
+
+.note-container {
+    max-height: 60vh;
+    overflow: scroll;
+}

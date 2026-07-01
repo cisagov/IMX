@@ -1,0 +1,43 @@
+<div style="max-height: 93vh; overflow-y: auto">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-title">{{ messageObj?.title + ' > ' + messageObj.menu }}</h4>
+        <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal" (click)="close()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body extensions-modal-body">
+        <p>For a video demonstration of this section, <a href="javascript:void(0)">click this link</a> (Work in Progress).</p>
+        @for (msg of messageObj?.messages; track msg; let index = $index) {
+            <div>
+                @if (showTextOnly(index)) {
+                    <div>
+                        <strong><span [innerHTML]="msg"></span></strong>
+                    </div>
+                }
+                @if (!showTextOnly(index)) {
+                    <div class="d-flex">
+                        <fa-icon class="me-2" [icon]="faArrowAltCircleRight"> </fa-icon>
+                        <span [innerHTML]="msg"></span>
+                    </div>
+                }
+            </div>
+        }
+        <div class="item-action">
+            @if (showButton('cancel')) {
+                <button type="button" class="btn btn-secondary me-3" (click)="close()">CANCEL</button>
+            }
+            @if (scriptPath) {
+                <div class="me-2">
+                    <a class="btn btn-primary" [href]="scriptPath" target="_blank">
+                        <fa-icon [icon]="faDownload"></fa-icon>
+                        Download Video Script
+                    </a>
+                </div>
+            }
+            @if (showButton('ok')) {
+                <button type="button" class="btn btn-success" (click)="confirm()">OK</button>
+            }
+        </div>
+    </div>
+</div>

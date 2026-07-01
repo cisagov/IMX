@@ -1,0 +1,72 @@
+{
+  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/extension.json",
+  "$schema": "http://json-schema.org/draft/2020-12/schema#",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "extension_type": {
+      "description": "The type of extension.",
+      "extension-type-enum": {
+        "type": "string",
+        "enum": [
+          "new-sdo",
+          "new-sco",
+          "new-sro",
+          "property-extension",
+          "toplevel-property-extension"
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "patternProperties": {
+        "^[a-z][a-z0-9_]{0,245}_bin$": {
+          "pattern": "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$"
+        },
+        "^[a-z][a-z0-9_]{0,245}_hex$": {
+          "pattern": "^([a-fA-F0-9]{2})+$"
+        },
+        "^([a-z][a-z0-9_]{2,249})|id$": {
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 1
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "required": [
+    "extension_type"
+  ],
+  "definitions": {
+    "extension-type-enum": {
+      "type": "string",
+      "enum": [
+        "new-sdo",
+        "new-sco",
+        "new-sro",
+        "property-extension",
+        "toplevel-property-extension"
+      ]
+    }
+  }
+}

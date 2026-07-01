@@ -1,0 +1,393 @@
+<div class="dialog">
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            <span>{{ this.stixService.toTitle(type) }} Extension</span>
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="modal-body">
+        @switch (this.type) {
+            <!-- Availablility Extension -->
+            @case ('availability') {
+                <div class="col-md-12">
+                    <div class="form-group mt-2 pt-2 ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Availability Impact*</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['availability_impact']" />
+                                @if (this.errors['availability_impact'] && this.errors['availability_impact'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['availability_impact'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- Confidentiality Extension -->
+            @case ('confidentiality') {
+                <div class="col-md-12">
+                    <div class="form-group mt-2 pt-2 ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Loss Type*</div>
+                                <select class="form-control dropdown" [(ngModel)]="this.currentExtension['loss_type']">
+                                    <option value="" selected></option>
+                                    @for (opt of this.incidentConfidentialityLossEnum; track opt) {
+                                        <option [value]="opt">
+                                            {{ this.stixService.toTitle(opt) }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 p-1">
+                                <div class="stix-title" style="float: left">Information Type</div>
+                                <div class="col-12 p-0 mt-1 input-group">
+                                    <div class="col-6 p-0">
+                                        <select class="form-control dropdown" [(ngModel)]="this.currentExtension['information_type']">
+                                            <option value="" selected></option>
+                                            @for (opt of this.informationTypeOV; track opt) {
+                                                <option [value]="opt">
+                                                    {{ opt }}
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-6 p-0">
+                                        <input class="form-control" [(ngModel)]="this.currentExtension['information_type']" />
+                                    </div>
+                                </div>
+                                @if (this.errors['information_type'] && this.errors['information_type'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['information_type'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Record Count</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['record_count']" />
+                                @if (this.errors['record_count'] && this.errors['record_count'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['record_count'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Record Size</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['record_size']" />
+                                @if (this.errors['record_size'] && this.errors['record_size'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['record_size'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- External Extension -->
+            @case ('external') {
+                <div class="col-md-12">
+                    <div class="form-group mt-2 pt-2 ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-8 p-1">
+                                <div class="stix-title" style="float: left">Impact Type*</div>
+                                <div class="col-12 p-0 mt-1 input-group">
+                                    <div class="col-6 p-0">
+                                        <select class="form-control dropdown" [(ngModel)]="this.currentExtension['impact_type']">
+                                            <option value="" selected></option>
+                                            @for (opt of this.externalImpactOV; track opt) {
+                                                <option [value]="opt">
+                                                    {{ opt }}
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-6 p-0">
+                                        <input class="form-control" [(ngModel)]="this.currentExtension['impact_type']" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- Integrity Extension -->
+            @case ('integrity') {
+                <div class="col-md-12">
+                    <div class="form-group mt-2 pt-2 ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Alteration*</div>
+                                <select class="form-control dropdown" [(ngModel)]="this.currentExtension['alteration']">
+                                    <option value="" selected></option>
+                                    @for (opt of this.integrityAlterationEnum; track opt) {
+                                        <option [value]="opt">
+                                            {{ this.stixService.toTitle(opt) }}
+                                        </option>
+                                    }
+                                </select>
+                                @if (this.errors['alteration'] && this.errors['alteration'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['alteration'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 p-1">
+                                <div class="stix-title" style="float: left">Information Type</div>
+                                <div class="col-12 p-0 mt-1 input-group">
+                                    <div class="col-6 p-0">
+                                        <select class="form-control dropdown" [(ngModel)]="this.currentExtension['information_type']">
+                                            <option value="" selected></option>
+                                            @for (opt of this.informationTypeOV; track opt) {
+                                                <option [value]="opt">
+                                                    {{ opt }}
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-6 p-0">
+                                        <input class="form-control" [(ngModel)]="this.currentExtension['information_type']" />
+                                    </div>
+                                </div>
+                                @if (this.errors['information_type'] && this.errors['information_type'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['information_type'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Record Count</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['record_count']" />
+                                @if (this.errors['record_count'] && this.errors['record_count'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['record_count'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Record Size</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['record_size']" />
+                                @if (this.errors['record_size'] && this.errors['record_size'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['record_size'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- Monetary Extension -->
+            @case ('monetary') {
+                <div class="col-md-12">
+                    <div class="form-group mt-2 pt-2 ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-8 p-1">
+                                <div class="stix-title" style="float: left">Variety*</div>
+                                <div class="col-12 p-0 mt-1 input-group">
+                                    <div class="col-6 p-0">
+                                        <select class="form-control dropdown" [(ngModel)]="this.currentExtension['variety']">
+                                            <option value="" selected></option>
+                                            @for (opt of this.monetaryImpactTypeOV; track opt) {
+                                                <option [value]="opt">
+                                                    {{ opt }}
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-6 p-0">
+                                        <input class="form-control" [(ngModel)]="this.currentExtension['variety']" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Conversion Rate</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['conversion_rate']" />
+                                @if (this.errors['conversion_rate'] && this.errors['conversion_rate'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['conversion_rate'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Conversion Time</div>
+                                <input
+                                    class="form-control"
+                                    [owlDateTimeTrigger]="dtConversionTime"
+                                    [owlDateTime]="dtConversionTime"
+                                    [(ngModel)]="this.currentExtension['conversion_time']"
+                                />
+                                <owl-date-time #dtConversionTime></owl-date-time>
+                                @if (this.errors['conversion_time'] && this.errors['conversion_time'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['conversion_time'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Currency</div>
+                                <select class="form-control form-select dropdown" [(ngModel)]="this.currentExtension['currency']">
+                                    <option value="" selected></option>
+                                    @for (opt of currencyCodes; track opt) {
+                                        <option [value]="opt">
+                                            {{ opt }}
+                                        </option>
+                                    }
+                                </select>
+                                @if (this.errors['currency'] && this.errors['currency'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['currency'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Currency Actual</div>
+                                <select class="form-control form-select dropdown" [(ngModel)]="this.currentExtension['currency_actual']">
+                                    <option value="" selected></option>
+                                    @for (opt of currencyCodes; track opt) {
+                                        <option [value]="opt">
+                                            {{ opt }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Max Amount</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['max_amount']" />
+                                @if (this.errors['max_amount'] && this.errors['max_amount'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['max_amount'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Min Amount</div>
+                                <input class="form-control" type="number" [(ngModel)]="this.currentExtension['min_amount']" />
+                                @if (this.errors['min_amount'] && this.errors['min_amount'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['min_amount'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- Physical Extension -->
+            @case ('physical') {
+                <div class="col-md-12">
+                    <div class="form-group mt-2 pt-2 ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Impact Type*</div>
+                                <select class="form-control dropdown" [(ngModel)]="this.currentExtension['impact_type']">
+                                    <option value="" selected></option>
+                                    @for (opt of this.physicalImpactEnum; track opt) {
+                                        <option [value]="opt">
+                                            {{ this.stixService.toTitle(opt) }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 p-1">
+                                <div class="stix-title" style="float: left">Asset Type</div>
+                                <div class="col-12 p-0 mt-1 input-group">
+                                    <div class="col-6 p-0">
+                                        <select class="form-control dropdown" [(ngModel)]="this.currentExtension['asset_type']">
+                                            <option value="" selected></option>
+                                            @for (opt of this.assetTypeOV; track opt) {
+                                                <option [value]="opt">
+                                                    {{ opt }}
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-6 p-0">
+                                        <input class="form-control" [(ngModel)]="this.currentExtension['asset_type']" />
+                                    </div>
+                                </div>
+                                @if (this.errors['asset_type'] && this.errors['asset_type'] != '') {
+                                    <div class="row">
+                                        <span class="mb-2 warning-message ps-3">
+                                            {{ this.errors['asset_type'] }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- Traceability Extension -->
+            @case ('traceability') {
+                <div class="col-md-12">
+                    <div class="form-group mt-2 pt-2 ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-6 p-1">
+                                <div class="stix-title" style="float: left">Traceablity Impact*</div>
+                                <select class="form-control dropdown" [(ngModel)]="this.currentExtension['traceability_impact']">
+                                    <option value="" selected></option>
+                                    @for (opt of this.traceabilityEnum; track opt) {
+                                        <option [value]="opt">
+                                            {{ this.stixService.toTitle(opt) }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="onX()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success ms-2" (click)="onConfirm()" [disabled]="!isValid()">Add</button>
+    </div>
+</div>

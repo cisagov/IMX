@@ -1,0 +1,253 @@
+@media (max-width: 992px) {
+    .component-button {
+        width: 80px;
+    }
+}
+
+.add-selector-button {
+    height: 34px;
+    width: 100px;
+    font-size: 14px;
+    border-radius: 0%;
+    padding: 0;
+}
+
+.input-group-text,
+input.form-control,
+select.form-control {
+    padding: 4px 8px;
+    font-size: 14px;
+    height: calc(1.5em + 0.5rem + 2px);
+}
+
+.accordion-panel-class {
+    padding: 0;
+}
+.tooltipright {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: -5px !important;
+}
+
+.tooltipright .toolttext {
+    visibility: hidden;
+
+    width: auto;
+    height: auto;
+    background-color: rgb(222, 222, 222);
+    color: black;
+    text-align: left;
+    font-size: 9.5pt;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+    top: -30%;
+    margin-left: 12px;
+}
+
+.toolttext {
+    min-width: 200px;
+}
+
+.tooltipright:hover .toolttext {
+    visibility: visible;
+}
+
+.tooltipright:empty .toolttext {
+    visibility: hidden;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper {
+    padding: 30px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper .tooltip-content {
+    margin-top: 15px;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tooltipright:hover .toolttext .tooltip-wrapper td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+#questions li:hover .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#questions li:focus {
+    outline: none;
+}
+
+#questions img:focus {
+    outline: 2px dashed #80bdff;
+}
+
+#questions li:focus-within .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#custom-obj li:hover .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#custom-obj li:focus {
+    outline: none;
+}
+
+#custom-obj li:focus-within .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#collection li:hover .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#collection li:focus {
+    outline: none;
+}
+
+#collection li:focus-within .trash-can {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.trash-can {
+    display: inline-block;
+}
+
+p {
+    margin-bottom: 5px !important;
+    font-size: 15px !important;
+}
+
+.add-left {
+    margin-right: 0;
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.add-right {
+    margin-left: 0;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.add-both {
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.no-border-right {
+    border-right-color: none;
+}
+
+.no-border-left {
+    border-left-color: none;
+}
+
+.no-border-bottom {
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.btn-color-outline {
+    border-color: #ced4da !important;
+    color: #495057 !important;
+    background-color: white !important;
+}
+
+.btn-color-outline:hover {
+    border-color: #ced4da !important;
+    color: white !important;
+    background-color: #495057 !important;
+}
+
+.description-box {
+    font-size: 0.8rem;
+}
+
+.input-header {
+    font-weight: bold;
+    color: #6f6f6f;
+}
+
+.btn-primary {
+    background-color: white;
+    border-color: #ced4da;
+    color: #495057;
+}
+
+.btn-primary:hover {
+    background-color: #f8f8f8;
+}
+
+.btn-primary:focus {
+    background-color: #f8f8f8;
+}
+
+.btn-primary:active {
+    background-color: #f8f8f8 !important;
+    color: #495057 !important;
+    border-color: #ced4da !important;
+}
+
+.table-content {
+    color: #a7a7a7;
+}
+
+.table-content:hover {
+    color: #c9c9c9;
+}
+
+.sidebar-item:hover {
+    cursor: pointer;
+    color: #bdbcbc;
+}
+
+.delete-button {
+    cursor: pointer;
+    color: #a0a0a0;
+    float: right;
+}
+
+.ref-item .delete-button {
+    visibility: hidden;
+}
+
+.ref-item:hover .delete-button {
+    visibility: visible;
+}
+
+.score-item:hover {
+    cursor: pointer;
+}
+
+.score-item:focus {
+    background-color: #e9ecef;
+    color: #495057;
+    opacity: 1;
+}
+
+::ng-deep .mat-autocomplete-panel {
+    background-color: white;
+    border: 1px solid #ced4da;
+}
+
+mat-option {
+    background-color: #f8f8f8 !important;
+}
+
+.disabled-select {
+    color: #6e777f;
+}

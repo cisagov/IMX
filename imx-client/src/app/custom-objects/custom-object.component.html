@@ -1,0 +1,844 @@
+<div *ngIf="!isLoadingItem">
+    <div class="container-fluid ps-5 pe-5" style="margin-top: 52px">
+        <div class="row ms-2 mt-3 me-3">
+            <div class="col-xl-12">
+                <div class="row ps-3">
+                    <h3 class="col component-title ps-2 mt-2" style="margin-bottom: 0">
+                        <ng-container *ngIf="!this.newObj"> Configure {{ this.currType }} (New {{ this.capitalizedCustomObjType }}) </ng-container>
+                        <ng-container *ngIf="this.newObj"> Configure new {{ capitalizedCustomObjType }} </ng-container>
+                    </h3>
+                    <div class="col">
+                        <button
+                            type="button"
+                            id="add_note_button"
+                            class="btn add-btn float-end position-relative"
+                            style="overflow: visible"
+                            (click)="openNoteDialogModal()"
+                        >
+                            <fa-icon class="me-1" [icon]="faNote"></fa-icon>
+                            Add Note
+                            <span
+                                *ngIf="stixService.notes && stixService.new_notes && stixService.notes.size + stixService.new_notes.size > 0"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+                            >
+                                {{ stixService.notes.size + stixService.new_notes.size }}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row ps-2 pe-2" *ngIf="errorMessage && this.errorMessage.length > 0">
+                            <div class="mx-auto mb-1 warning-message">{{ errorMessage }}</div>
+                        </div>
+                        <div class="row pe-2 pb-2" style="padding-top: 0">
+                            <hr class="section-separator" style="margin-top: 8px; margin-bottom: 8px" />
+                        </div>
+
+                        <div
+                            *ngIf="customObjType != 'new-sco'"
+                            class="row pe-2"
+                            [ngClass]="{ 'ps-2 mb-2': stixService.guidedUI }"
+                            style="padding-top: 0"
+                        >
+                            <app-string-array
+                                class="extra-btn"
+                                [key]="'object_marking_refs'"
+                                (stringArrayOutput)="setObjectMarkingReferences($event)"
+                                [class]="'col-6'"
+                            ></app-string-array>
+
+                            <app-string-array
+                                #labelsRow
+                                class="extra-btn"
+                                [key]="'labels'"
+                                (stringArrayOutput)="setLabels($event)"
+                                [class]="'col-6'"
+                            ></app-string-array>
+                            <hr *ngIf="!stixService.guidedUI" class="section-separator mt-3 mb-2" />
+                        </div>
+
+                        <div class="row">
+                            <!-- Side Bar -->
+                            <div *ngIf="customObjType != 'new-sco'" class="col-2 pt-3 pb-3 position-sticky side-bar" style="font-size: 1rem">
+                                <div class="row p-1" *ngFor="let prop of this.sdoProperties">
+                                    <div class="col-12 text-start sidebar-item" (click)="scrollTo(prop.row)">
+                                        {{ prop.name }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="customObjType == 'new-sco'" class="col-2 pt-3 pb-3 position-sticky side-bar" style="font-size: 1rem">
+                                <div class="row p-1" *ngFor="let prop of this.scoProperties">
+                                    <div class="col-12 text-start sidebar-item" (click)="scrollTo(prop.row)">
+                                        {{ prop.name }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Common Properties -->
+                            <div id="main-table" class="col-10 main-table mt-5 mb-5">
+                                <div class="row">
+                                    <div class="col-12 ps-5 pe-5 pb-3">
+                                        <div class="row pb-1">
+                                            <div class="col-3">
+                                                <div class="row">
+                                                    <div class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                        Object Type*
+                                                        <span *ngIf="!this.newObj" class="tooltipright ps-2">
+                                                            <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                            <div class="toolttext" style="margin-left: 80px">
+                                                                The value of this property MUST be {{ currType }}
+                                                            </div>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input
+                                                            class="form-control"
+                                                            [ngClass]="{
+                                                                'is-invalid': this.currentObject['type'] != '' && this.modalError.get('type'),
+                                                            }"
+                                                            placeholder="Object Type"
+                                                            [readonly]="!this.newObj"
+                                                            [(ngModel)]="this.currentObject['type']"
+                                                        />
+                                                        <span
+                                                            *ngIf="this.currentObject['type'] != '' && this.modalError.get('type')"
+                                                            class="invalid-feedback"
+                                                        >
+                                                            {{ this.modalError.get('type') }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-2">
+                                                <div class="row">
+                                                    <div class="col stix-title ms-0 mb-2 input-header" style="float: left">Extension Type</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input
+                                                            *ngIf="!this.newObj || this.extTypes.length <= 1"
+                                                            class="form-control"
+                                                            readonly
+                                                            [(ngModel)]="this.customObjType"
+                                                        />
+                                                        <select
+                                                            *ngIf="this.newObj && this.extTypes.length > 1"
+                                                            class="form-control dropdown"
+                                                            [(ngModel)]="this.customObjType"
+                                                            [ngClass]="{ 'disabled-select': this.customObjType === undefined }"
+                                                            (change)="updateType()"
+                                                        >
+                                                            <option *ngFor="let type of extTypes" [value]="type">{{ type }}</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-5">
+                                                <div class="row">
+                                                    <div class="col stix-title ms-0 mb-2 input-header" style="float: left">ID</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input class="form-control" [(ngModel)]="this.currentObject['id']" readonly />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-2 pe-5">
+                                                <div class="row">
+                                                    <div class="col stix-title ms-0 mb-2 input-header" style="float: left">Spec Ver.</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input class="form-control" [(ngModel)]="this.currentObject['spec_version']" readonly />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SDO Properties -->
+                                <div *ngIf="customObjType != 'new-sco'">
+                                    <div class="row">
+                                        <div class="col-12 ps-5 pe-5">
+                                            <div class="row pb-4">
+                                                <div class="col pe-5">
+                                                    <div class="row">
+                                                        <div class="col stix-title ms-0 mb-2 input-header" style="float: left">Created</div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <input class="form-control" [(ngModel)]="this.currentObject['created']" readonly />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col pe-5">
+                                                    <div class="row">
+                                                        <div class="col stix-title ms-0 mb-2 input-header" style="float: left">Modified</div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <input class="form-control" [(ngModel)]="this.currentObject['modified']" readonly />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <!-- Left Column -->
+                                        <div class="col-6 ps-5 pe-5">
+                                            <div #confidenceRow class="row pb-4">
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                            Confidence
+                                                            <span class="tooltipright">
+                                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                                <div class="toolttext p-2" style="width: 250px; margin-left: 120px">
+                                                                    <h4>Confidence Scales</h4>
+                                                                    <div class="font-weight-normal">
+                                                                        The confidence property reflects the object creator's trust <br />
+                                                                        in the accuracy of their data. The confidence value MUST <br />
+                                                                        be a number in the range of 0-100.
+                                                                    </div>
+                                                                    <div class="tooltip-content">
+                                                                        <table class="mt-2 font-weight-normal">
+                                                                            <tr>
+                                                                                <th>Low/Med/High</th>
+                                                                                <th>Range of Values</th>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="padding: 8px">Low</td>
+                                                                                <td style="padding: 8px">1-29</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="padding: 8px">Med</td>
+                                                                                <td style="padding: 8px">30-69</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="padding: 8px">High</td>
+                                                                                <td style="padding: 8px">70-100</td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <input
+                                                                class="form-control"
+                                                                type="number"
+                                                                min="0"
+                                                                max="100"
+                                                                [ngClass]="{ 'is-invalid': this.modalError.get('confidence') }"
+                                                                placeholder="Confidence"
+                                                                [(ngModel)]="this.currentObject['confidence']"
+                                                                [readonly]="this.stixService.revoked || this.stixService.revocation"
+                                                            />
+                                                            <span *ngIf="this.modalError.get('confidence')" class="invalid-feedback">
+                                                                {{ this.modalError.get('confidence') }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div #languageRow class="row pb-4">
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col stix-title ms-0 mb-2 input-header" style="float: left">Language</div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <select
+                                                                class="form-control dropdown"
+                                                                [(ngModel)]="this.currentObject['lang']"
+                                                                [ngClass]="{ 'disabled-select': this.currentObject['lang'] === undefined }"
+                                                            >
+                                                                <option selected default [ngValue]="undefined">Select Language</option>
+                                                                <option *ngFor="let lang of languages" [value]="lang.key">{{ lang.value }}</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Right Column -->
+                                        <div class="col-6 pe-5">
+                                            <div #createdByRefRow class="row pb-4">
+                                                <div class="col pe-5">
+                                                    <div class="row">
+                                                        <div class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                            Created By Ref
+                                                            <span class="tooltipright">
+                                                                <fa-icon [icon]="faInfoCircle"> </fa-icon>
+                                                                <div class="toolttext font-weight-normal" style="margin-left: 140px">
+                                                                    Defines the id property of the identity object, describing the entity
+                                                                    responsible<br />for creating this object. Relevant objects within the bundle will
+                                                                    be listed in a dropdown menu.
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <select
+                                                                type="text"
+                                                                class="form-control"
+                                                                [(ngModel)]="this.currentObject['created_by_ref']"
+                                                                [ngClass]="{ 'disabled-select': this.currentObject['confidence'] === undefined }"
+                                                            >
+                                                                <option [ngValue]="undefined" disabled>Select reference</option>
+                                                                <option *ngFor="let id of ids" [value]="id.id">{{ id.name }}</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div #revokedRow class="row pb-4">
+                                                <div class="col pe-5">
+                                                    <div class="row">
+                                                        <div class="col stix-title ms-0 mb-2 input-header" style="float: left">Revoked</div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <select
+                                                                class="form-control dropdown"
+                                                                [(ngModel)]="this.currentObject['revoked']"
+                                                                [ngClass]="{ 'disabled-select': this.currentObject['revoked'] === undefined }"
+                                                            >
+                                                                <option [ngValue]="undefined" disabled selected>Revoked</option>
+                                                                <option value=""></option>
+                                                                <option value="true">True</option>
+                                                                <option value="false">False</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="customObjType == 'new-sco'">
+                                    <div class="row">
+                                        <div class="col-6 ps-5 pe-5">
+                                            <div #defangedRow class="row pb-4">
+                                                <div class="col pe-5">
+                                                    <div class="row">
+                                                        <div class="col stix-title ms-0 mb-2 input-header" style="float: left">Defanged</div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <select
+                                                                class="form-control dropdown"
+                                                                [(ngModel)]="this.currentObject['defanged']"
+                                                                [ngClass]="{ 'disabled-select': this.currentObject['defanged'] === undefined }"
+                                                            >
+                                                                <option [ngValue]="undefined" disabled selected>Defanged</option>
+                                                                <option value=""></option>
+                                                                <option value="true">True</option>
+                                                                <option value="false">False</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ng-container *ngIf="!this.stixService.customObjReadOnly">
+                                    <div class="row pb-4">
+                                        <div class="ps-5 pe-5" [class]="questionWrapperClass('propertyName')">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div [class]="stixService.guidedUI ? 'input-group mb-2' : ''">
+                                                        <span
+                                                            [class]="
+                                                                stixService.guidedUI ? 'input-group-text' : 'col stix-title ms-0 mb-2 input-header'
+                                                            "
+                                                            style="float: left"
+                                                        >
+                                                            Property Name
+                                                        </span>
+                                                        <input
+                                                            placeholder="Property Name"
+                                                            [ngClass]="{
+                                                                'is-invalid': this.currentObject['name'] != '' && this.modalError.get('customName'),
+                                                            }"
+                                                            class="form-control"
+                                                            [(ngModel)]="customProp['name']"
+                                                            type="text"
+                                                        />
+                                                        <span
+                                                            *ngIf="this.currentObject['name'] != '' && this.modalError.get('customName')"
+                                                            class="invalid-feedback"
+                                                        >
+                                                            {{ this.modalError.get('customName') }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pe-5" [class]="questionWrapperClass('propertyType')" *ngIf="stixService.guidedUI">
+                                            <div class="row">
+                                                <div class="col pe-5">
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text"> Property Type </span>
+                                                        <select type="text" class="form-control form-select" [(ngModel)]="customProp['type']">
+                                                            <option value=""></option>
+                                                            <option value="text">Text</option>
+                                                            <option value="boolean">Boolean</option>
+                                                            <option value="integer">Integer</option>
+                                                            <option value="datetime">Datetime</option>
+                                                            <option value="array">Array</option>
+                                                            <option value="dict">Dictionary</option>
+                                                        </select>
+                                                        <div>
+                                                            <button
+                                                                class="btn btn-fa-sm btn-primary"
+                                                                type="button"
+                                                                (click)="createProperty(collection)"
+                                                                [disabled]="
+                                                                    customProp['type'] == '' ||
+                                                                    customProp['name'] == '' ||
+                                                                    (customProp['type'] == 'text' && customProp['text'] == '') ||
+                                                                    (customProp['type'] == 'boolean' && customProp['boolean'] == '') ||
+                                                                    (customProp['type'] == 'integer' && customProp['integer'] == '') ||
+                                                                    (customProp['type'] == 'datetime' && customProp['datetime'] == '')
+                                                                "
+                                                            >
+                                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pe-5" [class]="questionWrapperClass('propertyType')" *ngIf="!stixService.guidedUI">
+                                            <div class="row">
+                                                <div class="col pe-5">
+                                                    <span class="col stix-title ms-0 mb-2 input-header" style="float: left"> Property Type </span>
+                                                    <div class="input-group">
+                                                        <select
+                                                            type="text"
+                                                            [ngClass]="{ 'disabled-select': !customProp['type'] }"
+                                                            class="form-control form-select add-left no-border-right"
+                                                            [(ngModel)]="customProp['type']"
+                                                        >
+                                                            <option *ngIf="customProp['type'] === undefined" [ngValue]="undefined">
+                                                                Property Type
+                                                            </option>
+                                                            <option *ngIf="customProp['type'] !== undefined" value="">Property Type</option>
+                                                            <option value="text">Text</option>
+                                                            <option value="boolean">Boolean</option>
+                                                            <option value="integer">Integer</option>
+                                                            <option value="datetime">Datetime</option>
+                                                            <option value="array">Array</option>
+                                                            <option value="dict">Dictionary</option>
+                                                        </select>
+                                                        <div>
+                                                            <button
+                                                                class="btn btn-fa-sm add-btn btn-primary add-right"
+                                                                type="button"
+                                                                (click)="createProperty(collection)"
+                                                                [disabled]="
+                                                                    customProp['type'] == '' ||
+                                                                    customProp['type'] == undefined ||
+                                                                    customProp['name'] == '' ||
+                                                                    (customProp['type'] == 'text' && customProp['text'] == '') ||
+                                                                    (customProp['type'] == 'boolean' && customProp['boolean'] == '') ||
+                                                                    (customProp['type'] == 'integer' && customProp['integer'] == '') ||
+                                                                    (customProp['type'] == 'datetime' && customProp['datetime'] == '')
+                                                                "
+                                                            >
+                                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ng-container [ngSwitch]="this.customProp['type']">
+                                        <!-- Mappings are used for each type (text vs boolean vs etc) so that state is
+                                            saved if they switch to a previous type before submitting -->
+                                        <div *ngIf="this.customProp['type']" class="row pb-4">
+                                            <div class="col ps-5 pe-5">
+                                                <div *ngSwitchCase="'text'">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <span class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                                Property Value
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col pe-5">
+                                                            <textarea
+                                                                placeholder="Property Value"
+                                                                class="form-control me-4"
+                                                                [(ngModel)]="customProp['text']"
+                                                                type="text"
+                                                            ></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div *ngSwitchCase="'boolean'">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <span class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                                Property Value
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col pe-5">
+                                                            <select
+                                                                class="form-control form-select dropdown me-4"
+                                                                [ngClass]="{ 'disabled-select': !customProp['boolean'] }"
+                                                                [(ngModel)]="customProp['boolean']"
+                                                            >
+                                                                <option *ngIf="customProp['boolean'] === undefined" [ngValue]="undefined">
+                                                                    Property Value
+                                                                </option>
+                                                                <option *ngIf="customProp['boolean'] !== undefined" value="">Property Value</option>
+                                                                <option value="true">True</option>
+                                                                <option value="false">False</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div *ngSwitchCase="'integer'">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <span class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                                Property Value
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col pe-5">
+                                                            <input
+                                                                placeholder="Property Value"
+                                                                class="form-control me-4"
+                                                                [(ngModel)]="customProp['integer']"
+                                                                type="number"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div *ngSwitchCase="'datetime'">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <span class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                                Property Value
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col pe-5">
+                                                            <input
+                                                                class="form-control me-4"
+                                                                [(ngModel)]="customProp['datetime']"
+                                                                placeholder="Property Value"
+                                                                [owlDateTimeTrigger]="dtPickerCustom"
+                                                                [owlDateTime]="dtPickerCustom"
+                                                            />
+                                                            <owl-date-time #dtPickerCustom></owl-date-time>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="row pb-4"
+                                            *ngIf="
+                                                !(
+                                                    (!this.customStringPropKeys || this.customStringPropKeys.length == 0) &&
+                                                    (!this.customArrPropKeys || this.customArrPropKeys.length == 0)
+                                                )
+                                            "
+                                        >
+                                            <div class="col pe-5 ps-5">
+                                                <div class="row">
+                                                    <div class="col pe-5">
+                                                        <accordion>
+                                                            <accordion-group
+                                                                *ngFor="let prop of this.customStringPropKeys; let i = index"
+                                                                tabindex="0"
+                                                                [panelClass]="'accordion-panel-class mt-2'"
+                                                                [isDisabled]="true"
+                                                            >
+                                                                <div
+                                                                    id="customProp_list{{ i }}"
+                                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                                    accordion-heading
+                                                                    type="button"
+                                                                >
+                                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                                        <div class="btn no-btn-decoration btn-link">
+                                                                            {{ prop }}: {{ this.currentObject[prop] }}
+                                                                        </div>
+                                                                        <button
+                                                                            id="customProp_list{{ i }}_delete"
+                                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                                            type="button"
+                                                                            (click)="deleteProperty(prop)"
+                                                                        >
+                                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </accordion-group>
+                                                        </accordion>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col pe-5">
+                                                        <accordion>
+                                                            <accordion-group
+                                                                *ngFor="let prop of this.customArrPropKeys; let i = index"
+                                                                tabindex="0"
+                                                                [panelClass]="'accordion-panel-class mt-2'"
+                                                            >
+                                                                <div
+                                                                    id="customProp_list{{ i }}"
+                                                                    class="row justify-content-between d-flex pt-0 pb-0"
+                                                                    accordion-heading
+                                                                    type="button"
+                                                                >
+                                                                    <div class="col d-flex justify-content-between align-items-center">
+                                                                        <div class="btn no-btn-decoration btn-link">
+                                                                            {{ prop }}
+                                                                        </div>
+                                                                        <button
+                                                                            *ngIf="!this.stixService.customObjReadOnly"
+                                                                            id="customProp_list{{ i }}_delete"
+                                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                                            type="button"
+                                                                            (click)="editCollection(prop, collection)"
+                                                                        >
+                                                                            <fa-icon [icon]="faEdit"></fa-icon>
+                                                                        </button>
+                                                                        <button
+                                                                            *ngIf="!this.stixService.customObjReadOnly"
+                                                                            id="customProp_list{{ i }}_delete"
+                                                                            class="btn btn-fa-sm btn-color list-trash"
+                                                                            type="button"
+                                                                            (click)="deleteProperty(prop)"
+                                                                        >
+                                                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <pre>{{ this.currentObject[prop] | json }}</pre>
+                                                            </accordion-group>
+                                                        </accordion>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+
+                                <div class="row ps-5 pe-4">
+                                    <div class="col-12 ps-0 pb-3 pe-3" style="float: left">
+                                        <app-granular-markings class="w-100 extra-btn"></app-granular-markings>
+                                    </div>
+                                    <div class="col-12 ps-0 pb-3 pe-3" style="float: left">
+                                        <app-external-references class="w-100 extra-btn"></app-external-references>
+                                    </div>
+
+                                    <div class="col-12 ps-0 pb-1 pe-3">
+                                        <app-extensions class="w-100 extra-btn"></app-extensions>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div #customRow class="row pe-2">
+                            <hr class="section-separator" style="margin-top: 8px" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12 text-end mb-5">
+                <button type="button" class="btn btn-lg btn-secondary component-button text me-2" (click)="cancel()" style="width: 175px !important">
+                    <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-lg btn-success component-button text"
+                    (click)="addToBundle()"
+                    [disabled]="!isCustomObjAddEnabled()"
+                    style="width: 175px !important; will-change: transform, opacity"
+                >
+                    <fa-icon [icon]="faFileImport" class="pe-1"></fa-icon>
+                    Add to Bundle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #collection let-modal>
+    <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Configure {{ this.customProp['name'] }}</h2>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="modal-body extensions-modal-body" id="cust-obj-collection">
+        <div class="col-md-12">
+            <span class="tab"></span>
+
+            <!-- String Array -->
+            <ng-container *ngIf="this.customProp['type'] == 'array'">
+                <div class="row bump">
+                    <div class="p-0 col-12">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">
+                                <b>Value</b>
+                            </span>
+                            <input class="form-control" [(ngModel)]="this.customProp['value']" type="text" />
+                            <div>
+                                <button
+                                    class="btn btn-fa-sm btn-primary add-button ms-1 me-2"
+                                    type="button"
+                                    (click)="addSubModalString(this.customProp['value'], 'customArray')"
+                                    [disabled]="this.customProp['value'] == ''"
+                                >
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <span class="tab">
+                        <div class="form-group mt-2">
+                            <li *ngFor="let x of this.customProp.get('customArray')" tabindex="0">
+                                {{ x }}
+                                <button
+                                    class="btn btn-fa-xsm btn-danger trash-can ms-1"
+                                    type="button"
+                                    (click)="deleteSubModalString(x, 'customArray')"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </li>
+                        </div>
+                    </span>
+                </div>
+            </ng-container>
+
+            <!-- String Dict -->
+            <ng-container *ngIf="this.customProp['type'] == 'dict'">
+                <div class="row">
+                    <div class="p-0 col-12">
+                        <div class="input-group mb-2 col-12">
+                            <span class="input-group-text">
+                                <b>Key</b>
+                            </span>
+                            <input class="form-control" [(ngModel)]="this.customProp['key']" type="text" />
+                        </div>
+                        <div class="input-group mb-2 col-12">
+                            <span class="input-group-text">
+                                <b>Value</b>
+                            </span>
+                            <input class="form-control" [(ngModel)]="this.customProp['value']" type="text" />
+                            <div>
+                                <button
+                                    class="btn btn-fa-sm btn-primary ms-1"
+                                    type="button"
+                                    (click)="addSubModalDictString(this.customProp['key'], this.customProp['value'], 'customDict')"
+                                    [disabled]="this.customProp['key'] == '' || this.customProp['value'] == ''"
+                                >
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <span class="tab">
+                        <div class="form-group mt-2">
+                            <li *ngFor="let x of this.customProp.get('customDict').keys()">
+                                {{ x }}: {{ this.customProp.get('customDict').get(x) }}
+                                <button
+                                    class="btn btn-fa-xsm btn-danger trash-can ms-1"
+                                    type="button"
+                                    (click)="deleteSubModalDictString(x, 'customDict')"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </li>
+                        </div>
+                    </span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-md btn-secondary" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button
+            class="btn btn-md btn-success me-3"
+            type="button"
+            (click)="createCollection()"
+            [disabled]="this.customProp.get('customArray').length == 0 && this.customProp.get('customDict').size == 0"
+        >
+            <fa-icon [icon]="faPlusCircle" class="pe-1"></fa-icon>
+            Create Property
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #confidenceTooltip let-modal>
+    <div class="tooltip-wrapper">
+        <h2>Confidence Scales</h2>
+        <div>
+            The confidence property reflects the object creator's trust in the accuracy of their data. The confidence value MUST be a number in the
+            range of 0-100.
+        </div>
+        <div class="tooltip-content">
+            <table>
+                <tr>
+                    <th>Low/Med/High</th>
+                    <th>Range of Values</th>
+                </tr>
+                <tr>
+                    <td>Low</td>
+                    <td>1-29</td>
+                </tr>
+                <tr>
+                    <td>Med</td>
+                    <td>30-69</td>
+                </tr>
+                <tr>
+                    <td>High</td>
+                    <td>70-100</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</ng-template>
