@@ -952,7 +952,7 @@
                                                                             'is-invalid': this.errors['impact_category'] || !findImpactCat(),
                                                                         }"
                                                                         [(ngModel)]="this.currentIncidentCoreObject['impact_category']"
-                                                                        (ngModelChange)="openExtension()"
+                                                                        (ngModelChange)="onImpactCategoryChange()"
                                                                     >
                                                                         @if (!this.currentIncidentCoreObject['impact_category']) {
                                                                             <option [ngValue]="undefined" disabled selected>
@@ -1137,6 +1137,82 @@
                                             </div>
                                         </div>
                                     }
+
+                                    <!-- Impact Extension Input Fields -->
+                                    @if (this.type == 'impact') {
+                                        @if(this.currentIncidentCoreObject['impact_category']){
+                                            <div class="row">
+                                                <div class="col-12 ps-5 pe-5">
+                                                    @for (field of impactCategoryFieldMap[this.currentIncidentCoreObject['impact_category']]; track field) {
+                                                        <div #impactedExtensionDetails class="row pb-4">
+                                                            <div class="col pe-5">
+                                                                <div class="row">
+                                                                    <div class="col stix-title ms-0 mb-2 input-header" style="float: left">
+                                                                        {{field.label}}@if (field.required) {<span class="text-danger ms-1">*</span>}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        @if (field.type === 'text') {
+                                                                            <input
+                                                                                type="text"
+                                                                                class="form-control"
+                                                                                placeholder="Enter {{field.label}}"
+                                                                                [(ngModel)]="impactCategoryFormData[field.model]"
+                                                                                [ngClass]="{ 'is-invalid': errors[field.model] }"
+                                                                            >
+                                                                        }
+
+                                                                        @if (field.type === 'number') {
+                                                                            <input
+                                                                                type="number"
+                                                                                class="form-control"
+                                                                                placeholder="Enter {{field.label}}"
+                                                                                [(ngModel)]="impactCategoryFormData[field.model]"
+                                                                                [ngClass]="{ 'is-invalid': errors[field.model] }"
+                                                                            >
+                                                                        }
+
+                                                                        @if (field.type === 'select') {
+                                                                            <select
+                                                                                class="form-control"
+                                                                                [(ngModel)]="impactCategoryFormData[field.model]"
+                                                                                [ngClass]="{ 'is-invalid': errors[field.model] }"
+                                                                            >
+                                                                                <option [ngValue]="null" selected disabled>Select {{field.label}}</option>
+                                                                                @for (opt of field.options; track opt) {
+                                                                                    <option [ngValue]="opt.value ?? opt.label">{{opt.label}}</option>
+                                                                                }
+                                                                            </select>
+                                                                        }
+
+                                                                        @if (field.type === 'datetime') {
+                                                                            <input
+                                                                                class="form-control"
+                                                                                [owlDateTimeTrigger]="dtConversionTime"
+                                                                                placeholder="Enter {{field.label}}"
+                                                                                [owlDateTime]="dtConversionTime"
+                                                                                [(ngModel)]="impactCategoryFormData[field.model]"
+                                                                                [ngClass]="{ 'is-invalid': errors[field.model] }"
+                                                                            />
+                                                                            <owl-date-time #dtConversionTime></owl-date-time>
+                                                                        }
+
+                                                                        @if (errors[field.model]) {
+                                                                            <div class="text-danger small mt-1">
+                                                                                {{errors[field.model]}}
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+
                                     @if (this.type == 'impact') {
                                         <div class="row">
                                             <div class="col-12 ps-5 pe-5">
@@ -2220,9 +2296,11 @@
                                         <div class="col-12 ps-0 pe-0 pb-3" style="float: left">
                                             <app-external-references class="w-100 extra-btn"></app-external-references>
                                         </div>
-                                        <div class="col-12 ps-0 pe-0 pb-1">
-                                            <app-extensions class="w-100 extra-btn"></app-extensions>
-                                        </div>
+                                        @if (this.type !== 'impact')  {
+                                             <div class="col-12 ps-0 pe-0 pb-1">
+                                                <app-extensions class="w-100 extra-btn"></app-extensions>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
