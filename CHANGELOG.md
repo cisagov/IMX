@@ -1,3 +1,9 @@
+## 4.5.0 (2026-07-02)
+
+### Features
+
+* integration column for domain, error handling & safety checks, caching for domains 24994be
+
 ## 4.4.3 (2026-07-02)
 
 ### Bug Fixes
