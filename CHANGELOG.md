@@ -1,3 +1,9 @@
+## [4.5.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.4.3...v4.5.0) (2026-07-02)
+
+### Features
+
+* integration column for domain, error handling & safety checks, caching for domains ([24994be](https://git.va.th.ten/eos/cde/tie/imx/commit/24994be540f6e41e4a67682eb5c2b0227fc3562e))
+
 ## [4.4.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.4.2...v4.4.3) (2026-07-02)
 
 ### Bug Fixes
