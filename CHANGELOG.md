@@ -1,3 +1,10 @@
+## [4.4.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.4.2...v4.4.3) (2026-07-02)
+
+### Bug Fixes
+
+* move currency codes into its own model ([ef094dc](https://git.va.th.ten/eos/cde/tie/imx/commit/ef094dcb6594d4bfd8f6d28d6d055394aa31d2af))
+* refactor the standard impact form to use input fields instead of modal ([8002c8e](https://git.va.th.ten/eos/cde/tie/imx/commit/8002c8ef327db1085ab8e2c14026f368ff8b2e19))
+
 ## [4.4.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.3.1...v4.4.0) (2026-06-30)
 
 ### Features
