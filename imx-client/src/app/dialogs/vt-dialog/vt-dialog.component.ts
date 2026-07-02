@@ -264,25 +264,31 @@ export class VtDialogComponent {
     }
 
     private restoreFromCache(data: any): void {
-        this.parsedObjects = data.parsedObjects;
-        this.allObjects = data.allObjects;
-        this.selectedObjects = data.selectedObjects;
-        this.tempBundle = data.tempBundle;
-        this.isParsed = data.isParsed;
-        this.isConfirm = data.isConfirm;
-        this.textBody = data.textBody;
-        this.vtResultsByHash = data.vtResultsByHash;
-        this.vtResultsByIp = data.vtResultsByIp;
-        this.expandedHashes = data.expandedHashes;
-        this.expandedIps = data.expandedIps;
-        this.ipResultTabs = data.ipResultTabs;
-        this.hashStixObjectIds = data.hashStixObjectIds;
-        this.ipStixObjectIds = data.ipStixObjectIds;
-        this.hashIncluded = data.hashIncluded;
-        this.ipIncluded = data.ipIncluded;
-        this.hashExcludedObjectsStore = data.hashExcludedObjectsStore;
-        this.ipExcludedObjectsStore = data.ipExcludedObjectsStore;
-        this.selectAll = data.selectAll;
+        this.parsedObjects = data.parsedObjects || {};
+        this.allObjects = data.allObjects || [];
+        this.selectedObjects = data.selectedObjects || {};
+        this.tempBundle = data.tempBundle || new Bundle([]);
+        this.isParsed = data.isParsed || false;
+        this.isConfirm = data.isConfirm || false;
+        this.textBody = data.textBody || '';
+        this.vtResultsByHash = data.vtResultsByHash || new Map();
+        this.vtResultsByIp = data.vtResultsByIp || new Map();
+        this.expandedHashes = data.expandedHashes || new Set();
+        this.expandedIps = data.expandedIps || new Set();
+        this.ipResultTabs = data.ipResultTabs || new Map();
+        this.hashStixObjectIds = data.hashStixObjectIds || new Map();
+        this.ipStixObjectIds = data.ipStixObjectIds || new Map();
+        this.hashIncluded = data.hashIncluded || new Map();
+        this.ipIncluded = data.ipIncluded || new Map();
+        this.hashExcludedObjectsStore = data.hashExcludedObjectsStore || new Map();
+        this.ipExcludedObjectsStore = data.ipExcludedObjectsStore || new Map();
+        this.vtResultsByDomain = data.vtResultsByDomain || new Map();
+        this.expandedDomains = data.expandedDomains || new Set();
+        this.domainResultTabs = data.domainResultTabs || new Map();
+        this.domainStixObjectIds = data.domainStixObjectIds || new Map();
+        this.domainIncluded = data.domainIncluded || new Map();
+        this.domainExcludedObjectsStore = data.domainExcludedObjectsStore || new Map();
+        this.selectAll = data.selectAll || false;
         this.isLoading = false;
     }
 
@@ -307,6 +313,12 @@ export class VtDialogComponent {
                 ipIncluded: this.ipIncluded,
                 hashExcludedObjectsStore: this.hashExcludedObjectsStore,
                 ipExcludedObjectsStore: this.ipExcludedObjectsStore,
+                vtResultsByDomain: this.vtResultsByDomain,
+                expandedDomains: this.expandedDomains,
+                domainResultTabs: this.domainResultTabs,
+                domainStixObjectIds: this.domainStixObjectIds,
+                domainIncluded: this.domainIncluded,
+                domainExcludedObjectsStore: this.domainExcludedObjectsStore,
                 selectAll: this.selectAll,
             });
         }

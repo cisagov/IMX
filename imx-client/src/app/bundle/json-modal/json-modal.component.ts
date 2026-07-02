@@ -19,7 +19,7 @@ export class JsonModalComponent implements OnInit {
     @Input() objectType;
     @Input() disableEditObject!: (obj: any) => boolean;
     @Input() vtIndicator: string = '';
-    @Input() vtIndicatorType: 'hash' | 'ip' | null = null;
+    @Input() vtIndicatorType: 'hash' | 'ip' | 'domain' | null = null;
     @Input() vtCachedData: any = null;
     @Input() mispResults: any[] = null;
 
@@ -123,6 +123,6 @@ export class JsonModalComponent implements OnInit {
     }
 
     close() {
-        this.dialogRef.close();
+        this.dialogRef.close({ action: 'close' });
     }
 }
