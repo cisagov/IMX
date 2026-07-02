@@ -708,6 +708,7 @@ export class BundleComponent implements OnInit {
         modalRef.result.then(
             (data) => {
                 saveVtCache();
+                if (!data) return;
                 if (data.action === 'delete') {
                     this.removeObject(data.object.id);
                 } else if (data.action === 'edit') {
@@ -3916,10 +3917,13 @@ export class BundleComponent implements OnInit {
         if (component.type === 'ipv4-addr' || component.type === 'ipv6-addr') {
             return true;
         }
+        if (component.type === 'domain-name' && component.value) {
+            return true;
+        }
         return false;
     }
 
-    getIntegrationIndicator(component: any): { value: string; type: 'hash' | 'ip' } | null {
+    getIntegrationIndicator(component: any): { value: string; type: 'hash' | 'ip' | 'domain' } | null {
         if (component.type === 'file' && component.hashes) {
             const hashes = component.hashes;
             const value = hashes['SHA-256'] || hashes['SHA-1'] || hashes['MD5'] || hashes[Object.keys(hashes)[0]];
@@ -3927,6 +3931,9 @@ export class BundleComponent implements OnInit {
         }
         if (component.type === 'ipv4-addr' || component.type === 'ipv6-addr') {
             return component.value ? { value: component.value, type: 'ip' } : null;
+        }
+        if (component.type === 'domain-name') {
+            return component.value ? { value: component.value, type: 'domain' } : null;
         }
         return null;
     }
