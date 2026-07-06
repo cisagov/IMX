@@ -2456,4 +2456,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
 
         return this.filteredStringArr;
     }
+
+    getObjectById(id) {
+        return this.stixService.bundle.objects.find(obj => obj.id === id);
+    }
 }
