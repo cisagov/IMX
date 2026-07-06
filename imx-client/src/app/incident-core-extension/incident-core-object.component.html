@@ -495,7 +495,7 @@
                                                                     <mat-autocomplete #sightingRefsAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredSightingObjects; track opt) {
                                                                             <mat-option [value]="opt.id">
-                                                                                {{ opt.id }}
+                                                                                {{ formatReferenceString(opt.id) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -544,7 +544,7 @@
                                                                                         class="col d-flex justify-content-between align-items-center"
                                                                                     >
                                                                                         <div class="btn btn-link">
-                                                                                            {{ currentString }}
+                                                                                            {{ formatReferenceString(currentString) }}
                                                                                         </div>
                                                                                         <button
                                                                                             class="btn btn-fa-sm btn-color list-trash"
@@ -596,7 +596,7 @@
                                                                     <mat-autocomplete #eventInitialAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredInitialRefIds; track opt) {
                                                                             <mat-option [value]="opt">
-                                                                                {{ opt }}
+                                                                                {{ formatReferenceString(opt) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -623,7 +623,7 @@
                                                                     <mat-autocomplete #eventResultAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredResultRefIds; track opt) {
                                                                             <mat-option [value]="opt">
-                                                                                {{ opt }}
+                                                                                {{ formatReferenceString(opt) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -705,11 +705,11 @@
                                                                                     >
                                                                                         <div class="btn btn-link">
                                                                                             {{
-                                                                                                currentObj.initial_ref +
+                                                                                                formatReferenceString(currentObj.initial_ref) +
                                                                                                     '   ' +
                                                                                                     currentObj.state_change_type +
                                                                                                     '   ' +
-                                                                                                    currentObj.result_ref
+                                                                                                    formatReferenceString(currentObj.result_ref)
                                                                                             }}
                                                                                         </div>
                                                                                         <button
@@ -755,7 +755,7 @@
                                                                     <mat-autocomplete #nextEventRefAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredEventRefIds; track opt) {
                                                                             <mat-option [value]="opt.id">
-                                                                                {{ opt.id }}
+                                                                                {{ formatReferenceString(opt.id) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -805,7 +805,7 @@
                                                                                         class="col d-flex justify-content-between align-items-center"
                                                                                     >
                                                                                         <div class="btn btn-link">
-                                                                                            {{ currentString }}
+                                                                                            {{ formatReferenceString(currentString) }}
                                                                                         </div>
                                                                                         <button
                                                                                             class="btn btn-fa-sm btn-color list-trash"
@@ -1339,7 +1339,7 @@
                                                                     <mat-autocomplete #impactedRefsAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredImpactedRefIds; track opt) {
                                                                             <mat-option [value]="opt.id">
-                                                                                {{ formatImpactedRefString(opt.id) }}
+                                                                                {{ formatReferenceString(opt.id) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -1388,7 +1388,7 @@
                                                                                         class="col d-flex justify-content-between align-items-center"
                                                                                     >
                                                                                         <div class="btn btn-link">
-                                                                                            {{ formatImpactedRefString(currentString) }}
+                                                                                            {{ formatReferenceString(currentString) }}
                                                                                         </div>
                                                                                         <button
                                                                                             class="btn btn-fa-sm btn-color list-trash"
@@ -1761,7 +1761,7 @@
                                                                     <mat-autocomplete #eventInitialAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredInitialRefIds; track opt) {
                                                                             <mat-option [value]="opt">
-                                                                                {{ opt }}
+                                                                                {{ formatReferenceString(opt) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -1788,7 +1788,7 @@
                                                                     <mat-autocomplete #eventResultAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredResultRefIds; track opt) {
                                                                             <mat-option [value]="opt">
-                                                                                {{ opt }}
+                                                                                {{ formatReferenceString(opt) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -1870,11 +1870,11 @@
                                                                                     >
                                                                                         <div class="btn btn-link">
                                                                                             {{
-                                                                                                currentObj.initial_ref +
+                                                                                                formatReferenceString(currentObj.initial_ref) +
                                                                                                     '   ' +
                                                                                                     currentObj.state_change_type +
                                                                                                     '   ' +
-                                                                                                    currentObj.result_ref
+                                                                                                    formatReferenceString(currentObj.result_ref)
                                                                                             }}
                                                                                         </div>
                                                                                         <button
@@ -2017,7 +2017,7 @@
                                                                     <mat-autocomplete #nextTaskRefAuto="matAutocomplete" class="autocomplete">
                                                                         @for (opt of this.filteredTaskRefIds; track opt) {
                                                                             <mat-option [value]="opt.id">
-                                                                                {{ opt.id }}
+                                                                                {{ formatReferenceString(opt.id) }}
                                                                             </mat-option>
                                                                         }
                                                                     </mat-autocomplete>
@@ -2067,7 +2067,7 @@
                                                                                         class="col d-flex justify-content-between align-items-center"
                                                                                     >
                                                                                         <div class="btn btn-link">
-                                                                                            {{ currentString }}
+                                                                                            {{ formatReferenceString(currentString) }}
                                                                                         </div>
                                                                                         <button
                                                                                             class="btn btn-fa-sm btn-color list-trash"
@@ -2273,7 +2273,7 @@
                                                                 <mat-autocomplete #supersededAuto="matAutocomplete" class="autocomplete">
                                                                     @for (opt of this.filteredImpactObjects; track opt) {
                                                                         <mat-option [value]="opt.id">
-                                                                            {{ opt.id }}
+                                                                            {{ formatReferenceString(opt.id) }}
                                                                         </mat-option>
                                                                     }
                                                                 </mat-autocomplete>

@@ -1773,7 +1773,7 @@
                     >
                         <ul>
                             <li *ngFor="let currentString of stixService.stringArrays.get(question.key)" tabindex="0">
-                                {{ currentString }}
+                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                 <button
                                     type="button"
                                     class="btn btn-fa-xsm btn-danger trash-can"
@@ -1863,7 +1863,7 @@
                                     >
                                         <div class="col d-flex justify-content-between align-items-center">
                                             <div class="btn btn-link">
-                                                {{ currentString }}
+                                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                             </div>
                                             <button
                                                 class="btn btn-fa-sm btn-color list-trash"
@@ -2141,7 +2141,7 @@
                     (ngModelChange)="inputUpdate($event)"
                 >
                     <option *ngIf="!stixService.guidedUI" value=""></option>
-                    <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
+                    <option *ngFor="let opt of question.options" [value]="opt.key">{{ getObjDisplayName(getObjectById(opt.value)) }}</option>
                 </select>
                 <input
                     class="form-control"
@@ -2189,7 +2189,7 @@
 
                             <mat-autocomplete #sightingAuto="matAutocomplete" class="autocomplete">
                                 <mat-option *ngFor="let opt of filteredStringArr" [value]="opt.key">
-                                    {{ opt.value }}
+                                    {{ getObjDisplayName(getObjectById(opt.value)) }}
                                 </mat-option>
                             </mat-autocomplete>
                             <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
@@ -2284,7 +2284,7 @@
                                     >
                                         <div class="col d-flex justify-content-between align-items-center">
                                             <div class="btn btn-link">
-                                                {{ currentString }}
+                                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                             </div>
                                             <button
                                                 id="{{ question.key }}_list{{ i }}_delete"
@@ -2382,7 +2382,7 @@
                                     >
                                         <div class="col d-flex justify-content-between align-items-center">
                                             <div class="btn btn-link">
-                                                {{ currentString }}
+                                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                             </div>
                                             <button
                                                 id="{{ question.key }}_list{{ i }}_delete"
@@ -2679,7 +2679,7 @@
                     >
                         <ul>
                             <li *ngFor="let currentString of stixService.stringArrays.get(question.key)" tabindex="0">
-                                {{ currentString }}
+                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                 <button
                                     type="button"
                                     class="btn btn-fa-xsm btn-danger trash-can"
@@ -2763,7 +2763,7 @@
                                     <div class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
                                         <div class="col d-flex justify-content-between align-items-center">
                                             <div class="btn btn-link">
-                                                {{ currentString }}
+                                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                             </div>
                                             <button
                                                 class="btn btn-fa-sm btn-color list-trash"
@@ -3781,7 +3781,7 @@
                     >
                         <ul>
                             <li *ngFor="let currentString of stixService.stringArrays.get(question.key)" tabindex="0">
-                                {{ currentString }}
+                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                 <button
                                     type="button"
                                     class="btn btn-fa-xsm btn-danger trash-can"
@@ -3875,7 +3875,7 @@
                                     >
                                         <div class="col d-flex justify-content-between align-items-center">
                                             <div class="btn btn-link">
-                                                {{ currentString }}
+                                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                             </div>
                                             <button
                                                 id="{{ question.key }}_list{{ i }}_delete"
@@ -3967,7 +3967,7 @@
                                     >
                                         <div class="col d-flex justify-content-between align-items-center">
                                             <div class="btn btn-link">
-                                                {{ currentString }}
+                                                {{ getObjDisplayName(getObjectById(currentString)) }}
                                             </div>
                                             <button
                                                 id="{{ question.key }}_list{{ i }}_delete"
