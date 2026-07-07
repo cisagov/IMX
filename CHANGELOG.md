@@ -1,3 +1,9 @@
+## 4.5.1 (2026-07-07)
+
+### Bug Fixes
+
+* add user friendly values to reference objects in standard dropdowns 6d5b839
+
 ## 4.5.0 (2026-07-02)
 
 ### Features
