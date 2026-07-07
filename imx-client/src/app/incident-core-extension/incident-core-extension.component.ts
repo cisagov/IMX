@@ -428,4 +428,26 @@ export class IncidentCoreExtensionComponent implements OnInit {
     changeCollapse(index) {
         this.collapseScore[index] = !this.collapseScore[index];
     }
+
+    formatReferenceString(refId: string): string {
+        const obj = this.stixService.bundle.objects.find((o) => o.id === refId);
+
+        if (!obj) {
+            return refId;
+        }
+
+        switch(obj['type']) {
+            case 'impact':
+                return `Impact - ${obj.impact_category} (${obj.id})`;
+            case 'sighting':
+                let sightingObject = this.stixService.bundle.objects.find((o) => o.id === obj.sighting_of_ref);
+                return 'Sighting of ' + sightingObject.name || `Sighting of '${sightingObject.name || sightingObject.value ? sightingObject.name : "Unnamed " + sightingObject.type }'`;
+            case 'ipv4-addr':
+                return obj.value + ` (${obj.type})` || `IPv4 Address (${obj.id})`;
+            case 'ipv6-addr':
+                return obj.value + ` (${obj.type})` || `IPv6 Address (${obj.id})`;
+            default:
+                return (obj.name || obj.value)? (obj.name || obj.value) + ` (${obj.type})` : `Unnamed ${obj.type} (${obj.id})`;
+        }
+    }
 }

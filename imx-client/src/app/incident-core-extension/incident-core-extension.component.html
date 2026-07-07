@@ -311,7 +311,7 @@
                                         <mat-autocomplete #impactRefAuto="matAutocomplete" class="autocomplete">
                                             @for (opt of this.filteredImpactRefsList; track opt) {
                                                 <mat-option [value]="opt.id">
-                                                    {{ opt['impact_category'] ? opt['impact_category'] + ' (' + opt['id'] + ')' : opt['id'] }}
+                                                    {{ formatReferenceString(opt.id) }}
                                                 </mat-option>
                                             }
                                         </mat-autocomplete>
@@ -351,7 +351,7 @@
                                                 >
                                                     <div class="col d-flex justify-content-between align-items-center">
                                                         <div class="btn btn-link">
-                                                            {{ getRef('impactRefsList', currentString) }}
+                                                            {{ formatReferenceString(getRef('impactRefsList', currentString)) }}
                                                         </div>
                                                         <button
                                                             class="btn btn-fa-sm btn-color list-trash"
@@ -395,7 +395,7 @@
                                         <mat-autocomplete #eventRefAuto="matAutocomplete" class="autocomplete">
                                             @for (opt of this.filteredEventRefsList; track opt) {
                                                 <mat-option [value]="opt.id">
-                                                    {{ opt['name'] ? opt['name'] + ' (' + opt['id'] + ')' : opt['id'] }}
+                                                    {{ formatReferenceString(opt.id) }}
                                                 </mat-option>
                                             }
                                         </mat-autocomplete>
@@ -431,7 +431,7 @@
                                                 >
                                                     <div class="col d-flex justify-content-between align-items-center">
                                                         <div class="btn btn-link">
-                                                            {{ getRef('eventRefsList', currentString) }}
+                                                            {{ formatReferenceString(getRef('eventRefsList', currentString)) }}
                                                         </div>
                                                         <button
                                                             class="btn btn-fa-sm btn-color list-trash"
@@ -475,7 +475,7 @@
                                         <mat-autocomplete #taskRefAuto="matAutocomplete" class="autocomplete">
                                             @for (opt of this.filteredTaskRefsList; track opt) {
                                                 <mat-option [value]="opt.id">
-                                                    {{ opt['name'] ? opt['name'] + ' (' + opt['id'] + ')' : opt['id'] }}
+                                                    {{ formatReferenceString(opt.id) }}
                                                 </mat-option>
                                             }
                                         </mat-autocomplete>
@@ -511,7 +511,7 @@
                                                 >
                                                     <div class="col d-flex justify-content-between align-items-center">
                                                         <div class="btn btn-link">
-                                                            {{ getRef('taskRefsList', currentString) }}
+                                                            {{ formatReferenceString(getRef('taskRefsList', currentString)) }}
                                                         </div>
                                                         <button
                                                             class="btn btn-fa-sm btn-color list-trash"
