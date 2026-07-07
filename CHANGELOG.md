@@ -1,3 +1,9 @@
+## [4.5.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.0...v4.5.1) (2026-07-07)
+
+### Bug Fixes
+
+* add user friendly values to reference objects in standard dropdowns ([6d5b839](https://git.va.th.ten/eos/cde/tie/imx/commit/6d5b839672387c82b897a5a5d6b120b2e18ee45b))
+
 ## [4.5.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.4.3...v4.5.0) (2026-07-02)
 
 ### Features
