@@ -36,7 +36,7 @@ docker compose up -d --build
 description = "Scan client image"
 run = """
 cd imx-client
-docker build -t tie/imx/client:test
+docker build -t tie/imx/client:test .
 trivy image tie/imx/client:test
 """
 
@@ -44,7 +44,7 @@ trivy image tie/imx/client:test
 description = "Scan server image"
 run = """
 cd imx-server
-docker build -t tie/imx/server:test
+docker build -t tie/imx/server:test .
 trivy image tie/imx/server:test
 """
 
@@ -52,7 +52,7 @@ trivy image tie/imx/server:test
 description = "Scan py image"
 run = """
 cd imx-py
-docker build -t tie/imx/py:test
+docker build -t tie/imx/py:test .
 trivy image tie/imx/py:test
 """
 
