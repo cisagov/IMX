@@ -17,3 +17,55 @@ uv sync --project imx-py
 cd imx-client && npm install
 cd ../imx-server && npm install
 """
+
+[tasks.init]
+description = "Initial steps for build locally"
+run = """
+cp .env.example .env
+cp env.json.example env.json
+docker compose up -d --build
+"""
+
+[tasks.build]
+description = "Rebuild IMX"
+run = """
+docker compose up -d --build
+"""
+
+[tasks.trivy-client]
+description = "Scan client image"
+run = """
+cd imx-client
+docker build -t tie/imx/client:test
+trivy image tie/imx/client:test
+"""
+
+[tasks.trivy-server]
+description = "Scan server image"
+run = """
+cd imx-server
+docker build -t tie/imx/server:test
+trivy image tie/imx/server:test
+"""
+
+[tasks.trivy-py]
+description = "Scan py image"
+run = """
+cd imx-py
+docker build -t tie/imx/py:test
+trivy image tie/imx/py:test
+"""
+
+[tasks.audit-client]
+description = "Scan client npm packages"
+run = """
+cd imx-client
+npm audit
+"""
+
+[tasks.audit-server]
+description = "Scan server npm packages"
+run = """
+cd imx-server
+npm audit
+"""
