@@ -1,3 +1,9 @@
+## 4.5.2 (2026-07-14)
+
+### Bug Fixes
+
+* refactor guided identity form to define objects with property extension 3dbc92a
+
 ## 4.5.1 (2026-07-07)
 
 ### Bug Fixes
