@@ -38,8 +38,8 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
     whoType = null;
     nameAndContacts = null;
     nameAndContactsParsed = [];
-    phone = null;
-    email = null;
+    phone = '';
+    email = '';
     phoneError = false;
     emailError = false;
 
@@ -52,10 +52,14 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
     currentAttackerName = '';
     currentAttackerRoles = [];
     currentAttackerMotivation = '';
+    currentPhoneType = '';
+    currentEmailType = '';
     types = [];
     data = [];
 
     attackerUnknown = false;
+    phoneClassified = false;
+    emailClassified = false;
 
     disableWhoType = false;
     disableTargetType = false;
@@ -72,6 +76,20 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         { key: 'personal-satisfaction', value: 'Personal Satisfaction' },
         { key: 'revenge', value: 'Revenge' },
         { key: 'unpredictable', value: 'Unpredictable' },
+    ];
+
+    phoneTypeOptions: any[] = [
+        { key: 'personal-landline-phone', value: 'Personal Landline' },
+        { key: 'personal-mobile-phone', value: 'Personal Mobile' },
+        { key: 'personal-fax', value: 'Personal Fax' },
+        { key: 'work-phone', value: 'Work' },
+        { key: 'work-fax', value: 'Work Fax' }
+    ];
+
+    emailTypeOptions: any[] = [
+        { key: 'personal', value: 'Personal' },
+        { key: 'work', value: 'Work' },
+        { key: 'organizational', value: 'Organizational' }
     ];
 
     constructor(
@@ -141,6 +159,58 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             // identityObject['sectors'] = [this.sector];
             identityObject['identity_class'] = 'individual';
             identityObject['cartId'] = this.cartId[0] ? this.cartId[0] : null;
+
+            // Generate Identity Extension
+            let hasPhone = !!this.phone;
+            let hasEmail = !!this.email;
+            let identityExtension: any = null;
+            let emailAddressObject: any = null;
+
+            if(!hasPhone && !hasEmail) {
+
+            } else {
+                identityExtension = {
+                    "extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498" : {
+                        "extension-type": "propery-extension"
+                    }
+                }
+
+                if(hasPhone) {
+                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].contact_numbers = [];
+                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].contact_numbers.push({
+                        "contact_number": this.phone.trim(),
+                        "contact_number_type": this.phoneTypeOptions.find(o => o.key === this.currentPhoneType).key,
+                        "classified": this.phoneClassified
+                    })
+                }
+
+                if(hasEmail) {
+                    emailAddressObject = {
+                        "type": 'email-addr',
+                        "spec_version": "2.1",
+                        "value": this.email.trim(),
+                    }
+
+                    emailAddressObject["id"] = this.getStixId(emailAddressObject, "email-addr");
+                    emailAddressObject["display_name"] = this.email.trim();
+                    this.guidedService.syncCart("how-observable", { "Email Address": [emailAddressObject] });
+
+                    let emailBucket = this.guidedService.cart['how-observable']['Email Address'];
+                    let createdEmailObj = emailBucket[emailBucket.length - 1];
+                    let emailObjId = createdEmailObj.id;
+
+                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].email_addresses = [];
+                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].email_addresses.push({
+                        "email_address_ref": emailObjId,
+                        "digital_contact_type": this.emailTypeOptions.find(o => o.key === this.currentEmailType).key,
+                        "classified": this.emailClassified
+                    })
+                }
+            }
+
+            if(identityExtension) {
+                identityObject['extensions'] = identityExtension;
+            }
             emitObj.push.push(identityObject);
         } else if (this.isTarget && this.isOrganization) {
             this.linkId++;
@@ -251,11 +321,28 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             this.disableWhoType = true;
             this.isOrganization = false;
             this.targetName = event.name;
-            if (event.contact_information !== null) {
-                this.contactInfo = event.contact_information;
-                this.parseContacts();
-            }
+            // if (event.contact_information !== null) {
+            //     this.contactInfo = event.contact_information;
+            //     this.parseContacts();
+            // }
             this.cartId = [event.cartId];
+
+            // Fill out extension details
+            let identityExtension = event.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498']
+            if(identityExtension?.contact_numbers){
+                this.phone = identityExtension?.contact_numbers[0].contact_number;
+                this.currentPhoneType = identityExtension?.contact_numbers[0].contact_number_type;
+                this.phoneClassified = identityExtension?.contact_numbers[0].classified;
+            }
+
+            if(identityExtension?.email_addresses){
+                let emailAddressRef = identityExtension.email_addresses[0].email_address_ref
+                let emailCartRef = this.guidedService.cart['how-observable']['Email Address']?.find(o => o.id === emailAddressRef);
+                this.email = emailCartRef ? emailCartRef.value : null;
+                this.currentEmailType = this.email ? identityExtension?.email_addresses[0].digital_contact_type : '';
+                this.emailClassified = this.email ? identityExtension?.email_addresses[0].classified : ''
+            }
+
         } else {
             this.isTarget = false;
             this.targetAttackerType = 'attacker';
@@ -291,6 +378,13 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     enableAddToCart(event) {
         this.combineContacts();
+
+        if(this.isTarget) {
+            if(!this.targetName) { this.guidedService.cartDisabled$.next(true); return; }
+
+            if(!!this.phone && !this.currentPhoneType) { this.guidedService.cartDisabled$.next(true); return; }
+            if(!!this.email && !this.currentEmailType) { this.guidedService.cartDisabled$.next(true); return; }
+        }
 
         let disableContinue = true;
         if (!this.isOrganization && (!!this.targetName || !!this.contactInfo)) {
@@ -403,6 +497,10 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         this.cartId = [];
 
         this.currentAttackerMotivation = '';
+        this.currentPhoneType = '';
+        this.currentEmailType = '';
+        this.phoneClassified = false;
+        this.emailClassified = false;
         this.attackerUnknown = false;
 
         this.disableWhoType = false;
@@ -418,5 +516,17 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.cartSubscriptions.forEach((sub) => sub.unsubscribe());
+    }
+
+    getStixId(object, typeName) {
+        if (this.guidedService.editCart && this.guidedService.editCart[this.component] && this.guidedService.editCart[this.component][typeName]) {
+            for (let oldObject of this.guidedService.editCart[this.component][typeName]) {
+                if (oldObject.cartId === object.cartId) {
+                    return oldObject.id;
+                }
+            }
+        }
+
+        return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
     }
 }
