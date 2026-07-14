@@ -1,3 +1,9 @@
+## [4.5.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.1...v4.5.2) (2026-07-14)
+
+### Bug Fixes
+
+* refactor guided identity form to define objects with property extension ([3dbc92a](https://git.va.th.ten/eos/cde/tie/imx/commit/3dbc92a27a315d69055515a804680acd1ec6d32f))
+
 ## [4.5.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.0...v4.5.1) (2026-07-07)
 
 ### Bug Fixes
