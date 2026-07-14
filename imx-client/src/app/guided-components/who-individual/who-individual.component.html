@@ -61,21 +61,39 @@
             @if (whoType === 'individual' && targetAttackerType === 'target') {
                 <div class="d-flex w-100">
                     <div class="target-inputs col-12">
-                        <!-- Name & Phone Number -->
+                        <!-- Name -->
+                        <div class="inner-row">
+                            <div class="input-header">Name<span class="text-danger ms-1">*</span></div>
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    class="form-control form-control-guided"
+                                    placeholder="Enter name"
+                                    (keyup)="enableAddToCart($event)"
+                                    [(ngModel)]="targetName"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(targetName) }"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Phone Number & Type -->
                         <div class="guided-dual-container">
-                            <!-- Name -->
+                            <!-- Phone Type -->
                             <div class="inner-row">
-                                <div class="input-header">Name<span class="text-danger ms-1">*</span></div>
-                                <div class="input-group">
-                                    <input
-                                        type="text"
-                                        class="form-control form-control-guided"
-                                        placeholder="Enter name"
-                                        (keyup)="enableAddToCart($event)"
-                                        [(ngModel)]="targetName"
-                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(targetName) }"
-                                    />
+                                <div class="input-header">
+                                    Phone Type
                                 </div>
+                                <select
+                                    class="form-control form-control-guided form-select"
+                                    [(ngModel)]="currentPhoneType"
+                                    (ngModelChange)="enableAddToCart($event)"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentPhoneType) }"
+                                >
+                                    <option disabled selected value="">Select Phone Type</option>
+                                    @for (option of phoneTypeOptions; track option) {
+                                        <option [value]="option.key">{{ option.value }}</option>
+                                    }
+                                </select>
                             </div>
 
                             <!-- Phone Number -->
@@ -101,31 +119,72 @@
                                     />
                                     <div *ngIf="phoneError" class="invalid-feedback">Must be a valid phone number</div>
                                 </div>
+                                <div class="form-check mt-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="phoneClassified"
+                                        name="phoneClassified"
+                                        [(ngModel)]="phoneClassified"
+                                    />
+                                    <label class="form-check-label" for="phoneClassified">Classified</label>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Email Address -->
-                        <div class="inner-row half-row">
-                            <div class="input-header">
-                                Email Address
-                                <span class="guided-tip">
-                                    <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"> </fa-icon>
-                                    <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('individual_email')"> </span>
-                                </span>
+                        <!-- Email Address & Type -->
+                        <div class="guided-dual-container">
+                            <!-- Email Address Type -->
+                            <div class="inner-row">
+                                <div class="input-header">
+                                    Email Type
+                                </div>
+                                <select
+                                    class="form-control form-control-guided form-select"
+                                    [(ngModel)]="currentEmailType"
+                                    (change)="enableAddToCart($event)"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentEmailType) }"
+                                >
+                                    <option disabled selected value="">Select Email Type</option>
+                                    @for (option of emailTypeOptions; track option) {
+                                        <option [value]="option.key">{{ option.value }}</option>
+                                    }
+                                </select>
                             </div>
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    class="form-control form-control-guided"
-                                    placeholder="Enter email"
-                                    [ngClass]="{ 'is-invalid': emailError }"
-                                    (blur)="checkError('email')"
-                                    (keyup)="enableAddToCart($event)"
-                                    [(ngModel)]="email"
-                                    ,
-                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(email) }"
-                                />
-                                <div *ngIf="emailError" class="invalid-feedback">Must be a valid email address</div>
+
+                            <!-- Email Address -->
+                            <div class="inner-row">
+                                <div class="input-header">
+                                    Email Address
+                                    <span class="guided-tip">
+                                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"> </fa-icon>
+                                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('individual_email')"> </span>
+                                    </span>
+                                </div>
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-guided"
+                                        placeholder="Enter email"
+                                        [ngClass]="{ 'is-invalid': emailError }"
+                                        (blur)="checkError('email')"
+                                        (keyup)="enableAddToCart($event)"
+                                        [(ngModel)]="email"
+                                        ,
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(email) }"
+                                    />
+                                    <div *ngIf="emailError" class="invalid-feedback">Must be a valid email address</div>
+                                </div>
+                                <div class="form-check mt-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="emailClassified"
+                                        name="emailClassified"
+                                        [(ngModel)]="emailClassified"
+                                    />
+                                    <label class="form-check-label" for="emailClassified">Classified</label>
+                                </div>
                             </div>
                         </div>
                     </div>
