@@ -877,6 +877,37 @@ module.exports = function(app, logger) {
         }
     })
 
+    app.post('/get-url', async (req, res) => {
+        if(!process.env.VIRUS_TOTAL_ENABLED){
+            logger.logEndpoint(403, req, undefined);
+            res.send({
+                status: 403,
+                message: "VIRUS TOTAL is DISABLED"
+            })
+            return;
+        }
+
+        let url = req.body.url;
+        if(url === null || url === undefined || url.length === 0) {
+            logger.logEndpoint(400, req, undefined);
+            res.send({
+                status: 400,
+                message: "No URL found"
+            });
+            return;
+        }
+
+        try {
+            let vtResponse = await vt.getUrl(url);
+            logger.logEndpoint(200, req, undefined);
+            res.send(vtResponse.data);
+        } catch(err) {
+            console.log(err);
+            logger.logEndpoint(500, req, undefined);
+            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+        }
+    })
+
     app.post('/get-domain-resolutions', async (req, res) => {
         if(!process.env.VIRUS_TOTAL_ENABLED){
             logger.logEndpoint(403, req, undefined);

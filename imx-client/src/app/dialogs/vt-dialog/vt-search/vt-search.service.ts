@@ -27,6 +27,7 @@ export class VtSearchService {
     getDomainSubdomainsPath = '/get-domain-subdomains';
     getDomainHistoricalWhoisPath = '/get-domain-historical-whois';
     getDomainHistoricalSslCertsPath = '/get-domain-historical-ssl-certs';
+    getUrlPath = '/get-url';
 
     constructor(
         private httpClient: HttpClient,
@@ -284,6 +285,24 @@ export class VtSearchService {
                 error: (error) => {
                     if (error.status === 404) {
                         resolve({ message: 'Domain not found in VirusTotal', status: 404, data: null });
+                    } else {
+                        reject(error);
+                    }
+                },
+            });
+        });
+    }
+
+    async postVtUrlSearch(url: string) {
+        this.headers['Content-Type'] = 'application/json';
+        let body = { url: url };
+
+        return new Promise((resolve, reject) => {
+            this.httpClient.post(`${this.imxServerUrl}${this.getUrlPath}`, body, { headers: this.headers }).subscribe({
+                next: (data) => resolve(data),
+                error: (error) => {
+                    if (error.status === 404) {
+                        resolve({ message: 'URL not found in VirusTotal', status: 404, data: null });
                     } else {
                         reject(error);
                     }
