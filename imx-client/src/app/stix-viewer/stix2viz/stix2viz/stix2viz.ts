@@ -1,3 +1,6 @@
+//@ts-nocheck
+"use strict";
+
 /*
 Configure how embedded relationships (ref properties) are mapped to graph
 edges.  This map maps a STIX type to a list of triples, where each triple
@@ -13,86 +16,118 @@ A property path is a string formatted as a sequence of property names
 separated by dots.  See getValuesAtPath().
 */
 let embeddedRelationships = new Map([
-    [
-        null,
-        [
-            ['created_by_ref', 'created-by', true],
-            ['object_marking_refs', 'applies-to', false],
-        ],
-    ],
-    ['directory', [['contains_refs', 'contains', true]]],
-    ['domain-name', [['resolves_to_refs', 'resolves-to', true]]],
-    ['email-addr', [['belongs_to_ref', 'belongs-to', true]]],
-    [
-        'email-message',
-        [
-            ['from_ref', 'from', true],
-            ['sender_ref', 'sent-by', true],
-            ['to_refs', 'to', true],
-            ['cc_refs', 'cc', true],
-            ['bcc_refs', 'bcc', true],
-            ['raw_email_ref', 'raw-binary-of', false],
-        ],
-    ],
-    [
-        'file',
-        [
-            ['contains_refs', 'contains', true],
-            ['content_ref', 'contents-of', false],
-            ['parent_directory_ref', 'parent-of', false],
-        ],
-    ],
-    ['grouping', [['object_refs', 'refers-to', true]]],
-    ['ipv4-addr', [['resolves_to_refs', 'resolves-to', true]]],
-    ['ipv6-addr', [['resolves_to_refs', 'resolves-to', true]]],
-    ['language-content', [['object_ref', 'applies-to', true]]],
-    ['malware', [['sample_refs', 'sample-of', false]]],
-    ['malware-analysis', [['analysis_sco_refs', 'captured-by', false]]],
-    [
-        'network-traffic',
-        [
-            ['src_ref', 'source-of', false],
-            ['dst_ref', 'destination-of', false],
-            ['src_payload_ref', 'source-payload-of', false],
-            ['dst_payload_ref', 'destination-payload-of', false],
-            ['encapsulates_refs', 'encapsulated-by', false],
-            ['encapsulated_by_ref', 'encapsulated-by', true],
-        ],
-    ],
-    ['note', [['object_refs', 'refers-to', true]]],
-    ['observed-data', [['object_refs', 'refers-to', true]]],
-    ['opinion', [['object_refs', 'refers-to', true]]],
-    [
-        'process',
-        [
-            ['opened_connection_refs', 'opened-by', false],
-            ['creator_user_ref', 'created-by', true],
-            ['image_ref', 'image-of', false],
-            ['parent_ref', 'parent-of', false],
-        ],
-    ],
-    ['report', [['object_refs', 'refers-to', true]]],
-    [
-        'sighting',
-        [
-            ['sighting_of_ref', 'sighting-of', true],
-            ['observed_data_refs', 'observed', true],
-            ['where_sighted_refs', 'saw', false],
-        ],
-    ],
-    ['windows-registry-key', [['creator_user_ref', 'created-by', true]]],
+    [null, [
+        // ["created_by_ref", "created-by", true],
+        ["object_marking_refs", "applies-to", false]
+    ]],
+    ["directory", [
+        ["contains_refs", "contains", true]
+    ]],
+    ["domain-name", [
+        ["resolves_to_refs", "resolves-to", true]
+    ]],
+    ["email-addr", [
+        ["belongs_to_ref", "belongs-to", true]
+    ]],
+    ["email-message", [
+        ["from_ref", "from", true],
+        ["sender_ref", "sent-by", true],
+        ["to_refs", "to", true],
+        ["cc_refs", "cc", true],
+        ["bcc_refs", "bcc", true],
+        ["raw_email_ref", "raw-binary-of", false]
+    ]],
+    ["file", [
+        ["contains_refs", "contains", true],
+        ["content_ref", "contents-of", false],
+        ["parent_directory_ref", "parent-of", false]
+    ]],
+    ["grouping", [
+        ["object_refs", "refers-to", true]
+    ]],
+    ["ipv4-addr", [
+        ["resolves_to_refs", "resolves-to", true]
+    ]],
+    ["ipv6-addr", [
+        ["resolves_to_refs", "resolves-to", true]
+    ]],
+    ["language-content", [
+        ["object_ref", "applies-to", true]
+    ]],
+    ["malware", [
+        ["sample_refs", "sample-of", false]
+    ]],
+    ["malware-analysis", [
+        ["analysis_sco_refs", "captured-by", false]
+    ]],
+    ["network-traffic", [
+        ["src_ref", "source-of", false],
+        ["dst_ref", "destination-of", false],
+        ["src_payload_ref", "source-payload-of", false],
+        ["dst_payload_ref", "destination-payload-of", false],
+        ["encapsulates_refs", "encapsulated-by", false],
+        ["encapsulated_by_ref", "encapsulated-by", true]
+    ]],
+    ["note", [
+        ["object_refs", "refers-to", true]
+    ]],
+    ["observed-data", [
+        ["object_refs", "refers-to", true]
+    ]],
+    ["opinion", [
+        ["object_refs", "refers-to", true]
+    ]],
+    ["process", [
+        ["opened_connection_refs", "opened-by", false],
+        ["creator_user_ref", "created-by", true],
+        ["image_ref", "image-of", false],
+        ["parent_ref", "parent-of", false]
+    ]],
+    ["report", [
+        // ["object_refs", "refers-to", true]
+    ]],
+    ["sighting", [
+        ["sighting_of_ref", "sighting-of", true],
+        ["observed_data_refs", "observed", true],
+        ["where_sighted_refs", "saw", false]
+    ]],
+    ["windows-registry-key", [
+        ["creator_user_ref", "created-by", true]
+    ]],
+    // added for Incident and other IRF extensions
+    ["impact", [
+         [ "impacted_refs", "impacted_by", false ]
+    ]],
+    ["incident", [
+         [ "extensions.extension-definition--ef765651-680c-498d-9894-99799f2fa126.event_refs", "has_event", true],
+         [ "extensions.extension-definition--ef765651-680c-498d-9894-99799f2fa126.impact_refs", "has_impact", true],
+         [ "extensions.extension-definition--ef765651-680c-498d-9894-99799f2fa126.task_refs", "has_task", true]
+    ]],
+    ["event", [
+         [ "sighting_refs", "evidence", true],
+         [ "next_event_refs", "next_event", true]
+    ]],
+    ["task", [
+         [ "next_task_refs", "next_task", true]
+    ]],
+    ["identity", [
+        [ "extensions.extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498.email_addresses.email_address_ref", "email_addr", true],
+        [ "extensions.extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498.social_media_accounts.user_account_ref", "user_account", true]
+    ]]
+
 ]);
+
 
 // Defines operator support for the mongo-ish match algorithm.
 let valueOps = new Map([
-    ['$eq', (a, b) => a === b],
-    ['$gt', (a, b) => a > b],
-    ['$gte', (a, b) => a >= b],
-    ['$in', (val, arr) => arr.includes(val)],
-    ['$lt', (a, b) => a < b],
-    ['$lte', (a, b) => a <= b],
-    ['$ne', (a, b) => a !== b],
-    ['$nin', (val, arr) => !arr.includes(val)],
+    ["$eq", (a, b) => a === b],
+    ["$gt", (a, b) => a > b],
+    ["$gte", (a, b) => a >= b],
+    ["$in", (val, arr) => arr.includes(val)],
+    ["$lt", (a, b) => a < b],
+    ["$lte", (a, b) => a <= b],
+    ["$ne", (a, b) => a !== b],
+    ["$nin", (val, arr) => !arr.includes(val)]
 ]);
 
 import visjs from '../visjs/vis-network';
@@ -100,67 +135,85 @@ import visjs from '../visjs/vis-network';
 /**
  * Instances represent general invalid STIX content passed into the visualizer.
  */
-class STIXContentError extends Error {
-    constructor(message = null) {
+class STIXContentError extends Error
+{
+    constructor(message=null, opts=null)
+    {
         // Use a default generic message.
         if (!message)
-            message =
-                'Invalid STIX content: expected a non-empty mapping' +
-                ' (object or Map) which is a single STIX object or bundle with' +
-                ' at least one object, or a non-empty array of objects.';
+            message = "Invalid STIX content: expected a non-empty mapping"
+            + " (object or Map) which is a single STIX object or bundle with"
+            + " at least one object, or a non-empty array of objects.";
 
-        super(message);
+        //@ts-ignore
+        super(message, opts);
     }
 }
+
 
 /**
  * Instances represent a particular invalid STIX object.
  */
-class InvalidSTIXObjectError extends STIXContentError {
-    stixObject = null;
-
-    constructor(stixObject) {
-        let message = 'Invalid STIX object: requires at least type and id' + ' properties';
+class InvalidSTIXObjectError extends STIXContentError
+{
+    constructor(stixObject, opts=null)
+    {
+        let message = "Invalid STIX object: requires at least type and id"
+        + " properties";
 
         // May as well give some extra info if we know it.  It may seem
         // silly to say we require an id property... and them give the value
         // of the id property!  I think users will get the idea.
-        let stixId = stixObject.get('id');
-        if (stixId) message += ': ' + stixId;
+        let stixId = stixObject.get("id");
+        if (stixId)
+            message += ": " + stixId;
 
-        super(message);
+        super(message, opts);
 
+        //@ts-ignore
         this.stixObject = stixObject;
     }
 }
 
+
 /**
  * Instances represent an invalid configuration value.
  */
-class InvalidConfigError extends Error {
-    constructor(message = null) {
-        if (!message) message = 'Invalid configuration value: must be a JSON or' + ' Javascript object.';
+class InvalidConfigError extends Error
+{
+    constructor(message=null, opts=null)
+    {
+        if (!message)
+            message = "Invalid configuration value: must be a JSON or"
+                      + " Javascript object.";
 
-        super(message);
+        //@ts-ignore
+        super(message, opts);
     }
 }
+
 
 /**
  * Instances represent an invalid operator in match criteria for STIX objects.
  */
-class InvalidMatchOperator extends Error {
-    constructor(op = null) {
-        let message = 'In match criteria, invalid operator: ' + op;
+class InvalidMatchOperator extends Error
+{
+    constructor(op=null, opts=null)
+    {
+        let message = "In match criteria, invalid operator: " + op;
 
-        super(message);
+        //@ts-ignore
+        super(message, opts);
     }
 }
+
 
 /**
  * Determine whether the given value is a plain javascript object.  E.g. one
  * which was given as an object literal.
  */
-function isPlainObject(value) {
+function isPlainObject(value)
+{
     let result = false;
 
     // null/undefined would cause errors in Object.getPrototypeOf(), and
@@ -173,32 +226,45 @@ function isPlainObject(value) {
     return result;
 }
 
+
 /**
  * A JSON.parse() "reviver" function which may be used to cause JSON.parse()
  * to produce a Map instead of a plain javascript object (from a JSON object).
  */
-function mapReviver(key, value) {
-    if (isPlainObject(value)) return new Map(Object.entries(value));
-    else return value;
+function mapReviver(key, value)
+{
+    if (isPlainObject(value))
+        return new Map(Object.entries(value));
+    else
+        return value;
 }
+
 
 /**
  * Recursively search through the given value and convert all plain objects
  * found into Map's.
  */
-function recursiveObjectToMap(obj) {
+function recursiveObjectToMap(obj)
+{
     let newValue;
 
-    if (isPlainObject(obj)) {
+    if (isPlainObject(obj))
+    {
         let map = new Map();
-        for (let [key, value] of Object.entries(obj)) map.set(key, recursiveObjectToMap(value));
+
+        for (let [key, value] of Object.entries(obj))
+            map.set(key, recursiveObjectToMap(value));
 
         newValue = map;
-    } else if (Array.isArray(obj)) newValue = obj.map(recursiveObjectToMap);
-    else newValue = obj;
+    }
+    else if (Array.isArray(obj))
+        newValue = obj.map(recursiveObjectToMap);
+    else
+        newValue = obj;
 
     return newValue;
 }
+
 
 /**
  * Convert the given content to a data structure which uses Maps.  E.g. for
@@ -210,11 +276,14 @@ function recursiveObjectToMap(obj) {
  * @param jsonContent A JSON string, plain object, or array
  * @return The converted content
  */
-function parseToMap(jsonContent) {
+function parseToMap(jsonContent)
+{
     let newValue;
 
-    if (typeof jsonContent === 'string' || jsonContent instanceof String) newValue = JSON.parse(jsonContent as string, mapReviver);
-    else newValue = recursiveObjectToMap(jsonContent);
+    if (typeof jsonContent === "string" || jsonContent instanceof String)
+        newValue = JSON.parse(jsonContent, mapReviver);
+    else
+        newValue = recursiveObjectToMap(jsonContent);
 
     return newValue;
 }
@@ -242,56 +311,75 @@ function parseToMap(jsonContent) {
  * @param criteria Some match criteria
  * @return true if any of the selected values match; false otherwise
  */
-function mongoishMatchProperty(object, propPath, criteria) {
+function mongoishMatchProperty(object, propPath, criteria)
+{
     // Separate various types of criteria.
     let logicalCriteria = new Map();
     let valueCriteria = new Map();
     let presenceCriteria = new Map();
 
-    if (criteria instanceof Map) {
-        for (let [critPropName, critPropValue] of criteria) {
-            if (['$and', '$or', '$not'].includes(critPropName)) logicalCriteria.set(critPropName, critPropValue);
-            else if (valueOps.has(critPropName)) valueCriteria.set(critPropName, critPropValue);
-            else if (critPropName === '$exists') presenceCriteria.set(critPropName, critPropValue);
-            else if (critPropName.startsWith('$')) throw new InvalidMatchOperator(critPropName);
+    if (criteria instanceof Map)
+    {
+        for (let [critPropName, critPropValue] of criteria)
+        {
+            if (["$and", "$or", "$not"].includes(critPropName))
+                logicalCriteria.set(critPropName, critPropValue);
+            else if (valueOps.has(critPropName))
+                valueCriteria.set(critPropName, critPropValue);
+            else if (critPropName === "$exists")
+                presenceCriteria.set(critPropName, critPropValue);
+            else if (critPropName.startsWith("$"))
+                throw new InvalidMatchOperator(critPropName);
             else
                 // Another property path style check
                 valueCriteria.set(critPropName, critPropValue);
         }
-    } else
+    }
+    else
         // Non-map: treat the same as a plain equality check.
-        valueCriteria.set('$eq', criteria);
+        valueCriteria.set("$eq", criteria);
 
     let result = true;
 
     // Check logical criteria
-    for (let [logicalOp, subCriteria] of logicalCriteria) {
-        if (logicalOp === '$or') {
+    for (let [logicalOp, subCriteria] of logicalCriteria)
+    {
+        if (logicalOp === "$or")
+        {
             let orResult = false;
             for (let subCriterion of subCriteria)
-                if (mongoishMatchProperty(object, propPath, subCriterion)) {
+                if (mongoishMatchProperty(object, propPath, subCriterion))
+                {
                     orResult = true;
                     break;
                 }
 
             result &&= orResult;
-        } else if (logicalOp === '$and') {
+        }
+        else if (logicalOp === "$and")
+        {
             let andResult = true;
             for (let subCriterion of subCriteria)
-                if (!mongoishMatchProperty(object, propPath, subCriterion)) {
+                if (!mongoishMatchProperty(object, propPath, subCriterion))
+                {
                     andResult = false;
                     break;
                 }
 
             result &&= andResult;
-        } // logicalOp === "$not"
-        else result &&= !mongoishMatchProperty(object, propPath, subCriteria);
+        }
+        else  // logicalOp === "$not"
+            result &&= !mongoishMatchProperty(
+                object, propPath, subCriteria
+            );
 
-        if (!result) break;
+        if (!result)
+            break;
     }
 
     let anyValuesFound = false;
-    if (result) {
+    if (result)
+    {
         // Check value criteria.  If there aren't any, this check trivially
         // passes.  But we still need to go as far as ascertaining whether any
         // values exist which match the propPath selector.  That is necessary
@@ -299,34 +387,41 @@ function mongoishMatchProperty(object, propPath, criteria) {
         //
         // If there are any value criteria, the implied per-value checks here
         // are implicitly OR'd.
-        if (valueCriteria.size > 0) result = false;
+        if (valueCriteria.size > 0)
+            result = false;
 
-        for (let propValue of getValuesAtPath(object, propPath)) {
+        for (let propValue of getValuesAtPath(object, propPath))
+        {
             anyValuesFound = true;
 
             // If already trivially passed (see above), this loop really just
             // acts to tell whether the property path refers to any values.
             // There is no need to test any values against criteria.  If we are
             // in this loop body, we found a referent value.
-            if (result) break;
+            if (result)
+                break;
 
             result = mongoishMatchObject(propValue, valueCriteria);
 
-            if (result) break;
+            if (result)
+                break;
         }
     }
 
     // Check presence criteria.
-    if (result) {
+    if (result)
+    {
         // Hard-code handling of the only presence criterion we support.
-        if (presenceCriteria.has('$exists')) {
-            let exists = presenceCriteria.get('$exists'); // true or false
-            result &&= exists === anyValuesFound;
+        if (presenceCriteria.has("$exists"))
+        {
+            let exists = presenceCriteria.get("$exists");  // true or false
+            result &&= (exists === anyValuesFound);
         }
     }
 
     return result;
 }
+
 
 /**
  * Check a value for a match against some criteria.  This is inspired by
@@ -403,7 +498,8 @@ function mongoishMatchProperty(object, propPath, criteria) {
  * @param criteria Some criteria to check for
  * @return true if value matches the criteria; false if not
  */
-function mongoishMatchObject(value, criteria) {
+function mongoishMatchObject(value, criteria)
+{
     let result = true;
 
     // Separate various types of criteria.
@@ -411,19 +507,25 @@ function mongoishMatchObject(value, criteria) {
     let valueCriteria = new Map();
     let propValueCriteria = new Map();
 
-    if (criteria instanceof Map) {
+    if (criteria instanceof Map)
+    {
         // Map criteria can check properties of a map value, and can also check
         // non-map values (in the latter case, the criteria keys must be
         // operators, e.g. "$lt").
-        for (let [critKey, critValue] of criteria) {
-            if (['$and', '$or', '$not'].includes(critKey)) logicalCriteria.set(critKey, critValue);
-            else if (valueOps.has(critKey)) valueCriteria.set(critKey, critValue);
-            else if (critKey.startsWith('$')) throw new InvalidMatchOperator(critKey);
+        for (let [critKey, critValue] of criteria)
+        {
+            if (["$and", "$or", "$not"].includes(critKey))
+                logicalCriteria.set(critKey, critValue);
+            else if (valueOps.has(critKey))
+                valueCriteria.set(critKey, critValue);
+            else if (critKey.startsWith("$"))
+                throw new InvalidMatchOperator(critKey);
             else
                 // Key is a property path.
                 propValueCriteria.set(critKey, critValue);
         }
-    } else if (value instanceof Map)
+    }
+    else if (value instanceof Map)
         // Non-map criteria is not applicable to a map value.  Not sure what
         // the semantics would be... e.g. comparing a Map to 4.  What would
         // that mean?  Just treat as a non-match.
@@ -431,50 +533,65 @@ function mongoishMatchObject(value, criteria) {
     else
         // A non-map criteria can be a check on a non-map value.  Just treat as
         // an equality check.
-        valueCriteria.set('$eq', criteria);
+        valueCriteria.set("$eq", criteria);
 
     // Check logical criteria
-    if (result) {
-        for (let [logicalOp, subCriteria] of logicalCriteria) {
-            if (logicalOp === '$or') {
+    if (result)
+    {
+        for (let [logicalOp, subCriteria] of logicalCriteria)
+        {
+            if (logicalOp === "$or")
+            {
                 let orResult = false;
                 for (let subCriterion of subCriteria)
-                    if (mongoishMatchObject(value, subCriterion)) {
+                    if (mongoishMatchObject(value, subCriterion))
+                    {
                         orResult = true;
                         break;
                     }
 
                 result &&= orResult;
-            } else if (logicalOp === '$and') {
+            }
+            else if (logicalOp === "$and")
+            {
                 let andResult = true;
                 for (let subCriterion of subCriteria)
-                    if (!mongoishMatchObject(value, subCriterion)) {
+                    if (!mongoishMatchObject(value, subCriterion))
+                    {
                         andResult = false;
                         break;
                     }
 
                 result &&= andResult;
-            } // logicalOp === "$not"
-            else result &&= !mongoishMatchObject(value, subCriteria);
+            }
+            else  // logicalOp === "$not"
+                result &&= !mongoishMatchObject(value, subCriteria);
 
-            if (!result) break;
+            if (!result)
+                break;
         }
     }
 
     // Check value criteria
-    if (result) {
-        for (let [op, operand] of valueCriteria) {
+    if (result)
+    {
+        for (let [op, operand] of valueCriteria)
+        {
             let opFunc = valueOps.get(op);
             result &&= opFunc(value, operand);
 
-            if (!result) break;
+            if (!result)
+                break;
         }
     }
 
     // Check property value criteria
-    if (result) {
-        for (let [propPath, criteria] of propValueCriteria) {
-            if (value instanceof Map) result &&= mongoishMatchProperty(value, propPath, criteria);
+    if (result)
+    {
+        for (let [propPath, criteria] of propValueCriteria)
+        {
+            if (value instanceof Map)
+                result &&= mongoishMatchProperty(value, propPath, criteria);
             else
                 // Kind of an n/a situation.  Criteria is given as if it was to
                 // be used with a map (including property paths), but this
@@ -482,12 +599,14 @@ function mongoishMatchObject(value, criteria) {
                 // false.
                 result = false;
 
-            if (!result) break;
+            if (!result)
+                break;
         }
     }
 
     return result;
 }
+
 
 /**
  * Perform a simple sanity check on a STIX object to determine whether it's
@@ -496,12 +615,14 @@ function mongoishMatchObject(value, criteria) {
  * @param stixObject The STIX object
  * @return true if the object is valid; false if not
  */
-function isValidStixObject(stixObject) {
+function isValidStixObject(stixObject)
+{
     // assume we've gone through the normalization process such that we
     // can assume we have a Map object.  This is more about whether an object
     // has what we need, than whether we have an object in the first place.
-    return stixObject.has('id') && stixObject.has('type');
+    return stixObject.has("id") && stixObject.has("type");
 }
+
 
 /**
  * Sometimes we want to restrict attention to STIX types which are usable as
@@ -510,9 +631,11 @@ function isValidStixObject(stixObject) {
  * @param stixType A STIX type
  * @return true if the type is usable as a node, false if not
  */
-function isStixTypeValidForNode(stixType) {
-    return stixType !== 'relationship';
+function isStixTypeValidForNode(stixType)
+{
+    return stixType !== "relationship";
 }
+
 
 /**
  * Sometimes we want to restrict attention to STIX types which are usable as
@@ -523,13 +646,15 @@ function isStixTypeValidForNode(stixType) {
  * @return true if the type embedded within the ID is usable as a node, false
  *      if not
  */
-function isStixIdValidForNode(stixId) {
+function isStixIdValidForNode(stixId)
+{
     // length of UUIDs is 36 chars, plus 2 for the "--"
     let typeLength = stixId.length - 38;
     let stixType = stixId.substring(0, typeLength);
 
     return isStixTypeValidForNode(stixType);
 }
+
 
 /**
  * Given a name, modify it to make it unique: add a "(n)" suffix depending
@@ -541,18 +666,22 @@ function isStixIdValidForNode(stixId) {
  *      seen base names to counts
  * @return A uniquefied name
  */
-function uniquefyName(baseName, nameCounts) {
+function uniquefyName(baseName, nameCounts)
+{
     let uniqueName;
     let nameCount = nameCounts.get(baseName) || 0;
 
     ++nameCount;
     nameCounts.set(baseName, nameCount);
 
-    if (nameCount === 1) uniqueName = baseName;
-    else uniqueName = baseName + '(' + nameCount.toString() + ')';
+    if (nameCount === 1)
+        uniqueName = baseName;
+    else
+        uniqueName = baseName + "(" + nameCount.toString() + ")";
 
     return uniqueName;
 }
+
 
 /**
  * Find a name for the given STIX object.  This will be the label users see
@@ -568,39 +697,51 @@ function uniquefyName(baseName, nameCounts) {
  *      null to use defaults
  * @return A name
  */
-function nameForStixObject(stixObject, stixIdToName, nameCounts, config = null) {
-    let stixId = stixObject.get('id');
-    let stixType = stixObject.get('type');
+function nameForStixObject(stixObject, stixIdToName, nameCounts, config=null)
+{
+    let stixId = stixObject.get("id");
+    let stixType = stixObject.get("type");
 
     let name = stixIdToName.get(stixId);
-    if (!name) {
+    if (!name)
+    {
         let baseName;
         let userLabels;
 
         // Look for an ID-specific label; if that fails, look for a
         // type-specific label; if that fails, use some hard-coded fallbacks,
         // which eventually just default to using the STIX type.
-        if (config) {
-            userLabels = config.get('userLabels');
-            if (userLabels) baseName = userLabels.get(stixId);
+        if (config)
+        {
+            userLabels = config.get("userLabels");
+            if (userLabels)
+                baseName = userLabels.get(stixId);
 
-            if (!baseName) {
+            if (!baseName)
+            {
                 let typeConfig = config.get(stixType);
-                if (typeConfig) {
-                    let labelPropName = typeConfig.get('displayProperty');
-                    if (labelPropName) baseName = stixObject.get(labelPropName);
+                if (typeConfig)
+                {
+                    let labelPropName = typeConfig.get("displayProperty");
+                    if (labelPropName)
+                        baseName = stixObject.get(labelPropName);
                 }
             }
         }
 
         // Copied from old visualizer, fall back to some hard-coded properties
-        if (!baseName) baseName = stixObject.get('name');
-        if (!baseName) baseName = stixObject.get('value');
-        if (!baseName) baseName = stixObject.get('path');
-        if (!baseName) baseName = stixType;
+        if (!baseName)
+            baseName = stixObject.get("name");
+        if (!baseName)
+            baseName = stixObject.get("value");
+        if (!baseName)
+            baseName = stixObject.get("path");
+        if (!baseName)
+            baseName = stixType;
 
         // Copied from old visualizer: ensure the name isn't too long.
-        if (baseName.length > 40) baseName = baseName.substr(0, 40) + '...';
+        if (baseName.length > 40)
+          baseName = baseName.substr(0,40) + '...';
 
         name = uniquefyName(baseName, nameCounts);
         stixIdToName.set(stixId, name);
@@ -608,6 +749,7 @@ function nameForStixObject(stixObject, stixIdToName, nameCounts, config = null) 
 
     return name;
 }
+
 
 /**
  * Create a URL to an icon file for the given STIX type.  This does not check
@@ -621,16 +763,23 @@ function nameForStixObject(stixObject, stixIdToName, nameCounts, config = null) 
  *      from the given STIX type.
  * @return A URL of an icon for the given STIX type
  */
-function stixTypeToIconURL(stixType, iconPath, iconFileName) {
+function stixTypeToIconURL(stixType, iconPath, iconFileName)
+{
     let iconUrl;
 
-    if (!iconFileName) iconFileName = 'stix2_' + stixType.replaceAll('-', '_') + '_icon_tiny_round_v1.png';
+    if (!iconFileName)
+        iconFileName = "stix2_"
+            + stixType.replaceAll("-", "_")
+            + "_icon_tiny_round_v1.png";
 
-    if (iconPath === null || iconPath === undefined) iconUrl = iconFileName;
-    else iconUrl = iconPath + '/' + iconFileName;
+    if (iconPath === null || iconPath === undefined)
+        iconUrl = iconFileName;
+    else
+        iconUrl = iconPath + "/" + iconFileName;
 
     return iconUrl;
 }
+
 
 /**
  * Create an object representing a visjs network edge.  Any changes to edge
@@ -644,17 +793,109 @@ function stixTypeToIconURL(stixType, iconPath, iconFileName) {
  *      embedded relationship), this can be null.
  * @return An edge object
  */
-function makeEdgeObject(sourceRef, targetRef, label, stixId = null) {
+function makeEdgeObject(sourceRef, targetRef, label, stixId=null)
+{
     let edge = {
         from: sourceRef,
         to: targetRef,
-        label: label,
-        id: null,
+        label: label
     };
 
-    if (stixId) edge.id = stixId;
+    if (stixId)
+        edge.id = stixId;
 
     return edge;
+}
+
+const timelineTimestamps = {
+    "attack-pattern": ["modified", "created"],
+    "campaign": ["last_seen", "first_seen", "modified", "created"],
+    "course-of-action": ["modified", "created"],
+    "event": ["start_time", "modified", "created"],
+    "identity": ["modified", "created"],
+    "incident": ["modified", "created"],
+    "indicator": ["modified", "created"],
+    "infrastructure": ["modified", "created"],
+    "intrusion-set": ["last_seen", "first_seen", "modified", "created"],
+    "location": ["modified", "created"],
+    "malware": ["last_seen", "first_seen", "modified", "created"],
+    "malware-analysis": ["modified", "created"],
+    "note": ["modified", "created"],
+    "observed-data": ["last_observed", "first_observed", "modified", "created"],
+    "opinion": ["modified", "created"],
+    "report": ["modified", "created"],
+    "task": ["start_time", "modified", "created"],
+    "threat-actor": ["last_seen", "first_seen","modified", "created"],
+    "tool": ["modified", "created"],
+    "vulnerability": ["modified", "created"],
+
+    "relationship": ["start_time", "modified", "created"],
+    "sighting": ["last_seen", "first_seen", "modified", "created"]
+};
+
+/**
+ * Determine the timestamp based on any configuration information
+ *
+ * @param stixObject The STIX object.  Provided to provide any info from it is
+ *      needed for configuring the node
+ * @param stixType The STIX type of the stixObject
+ * @param config Config data used for specifying timeline timestamps; null
+ *      to use default settings (a Map instance)
+ * @return A Date object
+ *
+ */
+
+function determineTimestampFromConfig(stixObject, stixType, config)
+{
+    if (config.has(stixType)) {
+        let typeConfig = config.get(stixType);
+        if (typeConfig.has("timestampList"))
+            return determineTimestamp(stixObject, typeConfig.get("timestampList"), null);
+    }
+    return null
+}
+
+/**
+ * Determine the timestamp based on the properties of the timestamp list
+ *
+ * @param stixObject The STIX object.  Provided to provide any info from it is
+ *      needed for configuring the node
+ * @param timestampList List of properties to be considered for the timestamp, in order of their consideration
+ *
+ * @return A Date object
+ *
+ */
+
+function determineTimestamp(stixObject, timestampList)
+{
+    for (let prop of timestampList)
+    {
+        if (stixObject.has(prop))
+            return new Date(stixObject.get(prop)).valueOf()
+    }
+    return null
+}
+
+/**
+ * Determine the timestamp to use for SCOs, based on their relationship to observed data objects
+ *
+ * @param stixObject The STIX object.  Provided to provide any info from it is
+ *      needed for configuring the node
+ * @param observedDataNodes The observed-data STIX objects in the graph
+ * @return A Date object
+ *
+ */
+
+function determineTimestampForSCO(stixObject, observedDataNodes)
+{
+    let sco_id = stixObject.get("id")
+    for (let obsData of observedDataNodes)
+    {
+        let obj_refs = stixObject.get("object_refs")
+        if (!(obj_refs == null) &&  obj_refs.includes(sco_id))
+            return determineTimestamp(obsData, timelineTimestamps["observed-data"])
+    }
+    return null
 }
 
 /**
@@ -664,16 +905,46 @@ function makeEdgeObject(sourceRef, targetRef, label, stixId = null) {
  * @param name A node name; will be used to label the node in the graph
  * @param stixObject The STIX object.  Provided in case any info from it is
  *      needed for configuring the node
+ * @param observedDataNodes The observed-data STIX objects in the graph
+ * @param config Config data used for specifying timeline timestamps; null
+ *      to use default settings (a Map instance)
  * @return A node object
+ *
+ * Easier to work with epoch milliseconds in javascript, since Date objects
+ * don't seem to have any nice natural way to compare them.
  */
-function makeNodeObject(name, stixObject) {
-    let node = {
-        id: stixObject.get('id'),
-        label: name,
-    };
 
-    return node;
+function makeNodeObject(name, stixObject, observedDataNodes, config=null)
+{
+    let node = {
+        id: stixObject.get("id"),
+        label: name
+    };
+    let stixType = stixObject.get("type");
+
+    node.version = null
+    if (config)
+        // check the config first, which may contain an override of timelineTimestamps or
+        // timestamps not in timelineTimestamps
+        node.version = determineTimestampFromConfig(stixObject, stixType, config)
+
+    if (node.version === null)
+        if (stixType in timelineTimestamps)
+            // check timelineTimestamps
+            node.version = determineTimestamp(stixObject, timelineTimestamps[stixType])
+        // nothing in config or timelineTimestamps, use default behavior
+        else if (stixObject.has("modified"))
+            node.version = new Date(stixObject.get("modified")).valueOf();
+        else if (stixObject.has("created"))
+            node.version = new Date(stixObject.get("created")).valueOf();
+
+    if (node.version === null && observedDataNodes.length > 0)
+        // still null, maybe it is an SCO
+        node.version = determineTimestampForSCO(stixObject, observedDataNodes)
+
+        return node;
 }
+
 
 /**
  * Create a fallback icon URL to use any time the usual STIX type based
@@ -684,12 +955,14 @@ function makeNodeObject(name, stixObject) {
  *      it is relevant for the fallback; null if one was not configured.
  * @return A URL to an icon
  */
-function getDefaultIconURL(iconPath = null) {
+function getDefaultIconURL(iconPath=null)
+{
     let defaultURL = stixTypeToIconURL('custom_object', iconPath, null);
     defaultURL = defaultURL.replace('.png', '.svg');
 
     return defaultURL;
 }
+
 
 /**
  * Make a data structure which is suitable for an external entity to create a
@@ -703,27 +976,35 @@ function getDefaultIconURL(iconPath = null) {
  *      instance which maps STIX type to a URL, and defaultIconURL is a
  *      fallback URL in case the URL in the mapping does not resolve.
  */
-function makeLegendData(stixIdToObject, config = null) {
+function makeLegendData(stixIdToObject, config=null)
+{
     let iconPath = null;
-    if (config) iconPath = config.get('iconDir');
+    if (config)
+        iconPath = config.get("iconDir");
+
     let defaultIconURL = getDefaultIconURL(iconPath);
 
     let stixTypes = new Set();
 
     // collect our types
-    for (let object of stixIdToObject.values()) {
-        let stixType = object.get('type');
-        if (isStixTypeValidForNode(stixType)) stixTypes.add(stixType);
+    for (let object of stixIdToObject.values())
+    {
+        let stixType = object.get("type");
+        if (isStixTypeValidForNode(stixType))
+            stixTypes.add(stixType);
     }
 
     let iconURLs = new Map();
-    for (let type of stixTypes) {
+    for (let type of stixTypes)
+    {
         // Choose an icon file according to config settings
         let iconFileName;
 
-        if (config) {
+        if (config)
+        {
             let typeConfig = config.get(type);
-            if (typeConfig) iconFileName = typeConfig.get('displayIcon');
+            if (typeConfig)
+                iconFileName = typeConfig.get("displayIcon");
         }
 
         let iconURL = stixTypeToIconURL(type, iconPath, iconFileName);
@@ -734,6 +1015,7 @@ function makeLegendData(stixIdToObject, config = null) {
     return [iconURLs, defaultIconURL];
 }
 
+
 /**
  * Config can be given as JSON or an object.  Normalize whatever we are given
  * to a Map.
@@ -742,17 +1024,23 @@ function makeLegendData(stixIdToObject, config = null) {
  * @return A configuration Map
  * @throw InvalidConfigError if the given config value is invalid
  */
-function normalizeConfig(config) {
-    try {
-        config = parseToMap(config);
-    } catch (err) {
-        throw new InvalidConfigError(err);
+function normalizeConfig(config)
+{
+    try
+    {
+        config = parseToMap(config)
+    }
+    catch(err)
+    {
+        throw new InvalidConfigError(null, {cause: err});
     }
 
-    if (!(config instanceof Map)) throw new InvalidConfigError();
+    if (!(config instanceof Map))
+        throw new InvalidConfigError();
 
     return config;
 }
+
 
 /**
  * STIX content input can take different forms.  This function normalizes it to
@@ -768,38 +1056,53 @@ function normalizeConfig(config) {
  * @return An array of objects
  * @throw STIXContentError if any errors are found in the input
  */
-function normalizeContent(stixContent) {
+function normalizeContent(stixContent)
+{
     let stixObjects;
 
-    try {
+    try
+    {
         stixContent = parseToMap(stixContent);
-    } catch (err) {
-        throw new STIXContentError(err);
+    }
+    catch (err)
+    {
+        throw new STIXContentError(null, {cause: err});
     }
 
-    if (stixContent instanceof Map && stixContent.size > 0) {
-        if (stixContent.get('type') === 'bundle') stixObjects = stixContent.get('objects') || [];
+    if (stixContent instanceof Map && stixContent.size > 0)
+    {
+        if (stixContent.get("type") === "bundle")
+            stixObjects = stixContent.get("objects") || [];
         else
             // Assume we were given a single object
             stixObjects = [stixContent];
-    } else if (Array.isArray(stixContent)) stixObjects = stixContent;
-    else throw new STIXContentError();
+    }
+    else if (Array.isArray(stixContent))
+        stixObjects = stixContent;
+    else
+        throw new STIXContentError();
 
-    if (!Array.isArray(stixObjects) || stixObjects.length <= 0) throw new STIXContentError();
+    if (!Array.isArray(stixObjects) || stixObjects.length <= 0)
+        throw new STIXContentError();
 
     // Do a simple validity check on our individual STIX objects.
-    for (let stixObject of stixObjects) if (!isValidStixObject(stixObject)) throw new InvalidSTIXObjectError(stixObject);
+    for (let stixObject of stixObjects)
+        if (!isValidStixObject(stixObject))
+            throw new InvalidSTIXObjectError(stixObject);
 
     return stixObjects;
 }
 
+
 /**
  * Abstract base class for views of STIX-derived graph data.
  */
-class STIXContentView {
+class STIXContentView
+{
     #legendData;
 
-    constructor(stixIdToObject, config = null) {
+    constructor(stixIdToObject, config=null)
+    {
         this.#legendData = makeLegendData(stixIdToObject, config);
     }
 
@@ -811,7 +1114,8 @@ class STIXContentView {
      *      instance which maps STIX type to a URL, and defaultIconURL is a
      *      fallback URL in case the URL in the mapping does not resolve.
      */
-    get legendData() {
+    get legendData()
+    {
         return this.#legendData;
     }
 
@@ -819,25 +1123,32 @@ class STIXContentView {
      * Add an event listener to the view.  Events/semantics depends on the
      * view.
      */
-    // on(...args)
-    // {
-    // }
+    on(...args)
+    {
+    }
 
     /**
      * Dispose of the view to free up resources.
      */
-    // destroy()
-    // {
-    // }
+    destroy()
+    {
+    }
 
     /**
      * Toggle display of view elements of a particular STIX type.
      *
      * @param stixType the STIX type whose nodes should be toggled
      */
-    // toggleStixType(stixType)
-    // {
-    // }
+    toggleStixType(stixType)
+    {
+    }
+
+    /**
+     * Set the nodes with the given IDs to visible, and the others to hidden.
+     */
+    setVisible(ids)
+    {
+    }
 
     /**
      * Set the selection to the view element corresponding to the given STIX
@@ -845,15 +1156,17 @@ class STIXContentView {
      *
      * @param stixId the STIX ID of the node to select
      */
-    // selectNode(stixId)
-    // {
-    // }
+    selectNode(stixId)
+    {
+    }
 }
+
 
 /**
  * A view of STIX-derived graph data which is a simple textual list.
  */
-class ListView extends STIXContentView {
+class ListView extends STIXContentView
+{
     #containerRoot;
     #contentRoot;
     #stixIdToObject;
@@ -872,8 +1185,12 @@ class ListView extends STIXContentView {
      *      Maps, containing STIX content.
      * @param config A config object
      */
-    constructor(domElement, nodeDataSet, edgeDataSet, stixIdToObject, config = null) {
-        if (config !== null) config = normalizeConfig(config);
+    constructor(
+        domElement, nodeDataSet, edgeDataSet, stixIdToObject, config=null
+    )
+    {
+        if (config !== null)
+            config = normalizeConfig(config);
 
         super(stixIdToObject, config);
 
@@ -881,15 +1198,15 @@ class ListView extends STIXContentView {
         this.#stixIdToObject = stixIdToObject;
 
         let doc = domElement.ownerDocument;
-        let ol = doc.createElement('ol');
+        let ol = doc.createElement("ol");
 
         nodeDataSet.forEach((item, id) => {
             let stixObject = stixIdToObject.get(id);
-            let itemText = stixObject.get('type') + ': ' + item.label;
+            let itemText = stixObject.get("type") + ": " + item.label;
 
-            let li = doc.createElement('li');
+            let li = doc.createElement("li");
             li.id = id;
-            li.className = 'list-view-item';
+            li.className = "list-view-item";
             ol.append(li);
             li.append(itemText);
         });
@@ -898,13 +1215,16 @@ class ListView extends STIXContentView {
             let fromItem = nodeDataSet.get(item.from);
             let toItem = nodeDataSet.get(item.to);
 
-            let itemText = fromItem.label + ' ' + item.label + ' ' + toItem.label;
+            let itemText = fromItem.label
+                + " " + item.label
+                + " " + toItem.label;
 
-            if (!stixIdToObject.has(id)) itemText += ' (embedded)';
+            if (!stixIdToObject.has(id))
+                itemText += " (embedded)";
 
-            let li = doc.createElement('li');
+            let li = doc.createElement("li");
             li.id = id;
-            li.className = 'list-view-item';
+            li.className = "list-view-item";
             ol.append(li);
             li.append(itemText);
         });
@@ -919,14 +1239,16 @@ class ListView extends STIXContentView {
      * Adds a plain HTML event listener to the content root element of this
      * view.
      */
-    on(...args) {
+    on(...args)
+    {
         this.#contentRoot.addEventListener(...args);
     }
 
     /**
      * Remove all the DOM nodes associated with this view.
      */
-    destroy() {
+    destroy()
+    {
         this.#containerRoot.replaceChildren();
     }
 
@@ -936,14 +1258,30 @@ class ListView extends STIXContentView {
      *
      * @param stixType the STIX type whose items should be toggled
      */
-    toggleStixType(stixType) {
-        let listItems = this.#contentRoot.getElementsByTagName('li');
+    toggleStixType(stixType)
+    {
+        let listItems = this.#contentRoot.getElementsByTagName("li");
 
-        for (let idx = 0; idx < listItems.length; ++idx) {
+        for (let idx=0; idx < listItems.length; ++idx)
+        {
             let li = listItems[idx];
             let stixObject = this.#stixIdToObject.get(li.id);
 
-            if (stixObject && stixObject.get('type') === stixType) li.classList.toggle('hidden');
+            if (stixObject && stixObject.get("type") === stixType)
+                li.classList.toggle("hidden");
+        }
+    }
+
+    setVisible(ids)
+    {
+        let listItems = this.#contentRoot.getElementsByTagName("li");
+
+        for (let li of listItems)
+        {
+            if (ids.has(li.id))
+                li.classList.remove("hidden");
+            else
+                li.classList.add("hidden");
         }
     }
 
@@ -952,28 +1290,34 @@ class ListView extends STIXContentView {
      *
      * @param stixId the STIX ID of the node to select
      */
-    selectNode(stixId) {
+    selectNode(stixId)
+    {
         let doc = this.#contentRoot.ownerDocument;
 
         // de-select the previous item, if any
-        if (this.#selectedId) {
+        if (this.#selectedId)
+        {
             let oldLi = doc.getElementById(this.#selectedId);
-            if (oldLi) oldLi.classList.remove('list-view-selected');
+            if (oldLi)
+                oldLi.classList.remove("list-view-selected");
         }
 
         let li = doc.getElementById(stixId);
-        if (li) {
-            li.classList.add('list-view-selected');
+        if (li)
+        {
+            li.classList.add("list-view-selected");
             this.#selectedId = stixId;
-            li.scrollIntoView({ block: 'nearest' });
+            li.scrollIntoView({block: "nearest"});
         }
     }
 }
 
+
 /**
  * A view of STIX-derived graph data which is a visjs graph.
  */
-class GraphView extends STIXContentView {
+class GraphView extends STIXContentView
+{
     #nodeDataSet;
     #edgeDataSet;
     #network;
@@ -992,8 +1336,13 @@ class GraphView extends STIXContentView {
      *      Maps, containing STIX content.
      * @param config A config object
      */
-    constructor(visjs, domElement, nodeDataSet, edgeDataSet, stixIdToObject, config = null) {
-        if (config !== null) config = normalizeConfig(config);
+     constructor(
+        domElement, nodeDataSet, edgeDataSet, stixIdToObject,
+        config=null
+    )
+    {
+        if (config !== null)
+            config = normalizeConfig(config);
 
         super(stixIdToObject, config);
 
@@ -1007,7 +1356,7 @@ class GraphView extends STIXContentView {
         nodeDataSet.forEach((item, id) => {
             this.#nodeDataSet.add({
                 ...item,
-                group: stixIdToObject.get(id).get('type'),
+                group: stixIdToObject.get(id).get("type")
             });
         });
 
@@ -1015,52 +1364,53 @@ class GraphView extends STIXContentView {
 
         let graphData = {
             nodes: this.#nodeDataSet,
-            edges: this.#edgeDataSet,
+            edges: this.#edgeDataSet
         };
 
         let graphOpts = {
             groups: groups,
             nodes: {
                 color: {
-                    border: 'black',
+                    border: "black"
                 },
                 font: {
-                    size: 20,
+                    size: 20
                 },
                 borderWidth: 2,
                 chosen: {
                     // Enable a drop shadow when a node is selected
                     node: (values, id, selected, hovering) => {
-                        if (selected) {
+                        if (selected)
+                        {
                             values.shadow = true;
                             values.shadowX = values.shadowY = 8;
                             values.borderWidth = 4;
                         }
-                    },
-                },
+                    }
+                }
             },
             edges: {
-                arrows: 'to',
+                arrows: "to",
                 width: 3,
-                color: 'gray',
+                color: "gray",
                 font: {
-                    size: 20,
-                },
+                    size: 20
+                }
             },
             physics: {
-                solver: 'barnesHut',
+                solver: "barnesHut",
                 barnesHut: {
                     theta: 0.9,
                     gravitationalConstant: -3000,
                     centralGravity: 0,
                     springConstant: 0.01,
-                    springLength: 400,
+                    springLength: 400
                 },
                 minVelocity: 1,
                 // Set to false if you want to watch the graph stabilize when
                 // it first loads.
-                stabilization: true,
-            },
+                stabilization: true
+            }
         };
 
         this.#network = new visjs.Network(domElement, graphData, graphOpts);
@@ -1070,7 +1420,8 @@ class GraphView extends STIXContentView {
      * Get the underlying visjs Network object.  Might be useful in case one
      * wants to perform operations specific to the library.
      */
-    get graph() {
+    get graph()
+    {
         return this.#network;
     }
 
@@ -1078,7 +1429,8 @@ class GraphView extends STIXContentView {
      * Get the visjs DataSet object containing graph node data.  Useful to
      * affect changes in the graph.
      */
-    get nodeDataSet() {
+    get nodeDataSet()
+    {
         return this.#nodeDataSet;
     }
 
@@ -1086,7 +1438,8 @@ class GraphView extends STIXContentView {
      * Get the visjs DataSet object containing graph edge data.  Useful to
      * affect changes in the graph.
      */
-    get edgeDataSet() {
+    get edgeDataSet()
+    {
         return this.#edgeDataSet;
     }
 
@@ -1094,14 +1447,16 @@ class GraphView extends STIXContentView {
      * Convenience event handling method which passes through to the underlying
      * graph method.
      */
-    on(...args) {
+    on(...args)
+    {
         this.graph.on(...args);
     }
 
     /**
      * Dispose of the graph to free up resources.
      */
-    destroy() {
+    destroy()
+    {
         this.graph.destroy();
     }
 
@@ -1109,15 +1464,17 @@ class GraphView extends STIXContentView {
      * Create a visjs network groups structure.  There will be one group per
      * STIX type present in the data (except "relationship").
      */
-    #makeGroups() {
+    #makeGroups()
+    {
         let [iconURLs, defaultIconURL] = this.legendData;
 
         let groups = {};
-        for (let [stixType, iconURL] of iconURLs) {
+        for (let [stixType, iconURL] of iconURLs)
+        {
             groups[stixType] = {
-                shape: 'circularImage',
+                shape: "circularImage",
                 image: iconURL,
-                brokenImage: defaultIconURL,
+                brokenImage: defaultIconURL
             };
         }
 
@@ -1129,13 +1486,15 @@ class GraphView extends STIXContentView {
      *
      * @param stixType the STIX type whose nodes should be toggled
      */
-    toggleStixType(stixType) {
+    toggleStixType(stixType)
+    {
         let nodes = this.nodeDataSet.get({
-            filter: (item) => item.group === stixType,
-            fields: ['id', 'hidden'],
+            filter: item => item.group === stixType,
+            fields: ["id", "hidden"]
         });
 
-        if (nodes.length === 0) return;
+        if (nodes.length === 0)
+            return;
 
         this.enablePhysics();
 
@@ -1151,48 +1510,56 @@ class GraphView extends STIXContentView {
         // toggle an edge more than once!
         let toggledEdgeIds = new Set();
 
-        for (let node of nodes) {
+        for (let node of nodes)
+        {
             // Toggling the node is simple
             toggledNodes.push({
-                id: node.id,
-                hidden: hiding,
-                physics: !hiding,
+                id: node.id, hidden: hiding, physics: !hiding
             });
 
             // Toggling the edges is more complex...
             let edgesForNode = this.edgeDataSet.get({
                 // find (a) edges connecting to 'node'; (b) edges with the
                 // right visibility; (c) edges we have not already seen.
-                filter: (item) => (item.from === node.id || item.to === node.id) && !item.hidden === hiding && !toggledEdgeIds.has(item.id),
-                fields: ['id', 'from', 'to'],
+                filter: item => (item.from === node.id || item.to === node.id)
+                    && !item.hidden === hiding && !toggledEdgeIds.has(item.id),
+                fields: ["id", "from", "to"]
             });
 
-            if (hiding) {
+            if (hiding)
+            {
                 // simple case: unconditionally hide everything
-                for (let edge of edgesForNode) {
+                for (let edge of edgesForNode)
+                {
                     toggledEdges.push({
-                        id: edge.id,
-                        hidden: true,
-                        physics: false,
+                        id: edge.id, hidden: true, physics: false
                     });
                     toggledEdgeIds.add(edge.id);
                 }
-            } else {
+            }
+            else
+            {
                 // showing is a more complex case: gotta check the other ends
                 // of the edges.  Only show if the other end is also visible
                 // or of the selected type (meaning it will become visible).
-                for (let edge of edgesForNode) {
+                for (let edge of edgesForNode)
+                {
                     let otherEndId;
-                    if (edge.from === node.id) otherEndId = edge.to;
-                    else otherEndId = edge.from;
+                    if (edge.from === node.id)
+                        otherEndId = edge.to;
+                    else
+                        otherEndId = edge.from;
 
-                    let otherEndNode = this.nodeDataSet.get(otherEndId, { fields: ['group', 'hidden'] });
+                    let otherEndNode = this.nodeDataSet.get(
+                        otherEndId,
+                        {fields: ["group", "hidden"]}
+                    );
 
-                    if (!otherEndNode.hidden || otherEndNode.group === stixType) {
+                    if (!otherEndNode.hidden
+                        || otherEndNode.group === stixType)
+                    {
                         toggledEdges.push({
-                            id: edge.id,
-                            hidden: false,
-                            physics: true,
+                            id: edge.id, hidden: false, physics: true
                         });
                         toggledEdgeIds.add(edge.id);
                     }
@@ -1204,27 +1571,56 @@ class GraphView extends STIXContentView {
         this.edgeDataSet.updateOnly(toggledEdges);
     }
 
+    setVisible(ids)
+    {
+        let changedNodes = [];
+        this.nodeDataSet.forEach(function(node){
+            if (ids.has(node.id) && node.hidden)
+                // should be visible but is not
+                changedNodes.push({
+                    id: node.id,
+                    hidden: false,
+                    physics: true
+                });
+            else if (!ids.has(node.id) && !node.hidden)
+                // should be hidden but is not
+                changedNodes.push({
+                    id: node.id,
+                    hidden: true,
+                    physics: false
+                });
+        });
+
+        if (changedNodes.length > 0)
+            this.nodeDataSet.updateOnly(changedNodes);
+    }
+
+
     /**
      * Set the graph selection to the node corresponding to the given STIX ID.
      */
-    selectNode(stixId) {
+    selectNode(stixId)
+    {
         this.graph.selectNodes([stixId]);
     }
 
     /**
      * Enable physics in this graph view
      */
-    enablePhysics() {
-        this.#network.setOptions({ physics: true });
+    enablePhysics()
+    {
+        this.#network.setOptions( { physics: true } );
     }
 
     /**
      * Disable physics in this graph view
      */
-    disablePhysics() {
-        this.#network.setOptions({ physics: false });
+    disablePhysics()
+    {
+        this.#network.setOptions( { physics: false } );
     }
 }
+
 
 /**
  * Create a network edge object from the given STIX relationship object, if
@@ -1236,20 +1632,30 @@ class GraphView extends STIXContentView {
  *      Maps, containing STIX content.
  * @return An visjs network edge object, or null if one could not be created
  */
-function edgeForRelationship(stixRel, stixIdToObject) {
-    let sourceRef = stixRel.get('source_ref');
-    let targetRef = stixRel.get('target_ref');
-    let relType = stixRel.get('relationship_type');
+function edgeForRelationship(stixRel, stixIdToObject)
+{
+    let sourceRef = stixRel.get("source_ref");
+    let targetRef = stixRel.get("target_ref");
+    let relType = stixRel.get("relationship_type");
 
     let edge = null;
-    if (stixIdToObject.has(sourceRef) && stixIdToObject.has(targetRef)) {
+    if (stixIdToObject.has(sourceRef) && stixIdToObject.has(targetRef))
+    {
         // check STIX types just in case
         if (isStixIdValidForNode(sourceRef) && isStixIdValidForNode(targetRef))
-            edge = makeEdgeObject(sourceRef, targetRef, relType, stixRel.get('id'));
-    } else console.warn('Skipped relationship %s %s %s: missing endpoint object(s)', sourceRef, relType, targetRef);
+            edge = makeEdgeObject(
+                sourceRef, targetRef, relType, stixRel.get("id")
+            );
+    }
+    else
+        console.warn(
+            "Skipped relationship %s %s %s: missing endpoint object(s)",
+            sourceRef, relType, targetRef
+        );
 
     return edge;
 }
+
 
 /**
  * Generate values from stixValue according to the given path.
@@ -1295,32 +1701,49 @@ function edgeForRelationship(stixRel, stixIdToObject) {
  *      path component is the first one.  The initial call should let this
  *      parameter default to -1.
  */
-function* getValuesAtPath(stixValue, propPath, index = -1) {
-    if (Array.isArray(stixValue)) {
+function* getValuesAtPath(stixValue, propPath, index=-1)
+{
+    if (Array.isArray(stixValue))
+    {
         // pass-through array elements
-        for (let elt of stixValue) yield* getValuesAtPath(elt, propPath, index);
-    } else if (stixValue instanceof Map) {
-        let nextDotIdx = propPath.indexOf('.', index + 1);
+        for (let elt of stixValue)
+            yield* getValuesAtPath(elt, propPath, index);
+    }
+
+    else if (stixValue instanceof Map)
+    {
+        let nextDotIdx = propPath.indexOf(".", index+1);
         let pathStep;
 
-        if (nextDotIdx === -1) pathStep = propPath.substring(index + 1);
-        else pathStep = propPath.substring(index + 1, nextDotIdx);
+        if (nextDotIdx === -1)
+            pathStep = propPath.substring(index+1);
+        else
+            pathStep = propPath.substring(index+1, nextDotIdx);
 
-        if (pathStep.length > 0) {
-            if (stixValue.has(pathStep)) {
+        if (pathStep.length > 0)
+        {
+            if (stixValue.has(pathStep))
+            {
                 let propValue = stixValue.get(pathStep);
 
-                if (nextDotIdx === -1) {
+                if (nextDotIdx === -1)
+                {
                     // End of path; just yield whatever we have
-                    if (Array.isArray(propValue)) yield* propValue;
-                    else yield propValue;
-                } else yield* getValuesAtPath(propValue, propPath, nextDotIdx);
+                    if (Array.isArray(propValue))
+                        yield* propValue;
+                    else
+                        yield propValue;
+                }
+                else
+                    yield* getValuesAtPath(propValue, propPath, nextDotIdx);
             }
-        } else if (nextDotIdx !== -1)
+        }
+        else if (nextDotIdx !== -1)
             // Ignore empty path steps, e.g. two adjacent dots.
             yield* getValuesAtPath(stixValue, propPath, nextDotIdx);
     }
 }
+
 
 /**
  * Search a STIX object according to embedded relationship information
@@ -1334,31 +1757,45 @@ function* getValuesAtPath(stixValue, propPath, index = -1) {
  *      to create the edges.
  * @return An array of edge objects
  */
-function edgesFromPropertyPaths(stixObject, stixIdToObject, relInfo) {
-    let sourceId = stixObject.get('id');
+function edgesFromPropertyPaths(stixObject, stixIdToObject, relInfo)
+{
+    let sourceId = stixObject.get("id");
     let edges = [];
 
-    for (let [propPath, edgeLabel, forward] of relInfo) {
-        for (let ref of getValuesAtPath(stixObject, propPath)) {
-            if (isStixIdValidForNode(ref)) {
-                if (stixIdToObject.has(ref)) {
+    for (let [propPath, edgeLabel, forward] of relInfo)
+    {
+        for (let ref of getValuesAtPath(stixObject, propPath))
+        {
+            if (isStixIdValidForNode(ref))
+            {
+                if (stixIdToObject.has(ref))
+                {
                     let edgeSrc, edgeDst;
 
                     // "forward" edge direction is referrer->referent
                     // "backward" is referent->referrer
-                    if (forward) [edgeSrc, edgeDst] = [sourceId, ref];
-                    else [edgeSrc, edgeDst] = [ref, sourceId];
+                    if (forward)
+                        [edgeSrc, edgeDst] = [sourceId, ref];
+                    else
+                        [edgeSrc, edgeDst] = [ref, sourceId];
 
                     let edge = makeEdgeObject(edgeSrc, edgeDst, edgeLabel);
 
                     edges.push(edge);
-                } else console.warn('Skipped embedded relationship %s %s %s: target object' + ' missing', sourceId, propPath, ref);
+                }
+                else
+                    console.warn(
+                        "Skipped embedded relationship %s %s %s: target object"
+                        + " missing",
+                        sourceId, propPath, ref
+                    );
             }
         }
     }
 
     return edges;
 }
+
 
 /**
  * Create visjs network edges for embedded relationships within the given
@@ -1371,8 +1808,9 @@ function edgesFromPropertyPaths(stixObject, stixIdToObject, relInfo) {
  *      embedded relationships
  * @return An array of edge objects
  */
-function edgesForEmbeddedRelationships(stixObject, stixIdToObject, config = null) {
-    let stixType = stixObject.get('type');
+function edgesForEmbeddedRelationships(stixObject, stixIdToObject, config=null)
+{
+    let stixType = stixObject.get("type");
 
     let typeAgnosticRels = embeddedRelationships.get(null);
     let typeSpecificRels = embeddedRelationships.get(stixType);
@@ -1380,33 +1818,56 @@ function edgesForEmbeddedRelationships(stixObject, stixIdToObject, config = null
     let userTypeAgnosticRels = null;
     let userTypeSpecificRels = null;
 
-    if (config) {
+    if (config)
+    {
         // Can't have null keys in JSON or javascript (plain objects), so use
         // an empty string.  Put type-agnostic config there.
-        if (config.has('')) {
-            let typeConfig = config.get('');
-            if (typeConfig.has('embeddedRelationships')) userTypeAgnosticRels = typeConfig.get('embeddedRelationships');
+        if (config.has(""))
+        {
+            let typeConfig = config.get("");
+            if (typeConfig.has("embeddedRelationships"))
+                userTypeAgnosticRels = typeConfig.get("embeddedRelationships");
         }
 
-        if (config.has(stixType)) {
+        if (config.has(stixType))
+        {
             let typeConfig = config.get(stixType);
-            if (typeConfig.has('embeddedRelationships')) userTypeSpecificRels = typeConfig.get('embeddedRelationships');
+            if (typeConfig.has("embeddedRelationships"))
+                userTypeSpecificRels = typeConfig.get("embeddedRelationships");
         }
     }
 
     let allRels = [];
 
-    if (typeAgnosticRels) allRels.push(...typeAgnosticRels);
+    if (typeAgnosticRels)
+        allRels.push(...typeAgnosticRels);
 
-    if (typeSpecificRels) allRels.push(...typeSpecificRels);
+    if (typeSpecificRels)
+        allRels.push(...typeSpecificRels);
 
-    if (userTypeAgnosticRels) allRels.push(...userTypeAgnosticRels);
+    if (userTypeAgnosticRels)
+        allRels.push(...userTypeAgnosticRels);
 
-    if (userTypeSpecificRels) allRels.push(...userTypeSpecificRels);
+    if (userTypeSpecificRels)
+        allRels.push(...userTypeSpecificRels);
 
     let edges = edgesFromPropertyPaths(stixObject, stixIdToObject, allRels);
 
     return edges;
+}
+
+function selectObservedDataNodes(stixNodes)
+{
+    let listOfObservedDataNodes = [];
+
+    for (let object of stixNodes)
+    {
+        if (object.get("type") === 'observed-data')
+        {
+            listOfObservedDataNodes.push(object);
+        }
+    }
+    return listOfObservedDataNodes;
 }
 
 /**
@@ -1419,7 +1880,9 @@ function edgesForEmbeddedRelationships(stixObject, stixIdToObject, config = null
  *      null to use defaults
  * @return 2-tuple consisting of an array of nodes and array of edges.
  */
-function makeNodesAndEdges(stixIdToObject, config = null) {
+function makeNodesAndEdges(stixIdToObject, config=null)
+{
+    let stixNodes = stixIdToObject.values();
     // List of graph nodes, where each list element is whatever visjs needs
     // to represent the node.  This is a plain javascript object with an
     // "id" property at least, to identify the node.
@@ -1439,21 +1902,31 @@ function makeNodesAndEdges(stixIdToObject, config = null) {
     // Map STIX IDs to the node names we use in the graph.
     let stixIdToName = new Map();
 
-    for (let object of stixIdToObject.values()) {
-        let stixType = object.get('type');
+    let observedDataNodes = selectObservedDataNodes(stixNodes)
 
-        if (stixType === 'relationship') {
+    for (let object of stixIdToObject.values())
+    {
+        let stixType = object.get("type");
+
+        if (stixType === "relationship")
+        {
             let edge = edgeForRelationship(object, stixIdToObject);
 
-            if (edge) edges.push(edge);
+            if (edge)
+                edges.push(edge);
         }
         // check STIX type for suitability just in case
-        else if (isStixTypeValidForNode(stixType)) {
-            let name = nameForStixObject(object, stixIdToName, nameCounts, config);
-            let node = makeNodeObject(name, object);
+        else if (isStixTypeValidForNode(stixType))
+        {
+            let name = nameForStixObject(
+                object, stixIdToName, nameCounts, config
+            );
+            let node = makeNodeObject(name, object, observedDataNodes, config);
             nodes.push(node);
 
-            let embeddedRelEdges = edgesForEmbeddedRelationships(object, stixIdToObject, config);
+            let embeddedRelEdges = edgesForEmbeddedRelationships(
+                object, stixIdToObject, config
+            );
 
             // Seems like there ought to be a better way to extend one array
             // with the contents of another.
@@ -1464,6 +1937,7 @@ function makeNodesAndEdges(stixIdToObject, config = null) {
     return [nodes, edges];
 }
 
+
 /**
  * Handler for when graph stabilizes: disable physics so that dragging a node
  * only moves that node and all others stay where they are.
@@ -1472,9 +1946,11 @@ function makeNodesAndEdges(stixIdToObject, config = null) {
  * took to stabilize the graph
  * @param view the visjs Graphview instance
  */
-function stabilizedHandler(event, view) {
+function stabilizedHandler(event, view)
+{
     view.disablePhysics();
 }
+
 
 /**
  * Filter STIX objects according to criteria in the given config.  The config
@@ -1490,19 +1966,27 @@ function stabilizedHandler(event, view) {
  * @param config Configuration data, as a Map
  * @return An array containing STIX objects which passed the filters
  */
-function filterStixObjects(stixObjects, config) {
-    if (config.has('include')) {
-        let filterCriteria = config.get('include');
-        stixObjects = stixObjects.filter((obj) => mongoishMatchObject(obj, filterCriteria));
+function filterStixObjects(stixObjects, config)
+{
+    if (config.has("include"))
+    {
+        let filterCriteria = config.get("include");
+        stixObjects = stixObjects.filter(
+            obj => mongoishMatchObject(obj, filterCriteria)
+        );
     }
 
-    if (config.has('exclude')) {
-        let filterCriteria = config.get('exclude');
-        stixObjects = stixObjects.filter((obj) => !mongoishMatchObject(obj, filterCriteria));
+    if (config.has("exclude"))
+    {
+        let filterCriteria = config.get("exclude");
+        stixObjects = stixObjects.filter(
+            obj => !mongoishMatchObject(obj, filterCriteria)
+        );
     }
 
     return stixObjects;
 }
+
 
 /**
  * Make graph data from the given STIX content.
@@ -1515,22 +1999,28 @@ function filterStixObjects(stixObjects, config) {
  *      STIX content as a Map instance from STIX ID to a Map instance
  *      containing a STIX object.
  */
-function makeGraphData(stixContent, config = null) {
-    if (config !== null) config = normalizeConfig(config);
+function makeGraphData(stixContent, config=null)
+{
+    if (config !== null)
+        config = normalizeConfig(config);
+
 
     let stixObjects = normalizeContent(stixContent);
     stixObjects = filterStixObjects(stixObjects, config);
 
     let stixIdToObject = new Map();
 
-    for (let object of stixObjects) stixIdToObject.set(object.get('id'), object);
+    for (let object of stixObjects)
+        stixIdToObject.set(object.get("id"), object);
 
     let [nodes, edges] = makeNodesAndEdges(stixIdToObject, config);
+
     let nodeDataSet = new visjs.DataSet(nodes);
     let edgeDataSet = new visjs.DataSet(edges);
 
     return [nodeDataSet, edgeDataSet, stixIdToObject];
 }
+
 
 /**
  * Create a graph view of the given data.  The content will be added to the
@@ -1551,21 +2041,37 @@ function makeGraphData(stixContent, config = null) {
  * @return The graph view object.  May be used perform certain actions on the
  *      view, e.g. dispose of it.
  */
-function makeGraphView(domElement, nodeDataSet, edgeDataSet, stixIdToObject, config = null) {
-    let view = new GraphView(visjs, domElement, nodeDataSet, edgeDataSet, stixIdToObject, config);
+function makeGraphView(
+    domElement, nodeDataSet, edgeDataSet, stixIdToObject, config=null
+)
+{
+    let view = new GraphView(
+        domElement, nodeDataSet, edgeDataSet, stixIdToObject, config
+    );
 
     // Add some handlers to enable some hard-coded behavior.
-    view.on('stabilized', (e) => stabilizedHandler(e, view));
+    view.on("stabilized", e => stabilizedHandler(e, view));
 
     return view;
 }
 
-function makeListView(domElement, nodeDataSet, edgeDataSet, stixIdToObject, config) {
-    return new ListView(domElement, nodeDataSet, edgeDataSet, stixIdToObject, config);
+/**
+ * Create and return an object which is this file's module.
+ */
+function makeModule()
+{
+    let module = {
+        makeGraphData: (stixContent, config=null) =>
+            makeGraphData(stixContent, config),
+        //@ts-ignore
+        makeGraphView: (...args) => makeGraphView(...args),
+        //@ts-ignore
+        makeListView: (...args) => new ListView(...args)
+    };
+
+    return module;
 }
 
 export default {
-    makeGraphData,
-    makeListView,
-    makeGraphView,
+    makeModule
 };
