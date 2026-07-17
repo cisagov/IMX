@@ -1,3 +1,9 @@
+## [4.5.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.2...v4.5.3) (2026-07-17)
+
+### Bug Fixes
+
+* update stix visualizer to the most up to date version ([ef2bed9](https://git.va.th.ten/eos/cde/tie/imx/commit/ef2bed9ce78a9685582781395ec8eee5b0830b9f))
+
 ## [4.5.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.1...v4.5.2) (2026-07-14)
 
 ### Bug Fixes
