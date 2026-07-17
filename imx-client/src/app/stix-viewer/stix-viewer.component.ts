@@ -38,7 +38,7 @@ export class StixViewerComponent implements OnInit, OnDestroy {
             this.vizStixWrapper(
                 {
                     type: 'bundle',
-                    spec_version: '2.0',
+                    spec_version: '2.1',
                     objects: this.stixService.objectsToLoad,
                 },
                 null
@@ -48,7 +48,7 @@ export class StixViewerComponent implements OnInit, OnDestroy {
                 {
                     type: 'bundle',
                     id: 'bundle',
-                    spec_version: '2.0',
+                    spec_version: '2.1',
                     objects: [...this.stixService.bundle.objects, ...this.stixService.customObjects],
                 },
                 null
@@ -137,17 +137,18 @@ export class StixViewerComponent implements OnInit, OnDestroy {
         customConfig.iconDir = './assets/icons';
 
         try {
-            let [nodeDataSet, edgeDataSet, stixIdToObject] = stix2viz.makeGraphData(content, customConfig);
-
+            const modules = stix2viz.makeModule();
+            let [nodeDataSet, edgeDataSet, stixIdToObject] = modules.makeGraphData(JSON.stringify(content), customConfig);
+            
             this.wantsList = false;
             if (nodeDataSet.length > 200)
                 this.wantsList = confirm('This graph contains ' + nodeDataSet.length.toString() + ' nodes.  Do you wish to display it as a list?');
 
             if (this.wantsList) {
-                this.view = stix2viz.makeListView(this.canvas, nodeDataSet, edgeDataSet, stixIdToObject, customConfig);
+                this.view = modules.makeListView(this.canvas, nodeDataSet, edgeDataSet, stixIdToObject, customConfig);
                 this.view.on('click', (e) => this.listViewClickHandler(e, edgeDataSet, stixIdToObject));
             } else {
-                this.view = stix2viz.makeGraphView(this.canvas, nodeDataSet, edgeDataSet, stixIdToObject, customConfig);
+                this.view = modules.makeGraphView(this.canvas, nodeDataSet, edgeDataSet, stixIdToObject, customConfig);
                 this.view.on('click', (e) => this.graphViewClickHandler(e, edgeDataSet, stixIdToObject));
             }
 
