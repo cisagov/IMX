@@ -1,3 +1,9 @@
+## 4.5.3 (2026-07-17)
+
+### Bug Fixes
+
+* update stix visualizer to the most up to date version ef2bed9
+
 ## 4.5.2 (2026-07-14)
 
 ### Bug Fixes
