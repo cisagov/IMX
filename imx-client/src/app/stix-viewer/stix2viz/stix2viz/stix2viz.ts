@@ -96,9 +96,9 @@ let embeddedRelationships = new Map([
     ]],
     // added for Incident and other IRF extensions
     ["impact", [
-         [ "impacted_refs", "impacted_by", false ] 
+         [ "impacted_refs", "impacted_by", false ]
     ]],
-    ["incident", [ 
+    ["incident", [
          [ "extensions.extension-definition--ef765651-680c-498d-9894-99799f2fa126.event_refs", "has_event", true],
          [ "extensions.extension-definition--ef765651-680c-498d-9894-99799f2fa126.impact_refs", "has_impact", true],
          [ "extensions.extension-definition--ef765651-680c-498d-9894-99799f2fa126.task_refs", "has_task", true]
@@ -114,7 +114,7 @@ let embeddedRelationships = new Map([
         [ "extensions.extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498.email_addresses.email_address_ref", "email_addr", true],
         [ "extensions.extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498.social_media_accounts.user_account_ref", "user_account", true]
     ]]
-    
+
 ]);
 
 
@@ -807,7 +807,7 @@ function makeEdgeObject(sourceRef, targetRef, label, stixId=null)
     return edge;
 }
 
-const timelineTimestamps = {                                   
+const timelineTimestamps = {
     "attack-pattern": ["modified", "created"],
     "campaign": ["last_seen", "first_seen", "modified", "created"],
     "course-of-action": ["modified", "created"],
@@ -842,7 +842,7 @@ const timelineTimestamps = {
  * @param config Config data used for specifying timeline timestamps; null
  *      to use default settings (a Map instance)
  * @return A Date object
- * 
+ *
  */
 
 function determineTimestampFromConfig(stixObject, stixType, config)
@@ -863,7 +863,7 @@ function determineTimestampFromConfig(stixObject, stixType, config)
  * @param timestampList List of properties to be considered for the timestamp, in order of their consideration
  *
  * @return A Date object
- * 
+ *
  */
 
 function determineTimestamp(stixObject, timestampList)
@@ -883,7 +883,7 @@ function determineTimestamp(stixObject, timestampList)
  *      needed for configuring the node
  * @param observedDataNodes The observed-data STIX objects in the graph
  * @return A Date object
- * 
+ *
  */
 
 function determineTimestampForSCO(stixObject, observedDataNodes)
@@ -909,7 +909,7 @@ function determineTimestampForSCO(stixObject, observedDataNodes)
  * @param config Config data used for specifying timeline timestamps; null
  *      to use default settings (a Map instance)
  * @return A node object
- * 
+ *
  * Easier to work with epoch milliseconds in javascript, since Date objects
  * don't seem to have any nice natural way to compare them.
  */
@@ -941,7 +941,7 @@ function makeNodeObject(name, stixObject, observedDataNodes, config=null)
     if (node.version === null && observedDataNodes.length > 0)
         // still null, maybe it is an SCO
         node.version = determineTimestampForSCO(stixObject, observedDataNodes)
-    
+
         return node;
 }
 
@@ -1062,7 +1062,7 @@ function normalizeContent(stixContent)
 
     try
     {
-        stixContent = parseToMap(stixContent);   
+        stixContent = parseToMap(stixContent);
     }
     catch (err)
     {
@@ -1862,12 +1862,12 @@ function selectObservedDataNodes(stixNodes)
 
     for (let object of stixNodes)
     {
-        if (object.get("type") === 'observed-data') 
+        if (object.get("type") === 'observed-data')
         {
             listOfObservedDataNodes.push(object);
         }
     }
-    return listOfObservedDataNodes;      
+    return listOfObservedDataNodes;
 }
 
 /**
@@ -1881,7 +1881,7 @@ function selectObservedDataNodes(stixNodes)
  * @return 2-tuple consisting of an array of nodes and array of edges.
  */
 function makeNodesAndEdges(stixIdToObject, config=null)
-{   
+{
     let stixNodes = stixIdToObject.values();
     // List of graph nodes, where each list element is whatever visjs needs
     // to represent the node.  This is a plain javascript object with an
