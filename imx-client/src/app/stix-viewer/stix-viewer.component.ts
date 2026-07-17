@@ -139,7 +139,7 @@ export class StixViewerComponent implements OnInit, OnDestroy {
         try {
             const modules = stix2viz.makeModule();
             let [nodeDataSet, edgeDataSet, stixIdToObject] = modules.makeGraphData(JSON.stringify(content), customConfig);
-            
+
             this.wantsList = false;
             if (nodeDataSet.length > 200)
                 this.wantsList = confirm('This graph contains ' + nodeDataSet.length.toString() + ' nodes.  Do you wish to display it as a list?');
