@@ -32,6 +32,7 @@ export interface VtDataInput {}
 
 type IpRelationKey = 'resolutions' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
 type DomainRelationKey = 'resolutions' | 'subdomains' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
+type UrlRelationKey = 'servingIp';
 
 @Component({
     selector: 'app-vt-dialog',
@@ -225,6 +226,9 @@ export class VtDialogComponent {
             url: string;
             urlResult: any;
             hasData: boolean;
+            relations?: {
+                servingIp?: { data: any; loading: boolean; loadingMore: boolean; error?: string; cursor: string | null };
+            };
         }
     > = new Map();
 
@@ -899,6 +903,8 @@ export class VtDialogComponent {
         try {
             const results = await Promise.all(promises);
 
+            const relationPromises: Promise<void>[] = [];
+
             results.forEach((result) => {
                 if (result && result.success) {
                     if (result.vtData) {
@@ -907,6 +913,10 @@ export class VtDialogComponent {
                             urlResult: result.vtData.urlResult,
                             hasData: result.vtData.hasData,
                         });
+
+                        if (result.vtData.hasData) {
+                            relationPromises.push(this.loadAllUrlRelations(result.vtData.url));
+                        }
                     }
 
                     if (result.urlObj) {
@@ -919,6 +929,8 @@ export class VtDialogComponent {
                     }
                 }
             });
+
+            await Promise.all(relationPromises);
 
             const allErrors = results.filter((r) => r && r.errors && r.errors.length > 0).flatMap((r) => r.errors);
 
@@ -2254,6 +2266,11 @@ export class VtDialogComponent {
                         }
                         break;
                     case 'domain-name':
+                        if (obj.value) {
+                            values.push(obj.value);
+                        }
+                        break;
+                    case 'url':
                         if (obj.value) {
                             values.push(obj.value);
                         }
@@ -3817,6 +3834,51 @@ export class VtDialogComponent {
         }
     }
 
+    // ─── URL Relations (tier-agnostic; degrade to N/A when unavailable) ──────
+
+    private getUrlRelation(url: string, key: UrlRelationKey): any {
+        return this.vtResultsByUrl.get(url)?.relations?.[key];
+    }
+
+    private async loadUrlRelation(
+        url: string,
+        key: UrlRelationKey,
+        label: string,
+        fetchData: (url: string) => Promise<any>
+    ): Promise<void> {
+        const vtResult = this.vtResultsByUrl.get(url);
+        if (!vtResult) return;
+        if (!vtResult.relations) vtResult.relations = {};
+        if (vtResult.relations[key]?.data !== undefined) return;
+
+        vtResult.relations[key] = { data: null, loading: true, loadingMore: false, cursor: null };
+        this.vtResultsByUrl.set(url, vtResult);
+
+        try {
+            const result: any = await fetchData(url);
+            if (result?.data) {
+                vtResult.relations[key]!.data = result;
+                vtResult.relations[key]!.cursor = result.meta?.cursor || null;
+            } else if (result?.message) {
+                // Includes the Enterprise-gated 403 case surfaced by the server as a message.
+                vtResult.relations[key]!.data = null;
+                vtResult.relations[key]!.error = result.message;
+            }
+        } catch (e) {
+            console.error(`Error fetching ${label} for ${url}:`, e);
+            vtResult.relations[key]!.error = `Error fetching ${label}: ${e}`;
+        } finally {
+            vtResult.relations[key]!.loading = false;
+            this.vtResultsByUrl.set(url, vtResult);
+        }
+    }
+
+    async loadAllUrlRelations(url: string): Promise<void> {
+        await Promise.all([
+            this.loadUrlRelation(url, 'servingIp', 'serving IP', (u) => this.vtSearchService.postVtUrlServingIp(u)),
+        ]);
+    }
+
     // ─── URL Display Helpers ────────────────────────────────────────────────
 
     private getUrlAttributes(url: string): any {
@@ -3863,10 +3925,14 @@ export class VtDialogComponent {
         }
     }
     getUrlServingIp(url: string): string {
-        return this.getUrlAttributes(url)?.last_serving_ip_address || '';
+        // From the last_serving_ip_address relationship (Everyone-tier); falls back to base attr if present.
+        const relData = this.getUrlRelation(url, 'servingIp')?.data?.data;
+        return relData?.id || relData?.attributes?.ip_address || this.getUrlAttributes(url)?.last_serving_ip_address || '';
     }
     getUrlCountry(url: string): string {
-        return this.countryCodeToName(this.getUrlAttributes(url)?.proxy_country);
+        // Prefer the serving IP's country; fall back to the base object's proxy_country (e.g. "US").
+        const servingCountry = this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.country;
+        return this.countryCodeToName(servingCountry || this.getUrlAttributes(url)?.proxy_country);
     }
     getUrlStatusCode(url: string): number | null {
         return this.getUrlAttributes(url)?.last_http_response_code ?? null;
