@@ -4045,6 +4045,27 @@ export class VtDialogComponent {
         ];
     }
 
+    getUrlConsoleMessages(url: string): { sourceFile: string; source: string; level: string; message: string }[] {
+        const msgs = this.getUrlAttributes(url)?.console_messages;
+        if (!Array.isArray(msgs)) return [];
+        return msgs.map((m: any) => ({
+            sourceFile: m?.source_file ?? '',
+            source: 'Javascript',
+            level: (m?.level ?? '').replace('LOG_LEVEL_', '').toLowerCase() || '-',
+            message: m?.content ?? '',
+        }));
+    }
+    consoleLevelBadgeClass(level: string): string {
+        switch (level) {
+            case 'error':
+                return 'bg-danger';
+            case 'warning':
+                return 'bg-warning text-dark';
+            default:
+                return 'bg-secondary';
+        }
+    }
+
     getHashType(hash: string): string {
         const length = hash.length;
         switch (length) {
