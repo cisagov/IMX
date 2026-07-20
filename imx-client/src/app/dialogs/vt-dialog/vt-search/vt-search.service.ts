@@ -311,6 +311,26 @@ export class VtSearchService {
         });
     }
 
+    getUrlServingIpPath = '/get-url-serving-ip';
+
+    async postVtUrlServingIp(url: string) {
+        this.headers['Content-Type'] = 'application/json';
+        let body = { url: url };
+
+        return new Promise((resolve, reject) => {
+            this.httpClient.post(`${this.imxServerUrl}${this.getUrlServingIpPath}`, body, { headers: this.headers }).subscribe({
+                next: (data) => resolve(data),
+                error: (error) => {
+                    if (error.status === 404 || error.status === 403) {
+                        resolve({ message: 'No serving IP available for this URL', status: error.status, data: null });
+                    } else {
+                        reject(error);
+                    }
+                },
+            });
+        });
+    }
+
     async postVtDomainResolutions(domain: string, limit: number = 40, cursor: string | null = null) {
         this.headers['Content-Type'] = 'application/json';
         let body: any = { domain: domain, limit: limit };

@@ -216,6 +216,24 @@ const getUrl = async function(url) {
     })
 }
 
+const getUrlLastServingIp = async function(url) {
+    return new Promise((resolve, reject) => {
+        const urlId = Buffer.from(url).toString('base64url')
+        let vtUrl = `${process.env.VIRUS_TOTAL_URL}api/v3/urls/${urlId}/last_serving_ip_address`
+
+        let options = getOptions()
+
+        axios.get(vtUrl, options)
+            .then((resp) => {
+                resolve(resp)
+            })
+            .catch((err) => {
+                console.error(err)
+                reject(err)
+            })
+    })
+}
+
 const getDomainResolutions = async function(domain, limit = 40, cursor = null) {
     return new Promise((resolve, reject) => {
         let url = `${process.env.VIRUS_TOTAL_URL}api/v3/domains/${domain}/resolutions?limit=${limit}`
@@ -359,4 +377,4 @@ const getSigmaRule = async function(ruleId) {
     })
 }
 
-module.exports = { getHash, getIp, testConnection, getIpResolutions, getIpCommunicatingFiles, getIpReferrerFiles, getIpHistoricalWhois, getIpHistoricalSslCerts, getSigmaRule, getDomain, getUrl, getDomainResolutions, getDomainCommunicatingFiles, getDomainReferrerFiles, getDomainSubdomains, getDomainHistoricalWhois, getDomainHistoricalSslCerts }
+module.exports = { getHash, getIp, testConnection, getIpResolutions, getIpCommunicatingFiles, getIpReferrerFiles, getIpHistoricalWhois, getIpHistoricalSslCerts, getSigmaRule, getDomain, getUrl, getUrlLastServingIp, getDomainResolutions, getDomainCommunicatingFiles, getDomainReferrerFiles, getDomainSubdomains, getDomainHistoricalWhois, getDomainHistoricalSslCerts }
