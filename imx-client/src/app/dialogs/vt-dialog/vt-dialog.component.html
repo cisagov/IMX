@@ -4179,10 +4179,41 @@
                                                         }
                                                     </div>
 
-                                                    <!-- Network Requests / HTTPs Transactions -->
+                                                    <!-- HTML Info -->
+                                                    @if (getUrlHtmlMeta(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">HTML Info</h5>
+                                                            <div class="vt-properties section-content">
+                                                                <span class="vt-property-label">Title:</span>
+                                                                <span class="vt-property-value">{{ getUrlTitle(url) || 'Not Found' }}</span>
+                                                                <h6 class="vt-section-header mb-3 mt-4">Meta Tags</h6>
+                                                                @for (meta of getUrlHtmlMeta(url); track meta.name) {
+                                                                    <div class="vt-property-row">
+                                                                        <span class="vt-property-label">{{ meta.name }}:</span>
+                                                                        <span class="vt-property-value" style="word-break: break-all">{{ meta.value }}</span>
+                                                                    </div>
+                                                                }
+
+                                                                <h6 class="vt-section-header mb-3 mt-4">Trackers</h6>
+                                                                <div class="vt-property-row">
+                                                                    <span class="vt-property-value">
+                                                                        @if (getUrlTrackers(url).length > 0) {
+                                                                            @for (tracker of getUrlTrackers(url); track tracker) {
+                                                                                <span class="badge bg-secondary me-1">{{ tracker }}</span>
+                                                                            }
+                                                                        } @else {
+                                                                            Not Found
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- Network Requests / HTTPS Transactions -->
                                                     <div class="vt-section mb-4">
-                                                        <h5 class="vt-section-header mb-3">Network Requests / HTTPs Transactions</h5>
-                                                        <div class="scrollable-table-container">
+                                                        <h5 class="vt-section-header mb-3">Network Requests / HTTPS Transactions</h5>
+                                                        <div class="scrollable-table-container auto-height">
                                                             <table class="whois-table network-requests-table">
                                                                 <thead>
                                                                     <tr>
