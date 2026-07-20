@@ -4270,6 +4270,35 @@
                                                             </div>
                                                         </div>
                                                     }
+
+                                                    <!-- Console Messages -->
+                                                    @if (getUrlConsoleMessages(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">Console Messages</h5>
+                                                            <div class="scrollable-table-container">
+                                                                <table class="whois-table console-messages-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>URL/Text</th>
+                                                                            <th>Source</th>
+                                                                            <th>Level</th>
+                                                                            <th>Message</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @for (msg of getUrlConsoleMessages(url); track $index) {
+                                                                            <tr>
+                                                                                <td style="word-break: break-all">{{ msg.sourceFile || '—' }}</td>
+                                                                                <td><span class="badge bg-secondary">{{ msg.source }}</span></td>
+                                                                                <td><span class="badge" [ngClass]="consoleLevelBadgeClass(msg.level)">{{ msg.level }}</span></td>
+                                                                                <td style="word-break: break-all">{{ msg.message }}</td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 }
                                             } @else {
                                                 <div class="alert alert-warning">No data found for this URL.</div>

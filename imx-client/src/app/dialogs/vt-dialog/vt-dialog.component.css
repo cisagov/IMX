@@ -692,6 +692,32 @@ table {
     text-align: left;
 }
 
+/* Console Messages (4-column) */
+.scrollable-table-container .console-messages-table th,
+.scrollable-table-container .console-messages-table td {
+    padding: 9px 14px;
+}
+.scrollable-table-container .console-messages-table th:nth-child(1),
+.scrollable-table-container .console-messages-table td:nth-child(1) {
+    width: 45%;
+    text-align: left;
+}
+.scrollable-table-container .console-messages-table th:nth-child(2),
+.scrollable-table-container .console-messages-table td:nth-child(2) {
+    width: 12%;
+    text-align: left;
+}
+.scrollable-table-container .console-messages-table th:nth-child(3),
+.scrollable-table-container .console-messages-table td:nth-child(3) {
+    width: 10%;
+    text-align: left;
+}
+.scrollable-table-container .console-messages-table th:nth-child(4),
+.scrollable-table-container .console-messages-table td:nth-child(4) {
+    width: 33%;
+    text-align: left;
+}
+
 .whois-table {
     width: 100%;
     border-collapse: separate;
