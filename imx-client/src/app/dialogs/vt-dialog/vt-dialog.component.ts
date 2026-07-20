@@ -3953,6 +3953,19 @@ export class VtDialogComponent {
         return this.getUrlAttributes(url)?.tags ?? [];
     }
 
+    getUrlHtmlMeta(url: string): { name: string; value: string }[] {
+        const meta = this.getUrlAttributes(url)?.html_meta;
+        if (!meta) return [];
+        return Object.entries(meta).map(([name, values]: [string, any]) => ({
+            name,
+            value: Array.isArray(values) ? values.join(', ') : String(values),
+        }));
+    }
+    getUrlTrackers(url: string): string[] {
+        const trackers = this.getUrlAttributes(url)?.trackers;
+        return trackers ? Object.keys(trackers) : [];
+    }
+
     getUrlFirstSubmission(url: string): number | null {
         return this.getUrlAttributes(url)?.first_submission_date ?? null;
     }

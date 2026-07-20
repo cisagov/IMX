@@ -623,6 +623,12 @@ table {
     min-height: 400px;
 }
 
+/* Fixed-size tables that hold a single row (e.g. URL Network Requests) size to content */
+.scrollable-table-container.auto-height {
+    min-height: 0;
+    max-height: none;
+}
+
 .scrollable-table-container .whois-table th:nth-child(1),
 .scrollable-table-container .whois-table td:nth-child(1) {
     width: 25%;
