@@ -15,8 +15,8 @@
                     <span>VirusTotal Report</span>
                     <div class="vt-search-summary">
                         {{ searchedHashCount }} hash{{ searchedHashCount !== 1 ? 'es' : '' }}, {{ searchedDomainCount }} domain{{ searchedDomainCount !== 1 ? 's' : '' }},
-                        {{ searchedUrlCount }} URL{{ searchedUrlCount !== 1 ? 's' : '' }} searched,
-                        {{ searchedIpCount }} IP{{searchedIpCount !== 1 ? 's' : '' }}
+                        {{ searchedUrlCount }} URL{{ searchedUrlCount !== 1 ? 's' : '' }},
+                        {{ searchedIpCount }} IP{{searchedIpCount !== 1 ? 's' : '' }} searched
                         @if (searchedIpCount > 0) {
                             ({{ searchedIpv4Count }} IPv4, {{ searchedIpv6Count }} IPv6)
                         }
