@@ -1,3 +1,13 @@
+## [4.8.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.7.0...v4.8.0) (2026-07-21)
+
+### Features
+
+* show loading indicator when processing uploaded file ([8a4d4f2](https://git.va.th.ten/eos/cde/tie/imx/commit/8a4d4f2bb340371ede8b468ab7550a33b19ef02c))
+
+### Bug Fixes
+
+* update old sdo schemas to the most updated schemas ([d0ac892](https://git.va.th.ten/eos/cde/tie/imx/commit/d0ac892e79e6c098d94ee75a489c09f757a30d8a))
+
 ## [4.7.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.6.0...v4.7.0) (2026-07-21)
 
 ### Features
