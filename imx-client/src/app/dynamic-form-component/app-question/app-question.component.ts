@@ -905,7 +905,7 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
 
                 let found = false;
                 for (let ref of this.stixService.externalReferences) {
-                    if (ref.external_id === item.external_id) {
+                    if (ref.external_id === item.external_reference.external_id) {
                         found = true;
                         break;
                     }
@@ -943,6 +943,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         if (this.envService.env.decider.url.includes('localhost')) domain = 'localhost';
         else {
             domain = deciderHostArr.join('.');
+            domain = domain.replace('/', '');
+            domain = `.${domain}`;
         }
 
         return domain;
@@ -951,9 +953,9 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
     async openDeciderTool(): Promise<void> {
         let domain = this.getDeciderDomain();
 
-        document.cookie = `imx_attack_patterns=; Max-Age=0; domain=${domain};`;
+        document.cookie = `imx_attack_patterns=; expires=Thu, 01 Jan 9070 00:00:00 GMT; path=/; domain=${domain}; SameSite=None; Secure`;
         let result = await this.decider.openDeciderTool();
-        document.cookie = `imx_attack_patterns=; Max-Age=0; domain=${domain};`;
+        document.cookie = `imx_attack_patterns=; expires=Thu, 01 Jan 9070 00:00:00 GMT; path=/; domain=${domain}; SameSite=None; Secure`;
 
         this.addKillChain(result);
     }
@@ -2458,6 +2460,6 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
     }
 
     getObjectById(id) {
-        return this.stixService.bundle.objects.find(obj => obj.id === id);
+        return this.stixService.bundle.objects.find((obj) => obj.id === id);
     }
 }
