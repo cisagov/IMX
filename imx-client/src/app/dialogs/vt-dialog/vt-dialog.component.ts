@@ -4154,9 +4154,10 @@ export class VtDialogComponent {
             }
 
             lines.push(`URL: ${url}`);
-            lines.push(`Final URL: ${this.getUrlFinalUrl(url)}`);
-            lines.push(`Host: ${this.getUrlHostname(url)}`);
-            lines.push(`Categories: ${this.getUrlCategoryValues(url).join(', ')}`);
+            lines.push(`Geolocation: ${this.getUrlCountry(url) || 'N/A'}`);
+            lines.push(`Organization: ${this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.as_owner || ''}`);
+            lines.push(`Domains Hosted:`);
+            lines.push(`pDNS Resolutions:`);
             lines.push(`Activity: ${vendorNote}`);
             lines.push('');
         }
