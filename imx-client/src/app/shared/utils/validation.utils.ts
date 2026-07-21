@@ -6,6 +6,7 @@ import extension_schemas from '../../schemas/common/extension-definitions/extens
 //PREDEFINED
 import stix1xArchiveFile from '../../schemas/common/extension-definitions/predefined/stix1x-archive-file.json';
 import stix1xCampaign from '../../schemas/common/extension-definitions/predefined/stix1x-campaign.json';
+import stix1xVulnerability from '../../schemas/common/extension-definitions/predefined/stix1x-vulnerability.json';
 
 //COMMON
 import binary from '../../schemas/common/binary.json';
@@ -170,6 +171,7 @@ function initializeValidator(v) {
     //PREDEFINED
     addSchema(v, stix1xArchiveFile);
     addSchema(v, stix1xCampaign);
+    addSchema(v, stix1xVulnerability);
 
     //COMMON
     addSchema(v, binary)
