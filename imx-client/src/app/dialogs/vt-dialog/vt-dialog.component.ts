@@ -3925,12 +3925,10 @@ export class VtDialogComponent {
         }
     }
     getUrlServingIp(url: string): string {
-        // From the last_serving_ip_address relationship (Everyone-tier); falls back to base attr if present.
         const relData = this.getUrlRelation(url, 'servingIp')?.data?.data;
         return relData?.id || relData?.attributes?.ip_address || this.getUrlAttributes(url)?.last_serving_ip_address || '';
     }
     getUrlCountry(url: string): string {
-        // Prefer the serving IP's country; fall back to the base object's proxy_country (e.g. "US").
         const servingCountry = this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.country;
         return this.countryCodeToName(servingCountry || this.getUrlAttributes(url)?.proxy_country);
     }
