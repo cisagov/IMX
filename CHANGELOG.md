@@ -1,3 +1,11 @@
+## 4.6.0 (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation 004d0cb
+* add predefined stix1x extensions for schema validation 47f611b
+* add vulnerability predefined extension-definition schema validation a39e2a0
+
 ## 4.5.3 (2026-07-17)
 
 ### Bug Fixes
