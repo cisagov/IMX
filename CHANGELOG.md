@@ -1,3 +1,17 @@
+## [4.7.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.6.0...v4.7.0) (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation ([f7963ea](https://git.va.th.ten/eos/cde/tie/imx/commit/f7963eaf00b5574b5b1b1d877f7fa06814c2ed65))
+* add predefined stix1x extensions for schema validation ([34df546](https://git.va.th.ten/eos/cde/tie/imx/commit/34df5467c8db5b33d1b9c68639d2793524dd064e))
+* add vulnerability predefined extension-definition schema validation ([dec58a9](https://git.va.th.ten/eos/cde/tie/imx/commit/dec58a9ebb6641f3f3aaa3f316b31376cb41e4ad))
+
+### Bug Fixes
+
+* decider tool integration patched ([cd0ae45](https://git.va.th.ten/eos/cde/tie/imx/commit/cd0ae45de45690a245ea088bcb27ceeab79e249b))
+* update stix visualizer to the most up to date version ([e8be9e5](https://git.va.th.ten/eos/cde/tie/imx/commit/e8be9e55392fc18e4fe6ce20aacd176e9c3d8ee6))
+* upgrade axios and adm-zip for imx-server ([252127d](https://git.va.th.ten/eos/cde/tie/imx/commit/252127db4a455ca579f9a08ba1f0a119286066ee))
+
 ## [4.6.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.3...v4.6.0) (2026-07-21)
 
 ### Features
