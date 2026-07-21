@@ -3236,6 +3236,8 @@ export class BundleComponent implements OnInit {
         const promises = [];
         const fileNames = [];
 
+        this.openLoading();
+
         for (let file of event.target.files) {
             promises.push(
                 new Promise((res, rej) => {
@@ -3320,8 +3322,20 @@ export class BundleComponent implements OnInit {
                 }
 
                 this.uploadBundle();
+            } else {
+                this.closeLoading();
             }
         });
+    }
+
+    openLoading() {
+        this.addingStixToBundle = true;
+        this.isUploading = true;
+    }
+
+    closeLoading() {
+        this.addingStixToBundle = false;
+        this.isUploading = true;
     }
 
     cleanEmptyArraysInObj(obj) {
@@ -3396,6 +3410,7 @@ export class BundleComponent implements OnInit {
                 let error = `The following file(s) are of an incorrect format.\nError: ${this.bad_uploads.toString()}`;
                 this.isUploading = false;
                 this.announcementService.show(title, error, 'error', false);
+                this.closeLoading();
                 return;
             }
 
@@ -3431,6 +3446,7 @@ export class BundleComponent implements OnInit {
             }
 
             this.selectedFile = undefined;
+            this.closeLoading();
             this.stixService.hasObjectsToLoad = true;
             localStorage.setItem('new_version_objects', JSON.stringify(published_objects));
             localStorage.setItem('previous_new_version_objects', JSON.stringify(previous_published_objects));
