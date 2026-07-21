@@ -43,6 +43,7 @@ import objectDefinition from '../../schemas/common/object-definition.json';
 import properties from '../../schemas/common/properties.json';
 import timestamp from '../../schemas/common/timestamp.json';
 import urlRegex from '../../schemas/common/url-regex.json';
+import acs from '../../schemas/common/isa-acs-3-0.json';
 
 
 //OBSERVABLE
@@ -218,6 +219,7 @@ function initializeValidator(v) {
     addSchema(v, properties)
     addSchema(v, timestamp)
     addSchema(v, urlRegex)
+    addSchema(v, acs);
 
     //OBSERVABLES
     addSchema(v, artifact)
