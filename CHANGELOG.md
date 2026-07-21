@@ -1,3 +1,9 @@
+## 4.8.1 (2026-07-21)
+
+### Bug Fixes
+
+* decider integration again b62a104
+
 ## 4.8.0 (2026-07-21)
 
 ### Features
