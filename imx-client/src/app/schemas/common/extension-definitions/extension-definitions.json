@@ -285,7 +285,7 @@
             }
         ]
     },
-    "extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0":{
+    "extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/malware-behavior-8e9/extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0.json",
         "title": "Malware Behavior Extension",
@@ -324,6 +324,34 @@
                         "required": ["extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0"]
                     }
                 }
+            }
+        ]
+    },
+    "extension-definition--ac577b78-8356-41e0-bc5a-2cd3e5c17b2c": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--ac577b78-8356-41e0-bc5a-2cd3e5c17b2c.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-vulnerability-extension-schema-wrapper",
+        "description": "This is the wrapper for the vulnerability extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/vulnerability.json"
+            },
+            {
+                "properties": {
+                    "extensions": {
+                        "type": "object",
+                        "properties": {
+                            "extension-definition--ac577b78-8356-41e0-bc5a-2cd3e5c17b2c": {
+                                "type": "object",
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-vulnerability.json"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "extensions"
+                ]
             }
         ]
     }
