@@ -13,6 +13,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 100vh;
 }
 
 .border-bottoms {
@@ -131,7 +132,7 @@ input[type='file'].form-control {
     box-shadow: none;
 }
 
-accordion-group::ng-deep .highlight-panel > a {
+accordion-group::ng-deep .highlight-panel>a {
     background-color: yellow !important;
 }
 
@@ -247,9 +248,11 @@ accordion-group::ng-deep .highlight-panel > a {
     font-weight: 400;
     pointer-events: none;
 }
+
 .tooltipmenu:hover .toolttext {
     visibility: visible;
 }
+
 .tooltipmenu:empty .toolttext {
     visibility: hidden;
 }
@@ -271,9 +274,11 @@ accordion-group::ng-deep .highlight-panel > a {
     font-weight: 400;
     pointer-events: none;
 }
+
 .tooltipmenu:hover .toolttextToRight {
     visibility: visible;
 }
+
 .tooltipmenu:empty .toolttextToRight {
     visibility: hidden;
 }
@@ -293,6 +298,7 @@ accordion-group::ng-deep .highlight-panel > a {
 table tbody {
     overflow: auto;
 }
+
 table th {
     border-top: white;
     border-bottom: white;
@@ -300,6 +306,7 @@ table th {
     left: 0;
     border: 1px solid white;
 }
+
 table td {
     overflow: inherit;
     text-overflow: ellipsis;
@@ -501,7 +508,8 @@ th {
 
 .acs-form::-webkit-scrollbar-thumb {
     border-radius: 8px;
-    border: 2px solid white; /* should match background, can't be transparent */
+    border: 2px solid white;
+    /* should match background, can't be transparent */
     background-color: rgba(0, 0, 0, 0.5);
 }
 
@@ -701,6 +709,7 @@ th {
 .sidebar-active .sidebar-icon {
     color: #fff;
 }
+
 .sidebar-text {
     color: #8d9498;
     font-size: 20px;
