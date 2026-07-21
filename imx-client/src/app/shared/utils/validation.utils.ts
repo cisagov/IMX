@@ -4,7 +4,8 @@ import all_schemas from '../../bundle/schemas.json';
 import extension_schemas from '../../schemas/common/extension-definitions/extension-definitions.json';
 
 //PREDEFINED
-import archiveFile from '../../schemas/common/extension-definitions/predefined/stix1x-archive-file.json';
+import stix1xArchiveFile from '../../schemas/common/extension-definitions/predefined/stix1x-archive-file.json';
+import stix1xCampaign from '../../schemas/common/extension-definitions/predefined/stix1x-campaign.json';
 
 //COMMON
 import binary from '../../schemas/common/binary.json';
@@ -19,9 +20,15 @@ import granularMarking from '../../schemas/common/granular-marking.json';
 import hashesType from '../../schemas/common/hashes-type.json';
 import hex from '../../schemas/common/hex.json';
 import identifier from '../../schemas/common/identifier.json';
+import intendedEffectStatement from '../../schemas/common/intended-effect-statement.json';
 import killChainPhase from '../../schemas/common/kill-chain-phase.json';
 import languageContent from '../../schemas/common/language-content.json';
+import malwareBehavior from '../../schemas/common/malware-behavior.json';
+import malwareExtension from '../../schemas/common/malware-extension.json';
+import malwareMethod from '../../schemas/common/malware-method.json';
+import malwareObjective from '../../schemas/common/malware-objective.json';
 import markingDefinition from '../../schemas/common/marking-definition.json';
+import objectDefinition from '../../schemas/common/object-definition.json';
 import properties from '../../schemas/common/properties.json';
 import timestamp from '../../schemas/common/timestamp.json';
 import urlRegex from '../../schemas/common/url-regex.json';
@@ -161,7 +168,8 @@ function initializeValidator(v) {
     }
 
     //PREDEFINED
-    addSchema(v, archiveFile);
+    addSchema(v, stix1xArchiveFile);
+    addSchema(v, stix1xCampaign);
 
     //COMMON
     addSchema(v, binary)
@@ -176,9 +184,15 @@ function initializeValidator(v) {
     addSchema(v, hashesType)
     addSchema(v, hex)
     addSchema(v, identifier)
+    addSchema(v, intendedEffectStatement)
     addSchema(v, killChainPhase)
     addSchema(v, languageContent)
+    addSchema(v, malwareBehavior)
+    addSchema(v, malwareExtension)
+    addSchema(v, malwareMethod)
+    addSchema(v, malwareObjective)
     addSchema(v, markingDefinition)
+    addSchema(v, objectDefinition)
     addSchema(v, properties)
     addSchema(v, timestamp)
     addSchema(v, urlRegex)
