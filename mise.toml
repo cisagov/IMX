@@ -26,10 +26,17 @@ cp env.json.example env.json
 docker compose up -d --build
 """
 
-[tasks.build]
+[tasks.compose]
 description = "Rebuild IMX"
 run = """
 docker compose up -d --build
+"""
+
+[tasks.build-client]
+description = "Build IMX Client"
+run = """
+cd imx-client
+docker build -t tie/imx/client:test .
 """
 
 [tasks.trivy-client]
