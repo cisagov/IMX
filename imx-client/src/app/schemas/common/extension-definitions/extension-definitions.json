@@ -257,366 +257,1930 @@
             }
         ]
     },
-    "extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b": {
-        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/pap-marking-definition-f8d/extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b.json",
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "pap-marking-definition-extension",
-        "description": "This marking extension was created to apply PAP data markings",
+    "extension-definition--d83fce45-ef58-4c6c-a3f4-1fbc32e98c6e": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--d83fce45-ef58-4c6c-a3f4-1fbc32e98c6e.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-campaign-extension-schema-wrapper",
+        "description": "This is the wrapper for the campaign extension used by the stix-elevator",
         "type": "object",
         "allOf": [
             {
-                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/marking-definition.json"
-            },
-            {
-                "not": {
-                    "required": ["definition_type"]
-                }
-            },
-            {
-                "not": {
-                    "required": ["definition"]
-                }
-            },
-            {
-                "required": ["id", "type", "name", "spec_version", "created", "extensions"]
-            },
-            {
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "description": "The type of this object, which MUST be the literal `marking-definition`.",
-                        "enum": ["marking-definition"]
-                    },
-                    "spec_version": {
-                        "type": "string",
-                        "enum": ["2.1"],
-                        "description": "The version of the STIX specification used to represent this object."
-                    },
-                    "created": {
-                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
-                        "description": "The created property represents the time at which the first version of this Marking Definition object was created."
-                    },
-                    "name": {
-                        "type": "string",
-                        "description": "A name used to identify the Marking Definition. The value of this property MUST be one of the following: PAP:WHITE, PAP:GREEN, PAP:AMBER, PAP:RED, PAP:CLEAR"
-                    }
-                }
-            },
-            {
-                "oneOf": [
-                    {
-                        "$ref": "#/definitions/pap_white"
-                    },
-                    {
-                        "$ref": "#/definitions/pap_green"
-                    },
-                    {
-                        "$ref": "#/definitions/pap_amber"
-                    },
-                    {
-                        "$ref": "#/definitions/pap_red"
-                    },
-                    {
-                        "$ref": "#/definitions/pap_clear"
-                    }
-                ]
-            }
-        ],
-        "definitions": {
-            "pap_white": {
-                "description": "The marking-definition object representing Permissible Actions Protocol (PAP) White.",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "enum": ["marking-definition--a3bea94c-b469-41dc-9cfe-d6e7daba7730"]
-                    },
-                    "name": {
-                        "type": "string",
-                        "enum": ["PAP:WHITE"]
-                    },
-                    "extensions": {
-                        "type": "object",
-                        "properties": {
-                            "extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b": {
-                                "type": "object",
-                                "properties": {
-                                    "extension_type": {
-                                        "type": "string",
-                                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
-                                        "enum": ["property-extension"]
-                                    },
-                                    "pap": {
-                                        "type": "string",
-                                        "enum": ["white"]
-                                    }
-                                },
-                                "required": ["extension_type", "pap"],
-                                "additionalProperties": false
-                            }
-                        },
-                        "required": ["extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b"],
-                        "additionalProperties": false
-                    }
-                }
-            },
-            "pap_green": {
-                "description": "The marking-definition object representing Permissible Actions Protocol (PAP) Green.",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "enum": ["marking-definition--c43594d1-4b11-4c59-93ab-1c9b14d53ce9"]
-                    },
-                    "name": {
-                        "type": "string",
-                        "enum": ["PAP:GREEN"]
-                    },
-                    "extensions": {
-                        "type": "object",
-                        "properties": {
-                            "extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b": {
-                                "type": "object",
-                                "properties": {
-                                    "extension_type": {
-                                        "type": "string",
-                                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
-                                        "enum": ["property-extension"]
-                                    },
-                                    "pap": {
-                                        "type": "string",
-                                        "enum": ["green"]
-                                    }
-                                },
-                                "required": ["extension_type", "pap"],
-                                "additionalProperties": false
-                            }
-                        },
-                        "required": ["extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b"],
-                        "additionalProperties": false
-                    }
-                }
-            },
-            "pap_amber": {
-                "description": "The marking-definition object representing Permissible Protocol (PAP) Amber.",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "enum": ["marking-definition--60f8932b-e51e-4458-b265-a2e8be9a80ab"]
-                    },
-                    "name": {
-                        "type": "string",
-                        "enum": ["PAP:AMBER"]
-                    },
-                    "extensions": {
-                        "type": "object",
-                        "properties": {
-                            "extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b": {
-                                "type": "object",
-                                "properties": {
-                                    "extension_type": {
-                                        "type": "string",
-                                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
-                                        "enum": ["property-extension"]
-                                    },
-                                    "pap": {
-                                        "type": "string",
-                                        "enum": ["amber"]
-                                    }
-                                },
-                                "required": ["extension_type", "pap"],
-                                "additionalProperties": false
-                            }
-                        },
-                        "required": ["extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b"],
-                        "additionalProperties": false
-                    }
-                }
-            },
-            "pap_red": {
-                "description": "The marking-definition object representing Permissible Actions Protocol (PAP) Red.",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "enum": ["marking-definition--740d36e5-7714-4c30-961a-3ae632ceee0e"]
-                    },
-                    "name": {
-                        "type": "string",
-                        "enum": ["PAP:RED"]
-                    },
-                    "extensions": {
-                        "type": "object",
-                        "properties": {
-                            "extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b": {
-                                "type": "object",
-                                "properties": {
-                                    "extension_type": {
-                                        "type": "string",
-                                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
-                                        "enum": ["property-extension"]
-                                    },
-                                    "pap": {
-                                        "type": "string",
-                                        "enum": ["red"]
-                                    }
-                                },
-                                "required": ["extension_type", "pap"],
-                                "additionalProperties": false
-                            }
-                        },
-                        "required": ["extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b"],
-                        "additionalProperties": false
-                    }
-                }
-            },
-            "pap_clear": {
-                "description": "The marking-definition object representing Permissible Actions Protocol (PAP) Clear.",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "enum": ["marking-definition--ad15a0cd-55b6-4588-a14c-a66105329b92"]
-                    },
-                    "name": {
-                        "type": "string",
-                        "enum": ["PAP:CLEAR"]
-                    },
-                    "extensions": {
-                        "type": "object",
-                        "properties": {
-                            "extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b": {
-                                "type": "object",
-                                "properties": {
-                                    "extension_type": {
-                                        "type": "string",
-                                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
-                                        "enum": ["property-extension"]
-                                    },
-                                    "pap": {
-                                        "type": "string",
-                                        "enum": ["clear"]
-                                    }
-                                },
-                                "required": ["extension_type", "pap"],
-                                "additionalProperties": false
-                            }
-                        },
-                        "required": ["extension-definition--f8d78575-edfd-406e-8e84-6162a8450f5b"],
-                        "additionalProperties": false
-                    }
-                }
-            }
-        }
-    },
-    "extension-definition--762e2e97-ee51-43e5-a9ea-165fbb862c4a": {
-        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/iep-marking-definition-762/extension-definition--762e2e97-ee51-43e5-a9ea-165fbb862c4a.json",
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "iep-marking-definition-extension",
-        "description": "This marking definition extension was created to apply IEP data markings.",
-        "type": "object",
-        "allOf": [
-            {
-                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/marking-definition.json"
-            },
-            {
-                "not": {
-                    "required": ["definition_type"]
-                }
-            },
-            {
-                "not": {
-                    "required": ["definition"]
-                }
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/campaign.json"
             },
             {
                 "properties": {
                     "extensions": {
                         "type": "object",
                         "properties": {
-                            "extension-definition--762e2e97-ee51-43e5-a9ea-165fbb862c4a": {
+                            "extension-definition--d83fce45-ef58-4c6c-a3f4-1fbc32e98c6e": {
                                 "type": "object",
-                                "properties": {
-                                    "extension_type": {
-                                        "type": "string",
-                                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
-                                        "enum": ["property-extension"]
-                                    },
-                                    "encrypt_in_transit": {
-                                        "type": "string",
-                                        "description": "States whether the received information has to be encrypted when it is retransmitted by the recipient.",
-                                        "enum": ["must", "may"]
-                                    },
-                                    "permitted_actions": {
-                                        "type": "string",
-                                        "description": "States the permitted actions that recipients can take upon information received.",
-                                        "enum": [
-                                            "none",
-                                            "contact-for-instruction",
-                                            "internally-visible-actions",
-                                            "externally-visible-indirect-actions",
-                                            "externally-visible-direct-actions"
-                                        ]
-                                    },
-                                    "affected_party_notifications": {
-                                        "type": "string",
-                                        "description": "States whether recipients are permitted to notify affected third parties of a compromise or threat.",
-                                        "enum": ["may", "must-not"]
-                                    },
-                                    "tlp": {
-                                        "type": "string",
-                                        "description": "A TLP color that indicates the redistribution scope.",
-                                        "enum": ["red", "amber", "green", "white"]
-                                    },
-                                    "provider_attribution": {
-                                        "type": "string",
-                                        "description": "Recipients could be required to attribute or anonymize the provider when redistributing the informaiton received.",
-                                        "enum": ["may", "must", "must-not"]
-                                    },
-                                    "unmodified_resale": {
-                                        "type": "string",
-                                        "description": "States whether the recipient MAY or MUST NOT resell the information received unmodified or in a semanticaly equivalent format.",
-                                        "enum": ["may", "must-not"]
-                                    },
-                                    "iep_id": {
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "description": "Provides a unique ID to identify a specific IEP implementation. The policy ID must be either UUIDv4 or UUID5 as specified in RFC4122."
-                                    },
-                                    "iep_version": {
-                                        "type": "number",
-                                        "description": "Defines which version of the IEP Framework this policy implements. The value of this property MUST be 2.0.",
-                                        "enum": [2.0]
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "This statement can be used to provide some background information about the IEP implementation."
-                                    },
-                                    "start_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "description": "States the UTC date that an IEP is effective from."
-                                    },
-                                    "end_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "description": "States the UTC date that an IEP is effective until."
-                                    }
-                                },
-                                "required": [
-                                    "extension_type",
-                                    "encrypt_in_transit",
-                                    "permitted_actions",
-                                    "affected_party_notifications",
-                                    "tlp",
-                                    "provider_attribution",
-                                    "unmodified_resale",
-                                    "iep_id",
-                                    "iep_version",
-                                    "description",
-                                    "start_date"
-                                ]
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-campaign.json"
                             }
                         }
                     }
                 },
-                "required": ["extensions"]
+                "required": [
+                    "extensions"
+                ]
+            }
+        ]
+    },
+    "extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/malware-behavior-8e9/extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0.json",
+        "title": "Malware Behavior Extension",
+        "description": "This schema defines new SDOs to capture malware behaviors.",
+        "allOf": [
+            {
+                "oneOf": [
+                {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/malware-behavior-8e9/malware-behavior.json"
+                },
+                {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/malware-behavior-8e9/malware-method.json"
+                },
+                {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/malware-behavior-8e9/malware-objective.json"
+                }
+                ]
+            },
+            {
+                "properties": {
+                    "extensions": {
+                        "type": "object",
+                        "properties": {
+                            "extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0": {
+                                "type": "object",
+                                "properties": {
+                                    "extension_type": {
+                                        "type": "string",
+                                        "description": "MBC SDOs.",
+                                        "enum": ["new-sdo"]
+                                    }
+                                },
+                                "required": ["extension_type"]
+                            }
+                        },
+                        "required": ["extension-definition--d57b7c9c-7fa6-436b-b82c-8e6f69cdc3d0"]
+                    }
+                }
+            }
+        ]
+    },
+    "extension-definition--ac577b78-8356-41e0-bc5a-2cd3e5c17b2c": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--ac577b78-8356-41e0-bc5a-2cd3e5c17b2c.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-vulnerability-extension-schema-wrapper",
+        "description": "This is the wrapper for the vulnerability extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/vulnerability.json"
+            },
+            {
+                "properties": {
+                    "extensions": {
+                        "type": "object",
+                        "properties": {
+                            "extension-definition--ac577b78-8356-41e0-bc5a-2cd3e5c17b2c": {
+                                "type": "object",
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-vulnerability.json"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "extensions"
+                ]
+            }
+        ]
+    },
+    "extension-definition--abfeb963-42a9-45a7-841a-e1d97838e2c9": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--abfeb963-42a9-45a7-841a-e1d97838e2c9.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-attack-pattern-extension-schema",
+        "description": "This is the wrapper for the attack-pattern extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/attack-pattern.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--abfeb963-42a9-45a7-841a-e1d97838e2c9": {
+                        "type": "object",
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-attack-pattern.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
+            }
+        ]
+    },
+    "extension-definition--a46b18de-0b41-4a95-9d2d-67a360f2d859": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--a46b18de-0b41-4a95-9d2d-67a360f2d859.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-course-of-action-extension-schema-wrapper",
+        "description": "This is the wrapper for the course-of-action extension is used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/course-of-action.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--a46b18de-0b41-4a95-9d2d-67a360f2d859": {
+                "type": "object",
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-coa.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
+            }
+        ]
+    },
+    "extension-definition--8f0b8ed7-c7ad-4650-babe-c4c45cac4a0b": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--8f0b8ed7-c7ad-4650-babe-c4c45cac4a0b.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-identity-as-victim-target-schema",
+        "description": "This is the wrapper for the identity as victim target indicator extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/identity.json"
+          },
+          {
+            "properties": {
+              "extensions": {
+                "type": "object",
+                "properties": {
+                  "extension-definition--8f0b8ed7-c7ad-4650-babe-c4c45cac4a0b": {
+              "type": "object",
+              "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-victim-target.json"
+                  }
+                }
+              }
+            },
+            "required": [
+              "extensions"
+            ]
+          }
+        ]
+    },
+    "extension-definition--8e9e338f-c9ee-4d4f-8cac-85b4dcfdf3c1": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/malware-behavior-8e9/extension-definition--8e9e338f-c9ee-4d4f-8cac-85b4dcfdf3c1.json",
+        "title": "Malware Behavior Extension for the Malware Object",
+        "description": "An extension to the Malware object to support malware behaviors.",
+        "type": "object",
+        "allOf": [
+            {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/malware.json"
+            },
+            {
+                "properties": {
+                    "extensions": {
+                        "type": "object",
+                        "properties": {
+                            "extension-definition--8e9e338f-c9ee-4d4f-8cac-85b4dcfdf3c1": {
+                                "type": "object",
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/malware-behavior-8e9/malware-extension.json"
+                            }
+                        },
+                        "required": ["extension-definition--8e9e338f-c9ee-4d4f-8cac-85b4dcfdf3c1"]
+                    }
+                }
+            }
+        ]
+    },
+    "extension-definition--8b1aa84c-5532-4c69-a8e7-b6170facfd3d": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/observed-string-8b1/extension-definition--8b1aa84c-5532-4c69-a8e7-b6170facfd3d.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "observed-string-extension-schema",
+        "description": "This is the wrapper for the observed-strings extension",
+        "type": "object",
+        "allOf": [
+        {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/cyber-observable-core.json"
+        },
+        {
+            "properties": {
+            "extensions": {
+                "type": "object",
+                "properties": {
+                "extension-definition--8b1aa84c-5532-4c69-a8e7-b6170facfd3d": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "extension_type": {
+                "type": "string",
+                "const": "new-sco"
+                }
+            },
+            "required": [
+                "extension_type"
+            ]
+            }
+            }
+            },
+        "purpose": {
+                "type": "string",
+                "description": "What this string is used for"
+            },
+            "value": {
+            "type": "string",
+            "description": "The Unicode encoded value of the string. It SHOULD come from string-purpose-ov"
+            }
+        },
+        "required": [
+            "extensions",
+                "purpose",
+                "value"
+        ]
+        }
+        ]
+    },
+    "extension-definition--8053ffa0-dec7-4aef-870e-a56d0082cf69": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/artifact-805/extension-definition--8053ffa0-dec7-4aef-870e-a56d0082cf69.json",
+        "title": "malware-sample-artifact-extension",
+        "description": "An extension of the Artifact object to allow capture of malware samples.",
+        "type": "object",
+        "allOf:": [
+        {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/artifact.json"
+        },
+        {
+        "properties": {
+                "extensions": {
+            "type": "object",
+            "properties": {
+                        "extension-definition--8053ffa0-dec7-4aef-870e-a56d0082cf69": {
+                "type": "object",
+                "properties": {"extension_type": {
+                                "type": "string",
+                                "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
+                                "enum": ["toplevel-property-extension"]
+                }},
+                "required": ["extension_type"]
+                        },
+                        "required": ["extension-definition--8053ffa0-dec7-4aef-870e-a56d0082cf69"]
+            }
+                },
+                "is_safe": {
+            "type": "boolean",
+            "description": "Indicates whether the artifact is safe, i.e., can be opened or processed without risking harm or infection. The default value is false."
+                }
+        },
+        "required": [
+                "extensions",
+                "is_safe"
+        ]
+        }
+    ]
+    },
+    "extension-definition--7cc33dd6-f6a1-489b-98ea-522d351d71b9": {
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/incident-ef7/impact/extension-definition--7cc33dd6-f6a1-489b-98ea-522d351d71b9.json",
+        "title": "Impact",
+        "description": "An extension for tracking the impact of incidents.",
+        "type": "object",
+
+        "allOf": [
+            {
+                "$ref": "#/definitions/STIX_Uncommon"
+            },
+            {
+            "required": [
+            "extensions"
+            ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "const": "impact"
+                    },
+                    "id": {
+                        "type": "string",
+                        "pattern": "^impact--"
+                    },
+                    "criticality": {
+                        "type": "integer",
+                        "description": "The criticality of this particular impact",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "An optional narrative that further describes this impact"
+                    },
+                    "impacted_entity_counts": {
+                        "description": "A dictionary of entities that were impacted by the incident where the key is the entity type and the value is the number of entities of that type which were impacted.  In most cases these should be understood to be estimates.",
+                        "patternProperties": {
+                            "^[a-z\\-]+": {
+                                "type": "integer",
+                                "description": "Key names MUST be lower case and separated by dashes.  Common values include 'individuals', 'organizations', 'business-units', 'facilities', 'information-systems'",
+                                "minimum": 0
+                            }
+                        }
+                    },
+                    "start_time": {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                        "description": "The date the activity was first recorded.  If this is not present it is assumed to be unknown."
+                    },
+                    "start_time_fidelity": {
+                        "type": "string",
+                        "description": "The maximum degree of fidelity provided by the start_time.  When set to 'month' for example the timestamp 2021-02-01T04:00:00Z should only be read to be accurate to Februrary 2021 not a specific day within the month.",
+                        "enum": ["second", "minute", "hour", "day", "month", "year"]
+                    },
+                    "end_time": {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                        "description": "The date the activity was last recorded.  If this is not present it is assumed to be unknown."
+                    },
+                    "end_time_fidelity": {
+                        "type": "string",
+                        "description": "The maximum degree of fidelity provided by the end_time.  When set to 'hour' for example the timestamp 2021-02-01T04:00:00Z should only be read to be accurate to Februrary 1st 2021 between 04:00:00Z (inclusive) and 05:00:00Z (exclusive).",
+                        "enum": ["second", "minute", "hour", "day", "month", "year"]
+                    },
+            "impact_category": {
+                        "type": "string",
+                        "description": "The category of impact this applies to.  This MUST match a named extension within this object."
+                    },
+                    "impacted_refs": {
+                        "type": "array",
+                        "description": "A list of all impacted entities or infrastructure. This can relate directly to Infrastructure, SCOs, and other SDOs.",
+                        "minItems": 1,
+                        "items": {
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                        }
+                    },
+             "sub_impact_refs": {
+                        "type": "array",
+                        "description": "The impact objects to that are part of this impact.",
+                        "minItems": 1,
+                         "items": {
+                 "allOf": [
+                     {
+                     "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                     },
+                     {
+                     "pattern": "^impact--"
+                     }
+                 ]
+                        }
+                    },
+                    "recoverability": {
+                        "type": "string",
+                        "description": "The scope of impact required to recover from an incident",
+                        "enum": [
+                            "not-applicable",
+                            "regular",
+                            "supplemented",
+                            "extended",
+                            "not-recoverable"
+                        ],
+                        "$comment": "This is a closed vocabulary: non-applicable is an addition to what is found on https://us-cert.cisa.gov/incident-notification-guidelines for Incident reports that do not have associated recover costs.  For example a phishing email that was detected successfully."
+                    },
+                    "superseded_by_ref": {
+                        "allOf": [
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                            },
+                            {
+                                "type": "string",
+                                "pattern": "^impact--"
+                            }
+                        ]
+                    },
+                    "extensions": {
+                        "type": "object",
+                        "description": "STIX extensions.",
+                        "additionalProperties": true,
+                        "$comment": "re-consider min_properties: 2 if undetermined is removed",
+                        "required": ["extension-definition--7cc33dd6-f6a1-489b-98ea-522d351d71b9"],
+                        "properties": {
+                            "extension-definition--7cc33dd6-f6a1-489b-98ea-522d351d71b9": {
+                                "required": ["extension_type"],
+                    "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "extension_type": {
+                                        "type": "string",
+                                        "const": "new-sdo"
+                                    }
+                                }
+                            },
+                            "availability-ext": {
+                                "required": ["availability_impact"],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "availability_impact": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 100
+                                    }
+                                }
+                            },
+                            "confidentiality-ext": {
+                                "additionalProperties": false,
+                                "anyOf": [
+                                    {
+                                        "required": [
+                                            "information_type",
+                                            "loss_type"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "loss_type"
+                                        ],
+                                        "properties": {
+                                            "loss_type": {
+                                                "const": "none"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "properties": {
+                                    "information_type": {
+                                        "type": "string",
+                                        "description": "The type of data that had its confidentiality compromised. See information-type-ov"
+                                    },
+                                    "loss_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "confirmed-loss",
+                                            "contained",
+                                            "exploited-loss",
+                                            "suspected-loss",
+                                            "none",
+                        "unknown"
+                                        ]
+                                    },
+                                    "record_count": {
+                                        "type": "integer",
+                                        "description": "The number of records of this type that were compromised",
+                                        "minimum": 0
+                                    },
+                                    "record_size": {
+                                        "type": "integer",
+                                        "description": "The amount of data that was compromised in bytes",
+                                        "minimum": 0
+                                    }
+                                }
+                            },
+                            "external-ext": {
+                                "required": [
+                                    "impact_type"
+                                ],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "impact_type": {
+                        "description": "see external-impact-ov",
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "integrity-ext": {
+                                "anyOf": [
+                                    {
+                                        "required": [
+                                            "information_type",
+                                            "alteration"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "alteration"
+                                        ],
+                                        "properties": {
+                                            "alteration": {
+                                                "const": "none"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "information_type": {
+                                        "type": "string",
+                                        "description": "The type of information that had its integrity compromised.  This can include control systems and other processes that can result in virtual or physical impacts."
+                                    },
+                                    "alteration": {
+                                        "type": "string",
+                                        "description": "The type of information that had its integrity compromised.  This can include control systems and other processes that can result in virtual or physical impacts.",
+                                        "enum": [
+                                            "potential-destruction",
+                                            "potential-modification",
+                                            "partial-destruction",
+                                            "partial-modification",
+                                            "full-destruction",
+                                            "full-modification",
+                                            "none"
+                                        ]
+
+                                    },
+                                    "record_count": {
+                                        "type": "integer",
+                                        "description": "The number of records of this type that were compromised",
+                                        "minimum": 0
+                                    },
+                                    "record_size": {
+                                        "type": "integer",
+                                        "description": "The amount of data that was compromised in bytes",
+                                        "minimum": 0
+                                    }
+                                }
+                            },
+                            "economic-ext": {
+                                "required": ["variety"],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "variety": {
+                                        "type": "string",
+                                        "description": "The variety of the impact"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "description": "The currency that amount_min and amount_max are measured in"
+                                    },
+                                    "currency_actual": {
+                                        "type": "string",
+                                        "description": "The currency that the impact actually used.  For ransom demands this should be the currency of the demand."
+                                    },
+                                    "conversion_rate": {
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "conversion_time": {
+                                        "description": "When the conversion rate between the actual currency and the amount currency was queried",
+                                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json"
+                                    },
+                                    "max_amount": {
+                                        "type": "number",
+                                        "description": "The lower bound estimate using the currency listed for the economic damage caused by this impact",
+                                        "minimum": 0
+                                    },
+                                    "min_amount": {
+                                        "type": "number",
+                                        "description": "The lower bound estimate using the currency listed for the economic damage caused by this impact",
+                                        "minimum": 0
+                                    }
+                                },
+                    "dependentRequired": {
+                    "$comment": "'not currency_actual implies not conversion_rate' not specified here, but is in the spec",
+                    "min_amount": ["currency", "max_amount"],
+                    "currency_actual": ["currency", "conversion_rate"],
+                    "conversion_rate": ["conversion_time"]
+                    }
+
+                            },
+                            "physical-ext": {
+                                "additionalProperties": false,
+                                "anyOf": [
+                                    {
+                                        "required": [
+                                            "asset_type",
+                                            "impact_type"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "impact_type"
+                                        ],
+                                        "properties": {
+                                            "impact_type": {
+                                                "type": "string",
+                                                "const": "none"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "properties": {
+                                    "asset_type": {
+                                        "type": "string",
+                                        "description": "The type of asset that was affected by this impact. See asset-type-ov"
+                                    },
+                                    "impact_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "damaged-functional",
+                                            "damaged-nonfunctional",
+                                            "destruction",
+                                            "none",
+                        "unknown"
+                                        ]
+                                    }
+                                }
+                            },
+                            "traceability-ext": {
+                                "additionalProperties": false,
+                                "required": ["traceability_impact"],
+                                "properties": {
+                                    "traceability_impact": {
+                                        "type": "string",
+                                        "description": "The level of forensic or other traces left by the incident in order to enable auditing and accountability",
+                                        "enum": [
+                                            "accountability-lost"
+                                            , "partial-accountability"
+                                            , "provable-accountability"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "definitions": {
+        "asset-type-ov": {
+            "type": "string",
+            "enum": [
+            "building-doors",
+            "building-windows",
+            "buildings",
+            "computers-mobile",
+            "computers-personal",
+            "computers-server",
+            "environment",
+            "ics-actuator",
+            "ics-engineering-workstation",
+            "ics-historian",
+            "ics-hmi",
+            "ics-other",
+            "ics-plc",
+            "ics-safety-system",
+            "ics-sensor",
+            "inventory",
+            "network-device",
+            "private-infrastructure",
+            "public-infrastructure",
+            "security-containers",
+            "vehicles"
+            ]
+        },
+        "external-impact-ov": {
+            "type": "string",
+            "enum": [
+            "economic",
+            "emergency-services",
+            "foreign-relations",
+            "national-security",
+            "public-confidence",
+            "public-health",
+            "public-safety"
+            ]
+        },
+        "information-type-ov": {
+            "type": "string",
+            "enum": [
+            "classified-material",
+            "communication",
+            "credentials-admin",
+            "credentials-user",
+            "financial",
+            "legal",
+            "payment",
+            "phi",
+            "pii",
+            "proprietary",
+            "system"
+            ]
+        },
+            "STIX_Uncommon": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "title": "type",
+                    "type": "string",
+                    "pattern": "^([a-z][a-z0-9]*)+(-[a-z0-9]+)*\\-?$",
+                    "minLength": 3,
+                    "maxLength": 250,
+                    "description": "The type property identifies the type of STIX Object (SDO, Relationship Object, etc). The value of the type field MUST be one of the types defined by a STIX Object (e.g., indicator).",
+                    "not": {
+                      "enum": [
+                        "action"
+                      ]
+                    }
+                  },
+                  "spec_version": {
+                    "type": "string",
+                    "enum": [
+                      "2.0",
+                      "2.1"
+                    ],
+                    "description": "The version of the STIX specification used to represent this object."
+                  },
+                  "id": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                    "description": "The id property universally and uniquely identifies this object."
+                  },
+                  "created_by_ref": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                    "description": "The ID of the Source object that describes who created this object."
+                  },
+                  "labels": {
+                    "type": "array",
+                    "description": "The labels property specifies a set of terms used to describe this object.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "minItems": 1
+                  },
+                  "created": {
+                    "description": "The created property represents the time at which the first version of this object was created. The timstamp value MUST be precise to the nearest millisecond.",
+                    "allOf": [
+                      {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json"
+                      },
+                      {
+                        "title": "timestamp_millis",
+                        "pattern": "T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,}Z$"
+                      }
+                    ]
+                  },
+                  "modified": {
+                    "description": "The modified property represents the time that this particular version of the object was modified. The timstamp value MUST be precise to the nearest millisecond.",
+                    "allOf": [
+                      {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json"
+                      },
+                      {
+                        "title": "timestamp_millis",
+                        "pattern": "T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,}Z$"
+                      }
+                    ]
+                  },
+                  "revoked": {
+                    "type": "boolean",
+                    "description": "The revoked property indicates whether the object has been revoked."
+                  },
+                  "confidence": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "Identifies the confidence that the creator has in the correctness of their data."
+                  },
+                  "lang": {
+                    "type": "string",
+                    "description": "Identifies the language of the text content in this object."
+                  },
+                  "external_references": {
+                    "type": "array",
+                    "description": "A list of external references which refers to non-STIX information.",
+                    "items": {
+                      "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/external-reference.json"
+                    },
+                    "minItems": 1
+                  },
+                  "object_marking_refs": {
+                    "type": "array",
+                    "description": "The list of marking-definition objects to be applied to this object.",
+                    "items": {
+                      "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                    },
+                    "minItems": 1
+                  },
+                  "granular_markings": {
+                    "type": "array",
+                    "description": "The set of granular markings that apply to this object.",
+                    "items": {
+                      "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/granular-marking.json"
+                    },
+                    "minItems": 1
+                  },
+                  "extensions": {}
+                }
+            }
+        }
+    },
+    "extension-definition--7c8ca481-f0e9-4389-94f5-90df472eb01d": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--7c8ca481-f0e9-4389-94f5-90df472eb01d.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-indicator-extension-schema",
+        "description": "This is the wrapper for the indicator extension is used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/indicator.json"
+          },
+          {
+            "properties": {
+              "extensions": {
+                "type": "object",
+                "properties": {
+                  "extension-definition--7c8ca481-f0e9-4389-94f5-90df472eb01d": {
+              "type": "object",
+              "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-indicator.json"
+                  }
+                }
+              }
+            },
+            "required": [
+              "extensions"
+            ]
+          }
+        ]
+    },
+    "extension-definition--7a8eaf47-9b0f-487d-b280-1e6cc4cccee9": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--7a8eaf47-9b0f-487d-b280-1e6cc4cccee9.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-incident-extension-schema-wrapper",
+        "description": "This is the wrapper for the incident extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/incident.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--7a8eaf47-9b0f-487d-b280-1e6cc4cccee9": {
+                    "type": "object",
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-incident.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
+            }
+        ]
+    },
+    "extension-definition--6f6973cb-70be-40cb-b1ac-15ed78cebe56": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--6f6973cb-70be-40cb-b1ac-15ed78cebe56.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-icmp-header-extension-schema",
+        "description": "This is the wrapper for the icmp-header extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/network-traffic.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--6f6973cb-70be-40cb-b1ac-15ed78cebe56": {
+                "type": "object",
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-icmp-header.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
+            }
+        ]
+    },
+    "extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/identity-66e/extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498.json",
+        "title": "Identity Contact Information",
+        "description": "This extension allows contact information to be included in identities in a manner that allows them to be machine parsable.",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/identity.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "additionalProperties": true,
+                "properties": {
+                    "extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "extension_type"
+                    ],
+                    "properties": {
+                        "extension_type": {
+                        "type": "string",
+                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
+                        "enum": [
+                            "property-extension"
+                        ]
+                        },
+                        "contact_numbers": {
+                        "type": "array",
+                        "description": "A list of contact number objects that contain the phone and fax numbers.",
+                        "minItems": 1,
+                        "additionalProperties": false,
+                        "items": {
+                            "type": "object",
+                            "required": [
+                            "contact_number"
+                            ],
+                            "properties": {
+                            "contact_number": {
+                                "type": "string",
+                                "description": "The contact number.  Typically a phone number."
+                            },
+                            "classified": {
+                                "type": "boolean",
+                                "default": false,
+                                "description": "Can be used to reach the individual on a classified phone."
+                            },
+                            "contact_number_type": {
+                                "type": "string",
+                                "description": "The type of number this is used for.  This SHOULD be drawn from contact-number-ov."
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "An additional description for the phone number and its purpose"
+                            }
+                            }
+                        }
+                        },
+                        "email_addresses": {
+                        "type": "array",
+                        "description": "A list of contact number objects that contain the phone and fax numbers.",
+                        "minItems": 1,
+                        "additionalProperties": false,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                            "email_address_ref": {
+                                "type": "string",
+                                "description": "A reference to the email address itself",
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                                "pattern": "^email-addr--"
+                            },
+                            "classified": {
+                                "type": "boolean",
+                                "default": false,
+                                "description": "Can be used to reach the individual on a classified network."
+                            },
+                            "digital_contact_type": {
+                                "type": "string",
+                                "description": "The type of email that address is used for.  This SHOULD be drawn from digital-contact-ov."
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "An additional description for the email and its purpose"
+                            }
+                            },
+                            "required": [
+                            "email_address_ref"
+                            ]
+                        }
+                        },
+                        "social_media_accounts": {
+                        "type": "array",
+                        "description": "A list of contact number objects that contain the phone and fax numbers.",
+                        "minItems": 1,
+                        "additionalProperties": false,
+                        "items": {
+                            "type": "object",
+                            "required": [
+                            "user_account_ref"
+                            ],
+                            "properties": {
+                            "user_account_ref": {
+                                "type": "string",
+                                "description": "A reference to the social media account itself",
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                                "pattern": "^user-account--"
+                            },
+                            "classified": {
+                                "type": "boolean",
+                                "default": false,
+                                "description": "Can be used to reach the individual on a classified network."
+                            },
+                            "digital_contact_type": {
+                                "type": "string",
+                                "description": "The type of social media account that relates to.  This SHOULD be drawn from digital-contact-ov."
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "An additional description for the social media account and its purpose"
+                            }
+                            }
+                        }
+                        },
+                        "first_name": {
+                        "type": "string",
+                        "description": "The first name of an individual"
+                        },
+                        "last_name": {
+                        "type": "string",
+                        "description": "The last name of an individual"
+                        },
+                        "middle_name": {
+                        "type": "string",
+                        "description": "The middle name of an individual"
+                        },
+                        "prefix": {
+                        "type": "string",
+                        "description": "A prefix or title for an individual such as 'Mr' or 'Ms'"
+                        },
+                        "suffix": {
+                        "type": "string",
+                        "description": "A suffix for the individual such as 'PhD'"
+                        },
+                "websites": {
+                            "type": "array",
+                    "minItems": 1,
+                            "items": {
+                    "type": "string"
+                    },
+                            "description": "A list of websites associated with the identity."
+                        }
+                    }
+                    }
+                }
+                }
+            }
+            }
+        ],
+        "definitions": {
+            "contact-number-ov": {
+            "type": "string",
+            "enum": [
+                "personal-landline-phone",
+                "personal-mobile-phone",
+                "personal-fax",
+                "work-phone",
+                "work-fax"
+            ]
+            },
+            "digital-number-ov": {
+            "type": "string",
+            "enum": [
+                "organizational",
+                "personal",
+                "work"
+            ]
+            }
+        }
+    },
+    "extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/tlp-2.0/extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "tlp2.0-marking-definition-extension",
+        "description": "This marking extension was created to apply TLP2.0 data markings",
+        "type": "object",
+        "properties": {
+            "type": {
+            "type": "string",
+            "description": "The type of this object, which MUST be the literal `marking-definition`.",
+            "enum": [
+                "marking-definition"
+            ]
+            },
+            "spec_version": {
+            "type": "string",
+            "enum": [
+                "2.1"
+            ],
+            "description": "The version of the STIX specification used to represent this object."
+            },
+            "created_by_ref": {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+            "description": "The created_by_ref property specifies the ID of the identity object that describes the entity that created this Marking Definition."
+            },
+            "created": {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+            "description": "The created property represents the time at which the first version of this Marking Definition object was created."
+            },
+            "external_references": {
+            "type": "array",
+            "description": "A list of external references which refers to non-STIX information.",
+            "items": {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/external-reference.json"
+            },
+            "minItems": 1
+            },
+            "object_marking_refs": {
+            "type": "array",
+            "description": "The object_marking_refs property specifies a list of IDs of marking-definition objects that apply to this Marking Definition.",
+            "items": {
+                "allOf": [
+                {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                },
+                {
+                    "pattern": "^marking-definition--"
+                }
+                ]
+            },
+            "minItems": 1
+            },
+            "granular_markings": {
+            "type": "array",
+            "description": "The granular_markings property specifies a list of granular markings applied to this object.",
+            "items": {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/granular-marking.json"
+            },
+            "minItems": 1
+            }
+        },
+        "oneOf": [
+            {
+            "$ref": "#/definitions/tlp_clear"
+            },
+            {
+            "$ref": "#/definitions/tlp_green"
+            },
+            {
+            "$ref": "#/definitions/tlp_amber"
+            },
+            {
+            "$ref": "#/definitions/tlp_amber_strict"
+            },
+            {
+            "$ref": "#/definitions/tlp_red"
+            }
+        ],
+        "required": [
+            "id",
+            "type",
+            "name",
+            "spec_version",
+            "created",
+            "extensions"
+        ],
+        "definitions": {
+            "tlp_clear": {
+            "description": "The marking-definition object representing Traffic Light Protocol (TLP) Clear.",
+            "properties": {
+                "id": {
+                "type": "string",
+                "enum": [
+                    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
+                ]
+                },
+                "name": {
+                "type": "string",
+                "enum": [
+                    "TLP:CLEAR"
+                ]
+                },
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d": {
+                    "type": "object",
+                    "properties": {
+                        "extension_type": {
+                        "type": "string",
+                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
+                        "enum": [
+                            "property-extension"
+                        ]
+                        },
+                        "tlp_2_0": {
+                        "type": "string",
+                        "enum": [
+                            "clear"
+                        ]
+                        }
+                    },
+                    "required": [
+                        "extension_type",
+                        "tlp_2_0"
+                    ],
+                    "additionalProperties": false
+                    }
+                },
+                "required": [
+                    "extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d"
+                ],
+                "additionalProperties": false
+                }
+            }
+            },
+            "tlp_green": {
+            "description": "The marking-definition object representing Traffic Light Protocol (TLP) Green.",
+            "properties": {
+                "id": {
+                "type": "string",
+                "enum": [
+                    "marking-definition--bab4a63c-aed9-4cf5-a766-dfca5abac2bb"
+                ]
+                },
+                "name": {
+                "type": "string",
+                "enum": [
+                    "TLP:GREEN"
+                ]
+                },
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d": {
+                    "type": "object",
+                    "properties": {
+                        "extension_type": {
+                        "type": "string",
+                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
+                        "enum": [
+                            "property-extension"
+                        ]
+                        },
+                        "tlp_2_0": {
+                        "type": "string",
+                        "enum": [
+                            "green"
+                        ]
+                        }
+                    },
+                    "required": [
+                        "extension_type",
+                        "tlp_2_0"
+                    ],
+                    "additionalProperties": false
+                    }
+                },
+                "additionalProperties": false
+                }
+            }
+            },
+            "tlp_amber": {
+            "description": "The marking-definition object representing Traffic Light Protocol (TLP) Amber.",
+            "properties": {
+                "id": {
+                "type": "string",
+                "enum": [
+                    "marking-definition--55d920b0-5e8b-4f79-9ee9-91f868d9b421"
+                ]
+                },
+                "name": {
+                "type": "string",
+                "enum": [
+                    "TLP:AMBER"
+                ]
+                },
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d": {
+                    "type": "object",
+                    "properties": {
+                        "extension_type": {
+                        "type": "string",
+                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
+                        "enum": [
+                            "property-extension"
+                        ]
+                        },
+                        "tlp_2_0": {
+                        "type": "string",
+                        "enum": [
+                            "amber"
+                        ]
+                        }
+                    },
+                    "required": [
+                        "extension_type",
+                        "tlp_2_0"
+                    ],
+                    "additionalProperties": false
+                    }
+                },
+                "additionalProperties": false
+                }
+            }
+            },
+            "tlp_amber_strict": {
+            "description": "The marking-definition object representing Traffic Light Protocol (TLP) Amber+Strict.",
+            "properties": {
+                "id": {
+                "type": "string",
+                "enum": [
+                    "marking-definition--939a9414-2ddd-4d32-a0cd-375ea402b003"
+                ]
+                },
+                "name": {
+                "type": "string",
+                "enum": [
+                    "TLP:AMBER+STRICT"
+                ]
+                },
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d": {
+                    "type": "object",
+                    "properties": {
+                        "extension_type": {
+                        "type": "string",
+                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
+                        "enum": [
+                            "property-extension"
+                        ]
+                        },
+                        "tlp_2_0": {
+                        "type": "string",
+                        "enum": [
+                            "amber+strict"
+                        ]
+                        }
+                    },
+                    "required": [
+                        "extension_type",
+                        "tlp_2_0"
+                    ],
+                    "additionalProperties": false
+                    }
+                },
+                "additionalProperties": false
+                }
+            }
+            },
+            "tlp_red": {
+            "description": "The marking-definition object representing Traffic Light Protocol (TLP) Red.",
+            "properties": {
+                "id": {
+                "type": "string",
+                "enum": [
+                    "marking-definition--e828b379-4e03-4974-9ac4-e53a884c97c1"
+                ]
+                },
+                "name": {
+                "type": "string",
+                "enum": [
+                    "TLP:RED"
+                ]
+                },
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--60a3c5c5-0d10-413e-aab3-9e08dde9e88d": {
+                    "type": "object",
+                    "properties": {
+                        "extension_type": {
+                        "type": "string",
+                        "description": "Defined by STIX 2.1 extension definition rules from 'extension-type-enum'.",
+                        "enum": [
+                            "property-extension"
+                        ]
+                        },
+                        "tlp_2_0": {
+                        "type": "string",
+                        "enum": [
+                            "red"
+                        ]
+                        }
+                    },
+                    "required": [
+                        "extension_type",
+                        "tlp_2_0"
+                    ],
+                    "additionalProperties": false
+                    }
+                },
+                "additionalProperties": false
+                }
+            }
+            }
+        }
+    },
+    "extension-definition--5efa53f9-cf17-4867-bb4f-4cd2ac055e7c": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--5efa53f9-cf17-4867-bb4f-4cd2ac055e7c.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-malware-schema",
+        "description": "This is the wrapper for the identity as malware extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/malware.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--5efa53f9-cf17-4867-bb4f-4cd2ac055e7c": {
+                "type": "object",
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-malware.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
+            }
+        ]
+    },
+    "extension-definition--4ca6de00-5b0d-45ef-a1dc-ea7279ea910e": {
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/incident-ef7/event/extension-definition--4ca6de00-5b0d-45ef-a1dc-ea7279ea910e.json",
+        "title": "Event",
+        "description": "An extension for recording events in STIX.",
+        "type": "object",
+        "required": [
+            "extensions",
+        "status",
+        "type"
+        ],
+        "allOf": [
+            {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
+            },
+            {
+                "properties": {
+                    "extensions": {
+                        "type": "object",
+                        "description": "STIX extensions.",
+                        "additionalProperties": true,
+                        "properties": {
+                            "extension-definition--4ca6de00-5b0d-45ef-a1dc-ea7279ea910e": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "extension_type": {
+                                        "type": "string",
+                                        "const": "new-sdo"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "type": {
+                        "type": "string",
+                        "const": "event"
+                    },
+                    "id": {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                        "pattern": "^event--"
+                    },
+                    "event_types": {
+                "description": "see event-type-ov",
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "changed_objects": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["state_change_type"],
+                            "anyOf": [
+                                {
+                                    "required": ["initial_ref"]
+                                },
+                                {
+                                    "required": ["result_ref"]
+                                }
+                            ],
+                            "properties": {
+                                "state_change_type": {
+                                    "type": "string",
+                                    "description": "How this activity influenced the change in state"
+                                },
+                                "initial_ref": {
+                                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                                },
+                                "result_ref": {
+                                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                                }
+                            }
+                        }
+                    },
+                    "goal": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A description of the activity that occurred."
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "The outcome of a particular attacker activity",
+                        "enum": [
+                            "ongoing"
+                            , "occurred"
+                            , "not-occurred"
+                            , "pending"
+                            , "undetermined"
+                        ]
+                    },
+                    "start_time": {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                        "description": "The date the activity was first recorded.  If this is not present it is assumed to be unknown."
+                    },
+                    "start_time_fidelity": {
+                        "type": "string",
+                        "description": "The maximum degree of fidelity provided by the start_time.  When set to 'month' for example the timestamp 2021-02-01T04:00:00Z should only be read to be accurate to Februrary 2021 not a specific day within the month.",
+                        "enum": ["second", "minute", "hour", "day", "month", "year"]
+                    },
+                    "end_time": {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                        "description": "The date the activity was last recorded.  If this is not present it is assumed to be unknown."
+                    },
+                    "end_time_fidelity": {
+                        "type": "string",
+                        "description": "The maximum degree of fidelity provided by the end_time.  When set to 'hour' for example the timestamp 2021-02-01T04:00:00Z should only be read to be accurate to Februrary 1st 2021 between 04:00:00Z (inclusive) and 05:00:00Z (exclusive).",
+                        "enum": ["second", "minute", "hour", "day", "month", "year"]
+                    },
+                    "sighting_refs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                            "pattern": "^sighting--"
+                        }
+                    },
+            "next_events_refs": {
+                "type": "array",
+                "items": {
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                            "pattern": "^event--"
+                        }
+            },
+            "unevaluatedProperties": false
+                },
+            "definitions": {
+            "event-type-ov": {
+                "type": "string",
+                "enum": [
+                "aggregation-information-phishing-schemes",
+                "benign",
+                "blocked",
+                "brute-force-attempt",
+                "c&c-server-hosting",
+                "compromised-system",
+                "confirmed",
+                "connection-malware-port",
+                "connection-malware-system",
+                "content-forbidden-by-law",
+                "control-system-bypass",
+                "copyrighted-content",
+                "data-exfiltration",
+                "deferred",
+                "deletion-information",
+                "denial-of-service",
+                "destruction",
+                "dictionary-attack-attempt",
+                "discarded",
+                "disruption-data-transmission",
+                "dissemination-malware-email",
+                "dissemination-phishing-emails",
+                "dns-cache-poisoning",
+                "dns-local-resolver-hijacking",
+                "dns-spoofing-registered",
+                "dns-rebinding",
+                "dns-server-compromise",
+                "dns-spoofing-unregistered",
+                "dns-stub-resolver-hijacking",
+                "dns-zone-transfer",
+                "domain-name-compromise",
+                "duplicate",
+                "email-flooding",
+                "equipment-loss",
+                "equipment-theft",
+                "exploit",
+                "exploit-attempt",
+                "exploit-framework-exhausting-resources",
+                "exploit-tool-exhausting-resources",
+                "failed",
+                "file-inclusion",
+                "file-inclusion-attempt",
+                "hosting-malware-webpage",
+                "hosting-phishing-sites",
+                "illegitimate-use-name",
+                "illegitimate-use-resources",
+                "infected-by-known-malware",
+                "insufficient-data",
+                "known-malware",
+                "lame-delegations",
+                "major",
+                "modification-information",
+                "misconfiguration",
+                "natural",
+                "negotiation",
+                "network-scanning",
+                "no-apt",
+                "packet-flood",
+                "password-cracking-attempt",
+                "policy-violation",
+                "ransomware",
+                "ransomware-payment",
+                "refuted",
+                "scan-probe",
+                "silently-discarded",
+                "supply-chain-customer",
+                "supply-chain-vendor",
+                "spam",
+                "sql-injection",
+                "sql-injection-attempt",
+                "successful",
+                "system-probe",
+                "theft-access-credentials",
+                "unattributed",
+                "unauthorized-access-information",
+                "unauthorized-access-system",
+                "unauthorized-equipment",
+                "unauthorized-release",
+                "unauthorized-use",
+                "undetermined",
+                "unintentional",
+                "unknown-apt",
+                "unspecified",
+                "vandalism",
+                "wiretapping",
+                "worm-spreading",
+                "xss",
+                "xss-attempt"
+                ]
+            }
+            }
+            }
+        ]
+    },
+    "extension-definition--3a65884d-005a-4290-8335-cb2d778a83ce": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/acs-marking-definition-3a6/extension-definition--3a65884d-005a-4290-8335-cb2d778a83ce.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "acs-marking-definition-extension",
+        "description": "This marking extension was created to apply the SD-EDH Cyber Profile to ISA shared documents (ACS)",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/marking-definition.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--3a65884d-005a-4290-8335-cb2d778a83ce": {
+                "type": "object",
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/acs-data-markings/isa-acs-3-0.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
+            }
+        ]
+    },
+    "extension-definition--2074a052-8be4-4932-849e-f5e7798e0030": {
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/incident-ef7/task/extension-definition--2074a052-8be4-4932-849e-f5e7798e0030.json",
+        "title": "Task",
+        "description": "An extension for recording tasks in STIX.",
+        "type": "object",
+        "unevaluatedProperties": false,
+
+        "allOf": [
+            {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
+            },
+            {
+                "properties": {
+                    "extensions": {
+                        "type": "object",
+                        "description": "STIX extensions.",
+                        "required": ["extension-definition--2074a052-8be4-4932-849e-f5e7798e0030"],
+                        "additionalProperties": true,
+                        "properties": {
+                            "extension-definition--2074a052-8be4-4932-849e-f5e7798e0030": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "extension_type": {
+                                        "type": "string",
+                                        "const": "new-sdo"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "type": {
+                        "type": "string",
+                        "const": "task"
+                    },
+                    "id": {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                        "pattern": "^task--"
+                    },
+            "name": {
+                        "type": "string"
+                    },
+            "affected_entity_counts": {
+                        "description": "A dictionary of entities that were impacted by the incident where the key is the entity type and the value is the number of entities of that type which were impacted.  In most cases these should be understood to be estimates.",
+                        "patternProperties": {
+                            "^[a-z\\-]+": {
+                                "type": "integer",
+                                "description": "Key names MUST be lower case and separated by dashes.  Common values include 'individuals', 'organizations', 'business-units', 'facilities', 'information-systems'",
+                                "minimum": 0
+                            }
+                        }
+                    },
+                    "changed_objects": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["state_change_type"],
+                            "anyOf": [
+                                {
+                                    "required": ["initial_ref"]
+                                },
+                                {
+                                    "required": ["result_ref"]
+                                }
+                            ],
+                            "properties": {
+                                "state_change_type": {
+                                    "type": "string",
+                                    "description": "How this activity influenced the change in state"
+                                },
+                                "initial_ref": {
+                                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                                },
+                                "result_ref": {
+                                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                                }
+                            }
+                        }
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A description of the activity that occurred."
+                    },
+            "due_date": {
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                "description": "The date and time the task is/was due to be completed. The value of due_date MAY be unrelated to the values of start_time and end_time, i.e., there is no requirement that a due_date be between those values."
+            },
+                    "task_types": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "string",
+                            "description": "A general type for the timestamp for higher level rollup. See task-type-ov",
+                            "$comment": "Open-Vocab including: 'recovery', 'detected', 'declared', 'escalated'"
+                        }
+                    },
+                    "outcome": {
+                        "type": "string",
+                        "description": "The outcome of a particular attacker activity",
+                        "enum": [
+                            "cancelled",
+                            "failed",
+                            "ongoing",
+                            "pending",
+                            "successful",
+                            "unknown"
+                        ]
+                    },
+                    "start_time": {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                        "description": "The date the activity was first recorded.  If this is not present it is assumed to be unknown."
+                    },
+                    "start_time_fidelity": {
+                        "type": "string",
+                        "description": "The maximum degree of fidelity provided by the start_time.  When set to 'month' for example the timestamp 2021-02-01T04:00:00Z should only be read to be accurate to Februrary 2021 not a specific day within the month.",
+                        "enum": ["second", "minute", "hour", "day", "month", "year"]
+                    },
+                    "end_time": {
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                        "description": "The date the activity was last recorded.  If this is not present it is assumed to be unknown."
+                    },
+                    "end_time_fidelity": {
+                        "type": "string",
+                        "description": "The maximum degree of fidelity provided by the end_time.  When set to 'hour' for example the timestamp 2021-02-01T04:00:00Z should only be read to be accurate to Februrary 1st 2021 between 04:00:00Z (inclusive) and 05:00:00Z (exclusive).",
+                        "enum": ["second", "minute", "hour", "day", "month", "year"]
+                    },
+                    "error": {
+                        "type": "string",
+                        "description": "Details about any failures or deviations that occurred in the task."
+                    },
+                    "priority": {
+                        "type": "integer",
+                        "description": "How important this task is on a scale of 0 to 100.",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+            "next_tasks_refs": {
+                "type": "array",
+                "items": {
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                            "pattern": "^task--"
+                        }
+            }
+                },
+            "required": [
+            "extensions",
+            "outcome",
+            "type"
+            ]
+            }
+        ],
+        "definitions": {
+        "task-type-ov": {
+            "type": "string",
+            "enum": [
+            "administrative",
+            "attribution",
+            "containment",
+            "declared",
+            "detected",
+            "eradication",
+            "escalated",
+            "exercised-control",
+            "external-intelligence",
+            "external-outreach",
+            "external-support",
+            "implemented-control",
+            "investigation",
+            "negotiation",
+            "playbook-execution",
+            "playbook-step-execution",
+            "ransom-payment",
+            "recovery",
+            "reported",
+            "routine-updates",
+            "victim-notification"
+            ]
+        }
+        }
+    },
+    "extension-definition--0d4dda28-1b6c-446a-be85-38b9d9cd297c": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--0d4dda28-1b6c-446a-be85-38b9d9cd297c.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-email-message-extension-schema-wrapper",
+        "description": "This is the wrapper for the email-message extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/email-message.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--0d4dda28-1b6c-446a-be85-38b9d9cd297c": {
+                    "type": "object",
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-email-message.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
+            }
+        ]
+    },
+    "extension-definition--005e229c-fffc-42b0-a912-84671ab2829d": {
+        "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/extension-definition--005e229c-fffc-42b0-a912-84671ab2829d.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "stix1x-network-socket-extension-schema",
+        "description": "This is the wrapper for the network-socket extension used by the stix-elevator",
+        "type": "object",
+        "allOf": [
+            {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/network-traffic.json"
+            },
+            {
+            "properties": {
+                "extensions": {
+                "type": "object",
+                "properties": {
+                    "extension-definition--005e229c-fffc-42b0-a912-84671ab2829d": {
+                "type": "object",
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix-common-objects/main/extension-definition-specifications/stix-1x/stix1x-network-socket.json"
+                    }
+                }
+                }
+            },
+            "required": [
+                "extensions"
+            ]
             }
         ]
     }
