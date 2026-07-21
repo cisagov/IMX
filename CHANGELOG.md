@@ -1,3 +1,17 @@
+## 4.7.0 (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation f7963ea
+* add predefined stix1x extensions for schema validation 34df546
+* add vulnerability predefined extension-definition schema validation dec58a9
+
+### Bug Fixes
+
+* decider tool integration patched cd0ae45
+* update stix visualizer to the most up to date version e8be9e5
+* upgrade axios and adm-zip for imx-server 252127d
+
 ## 4.6.0 (2026-07-21)
 
 ### Features
