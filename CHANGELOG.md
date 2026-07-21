@@ -1,3 +1,11 @@
+## [4.6.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.3...v4.6.0) (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation ([004d0cb](https://git.va.th.ten/eos/cde/tie/imx/commit/004d0cb719edd99a9e76dbd6896dd56607675d8e))
+* add predefined stix1x extensions for schema validation ([47f611b](https://git.va.th.ten/eos/cde/tie/imx/commit/47f611b704ab929706d4d13d29cc8604d6381ccb))
+* add vulnerability predefined extension-definition schema validation ([a39e2a0](https://git.va.th.ten/eos/cde/tie/imx/commit/a39e2a013c4d3633b95a3822d6de1ea9694dcd85))
+
 ## [4.5.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.2...v4.5.3) (2026-07-17)
 
 ### Bug Fixes
