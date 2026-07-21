@@ -1,3 +1,9 @@
+## [4.8.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.0...v4.8.1) (2026-07-21)
+
+### Bug Fixes
+
+* decider integration again ([b62a104](https://git.va.th.ten/eos/cde/tie/imx/commit/b62a104dae9f228d5efb88b9a8fd15b1b7766f47))
+
 ## [4.8.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.7.0...v4.8.0) (2026-07-21)
 
 ### Features
