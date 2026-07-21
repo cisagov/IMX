@@ -1,3 +1,13 @@
+## 4.8.0 (2026-07-21)
+
+### Features
+
+* show loading indicator when processing uploaded file 8a4d4f2
+
+### Bug Fixes
+
+* update old sdo schemas to the most updated schemas d0ac892
+
 ## 4.7.0 (2026-07-21)
 
 ### Features
