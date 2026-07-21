@@ -4,8 +4,18 @@ import all_schemas from '../../bundle/schemas.json';
 import extension_schemas from '../../schemas/common/extension-definitions/extension-definitions.json';
 
 //PREDEFINED
+import hmlStatement from '../../schemas/common/extension-definitions/predefined/hml-statement.json';
 import stix1xArchiveFile from '../../schemas/common/extension-definitions/predefined/stix1x-archive-file.json';
+import stix1xAttackPattern from '../../schemas/common/extension-definitions/predefined/stix1x-attack-pattern.json';
 import stix1xCampaign from '../../schemas/common/extension-definitions/predefined/stix1x-campaign.json';
+import stix1xCoa from '../../schemas/common/extension-definitions/predefined/stix1x-coa.json';
+import stix1xEmailMessage from '../../schemas/common/extension-definitions/predefined/stix1x-email-message.json';
+import stix1xIcmpHeader from '../../schemas/common/extension-definitions/predefined/stix1x-icmp-header.json';
+import stix1xIncident from '../../schemas/common/extension-definitions/predefined/stix1x-incident.json';
+import stix1xIndicator from '../../schemas/common/extension-definitions/predefined/stix1x-indicator.json';
+import stix1xMalware from '../../schemas/common/extension-definitions/predefined/stix1x-malware.json';
+import stix1xNetworkSocket from '../../schemas/common/extension-definitions/predefined/stix1x-network-socket.json';
+import stix1xVictimTarget from '../../schemas/common/extension-definitions/predefined/stix1x-victim-target.json';
 import stix1xVulnerability from '../../schemas/common/extension-definitions/predefined/stix1x-vulnerability.json';
 
 //COMMON
@@ -169,8 +179,18 @@ function initializeValidator(v) {
     }
 
     //PREDEFINED
+    addSchema(v, hmlStatement);
     addSchema(v, stix1xArchiveFile);
+    addSchema(v, stix1xAttackPattern);
     addSchema(v, stix1xCampaign);
+    addSchema(v, stix1xCoa);
+    addSchema(v, stix1xEmailMessage);
+    addSchema(v, stix1xIcmpHeader);
+    addSchema(v, stix1xIncident);
+    addSchema(v, stix1xIndicator);
+    addSchema(v, stix1xMalware);
+    addSchema(v, stix1xNetworkSocket);
+    addSchema(v, stix1xVictimTarget);
     addSchema(v, stix1xVulnerability);
 
     //COMMON
