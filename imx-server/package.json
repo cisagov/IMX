@@ -14,7 +14,7 @@
   "author": "Joseph King",
   "license": "ISC",
   "dependencies": {
-    "adm-zip": "^0.5.10",
+    "adm-zip": "^0.6.0",
     "axios": "^1.12.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",

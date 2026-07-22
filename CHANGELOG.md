@@ -1,3 +1,41 @@
+## 4.8.1 (2026-07-21)
+
+### Bug Fixes
+
+* decider integration again b62a104
+
+## 4.8.0 (2026-07-21)
+
+### Features
+
+* show loading indicator when processing uploaded file 8a4d4f2
+
+### Bug Fixes
+
+* update old sdo schemas to the most updated schemas d0ac892
+
+## 4.7.0 (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation f7963ea
+* add predefined stix1x extensions for schema validation 34df546
+* add vulnerability predefined extension-definition schema validation dec58a9
+
+### Bug Fixes
+
+* decider tool integration patched cd0ae45
+* update stix visualizer to the most up to date version e8be9e5
+* upgrade axios and adm-zip for imx-server 252127d
+
+## 4.6.0 (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation 004d0cb
+* add predefined stix1x extensions for schema validation 47f611b
+* add vulnerability predefined extension-definition schema validation a39e2a0
+
 ## 4.5.3 (2026-07-17)
 
 ### Bug Fixes

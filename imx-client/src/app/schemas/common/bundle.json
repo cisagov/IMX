@@ -146,7 +146,7 @@
               {
                 "oneOf": [
                   {
-                    "$ref": "../common/core.json"
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
                   },
                   {
                     "$ref": "../common/cyber-observable-core.json"
