@@ -1,3 +1,41 @@
+## [4.8.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.0...v4.8.1) (2026-07-21)
+
+### Bug Fixes
+
+* decider integration again ([b62a104](https://git.va.th.ten/eos/cde/tie/imx/commit/b62a104dae9f228d5efb88b9a8fd15b1b7766f47))
+
+## [4.8.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.7.0...v4.8.0) (2026-07-21)
+
+### Features
+
+* show loading indicator when processing uploaded file ([8a4d4f2](https://git.va.th.ten/eos/cde/tie/imx/commit/8a4d4f2bb340371ede8b468ab7550a33b19ef02c))
+
+### Bug Fixes
+
+* update old sdo schemas to the most updated schemas ([d0ac892](https://git.va.th.ten/eos/cde/tie/imx/commit/d0ac892e79e6c098d94ee75a489c09f757a30d8a))
+
+## [4.7.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.6.0...v4.7.0) (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation ([f7963ea](https://git.va.th.ten/eos/cde/tie/imx/commit/f7963eaf00b5574b5b1b1d877f7fa06814c2ed65))
+* add predefined stix1x extensions for schema validation ([34df546](https://git.va.th.ten/eos/cde/tie/imx/commit/34df5467c8db5b33d1b9c68639d2793524dd064e))
+* add vulnerability predefined extension-definition schema validation ([dec58a9](https://git.va.th.ten/eos/cde/tie/imx/commit/dec58a9ebb6641f3f3aaa3f316b31376cb41e4ad))
+
+### Bug Fixes
+
+* decider tool integration patched ([cd0ae45](https://git.va.th.ten/eos/cde/tie/imx/commit/cd0ae45de45690a245ea088bcb27ceeab79e249b))
+* update stix visualizer to the most up to date version ([e8be9e5](https://git.va.th.ten/eos/cde/tie/imx/commit/e8be9e55392fc18e4fe6ce20aacd176e9c3d8ee6))
+* upgrade axios and adm-zip for imx-server ([252127d](https://git.va.th.ten/eos/cde/tie/imx/commit/252127db4a455ca579f9a08ba1f0a119286066ee))
+
+## [4.6.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.3...v4.6.0) (2026-07-21)
+
+### Features
+
+* add all common extension definition schemas for validation ([004d0cb](https://git.va.th.ten/eos/cde/tie/imx/commit/004d0cb719edd99a9e76dbd6896dd56607675d8e))
+* add predefined stix1x extensions for schema validation ([47f611b](https://git.va.th.ten/eos/cde/tie/imx/commit/47f611b704ab929706d4d13d29cc8604d6381ccb))
+* add vulnerability predefined extension-definition schema validation ([a39e2a0](https://git.va.th.ten/eos/cde/tie/imx/commit/a39e2a013c4d3633b95a3822d6de1ea9694dcd85))
+
 ## [4.5.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.5.2...v4.5.3) (2026-07-17)
 
 ### Bug Fixes

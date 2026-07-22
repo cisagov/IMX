@@ -19,21 +19,35 @@ export class DeciderServiceService {
         if (this.envService.env.decider.url.includes('localhost')) domain = 'localhost';
         else {
             domain = deciderHostArr.join('.');
+            domain = domain.replace('/', '');
+            domain = `.${domain}`;
         }
+
+        console.debug(`Decider Domain: ${domain}`);
 
         return domain;
     }
 
     async openDeciderTool() {
-        return new Promise<any[]>(async (resolve) => {
+        return new Promise<any[]>(async (resolve, reject) => {
             let domain = this.getDeciderDomain();
-            document.cookie = `imx_attack_patterns=; Max-Age=0; domain=${domain};`;
+            document.cookie = `imx_attack_patterns=; expires=Thu, 01 Jan 9070 00:00:00 GMT; path=/; domain=${domain}; SameSite=None; Secure`;
 
             window.open(this.envService.env.decider.url, '_blank').focus();
 
             let deciderRes = await this.getImxDeciderCookie();
+            console.debug(deciderRes);
 
-            let cartObj = JSON.parse(deciderRes);
+            let cartObj = {
+                cartItems: [],
+            };
+            try {
+                cartObj = JSON.parse(deciderRes);
+            } catch (err) {
+                console.error(err);
+                reject(err);
+                return;
+            }
 
             let tempResult = cartObj;
             let result = [];
@@ -63,7 +77,7 @@ export class DeciderServiceService {
                 };
 
                 result.push(temp);
-                document.cookie = `imx_attack_patterns=; Max-Age=0; domain=${domain};`;
+                document.cookie = `imx_attack_patterns=; expires=Thu, 01 Jan 9070 00:00:00 GMT; path=/; domain=${domain}; SameSite=None; Secure`;
             }
             resolve(result);
         });
@@ -76,11 +90,19 @@ export class DeciderServiceService {
 
                 if (cookie && cookie.indexOf('imx_attack_patterns') !== -1) {
                     let splitCookie = cookie.split('=');
+                    console.debug(splitCookie);
 
                     for (let i = 0; i < splitCookie.length; i++) {
+                        if (splitCookie[i].startsWith(';')) splitCookie[i] = splitCookie[i].slice(1, splitCookie[i].length);
+                        if (splitCookie[i].startsWith(' ')) splitCookie[i] = splitCookie[i].slice(1, splitCookie[i].length);
+
                         if (splitCookie[i].startsWith('imx_attack_patterns')) {
-                            resolve(splitCookie[i + 1]);
-                            clearInterval(interval);
+                            if (splitCookie[i + 1].includes('{') && splitCookie[i + 1].includes('}')) {
+                                resolve(splitCookie[i + 1]);
+                                clearInterval(interval);
+                            }
+
+                            break;
                         }
                     }
                 }
