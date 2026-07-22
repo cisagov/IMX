@@ -252,7 +252,6 @@
                                     *ngSwitchCase="'content'"
                                     placeholder="{{ trimLabel(question.label) }}"
                                     class="form-control"
-                                    style="font-size: 14px !important"
                                     [formControlName]="question.key"
                                     [id]="question.key"
                                     rows="5"
@@ -265,7 +264,6 @@
                                     *ngSwitchCase="'explanation'"
                                     placeholder="{{ trimLabel(question.label) }}"
                                     class="form-control"
-                                    style="font-size: 14px !important"
                                     [formControlName]="question.key"
                                     [id]="question.key"
                                     rows="5"
@@ -277,7 +275,6 @@
                                     *ngSwitchCase="'body'"
                                     placeholder="{{ trimLabel(question.label) }}"
                                     class="form-control"
-                                    style="font-size: 14px !important"
                                     [formControlName]="question.key"
                                     [id]="question.key"
                                     rows="5"
@@ -289,7 +286,6 @@
                                     *ngSwitchCase="'command_line'"
                                     placeholder="{{ trimLabel(question.label) }}"
                                     class="form-control"
-                                    style="font-size: 14px !important"
                                     [formControlName]="question.key"
                                     [id]="question.key"
                                     rows="5"
@@ -302,7 +298,6 @@
                                     *ngSwitchCase="'description'"
                                     placeholder="{{ trimLabel(question.label) }}"
                                     class="form-control"
-                                    style="font-size: 14px !important"
                                     [formControlName]="question.key"
                                     [id]="question.key"
                                     rows="5"
@@ -324,7 +319,6 @@
                                     *ngSwitchCase="'incident_description'"
                                     placeholder="{{ trimLabel(question.label) }}"
                                     class="form-control"
-                                    style="font-size: 14px !important"
                                     [formControlName]="question.key"
                                     [id]="question.key"
                                     rows="8"
@@ -336,7 +330,6 @@
                                     *ngSwitchCase="'payload_bin'"
                                     placeholder="{{ trimLabel(question.label) }}"
                                     class="form-control"
-                                    style="font-size: 14px !important"
                                     [formControlName]="question.key"
                                     [id]="question.key"
                                     rows="5"
@@ -350,7 +343,6 @@
                                         <textarea
                                             placeholder="{{ trimLabel(question.label) }}"
                                             class="form-control"
-                                            style="font-size: 14px !important"
                                             [formControlName]="question.key"
                                             [id]="question.key"
                                             rows="5"
@@ -456,7 +448,6 @@
                             <div class="d-flex" [ngClass]="{ 'is-invalid': !isValid }">
                                 <textarea
                                     class="form-control add-left"
-                                    style="font-size: 14px !important"
                                     [ngClass]="{ '': stixService.guidedUI, 'is-invalid': !isValid }"
                                     [formControlName]="question.key"
                                     [placeholder]="
@@ -4794,8 +4785,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row d-flex align-items-center">
-                        <div class="col-8 m-0 pe-0">
+                    <div class="row d-flex align-items-stretch">
+                        <div class="col-8 m-0 pe-0 d-flex">
                             <input
                                 type="file"
                                 class="custom-file-input form-control add-left me-0"
@@ -4804,11 +4795,9 @@
                                 [class.is-invalid]="message"
                                 [disabled]="isProcessingFile"
                             />
-                        </div>
-                        <div class="col-2 m-0 p-0">
                             <button
                                 type="button"
-                                class="ms-0 btn btn-sm btn-color add-right add-left no-border-left file-upload-btn-width"
+                                class="ms-0 btn btn-color add-right add-left no-border-left file-upload-btn-width"
                                 id="{{ question.key }}_load"
                                 (click)="onUploadFieldFile()"
                                 [disabled]="!loadedFile"
@@ -4816,7 +4805,7 @@
                                 Upload
                             </button>
                         </div>
-                        <div class="col-2 m-0 ps-0">
+                        <div class="col-2 m-0">
                             <div class="input-group pe-2 me-2">
                                 <span class="font">Already Encoded</span>
                                 <input
@@ -4849,7 +4838,7 @@
                             <textarea
                                 placeholder="{{ trimLabel(question.label) }}"
                                 class="form-control"
-                                style="font-size: 14px !important; background-color: #e9ecef"
+                                style="background-color: #e9ecef"
                                 [formControlName]="question.key"
                                 [id]="question.key"
                                 rows="5"

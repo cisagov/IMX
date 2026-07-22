@@ -102,14 +102,15 @@ body {
     height: 38px;
 }
 .btn-fa-sm {
-    width: 35px;
-    height: 31px;
+    /* width: 35px; */
+    /* height: 31px; */
     min-height: 31px;
-    min-width: 35px;
+    min-width: 38px;
     font-size: 15px !important;
-    padding-left: 10px !important;
+    /* padding-left: 10px !important; */
     /* padding-top: 3px !important; */
 }
+
 .btn-fa-xsm {
     width: 20px !important;
     height: 20px !important;
