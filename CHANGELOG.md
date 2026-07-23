@@ -1,3 +1,9 @@
+## 4.8.2 (2026-07-23)
+
+### Bug Fixes
+
+* restyle standard ui to match guided styling 1b7b109
+
 ## 4.8.1 (2026-07-21)
 
 ### Bug Fixes
