@@ -1,3 +1,16 @@
+## 4.9.0 (2026-07-23)
+
+### Features
+
+* added console messages section VT URL results f2b6b47
+* enriching URL VT search results, some clean up fd42789
+* initial commit of URL searching on virustotal integration eb18c45
+
+### Bug Fixes
+
+* moving some text on VT results page ba4aaf7
+* updated Intel Summary for URLs to conform to info from Fusion cbfa908
+
 ## 4.8.2 (2026-07-23)
 
 ### Bug Fixes
