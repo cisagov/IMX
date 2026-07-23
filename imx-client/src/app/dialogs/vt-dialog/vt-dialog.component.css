@@ -623,6 +623,12 @@ table {
     min-height: 400px;
 }
 
+/* Fixed-size tables that hold a single row (e.g. URL Network Requests) size to content */
+.scrollable-table-container.auto-height {
+    min-height: 0;
+    max-height: none;
+}
+
 .scrollable-table-container .whois-table th:nth-child(1),
 .scrollable-table-container .whois-table td:nth-child(1) {
     width: 25%;
@@ -637,6 +643,79 @@ table {
 .scrollable-table-container .whois-table th:nth-child(3),
 .scrollable-table-container .whois-table td:nth-child(3) {
     width: 25%;
+}
+
+/* Network Requests / HTTPS Transactions (4-column) */
+.scrollable-table-container .network-requests-table th,
+.scrollable-table-container .network-requests-table td {
+    padding: 9px 14px;
+}
+.scrollable-table-container .network-requests-table th:nth-child(1),
+.scrollable-table-container .network-requests-table td:nth-child(1) {
+    width: 55%;
+    text-align: left;
+}
+.scrollable-table-container .network-requests-table th:nth-child(2),
+.scrollable-table-container .network-requests-table td:nth-child(2) {
+    width: 12%;
+    text-align: left;
+}
+.scrollable-table-container .network-requests-table th:nth-child(3),
+.scrollable-table-container .network-requests-table td:nth-child(3) {
+    width: 18%;
+    text-align: left;
+}
+.scrollable-table-container .network-requests-table th:nth-child(4),
+.scrollable-table-container .network-requests-table td:nth-child(4) {
+    width: 15%;
+    text-align: left;
+}
+
+/* Javascript Global Variables (3-column) */
+.scrollable-table-container .js-variables-table th,
+.scrollable-table-container .js-variables-table td {
+    padding: 9px 14px;
+}
+.scrollable-table-container .js-variables-table th:nth-child(1),
+.scrollable-table-container .js-variables-table td:nth-child(1) {
+    width: 45%;
+    text-align: left;
+}
+.scrollable-table-container .js-variables-table th:nth-child(2),
+.scrollable-table-container .js-variables-table td:nth-child(2) {
+    width: 30%;
+    text-align: left;
+}
+.scrollable-table-container .js-variables-table th:nth-child(3),
+.scrollable-table-container .js-variables-table td:nth-child(3) {
+    width: 25%;
+    text-align: left;
+}
+
+/* Console Messages (4-column) */
+.scrollable-table-container .console-messages-table th,
+.scrollable-table-container .console-messages-table td {
+    padding: 9px 14px;
+}
+.scrollable-table-container .console-messages-table th:nth-child(1),
+.scrollable-table-container .console-messages-table td:nth-child(1) {
+    width: 45%;
+    text-align: left;
+}
+.scrollable-table-container .console-messages-table th:nth-child(2),
+.scrollable-table-container .console-messages-table td:nth-child(2) {
+    width: 12%;
+    text-align: left;
+}
+.scrollable-table-container .console-messages-table th:nth-child(3),
+.scrollable-table-container .console-messages-table td:nth-child(3) {
+    width: 10%;
+    text-align: left;
+}
+.scrollable-table-container .console-messages-table th:nth-child(4),
+.scrollable-table-container .console-messages-table td:nth-child(4) {
+    width: 33%;
+    text-align: left;
 }
 
 .whois-table {

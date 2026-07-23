@@ -2,6 +2,7 @@ const vt = require('../apis/virus-total');
 
 module.exports = function(app, logger) {
     const { v5: uuidV5, v4: uuidV4 } = require("uuid");
+    const fileExtensions = require('file-extensions');
 
     const regex = {
       "ipv4-addr": /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/,
@@ -10,7 +11,7 @@ module.exports = function(app, logger) {
       "domain-name": /^[a-z0-9]+(?:\-[\w]+)*\.[a-z]{2,6}$/i,
       "sub-domain-name": /^[a-z0-9]+(?:\-[\w]+)*\.[a-z0-9]+(?:\-[\w]+)*\.[a-z]{2,6}$/i,
       "sub-sub-domain-name": /^[a-z0-9]+(?:\-[\w]+)*\.[a-z0-9]+(?:\-[\w]+)*\.[a-z0-9]+(?:\-[\w]+)*\.[a-z]{2,6}$/i,
-      "url": /^(?=^.{1, 500})(?:[A-Za-z][A-Za-z0-9+.-]*:\/{2})+(?:(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})+(?::([A-Za-z0-9-._~]?|[%][A-Fa-f0-9]{2})+)?@)?(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.){1,126}[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?::[0-9]+)?(?:(\/|\\\\)(?:.)*)*$/,
+      "url": /^(?=.{1,500}$)[A-Za-z][A-Za-z0-9+.-]*:\/\/\S+$/,
       "mac-addr": /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/,
       'artifact': /^(?!.*(?:[\\/]|:\/\/))([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)$/,
       "file": /^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$/,
@@ -577,7 +578,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -609,7 +610,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -641,7 +642,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -675,7 +676,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -709,7 +710,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -743,7 +744,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -777,7 +778,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -808,7 +809,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -842,7 +843,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -873,7 +874,69 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
+        }
+    })
+
+    app.post('/get-url', async (req, res) => {
+        if(!process.env.VIRUS_TOTAL_ENABLED){
+            logger.logEndpoint(403, req, undefined);
+            res.send({
+                status: 403,
+                message: "VIRUS TOTAL is DISABLED"
+            })
+            return;
+        }
+
+        let url = req.body.url;
+        if(url === null || url === undefined || url.length === 0) {
+            logger.logEndpoint(400, req, undefined);
+            res.send({
+                status: 400,
+                message: "No URL found"
+            });
+            return;
+        }
+
+        try {
+            let vtResponse = await vt.getUrl(url);
+            logger.logEndpoint(200, req, undefined);
+            res.send(vtResponse.data);
+        } catch(err) {
+            console.log(err);
+            logger.logEndpoint(500, req, undefined);
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
+        }
+    })
+
+    app.post('/get-url-serving-ip', async (req, res) => {
+        if(!process.env.VIRUS_TOTAL_ENABLED){
+            logger.logEndpoint(403, req, undefined);
+            res.send({
+                status: 403,
+                message: "VIRUS TOTAL is DISABLED"
+            })
+            return;
+        }
+
+        let url = req.body.url;
+        if(url === null || url === undefined || url.length === 0) {
+            logger.logEndpoint(400, req, undefined);
+            res.send({
+                status: 400,
+                message: "No URL found"
+            });
+            return;
+        }
+
+        try {
+            let vtResponse = await vt.getUrlLastServingIp(url);
+            logger.logEndpoint(200, req, undefined);
+            res.send(vtResponse.data);
+        } catch(err) {
+            console.log(err);
+            logger.logEndpoint(500, req, undefined);
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -907,7 +970,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -941,7 +1004,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -975,7 +1038,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -1009,7 +1072,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -1043,7 +1106,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
@@ -1077,7 +1140,7 @@ module.exports = function(app, logger) {
         } catch(err) {
             console.log(err);
             logger.logEndpoint(500, req, undefined);
-            res.send({ status: 500, message: `Something went wrong. ${JSON.stringify(err)}` });
+            res.send({ status: 500, message: 'Something went wrong contacting VirusTotal' });
         }
     })
 
