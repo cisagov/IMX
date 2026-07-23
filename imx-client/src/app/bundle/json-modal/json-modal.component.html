@@ -8,87 +8,79 @@
         </button>
     </div>
     @if (showVtTab || showMispTab) {
-        <ul class="nav nav-underline ms-3 mt-2">
-            <li class="nav-item">
-                <a class="nav-link pointer" [class.active]="activeTab === 'json'" (click)="activeTab = 'json'">JSON</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link pointer" [class.active]="activeTab === 'vt'" (click)="activeTab = 'vt'">VT Results</a>
-            </li>
-            @if (!envService.env.aeSetting) {
-                <li class="nav-item">
-                    <a class="nav-link pointer" [class.active]="activeTab === 'misp'" (click)="switchTab('misp')">MISP Results</a>
-                </li>
-            }
-        </ul>
+    <ul class="nav nav-underline ms-3 mt-2">
+        <li class="nav-item">
+            <a class="nav-link pointer" [class.active]="activeTab === 'json'" (click)="activeTab = 'json'">JSON</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link pointer" [class.active]="activeTab === 'vt'" (click)="activeTab = 'vt'">VT Results</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link pointer" [class.active]="activeTab === 'misp'" (click)="switchTab('misp')">MISP
+                Results</a>
+        </li>
+    </ul>
     }
     @if (activeTab === 'json') {
-        <div id="json-view" class="modal-body d-flex justify-content-center">
-            @if (isLoading) {
-                <div class="loading">
-                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 500px">
-                        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="text-muted">Loading JSON...</p>
-                    </div>
+    <div id="json-view" class="modal-body d-flex justify-content-center">
+        @if (isLoading) {
+        <div class="loading">
+            <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 500px">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-            }
-            @if (!isLoading) {
-                <ngx-monaco-editor
-                    style="width: 100%; display: block; height: 500px !important"
-                    readonly
-                    [options]="editorOptions"
-                    [(ngModel)]="json"
-                ></ngx-monaco-editor>
-            }
-        </div>
-        <div class="modal-footer d-flex justify-content-between">
-            <button id="remove-obj-btn" (click)="remove()" class="btn btn-outline-danger">Remove</button>
-            <div>
-                @if (
-                    component.type == 'extension-definition' &&
-                    (component['extension_types'].includes('new-sdo') ||
-                        component['extension_types'].includes('new-sco') ||
-                        component['extension_types'].includes('new-sro'))
-                ) {
-                    <button id="create-cust-btn" type="button" class="btn btn-outline-success me-2" (click)="custom()">Configure New Object</button>
-                }
-                <button [disabled]="disableEditObject(component)" id="edit-obj-btn" (click)="edit()" class="btn btn-outline">Edit</button>
+                <p class="text-muted">Loading JSON...</p>
             </div>
         </div>
+        }
+        @if (!isLoading) {
+        <ngx-monaco-editor style="width: 100%; display: block; height: 500px !important" readonly
+            [options]="editorOptions" [(ngModel)]="json"></ngx-monaco-editor>
+        }
+    </div>
+    <div class="modal-footer d-flex justify-content-between">
+        <button id="remove-obj-btn" (click)="remove()" class="btn btn-outline-danger">Remove</button>
+        <div>
+            @if (
+            component.type == 'extension-definition' &&
+            (component['extension_types'].includes('new-sdo') ||
+            component['extension_types'].includes('new-sco') ||
+            component['extension_types'].includes('new-sro'))
+            ) {
+            <button id="create-cust-btn" type="button" class="btn btn-outline-success me-2" (click)="custom()">Configure
+                New Object</button>
+            }
+            <button [disabled]="disableEditObject(component)" id="edit-obj-btn" (click)="edit()"
+                class="btn btn-outline">Edit</button>
+        </div>
+    </div>
     }
     @if (activeTab === 'vt') {
-        <app-vt-dialog
-            mode="embedded"
-            [preloadIndicator]="vtIndicator"
-            [preloadType]="vtIndicatorType"
-            [cachedData]="vtCachedData"
-            (vtDataLoaded)="onVtDataLoaded($event)"
-            (stixObjectsSelected)="handleVtObjectsSelected($event)"
-        >
-        </app-vt-dialog>
+    <app-vt-dialog mode="embedded" [preloadIndicator]="vtIndicator" [preloadType]="vtIndicatorType"
+        [cachedData]="vtCachedData" (vtDataLoaded)="onVtDataLoaded($event)"
+        (stixObjectsSelected)="handleVtObjectsSelected($event)">
+    </app-vt-dialog>
     }
     @if (activeTab === 'misp') {
-        @if (!mispResults) {
-            <div class="modal-body d-flex justify-content-center">
-                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 600px">
-                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
-                        <span class="visually-hidden">Searching...</span>
-                    </div>
-                    <p class="text-muted">Searching MISP...</p>
-                </div>
+    @if (!mispResults) {
+    <div class="modal-body d-flex justify-content-center">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 600px">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
+                <span class="visually-hidden">Searching...</span>
             </div>
-        } @else {
-            <div class="modal-body d-flex justify-content-center" style="height: 600px; overflow-y: auto">
-                <app-misp-result style="width: 100%" [results]="mispResults"></app-misp-result>
-            </div>
+            <p class="text-muted">Searching MISP...</p>
+        </div>
+    </div>
+    } @else {
+    <div class="modal-body d-flex justify-content-center" style="height: 600px; overflow-y: auto">
+        <app-misp-result style="width: 100%" [results]="mispResults"></app-misp-result>
+    </div>
 
-            <div class="modal-footer d-flex justify-content-end">
-                <div>
-                    <button id="edit-obj-btn" class="btn btn-outline-primary" (click)="importMisp()">Import</button>
-                </div>
-            </div>
-        }
+    <div class="modal-footer d-flex justify-content-end">
+        <div>
+            <button id="edit-obj-btn" class="btn btn-outline-primary" (click)="importMisp()">Import</button>
+        </div>
+    </div>
+    }
     }
 </div>
