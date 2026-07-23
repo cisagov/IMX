@@ -1,3 +1,9 @@
+## [4.8.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.1...v4.8.2) (2026-07-23)
+
+### Bug Fixes
+
+* restyle standard ui to match guided styling ([1b7b109](https://git.va.th.ten/eos/cde/tie/imx/commit/1b7b109ed7817ab79964a6582974adbe550b1d12))
+
 ## [4.8.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.0...v4.8.1) (2026-07-21)
 
 ### Bug Fixes
