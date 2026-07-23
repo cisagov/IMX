@@ -1,3 +1,16 @@
+## [4.9.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.2...v4.9.0) (2026-07-23)
+
+### Features
+
+* added console messages section VT URL results ([f2b6b47](https://git.va.th.ten/eos/cde/tie/imx/commit/f2b6b4759633a41f843df01523df1d672c422e0b))
+* enriching URL VT search results, some clean up ([fd42789](https://git.va.th.ten/eos/cde/tie/imx/commit/fd427897660889b06487e27b9a545709a6c22d6b))
+* initial commit of URL searching on virustotal integration ([eb18c45](https://git.va.th.ten/eos/cde/tie/imx/commit/eb18c457b9598b39d761fef4e29941a532182965))
+
+### Bug Fixes
+
+* moving some text on VT results page ([ba4aaf7](https://git.va.th.ten/eos/cde/tie/imx/commit/ba4aaf7c14d526ae80bdab905155520784571fed))
+* updated Intel Summary for URLs to conform to info from Fusion ([cbfa908](https://git.va.th.ten/eos/cde/tie/imx/commit/cbfa9080b01880efe88ea715c371e6fe90ed9147))
+
 ## [4.8.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.1...v4.8.2) (2026-07-23)
 
 ### Bug Fixes
