@@ -12,13 +12,6 @@
     padding: 0;
 }
 
-.input-group-text,
-input.form-control,
-select.form-control {
-    padding: 4px 8px;
-    font-size: 14px;
-    height: calc(1.5em + 0.5rem + 2px);
-}
 
 .accordion-panel-class {
     padding: 0;
