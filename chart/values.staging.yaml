@@ -1,0 +1,29 @@
+client:
+  tag: v4.8.1
+  host: ""
+
+elastic:
+  tag: 8.18.8
+
+kibana:
+  tag: 8.18.8
+  host: ""
+
+py:
+  tag: v4.8.1
+
+server:
+  auth: ""
+  env: staging
+  keycloakUrl: ""
+  oidcUrl: ""
+  nodeEnv: staging
+  proxyUrl: ""
+  smtpHost: ""
+  tag: v4.8.1
+  taxiiUrl: ""
+
+tika:
+  tag: 3.2.3.0
+
+env: staging

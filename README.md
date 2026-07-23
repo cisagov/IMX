@@ -6,16 +6,16 @@ IMX itself is intended to be used along side a compatible TAXII Server.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Angular 20 |
-| Backend | Node.js |
-| STIX Processing | Python 3 / Flask |
-| Search & Storage | Elasticsearch |
-| Observability | Kibana |
-| Document Parsing | Apache Tika |
-| Authentication | Keycloak, OIDC (optional) |
-| Standards | STIX 2.x, TAXII 2.x |
+| Layer            | Technology                |
+| ---------------- | ------------------------- |
+| Frontend         | Angular 20                |
+| Backend          | Node.js                   |
+| STIX Processing  | Python 3 / Flask          |
+| Search & Storage | Elasticsearch             |
+| Observability    | Kibana                    |
+| Document Parsing | Apache Tika               |
+| Authentication   | Keycloak, OIDC (optional) |
+| Standards        | STIX 2.x, TAXII 2.x       |
 
 ## Prerequisites
 
@@ -101,7 +101,7 @@ For OIDC setup configure the env.json and IMX Server env variables respectively:
 - `env.json` - `oidc.usernameField` - {TARGET OIDC FIELD FOR USERNAME}
 - `ENV` - `OIDC_URL` - {TARGET OIDC PROVIDER API URL}
 - `ENV` - `OIDC_USER_FIELD` - {TARGET OIDC FIELD FOR USERNAME}
-- `ENV` - `OIDC_CERT` - {IF DESIRED TO BYPASS TLS VERIFICATION FOR OIDC PROVIDER SET TO "TEN"}
+- `ENV` - `OIDC_CERT` - {IF DESIRED TO BYPASS TLS VERIFICATION FOR OIDC PROVIDER SET TO "false"}
 
 ## License
 
