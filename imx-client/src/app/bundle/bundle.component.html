@@ -115,7 +115,6 @@
                     </span>
                     <span class="sidebar-label"> VirusTotal </span>
                 </div>
-                @if (!envService.env.aeSetting) {
                 <div title="MISP" id="open-vt-btn" (click)="openMispDialog($event, saveModal)"
                     [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
                     class="d-flex sidebar-item align-items-center">
@@ -124,7 +123,6 @@
                     </span>
                     <span class="sidebar-label"> MISP </span>
                 </div>
-                }
                 <div title="Tools" id="expand-tools-btn" (click)="clickTool($event)"
                     [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
                     class="d-flex sidebar-item align-items-center">
@@ -373,7 +371,6 @@
                                                                                             ">Get VirusTotal
                                                                                 Insights</a>
                                                                         </li>
-                                                                        @if (!envService.env.aeSetting) {
                                                                         <li>
                                                                             <a class="dropdown-item pointer" (click)="
                                                                                                     onIntegrationAction(
@@ -385,7 +382,6 @@
                                                                                                     )
                                                                                                 ">Get MISP Events</a>
                                                                         </li>
-                                                                        }
                                                                     </ul>
                                                                 </div>
                                                                 }
