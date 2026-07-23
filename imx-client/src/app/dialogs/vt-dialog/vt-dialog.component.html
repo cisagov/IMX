@@ -14,8 +14,9 @@
                 @if (isParsed) {
                     <span>VirusTotal Report</span>
                     <div class="vt-search-summary">
-                        {{ searchedHashCount }} hash{{ searchedHashCount !== 1 ? 'es' : '' }}, {{ searchedDomainCount }} domain{{ searchedDomainCount !== 1 ? 's' : '' }} searched,
-                        {{ searchedIpCount }} IP{{searchedIpCount !== 1 ? 's' : '' }}
+                        {{ searchedHashCount }} hash{{ searchedHashCount !== 1 ? 'es' : '' }}, {{ searchedDomainCount }} domain{{ searchedDomainCount !== 1 ? 's' : '' }},
+                        {{ searchedUrlCount }} URL{{ searchedUrlCount !== 1 ? 's' : '' }},
+                        {{ searchedIpCount }} IP{{searchedIpCount !== 1 ? 's' : '' }} searched
                         @if (searchedIpCount > 0) {
                             ({{ searchedIpv4Count }} IPv4, {{ searchedIpv6Count }} IPv6)
                         }
@@ -104,8 +105,15 @@
                 </ul>
                 @if (responseTab === 'textResponse') {
                     <div class="p-3">
-                        @if (getHashesWithResults().length === 0 && getIpsWithResults().length === 0 && getDomainsWithResults().length === 0) {
-                            <div class="alert alert-info">No VirusTotal results available. Please parse hashes, IP addresses, or domains first.</div>
+                        @if (
+                            getHashesWithResults().length === 0 &&
+                            getIpsWithResults().length === 0 &&
+                            getDomainsWithResults().length === 0 &&
+                            getUrlsWithResults().length === 0
+                        ) {
+                            <div class="alert alert-info">
+                                No VirusTotal results available. Please parse hashes, IP addresses, domains, or URLs first.
+                            </div>
                         }
                         <!-- Collapsible sections for each hash -->
                         @for (hash of getHashesWithResults(); track hash) {
@@ -3707,6 +3715,593 @@
                                                 }
                                             } @else {
                                                 <div class="alert alert-warning">No data found for this domain.</div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- ─── URL RESULTS ─────────────────────────────────────────── -->
+                        @for (url of getUrlsWithResults(); track url) {
+                            <div class="dashboard-card main-card mb-3">
+                                <div class="d-flex flex-column ps-4 pe-4 pb-3">
+                                    <div class="p-3 card-title card-header">
+                                        <div
+                                            (click)="toggleUrlExpansion(url)"
+                                            class="d-flex justify-content-between cursor-pointer align-items-center"
+                                        >
+                                            <div class="ms-2 d-flex align-items-center">
+                                                <div class="d-flex flex-column align-items-center me-3" (click)="$event.stopPropagation()">
+                                                    <input
+                                                        type="checkbox"
+                                                        class="form-check-input"
+                                                        [checked]="isUrlIncluded(url)"
+                                                        style="margin-top: 0; margin-right: 0"
+                                                        (change)="toggleUrlIncluded(url)"
+                                                        title="Include in STIX objects"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <span class="badge bg-info me-2">URL</span>
+                                                    <span class="hash-text me-3" style="word-break: break-all">{{ url }}</span>
+                                                    <span class="badge" [ngClass]="getVtResultForUrl(url)?.hasData ? 'bg-success' : 'bg-secondary'">
+                                                        {{ getVtResultForUrl(url)?.hasData ? 'Data Available' : 'No Data' }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex align-items-center">
+                                                <div class="d-flex align-items-center me-3 file-metadata">
+                                                    <div class="metadata-column">
+                                                        <div class="metadata-label">Status Code</div>
+                                                        <div class="metadata-value">
+                                                            {{
+                                                                getUrlStatusCode(url)
+                                                                    ? getUrlStatusCode(url)
+                                                                    : 'N/A'
+                                                            }}                                                        </div>
+                                                    </div>
+                                                    <div class="metadata-column ms-1">
+                                                        <div class="metadata-label">Status</div>
+                                                        <div class="metadata-value">
+                                                            {{
+                                                                getUrlLastAnalysis(url)
+                                                                    ? formatResolutionDate(getUrlLastAnalysis(url))
+                                                                    : 'N/A'
+                                                            }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="vr mx-3"></div>
+
+                                                <div class="d-flex flex-column align-items-center me-3" (click)="$event.stopPropagation()">
+                                                    <button
+                                                        class="btn"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                        aria-label="Download"
+                                                        title="Download"
+                                                    >
+                                                        <fa-icon [icon]="faDownload" class="sidebar-icon"></fa-icon>
+                                                        <fa-icon
+                                                            [icon]="faCaretDown"
+                                                            class="ms-1"
+                                                            style="font-size: 0.65em; color: #8d9498"
+                                                        ></fa-icon>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a
+                                                                class="dropdown-item pointer"
+                                                                style="color: #212529; font-size: 14px"
+                                                                (click)="downloadByUrl(url, 'vt')"
+                                                                >VT JSON</a
+                                                            >
+                                                        </li>
+                                                        <li>
+                                                            <a
+                                                                class="dropdown-item pointer"
+                                                                style="color: #212529; font-size: 14px"
+                                                                (click)="downloadByUrl(url, 'stix')"
+                                                                >STIX</a
+                                                            >
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    class="btn"
+                                                    [ngClass]="{ rotate: !isUrlExpanded(url), 'rotate-back': isUrlExpanded(url) }"
+                                                >
+                                                    <fa-icon class="sidebar-icon" [icon]="faAngleDoubleUp"></fa-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if (isUrlExpanded(url)) {
+                                        <ul class="nav nav-underline ms-3 ip-result-tabs">
+                                            <li class="nav-item">
+                                                <a
+                                                    class="nav-link pointer"
+                                                    [ngClass]="{ active: getUrlResultTab(url) === 'summary' }"
+                                                    (click)="setUrlResultTab(url, 'summary')"
+                                                    >Summary</a
+                                                >
+                                            </li>
+                                            <li class="nav-item">
+                                                <a
+                                                    class="nav-link pointer"
+                                                    [ngClass]="{ active: getUrlResultTab(url) === 'detection' }"
+                                                    (click)="setUrlResultTab(url, 'detection')"
+                                                    >Detection</a
+                                                >
+                                            </li>
+                                            <li class="nav-item">
+                                                <a
+                                                    class="nav-link pointer"
+                                                    [ngClass]="{ active: getUrlResultTab(url) === 'details' }"
+                                                    (click)="setUrlResultTab(url, 'details')"
+                                                    >Details</a
+                                                >
+                                            </li>
+                                        </ul>
+
+                                        <div class="card-body pt-2">
+                                            @if (getVtResultForUrl(url)?.hasData) {
+                                                <!-- URL SUMMARY TAB -->
+                                                @if (getUrlResultTab(url) === 'summary') {
+                                                    <!-- Page Stats -->
+                                                    <div class="vt-section mb-4">
+                                                        <h5 class="vt-section-header mb-3">Page Stats</h5>
+                                                        <div class="vt-properties section-content">
+                                                            <div class="row g-2">
+                                                                <div class="col-md-4">
+                                                                    <div class="vt-property-row">
+                                                                        <span class="vt-property-label">Response Size:</span>
+                                                                        <span class="vt-property-value">{{ getUrlResponseSizeDisplay(url) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="vt-property-row">
+                                                                        <span class="vt-property-label">HTTP Status:</span>
+                                                                        <span class="vt-property-value">{{ getUrlStatusCode(url) ?? 'N/A' }}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="vt-property-row">
+                                                                        <span class="vt-property-label">Cookies:</span>
+                                                                        <span class="vt-property-value">{{ getUrlCookieCount(url) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- URL Overview -->
+                                                    <div class="vt-section mb-4">
+                                                        <h5 class="vt-section-header mb-3">URL Overview</h5>
+                                                        <div class="vt-properties section-content">
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Vendors Analysis:</span>
+                                                                <span
+                                                                    class="vt-property-value"
+                                                                    [ngClass]="getUrlMaliciousCount(url) > 0 ? 'malicious' : ''"
+                                                                >
+                                                                    {{ getUrlMaliciousCount(url) }}/{{ getUrlTotalEngines(url) }} security vendors
+                                                                    flagged this URL as malicious
+                                                                </span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Final URL:</span>
+                                                                <span class="vt-property-value" style="word-break: break-all">{{
+                                                                    getUrlFinalUrl(url)
+                                                                }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Domain:</span>
+                                                                <span class="vt-property-value">{{ getUrlHostname(url) || 'N/A' }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Serving IP:</span>
+                                                                <span class="vt-property-value">
+                                                                    {{ getUrlServingIp(url) || 'N/A' }}
+                                                                    @if (getUrlCountry(url)) {
+                                                                        <span class="badge bg-secondary ms-1">{{ getUrlCountry(url) }}</span>
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Current Status Code:</span>
+                                                                <span class="vt-property-value">{{ getUrlStatusCode(url) ?? 'N/A' }}</span>
+                                                            </div>
+                                                            @if (getUrlTitle(url)) {
+                                                                <div class="vt-property-row">
+                                                                    <span class="vt-property-label">Title:</span>
+                                                                    <span class="vt-property-value">{{ getUrlTitle(url) }}</span>
+                                                                </div>
+                                                            }
+                                                            @if (getUrlCategoryValues(url).length > 0) {
+                                                                <div class="vt-property-row">
+                                                                    <span class="vt-property-label">Category:</span>
+                                                                    <span class="vt-property-value">
+                                                                        @for (cat of getUrlCategoryValues(url); track cat) {
+                                                                            <span class="badge bg-secondary me-1">{{ cat }}</span>
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            }
+                                                            @if (getUrlTags(url).length > 0) {
+                                                                <div class="vt-property-row">
+                                                                    <span class="vt-property-label">Tags:</span>
+                                                                    <span class="vt-property-value">
+                                                                        @for (tag of getUrlTags(url); track tag) {
+                                                                            <span class="badge bg-secondary me-1">{{ tag }}</span>
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- History -->
+                                                    <div class="vt-section mb-4">
+                                                        <h5 class="vt-section-header mb-3">History</h5>
+                                                        <div class="vt-properties section-content">
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">First Submission:</span>
+                                                                <span class="vt-property-value">{{ formatVtTimestampUtc(getUrlFirstSubmission(url)) }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Last Submission:</span>
+                                                                <span class="vt-property-value">{{ formatVtTimestampUtc(getUrlLastSubmission(url)) }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Last Analysis:</span>
+                                                                <span class="vt-property-value">{{ formatVtTimestampUtc(getUrlLastAnalysis(url)) }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Web Technologies -->
+                                                    @if (getUrlWebTechnologies(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">Web Technologies</h5>
+                                                            <div class="scrollable-table-container">
+                                                                <table class="whois-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Technology</th>
+                                                                            <th>Version</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @for (tech of getUrlWebTechnologies(url); track tech.technology) {
+                                                                            <tr>
+                                                                                <td>{{ tech.technology }}</td>
+                                                                                <td>{{ tech.version }}</td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+
+                                                <!-- URL DETECTION TAB -->
+                                                @if (getUrlResultTab(url) === 'detection') {
+                                                    <div class="vt-section mb-4">
+                                                        <h5 class="vt-section-header mb-3">Analysis Summary:</h5>
+                                                        <div class="vt-properties section-content">
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Malicious:</span>
+                                                                <span class="vt-property-value text-danger">{{ getUrlAnalysisStats(url).malicious }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Suspicious:</span>
+                                                                <span class="vt-property-value text-warning">{{ getUrlAnalysisStats(url).suspicious }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Clean:</span>
+                                                                <span class="vt-property-value">{{ getUrlAnalysisStats(url).harmless }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Undetected:</span>
+                                                                <span class="vt-property-value">{{ getUrlAnalysisStats(url).undetected }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    @if (getUrlDetectionResults(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">Detections:</h5>
+                                                            <div class="vt-properties section-content" style="max-height: 400px; overflow-y: auto">
+                                                                <div class="row g-1">
+                                                                    @for (detection of getUrlDetectionResults(url); track detection.engine) {
+                                                                        <div class="col-md-6">
+                                                                            <div class="vt-property-row">
+                                                                                <span class="vt-property-label detections-width">{{
+                                                                                    detection.engine_name
+                                                                                }}</span>
+                                                                                <span
+                                                                                    class="vt-property-value d-flex align-items-center"
+                                                                                    [ngClass]="{
+                                                                                        clean:
+                                                                                            getDetectionCategory(
+                                                                                                detection.result,
+                                                                                                detection.category
+                                                                                            ) === 'clean',
+                                                                                        malicious:
+                                                                                            getDetectionCategory(
+                                                                                                detection.result,
+                                                                                                detection.category
+                                                                                            ) === 'malicious',
+                                                                                        suspicious:
+                                                                                            getDetectionCategory(
+                                                                                                detection.result,
+                                                                                                detection.category
+                                                                                            ) === 'suspicious',
+                                                                                        error:
+                                                                                            getDetectionCategory(
+                                                                                                detection.result,
+                                                                                                detection.category
+                                                                                            ) === 'error',
+                                                                                    }"
+                                                                                >
+                                                                                    @if (
+                                                                                        getDetectionCategory(detection.result, detection.category) ===
+                                                                                        'malicious'
+                                                                                    ) {
+                                                                                        <fa-icon
+                                                                                            [icon]="faExclamationTriangle"
+                                                                                            class="detection-icon me-2"
+                                                                                        ></fa-icon>
+                                                                                    }
+                                                                                    @if (
+                                                                                        getDetectionCategory(detection.result, detection.category) ===
+                                                                                        'suspicious'
+                                                                                    ) {
+                                                                                        <fa-icon
+                                                                                            [icon]="faExclamationTriangle"
+                                                                                            class="detection-icon me-2"
+                                                                                        ></fa-icon>
+                                                                                    }
+                                                                                    @if (
+                                                                                        getDetectionCategory(detection.result, detection.category) ===
+                                                                                        'error'
+                                                                                    ) {
+                                                                                        <fa-icon [icon]="faBan" class="detection-icon me-2"></fa-icon>
+                                                                                    }
+                                                                                    @if (
+                                                                                        getDetectionCategory(detection.result, detection.category) ===
+                                                                                        'clean'
+                                                                                    ) {
+                                                                                        <fa-icon
+                                                                                            [icon]="faCheckCircle"
+                                                                                            class="detection-icon me-2"
+                                                                                        ></fa-icon>
+                                                                                    }
+                                                                                    {{
+                                                                                        getDetectionDisplayText(detection.result, detection.category)
+                                                                                    }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+
+                                                <!-- URL DETAILS TAB -->
+                                                @if (getUrlResultTab(url) === 'details') {
+                                                    <!-- Categories -->
+                                                    @if (getUrlCategories(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">Categories</h5>
+                                                            <div class="vt-properties section-content">
+                                                                @for (cat of getUrlCategories(url); track cat.vendor) {
+                                                                    <div class="vt-property-row">
+                                                                        <span class="vt-property-label">{{ cat.vendor }}:</span>
+                                                                        <span class="vt-property-value">{{ cat.category }}</span>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- History -->
+                                                    <div class="vt-section mb-4">
+                                                        <h5 class="vt-section-header mb-3">History</h5>
+                                                        <div class="vt-properties section-content">
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">First Submission:</span>
+                                                                <span class="vt-property-value">{{ formatVtTimestampUtc(getUrlFirstSubmission(url)) }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Last Submission:</span>
+                                                                <span class="vt-property-value">{{ formatVtTimestampUtc(getUrlLastSubmission(url)) }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Last Analysis:</span>
+                                                                <span class="vt-property-value">{{ formatVtTimestampUtc(getUrlLastAnalysis(url)) }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- HTTP Response -->
+                                                    <div class="vt-section mb-4">
+                                                        <h5 class="vt-section-header mb-3">HTTP Response</h5>
+                                                        <div class="vt-properties section-content">
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Final URL:</span>
+                                                                <span class="vt-property-value" style="word-break: break-all">{{
+                                                                    getUrlFinalUrl(url)
+                                                                }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Serving IP Address:</span>
+                                                                <span class="vt-property-value">
+                                                                    {{ getUrlServingIp(url) || 'N/A' }}
+                                                                    @if (getUrlCountry(url)) {
+                                                                        <span class="badge bg-secondary ms-1">{{ getUrlCountry(url) }}</span>
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Status Code:</span>
+                                                                <span class="vt-property-value">{{ getUrlStatusCode(url) ?? 'N/A' }}</span>
+                                                            </div>
+                                                            <div class="vt-property-row">
+                                                                <span class="vt-property-label">Body Length:</span>
+                                                                <span class="vt-property-value">{{ getUrlResponseSizeDisplay(url) }}</span>
+                                                            </div>
+                                                        </div>
+                                                        @if (getUrlResponseHeaders(url).length > 0) {
+                                                            <div class="vt-section mb-4 mt-4">
+                                                                <h5 class="vt-section-header mb-3">Headers</h5>
+                                                                <div class="vt-properties section-content">
+                                                                    @for (header of getUrlResponseHeaders(url); track header.name) {
+                                                                        <div class="vt-property-row">
+                                                                            <span class="vt-property-label">{{ header.name }}:</span>
+                                                                            <span class="vt-property-value" style="word-break: break-all">{{
+                                                                                header.value
+                                                                            }}</span>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+
+                                                    <!-- HTML Info -->
+                                                    @if (getUrlHtmlMeta(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">HTML Info</h5>
+                                                            <div class="vt-properties section-content">
+                                                                <span class="vt-property-label">Title:</span>
+                                                                <span class="vt-property-value">{{ getUrlTitle(url) || 'Not Found' }}</span>
+                                                                <h6 class="vt-section-header mb-3 mt-4">Meta Tags</h6>
+                                                                @for (meta of getUrlHtmlMeta(url); track meta.name) {
+                                                                    <div class="vt-property-row">
+                                                                        <span class="vt-property-label">{{ meta.name }}:</span>
+                                                                        <span class="vt-property-value" style="word-break: break-all">{{ meta.value }}</span>
+                                                                    </div>
+                                                                }
+
+                                                                <h6 class="vt-section-header mb-3 mt-4">Trackers</h6>
+                                                                <div class="vt-property-row">
+                                                                    <span class="vt-property-value">
+                                                                        @if (getUrlTrackers(url).length > 0) {
+                                                                            @for (tracker of getUrlTrackers(url); track tracker) {
+                                                                                <span class="badge bg-secondary me-1">{{ tracker }}</span>
+                                                                            }
+                                                                        } @else {
+                                                                            Not Found
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- Network Requests / HTTPS Transactions -->
+                                                    <div class="vt-section mb-4">
+                                                        <h5 class="vt-section-header mb-3">Network Requests / HTTPS Transactions</h5>
+                                                        <div class="scrollable-table-container auto-height">
+                                                            <table class="whois-table network-requests-table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>URL</th>
+                                                                        <th>Status</th>
+                                                                        <th>Detections</th>
+                                                                        <th>Relation Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @for (tx of getUrlHttpTransactions(url); track tx.url) {
+                                                                        <tr>
+                                                                            <td>
+                                                                                <span style="word-break: break-all">{{ tx.url }}</span>
+                                                                                @if (tx.contentType) {
+                                                                                    <span class="badge bg-secondary ms-2 align-middle">{{ tx.contentType }}</span>
+                                                                                }
+                                                                            </td>
+                                                                            <td>{{ tx.status ?? 'N/A' }}</td>
+                                                                            <td [ngClass]="tx.malicious > 0 ? 'text-danger' : ''">
+                                                                                {{ tx.malicious }} / {{ tx.total }}
+                                                                            </td>
+                                                                            <td>{{ tx.date ? formatResolutionDate(tx.date) : 'N/A' }}</td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Javascript Global Variables -->
+                                                    @if (getUrlJavascriptVariables(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">Javascript Global Variables</h5>
+                                                            <div class="scrollable-table-container">
+                                                                <table class="whois-table js-variables-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Variable name</th>
+                                                                            <th>Type</th>
+                                                                            <th>Value</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @for (jsVar of getUrlJavascriptVariables(url); track $index) {
+                                                                            <tr>
+                                                                                <td>{{ jsVar.name }}</td>
+                                                                                <td>{{ jsVar.type }}</td>
+                                                                                <td style="word-break: break-all">{{ jsVar.value }}</td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- Console Messages -->
+                                                    @if (getUrlConsoleMessages(url).length > 0) {
+                                                        <div class="vt-section mb-4">
+                                                            <h5 class="vt-section-header mb-3">Console Messages</h5>
+                                                            <div class="scrollable-table-container">
+                                                                <table class="whois-table console-messages-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>URL/Text</th>
+                                                                            <th>Source</th>
+                                                                            <th>Level</th>
+                                                                            <th>Message</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @for (msg of getUrlConsoleMessages(url); track $index) {
+                                                                            <tr>
+                                                                                <td style="word-break: break-all">{{ msg.sourceFile || '—' }}</td>
+                                                                                <td><span class="badge bg-secondary">{{ msg.source }}</span></td>
+                                                                                <td><span class="badge" [ngClass]="consoleLevelBadgeClass(msg.level)">{{ msg.level }}</span></td>
+                                                                                <td style="word-break: break-all">{{ msg.message }}</td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            } @else {
+                                                <div class="alert alert-warning">No data found for this URL.</div>
                                             }
                                         </div>
                                     }
