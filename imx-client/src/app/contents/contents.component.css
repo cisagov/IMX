@@ -28,12 +28,6 @@
     width: 80px;
 }
 
-.input-group-text,
-input.form-control {
-    padding: 4px 8px;
-    font-size: 14px;
-    height: calc(1.5em + 0.5rem + 2px);
-}
 
 .accordion-panel-class {
     padding: 0;
@@ -43,14 +37,6 @@ input.form-control {
     width: 0px;
 }
 
-.form-control {
-    height: 33px;
-}
-
-.form-control {
-    height: 33px;
-    font-size: 15px;
-}
 
 .input-section-offset {
     margin-top: 25px;
