@@ -165,12 +165,6 @@ textarea::placeholder {
     color: #adb5bd !important;
 }
 
-.input-group-text,
-input.form-control {
-    padding: 4px 8px;
-    font-size: 14px;
-    height: 31px;
-}
 
 .inner-row {
     padding: 8px 0px 34px;
@@ -178,10 +172,6 @@ input.form-control {
     height: 31px;
 }
 
-.dropdown {
-    font-size: 14px;
-    height: 28px;
-}
 
 .cust-obj-add-button,
 .cancel-button {
@@ -223,14 +213,6 @@ input.form-control {
 
 .cancel-button {
     width: 80px;
-}
-
-.input-group-text,
-input.form-control,
-select.form-control {
-    padding: 4px 8px;
-    font-size: 14px;
-    height: 31px;
 }
 
 .accordion-panel-class {
