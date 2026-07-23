@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.tika.name }}
+spec:
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.tika.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.tika.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.tika.app }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.tika.podSecurityContext | nindent 8 }}
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: {{ .Values.tika.name }}
+          securityContext:
+            {{- toYaml .Values.tika.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.tika.resources | nindent 12 }}
+          image: "{{ .Values.tika.image}}:{{ .Values.tika.tag }}"
+          imagePullPolicy: "{{ .Values.tika.imagePullPolicy }}"
+
+          ports:
+            - containerPort: {{ .Values.tika.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.tika.name }}
+  labels:
+    app: {{ .Values.tika.app }}
+spec:
+  type: NodePort
+  ports:
+   - port: {{ .Values.tika.port }}
+     targetPort: {{ .Values.tika.port }}
+  selector:
+   app: {{ .Values.tika.app }}
+---

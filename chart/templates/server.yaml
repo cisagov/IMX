@@ -1,0 +1,157 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.server.name }}
+spec:
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.server.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.server.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.server.app }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.server.podSecurityContext | nindent 8 }}
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: uploads
+          emptyDir:
+            sizeLimit: 512Mi
+      containers:
+        - name: {{ .Values.server.name }}
+          securityContext:
+            {{- toYaml .Values.server.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.server.resources | nindent 12 }}
+          image: "{{ .Values.server.image }}:{{ .Values.server.tag }}"
+          imagePullPolicy: "{{ .Values.server.imagePullPolicy }}"
+          volumeMounts:
+            - name: uploads
+              mountPath: /imx-server/uploads
+
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.server.nodeEnv | quote }}
+
+            - name: ENV
+              value: {{ .Values.server.env | quote }}
+
+            - name: STARTUP
+              value: {{ .Values.server.startup | quote }}
+
+            - name: AUTH
+              value: {{ .Values.server.auth | quote }}
+
+            - name:  BASIC_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: basic-pass
+
+            - name: KC_URL
+              value: {{ .Values.server.keycloakUrl | quote }}
+
+            - name: KC_REALM
+              value: {{ .Values.server.keycloakRealm | quote }}
+
+            - name: KC_CERT
+              value: {{ .Values.server.keycloakCert | quote }}
+
+            - name: OIDC_URL
+              value: {{ .Values.server.oidcUrl | quote }}
+
+            - name: OIDC_USER_FIELD
+              value: {{ .Values.server.oidcUserField | quote }}
+
+            - name: OIDC_CERT
+              value: {{ .Values.server.keycloakCert | quote }}
+
+            - name:  DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: elastic-password
+
+            - name: KIBANA_ENABLED
+              value: {{ .Values.server.kibanaEnabled | quote }}
+
+            - name: SMTP_HOST
+              value: {{ .Values.server.smtpHost | quote }}
+
+            - name: SMTP_SSL
+              value: {{ .Values.server.smtpSSL | quote }}
+
+            - name: TAXII_URL
+              value: {{ .Values.server.taxiiUrl | quote }}
+
+            - name:  TAXII_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: taxii-pass
+
+            - name: TAXII_A1_API_ROOT
+              value: {{ .Values.server.taxiiA1ApiRoot | quote }}
+
+            - name: TAXII_A1_CTI_ID
+              value: {{ .Values.server.taxiiA1CtiId | quote }}
+
+            - name: TAXII_A1_COL_ID
+              value: {{ .Values.server.taxiiA1ColId | quote }}
+
+            - name: TAXII_A1_RAW_ID
+              value: {{ .Values.server.taxiiA1RawId | quote }}
+
+            - name: TIKA_URL
+              value: {{ .Values.tika.url | quote }}
+
+            - name: CMA_URL
+              value: {{ .Values.server.proxyUrl | quote }}
+
+            - name: CMA_USER
+              value: {{ .Values.server.cmaUser | quote }}
+
+            - name: CMA_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: taxii-proxy-pass
+
+            - name: CMA_REQUIRED
+              value: {{ .Values.server.cmaRequired | quote }}
+
+            - name: LOGGER
+              value: {{ .Values.server.logger | quote }}
+
+            - name: VIRUS_TOTAL_ENABLED
+              value: {{ .Values.server.virusTotalEnabled | quote }}
+
+            - name:  VIRUS_TOTAL_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: virus-total-key
+
+          ports:
+            - containerPort: {{ .Values.server.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.server.name }}
+  labels:
+    app: {{ .Values.server.app }}
+spec:
+  type: NodePort
+  ports:
+   - port: {{ .Values.server.port }}
+     targetPort: {{ .Values.server.port }}
+  selector:
+   app: {{ .Values.server.app }}
+---

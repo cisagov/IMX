@@ -1,0 +1,121 @@
+namespace: ""
+
+secrets:
+  create: "false"
+  basicPassword: ""
+  elasticPassword: ""
+  kibanaPassword: ""
+  taxiiPassword: ""
+  taxiiProxyPassword: ""
+  virusTotalKey: ""
+
+client:
+  app: imx-client
+  host: ""
+  image: ""
+  imagePullPolicy: Always
+  name: imx-client
+  podSecurityContext: {}
+  port: 8080
+  replicaCount: 1
+  resources: {}
+  securityContext: {}
+  tag: v4.8.1
+
+elastic:
+  app: elasticsearch
+  discoveryType: single-node
+  image: ""
+  imagePullPolicy: Always
+  javaOpts: "-Xms750m -Xmx750m"
+  name: elasticsearch
+  pathRepo: /opt/snapshots
+  podSecurityContext: {}
+  port: 9200
+  replicaCount: 1
+  resources: { limits: { memory: 2Gi } }
+  securityContext: {}
+  tag: 8.18.8
+  url: http://elasticsearch:9200/
+  xpackSecurityEnabled: "true"
+
+kibana:
+  app: kibana
+  elasticsearchUsername: ""
+  host: ""
+  image: ""
+  imagePullPolicy: Always
+  name: kibana
+  podSecurityContext: {}
+  port: 5601
+  replicaCount: 1
+  resources: { limits: { memory: 2Gi } }
+  securityContext: {}
+  tag: 8.18.8
+  url: http://kibana:5601/
+
+py:
+  app: imx-py
+  image: ""
+  imagePullPolicy: Always
+  name: imx-py
+  podSecurityContext: {}
+  port: 5000
+  replicaCount: 1
+  resources: {}
+  securityContext: {}
+  tag: v4.8.1
+  url: http://imx-py:5000/
+
+server:
+  a1Enabled: "false"
+  app: imx-server
+  auth: ""
+  cmaUser: ""
+  cmaRequired: []
+  env: "local"
+  image: ""
+  imagePullPolicy: Always
+  keycloakCert: ""
+  keycloakRealm: ""
+  keycloakUrl: ""
+  kibanaEnabled: "false"
+  logger: elasticsearch
+  name: imx-server
+  nodeEnv: "local"
+  oidcUrl: ""
+  oidcUserField: preferred_username
+  podSecurityContext: {}
+  port: 3000
+  proxyUrl: ""
+  proxyUser: ""
+  replicaCount: 1
+  resources: {}
+  securityContext: {}
+  smtpHost: ""
+  smtpSSL: "false"
+  startup: "true"
+  tag: v4.8.1
+  taxiiA1ApiRoot: ""
+  taxiiA1ColId: ""
+  taxiiA1CtiId: ""
+  taxiiA1RawId: ""
+  taxiiUrl: ""
+  taxiiUser: ""
+  url: http://imx-server:3000/
+  virusTotalEnabled: "false"
+
+tika:
+  app: apache-tika
+  image: ""
+  imagePullPolicy: Always
+  name: apache-tika
+  podSecurityContext: {}
+  port: 9998
+  replicaCount: 1
+  resources: {}
+  securityContext: {}
+  tag: 3.2.3.0
+  url: http://apache-tika:9998/tika
+
+env: "local"

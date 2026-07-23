@@ -1,0 +1,108 @@
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: elastic-data-pv-claim
+  labels:
+    app: {{ .Values.elastic.app }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: elastic-snapshots-pv-claim
+  labels:
+    app: {{ .Values.elastic.app }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.elastic.name }}
+spec:
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.elastic.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.elastic.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.elastic.app }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.elastic.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Values.elastic.name }}
+          securityContext:
+            {{- toYaml .Values.elastic.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.elastic.resources | nindent 12 }}
+          image: "{{ .Values.elastic.image}}:{{ .Values.elastic.tag }}"
+          imagePullPolicy: "{{ .Values.elastic.imagePullPolicy }}"
+
+          env:
+            - name: discovery.type
+              value: {{ .Values.elastic.discoveryType | quote }}
+
+            - name: ES_JAVA_OPTS
+              value: {{ .Values.elastic.javaOpts | quote }}
+
+            - name: path.repo
+              value: {{ .Values.elastic.pathRepo | quote }}
+
+            - name: xpack.security.enabled
+              value: {{ .Values.elastic.xpackSecurityEnabled | quote }}
+
+            - name:  ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: elastic-password
+
+          ports:
+            - containerPort: {{ .Values.elastic.port }}
+
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: data
+            - mountPath: /opt/snapshots
+              name: snapshots
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: elastic-data-pv-claim
+        - name: snapshots
+          persistentVolumeClaim:
+            claimName: elastic-snapshots-pv-claim
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.elastic.name }}
+  labels:
+    app: {{ .Values.elastic.app }}
+spec:
+  type: ClusterIP
+  ports:
+   - port: {{ .Values.elastic.port }}
+  selector:
+   app: {{ .Values.elastic.app }}
+---
