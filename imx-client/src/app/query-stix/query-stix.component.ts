@@ -165,6 +165,8 @@ export class QueryStixComponent implements OnInit, OnDestroy {
     setFirstRoot = false;
     setFirstCollection = false;
 
+    isAdmin = false;
+
     userRoles = [];
 
     statusTable: any[];
@@ -271,6 +273,7 @@ export class QueryStixComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.stixService.getUnreadAlerts();
+        this.isAdminUser();
         new Promise(async (resolve, reject) => {
             try {
                 if (this.taxiiServerType === 'custom') {
@@ -2705,8 +2708,27 @@ export class QueryStixComponent implements OnInit, OnDestroy {
         this.messageService.add(`${message}`);
     }
 
-    get isAdminUser(): boolean {
-        return this.envService.env.keycloak.enabled && this.userRoles.includes('imx-admin');
+    async isAdminUser() {
+        if (this.envService.env.keycloak.enabled === false && this.envService.env.oidc.enabled === false) {
+            this.isAdmin = true;
+            return;
+        }
+
+        if (this.userRoles.length === 0) {
+            this.isAdmin = false;
+            return;
+        }
+
+        if (this.envService.env.taxiiServer === undefined) {
+            await this.envService.wait('taxiiServer');
+        }
+
+        if (this.userRoles.includes(this.envService.env.taxiiServer.adminRoleName)) {
+            this.isAdmin = true;
+            return;
+        }
+
+        this.isAdmin = false;
     }
 
     async nextPage(direction) {
