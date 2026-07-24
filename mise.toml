@@ -5,6 +5,7 @@ uv = "latest"
 node = "lts"
 npm = "latest"
 hadolint = "latest"
+"npm:@angular/cli" = "latest"
 
 [settings]
 python.uv_venv_auto = "create|source"
@@ -16,6 +17,7 @@ prek install
 uv sync --project imx-py
 cd imx-client && npm install
 cd ../imx-server && npm install
+cd ../ && npm i && npx playwright install
 """
 
 [tasks.init]
@@ -32,11 +34,11 @@ run = """
 docker compose up -d --build
 """
 
-[tasks.build-client]
-description = "Build IMX Client"
+[tasks.playwright]
+description = "Runs playwright tests"
+depends = ["init"]
 run = """
-cd imx-client
-docker build -t tie/imx/client:test .
+npx playwright test tests/
 """
 
 [tasks.trivy-client]
