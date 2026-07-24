@@ -1,3 +1,9 @@
+## 4.10.1 (2026-07-24)
+
+### Bug Fixes
+
+* pattern matching for stix 1.1 indicator to also account for AND operators 8cf46f5
+
 ## 4.10.0 (2026-07-24)
 
 ### Features
