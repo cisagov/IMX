@@ -104,10 +104,12 @@ export class VtDialogComponent {
         ['file', 'File'],
         ['ipv4-addr', 'IPv4 Address'],
         ['ipv6-addr', 'IPv6 Address'],
+        ['autonomous-system', 'Autonomous System'],
         ['mac-addr', 'Mac Address'],
         ['process', 'Process'],
         ['url', 'URL'],
         ['windows-registry-key', 'Windows Registry Key'],
+        ['x509-certificate', 'X509 Certificate'],
         ['malware-analysis', 'Malware Analysis'],
         ['malware', 'Malware'],
         ['indicator', 'Indicator'],
@@ -187,6 +189,7 @@ export class VtDialogComponent {
     private convertedDomains: Map<string, Set<string>> = new Map();
     private convertedDomainResolutionIps: Map<string, Set<string>> = new Map();
     private convertedDomainCommunicatingFileHashes: Map<string, Set<string>> = new Map();
+    private convertedUrlServingIps: Map<string, Set<string>> = new Map();
     private createdIpIndicators: Set<string> = new Set();
     private combinedIpPdnsIndicatorIds: Map<string, string> = new Map();
     private ipStixObjectIds: Map<string, string[]> = new Map();
@@ -569,6 +572,7 @@ export class VtDialogComponent {
         this.urlStixObjectIds.clear();
         this.urlIncluded.clear();
         this.urlExcludedObjectsStore.clear();
+        this.convertedUrlServingIps.clear();
 
         let classification = this.validateAndClassifyInputs(this.textBody.toString());
 
@@ -926,6 +930,23 @@ export class VtDialogComponent {
                         const urlIndicator = this.createUrlSearchIndicatorObject(result.vtData.url);
                         this.addStixObject(urlIndicator);
                         this.trackUrlStixObject(result.vtData.url, urlIndicator.id);
+
+                        // Distinct final URL (redirect target) as its own SCO, linked to the submitted URL.
+                        if (result.finalUrlObj) {
+                            this.addStixObject(result.finalUrlObj);
+                            this.trackUrlStixObject(result.vtData.url, result.finalUrlObj.id);
+
+                            const finalRel = this.createRelationshipObject(result.urlObj.id, result.finalUrlObj.id, 'related-to');
+                            this.addStixObject(finalRel);
+                            this.trackUrlStixObject(result.vtData.url, finalRel.id);
+                        }
+
+                        // One malware-analysis per malicious/suspicious engine.
+                        const malwareAnalyses = this.createUrlMalwareAnalysisObjects(result.vtData.url, result.urlObj.id);
+                        malwareAnalyses.forEach((ma) => {
+                            this.addStixObject(ma);
+                            this.trackUrlStixObject(result.vtData.url, ma.id);
+                        });
                     }
                 }
             });
@@ -1217,6 +1238,34 @@ export class VtDialogComponent {
         malwareAnalysis.id = malwareAnalysis.type + '--' + this.stixService.getUUIDFrIdContributingProperties(malwareAnalysis);
 
         return malwareAnalysis;
+    }
+
+    /** Builds one malware-analysis SDO per URL engine that reported malicious or suspicious,
+     *  each referencing the URL SCO. Harmless/undetected/type-unsupported engines are skipped. */
+    private createUrlMalwareAnalysisObjects(url: string, urlObjId: string): any[] {
+        const detections = this.getUrlDetectionResults(url).filter(
+            (d) => d.category === 'malicious' || d.category === 'suspicious'
+        );
+
+        return detections.map((chunk, index) => {
+            const date = new Date();
+            date.setMilliseconds(date.getMilliseconds() + index * 10);
+
+            const malwareAnalysis: any = {
+                type: 'malware-analysis',
+                spec_version: '2.1',
+                created: date.toISOString(),
+                modified: date.toISOString(),
+            };
+
+            if (chunk.engine_name) malwareAnalysis.product = chunk.engine_name.toLowerCase();
+            if (chunk.category) malwareAnalysis.result = chunk.category;
+            if (chunk.result) malwareAnalysis.result_name = chunk.result;
+            malwareAnalysis.analysis_sco_refs = [urlObjId];
+
+            malwareAnalysis.id = malwareAnalysis.type + '--' + this.stixService.getUUIDFrIdContributingProperties(malwareAnalysis);
+            return malwareAnalysis;
+        });
     }
 
     private createMalwareObject(names: string[], kill_chain_phases: any[], external_references: any[], fileIds: string[]): any {
@@ -2472,6 +2521,7 @@ export class VtDialogComponent {
 
             const errors: string[] = [];
             let urlObj: any = null;
+            let finalUrlObj: any = null;
 
             const vtData = {
                 url: url,
@@ -2487,7 +2537,12 @@ export class VtDialogComponent {
                 urlObj = this.createUrlSearchObject(url);
             }
 
-            return { success: true, errors, urlObj, vtData };
+            const finalUrl = vtUrlResult?.data?.attributes?.last_final_url;
+            if (finalUrl && finalUrl !== url) {
+                finalUrlObj = this.createUrlSearchObject(finalUrl);
+            }
+
+            return { success: true, errors, urlObj, finalUrlObj, vtData };
         } catch (e) {
             console.error(`Error in searchVtUrl for ${url}:`, e);
             const urlObj = this.createUrlSearchObject(url);
@@ -2496,6 +2551,7 @@ export class VtDialogComponent {
                 success: false,
                 errors: [`Error encountered for ${url}: ${e}`],
                 urlObj,
+                finalUrlObj: null,
                 vtData: { url: url, urlResult: null, hasData: false },
             };
         }
@@ -2532,7 +2588,7 @@ export class VtDialogComponent {
 
     private trackUrlStixObject(url: string, objectId: string): void {
         const ids = this.urlStixObjectIds.get(url) || [];
-        ids.push(objectId);
+        if (!ids.includes(objectId)) ids.push(objectId);
         this.urlStixObjectIds.set(url, ids);
     }
 
@@ -2552,6 +2608,18 @@ export class VtDialogComponent {
         return ipObj;
     }
 
+    private createAutonomousSystemObject(asn: number, asOwner?: string, rir?: string): any {
+        const asObj: any = {
+            type: 'autonomous-system',
+            spec_version: '2.1',
+            number: asn,
+        };
+        if (asOwner) asObj.name = asOwner;
+        if (rir) asObj.rir = rir;
+        asObj.id = 'autonomous-system--' + this.stixService.getUUIDFrIdContributingPropertiesVT(asObj);
+        return asObj;
+    }
+
     private createDomainObject(hostname: string, ipId: string): any {
         const domainObj: any = {
             type: 'domain-name',
@@ -2563,7 +2631,13 @@ export class VtDialogComponent {
         return domainObj;
     }
 
-    private createObservedDataObject(ipId: string, domainId: string, date: number, lastAnalysisStats?: any): any {
+    private createObservedDataObject(
+        objectRefs: string[],
+        date: number,
+        lastAnalysisStats?: any,
+        description?: string,
+        numberObserved?: number
+    ): any {
         const now = new Date().toISOString();
         const observed = date ? new Date(date * 1000).toISOString() : now;
         const obj: any = {
@@ -2575,10 +2649,12 @@ export class VtDialogComponent {
             modified: now,
             first_observed: observed,
             last_observed: observed,
-            number_observed: 1,
-            object_refs: [ipId, domainId],
+            number_observed: numberObserved && numberObserved > 0 ? numberObserved : 1,
+            object_refs: [...objectRefs],
         };
-        if (lastAnalysisStats) {
+        if (description) {
+            obj.description = description;
+        } else if (lastAnalysisStats) {
             const malicious = lastAnalysisStats.malicious ?? 0;
             const suspicious = lastAnalysisStats.suspicious ?? 0;
             const total = Object.values(lastAnalysisStats).reduce((sum: number, v: any) => sum + (v ?? 0), 0);
@@ -2739,7 +2815,7 @@ export class VtDialogComponent {
 
             const lastAnalysisStats = resolution.attributes?.last_analysis_stats ?? resolution.attributes?.host_name_last_analysis_stats;
             const domainObj = this.createDomainObject(hostname, ipObj.id);
-            const observedObj = this.createObservedDataObject(ipObj.id, domainObj.id, resolution.attributes.date, lastAnalysisStats);
+            const observedObj = this.createObservedDataObject([ipObj.id, domainObj.id], resolution.attributes.date, lastAnalysisStats);
 
             this.allObjects.push(domainObj);
             this.allObjects.push(observedObj);
@@ -2845,6 +2921,143 @@ export class VtDialogComponent {
 
             converted.add(sha256);
         }
+    }
+
+    /** Builds STIX objects from a URL's serving-IP relation and response attributes:
+     *  the serving ipv4/6-addr, its autonomous-system, the resolved domain-name, the HTTPS
+     *  x509-certificate, the response-body file, and an observed-data grouping them with the URL.
+     *  SCOs are deduped against the bundle so an address reached by multiple paths appears once. */
+    private convertUrlServingIpToStixObjects(url: string): void {
+        const urlObj = this.allObjects.find((o) => o.type === 'url' && o.value === url);
+        if (!urlObj) return;
+
+        const ip = this.getUrlServingIp(url);
+        if (!ip) return;
+
+        // Re-entrancy guard: only process a given serving IP once per URL.
+        if (!this.convertedUrlServingIps.has(url)) this.convertedUrlServingIps.set(url, new Set());
+        const converted = this.convertedUrlServingIps.get(url)!;
+        if (converted.has(ip)) return;
+        converted.add(ip);
+
+        const attrs = this.getUrlAttributes(url) ?? {};
+        const ipAttrs = this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes ?? {};
+
+        const objectRefs: string[] = [urlObj.id];
+
+        // --- Autonomous System (created first so the IP can reference it) ---
+        let asObj: any = null;
+        if (ipAttrs.asn != null) {
+            const existingAs = this.allObjects.find((o) => o.type === 'autonomous-system' && o.number === ipAttrs.asn);
+            if (existingAs) {
+                asObj = existingAs;
+            } else {
+                asObj = this.createAutonomousSystemObject(ipAttrs.asn, ipAttrs.as_owner, ipAttrs.regional_internet_registry);
+                this.addStixObject(asObj);
+                this.trackUrlStixObject(url, asObj.id);
+            }
+        }
+
+        // --- Serving IP (deduped: may already exist from an IP search, a domain resolution, or the URL host literal) ---
+        let ipObj = this.allObjects.find((o) => (o.type === 'ipv4-addr' || o.type === 'ipv6-addr') && o.value === ip);
+        if (!ipObj) {
+            ipObj = this.createIpObject(ip, this.detectIpType(ip));
+            if (asObj) ipObj.belongs_to_refs = [asObj.id];
+            this.addStixObject(ipObj);
+            this.trackUrlStixObject(url, ipObj.id);
+        } else if (asObj && !ipObj.belongs_to_refs?.includes(asObj.id)) {
+            ipObj.belongs_to_refs = Array.from(new Set([...(ipObj.belongs_to_refs || []), asObj.id]));
+        }
+        objectRefs.push(ipObj.id);
+
+        // --- Resolved domain (only when the URL host is a hostname, not an IP literal) ---
+        const hostname = this.getUrlHostname(url);
+        const hostIsDomain = !!hostname && /[a-zA-Z]/.test(hostname) && !hostname.includes(':') && !hostname.startsWith('[');
+        if (hostIsDomain) {
+            let domainObj = this.allObjects.find((o) => o.type === 'domain-name' && o.value === hostname);
+            if (!domainObj) {
+                domainObj = this.createDomainObject(hostname, ipObj.id);
+                this.addStixObject(domainObj);
+                this.trackUrlStixObject(url, domainObj.id);
+            } else {
+                domainObj.resolves_to_refs = Array.from(new Set([...(domainObj.resolves_to_refs || []), ipObj.id]));
+            }
+            objectRefs.push(domainObj.id);
+        }
+
+        // --- HTTPS certificate (lives on the serving-IP object; absent for plain-HTTP URLs) ---
+        const cert = ipAttrs.last_https_certificate;
+        if (cert) {
+            const x509Obj = this.createX509CertificateObject(cert);
+            if (!this.allObjects.some((o) => o.id === x509Obj.id)) {
+                this.addStixObject(x509Obj);
+                this.trackUrlStixObject(url, x509Obj.id);
+            }
+            objectRefs.push(x509Obj.id);
+        }
+
+        // --- Response body file ---
+        const bodySha256 = attrs.last_http_response_content_sha256;
+        if (bodySha256) {
+            let fileObj = this.allObjects.find((o) => o.type === 'file' && o.hashes?.['SHA-256'] === bodySha256);
+            if (!fileObj) {
+                fileObj = { type: 'file', spec_version: '2.1', hashes: { 'SHA-256': bodySha256 } };
+                if (attrs.last_http_response_content_length != null) fileObj.size = attrs.last_http_response_content_length;
+                fileObj.id = 'file--' + this.stixService.getUUIDFrIdContributingPropertiesVT(fileObj);
+                this.addStixObject(fileObj);
+                this.trackUrlStixObject(url, fileObj.id);
+            }
+            objectRefs.push(fileObj.id);
+        }
+
+        // --- Observed-data grouping (carries the VT detection/serving-IP summary) ---
+        const observedDate = attrs.last_analysis_date || attrs.last_submission_date;
+        const observedObj = this.createObservedDataObject(
+            objectRefs,
+            observedDate,
+            undefined,
+            this.buildUrlObservedDescription(url, ip, ipAttrs),
+            attrs.times_submitted
+        );
+        this.addStixObject(observedObj);
+        this.trackUrlStixObject(url, observedObj.id);
+
+        // --- Indicator --based-on--> observed-data ---
+        const indicatorObj = this.allObjects.find((o) => o.type === 'indicator' && o.pattern === `[url:value = '${url}']`);
+        if (indicatorObj) {
+            const rel = this.createRelationshipObject(indicatorObj.id, observedObj.id, 'based-on');
+            this.addStixObject(rel);
+            this.trackUrlStixObject(url, rel.id);
+        }
+    }
+
+    private buildUrlObservedDescription(url: string, ip: string, ipAttrs: any): string {
+        const stats = this.getUrlAnalysisStats(url);
+        const total = this.getUrlTotalEngines(url);
+        const attrs = this.getUrlAttributes(url) ?? {};
+        const headers = attrs.last_http_response_headers ?? {};
+        const contentType = headers['content-type'] || headers['Content-Type'] || 'unknown';
+        const code = attrs.last_http_response_code ?? 'N/A';
+        const length = attrs.last_http_response_content_length ?? 'unknown';
+
+        let desc = `VirusTotal URL analysis. ${stats.malicious} malicious, ${stats.suspicious} suspicious out of ${total} engines.`;
+        desc += ` HTTP ${code}, content-type ${contentType}, ${length} bytes.`;
+
+        const asParts: string[] = [];
+        if (ipAttrs.asn != null) asParts.push(`AS${ipAttrs.asn}`);
+        if (ipAttrs.as_owner) asParts.push(ipAttrs.as_owner);
+        if (ipAttrs.country) asParts.push(ipAttrs.country);
+        desc += asParts.length ? ` Served by ${ip} (${asParts.join(' ')}).` : ` Served by ${ip}.`;
+
+        const ipStats = ipAttrs.last_analysis_stats;
+        if (ipStats && (ipStats.malicious || ipStats.suspicious)) {
+            desc += ` Serving IP scored ${ipStats.malicious ?? 0} malicious, ${ipStats.suspicious ?? 0} suspicious.`;
+        }
+
+        if (Array.isArray(attrs.threat_names) && attrs.threat_names.length) {
+            desc += ` Threat names: ${attrs.threat_names.join(', ')}.`;
+        }
+        return desc;
     }
 
     private trackIpStixObject(ip: string, id: string): void {
@@ -3877,6 +4090,7 @@ export class VtDialogComponent {
         await Promise.all([
             this.loadUrlRelation(url, 'servingIp', 'serving IP', (u) => this.vtSearchService.postVtUrlServingIp(u)),
         ]);
+        this.convertUrlServingIpToStixObjects(url);
     }
 
     // ─── URL Display Helpers ────────────────────────────────────────────────
