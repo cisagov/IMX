@@ -1,3 +1,16 @@
+## 4.10.0 (2026-07-24)
+
+### Features
+
+* add loading modal for reference checks, allow users to cancel out of the reference checking bec36f9
+
+### Bug Fixes
+
+* extension-type should be extension_type for identity contact extension d4c9062
+* extension-type typo fix for identity contact extension e534d0a
+* show export to misp button in publish modal for all deployments 19b4eff
+* stix 1.1 indicator to include indicators that has AND or OR operator without parentheses 24ef407
+
 ## 4.9.1 (2026-07-24)
 
 ### Bug Fixes
