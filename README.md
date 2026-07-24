@@ -6,16 +6,16 @@ IMX itself is intended to be used along side a compatible TAXII Server.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Angular 20 |
-| Backend | Node.js |
-| STIX Processing | Python 3 / Flask |
-| Search & Storage | Elasticsearch |
-| Observability | Kibana |
-| Document Parsing | Apache Tika |
-| Authentication | Keycloak, OIDC (optional) |
-| Standards | STIX 2.x, TAXII 2.x |
+| Layer            | Technology                |
+| ---------------- | ------------------------- |
+| Frontend         | Angular 20                |
+| Backend          | Node.js                   |
+| STIX Processing  | Python 3 / Flask          |
+| Search & Storage | Elasticsearch             |
+| Observability    | Kibana                    |
+| Document Parsing | Apache Tika               |
+| Authentication   | Keycloak, OIDC (optional) |
+| Standards        | STIX 2.x, TAXII 2.x       |
 
 ## Prerequisites
 
@@ -102,6 +102,17 @@ For OIDC setup configure the env.json and IMX Server env variables respectively:
 - `ENV` - `OIDC_URL` - {TARGET OIDC PROVIDER API URL}
 - `ENV` - `OIDC_USER_FIELD` - {TARGET OIDC FIELD FOR USERNAME}
 - `ENV` - `OIDC_CERT` - {IF DESIRED TO BYPASS TLS VERIFICATION FOR OIDC PROVIDER SET TO "TEN"}
+
+### Testing
+
+At time of writing tests can be executed via mise or directly with playwright. However, before running the playwright task be sure to have a functional connection to a TAXII Server. Otherwise simply run the following:
+
+```
+mise run install
+mise run playwright
+```
+
+These mise tasks will install respective dependencies, execute a build with the docker compose environment with the default .env.example file, and run the playwright tests.
 
 ## License
 
