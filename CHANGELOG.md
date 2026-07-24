@@ -1,3 +1,9 @@
+## [4.10.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.0...v4.10.1) (2026-07-24)
+
+### Bug Fixes
+
+* pattern matching for stix 1.1 indicator to also account for AND operators ([8cf46f5](https://git.va.th.ten/eos/cde/tie/imx/commit/8cf46f56c299f218346d2890edaedbab439754fe))
+
 ## [4.10.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.9.1...v4.10.0) (2026-07-24)
 
 ### Features
