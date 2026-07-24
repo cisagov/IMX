@@ -428,7 +428,7 @@
                                     Clear
                                 </button>
                                 <button
-                                    *ngIf="isAdminUser"
+                                    *ngIf="isAdmin"
                                     class="btn btn-sm btn-outline-secondary"
                                     (click)="deleteSelectedObjects()"
                                     [disabled]="isLoadingRoots || isLoadingStix"
