@@ -1,3 +1,9 @@
+## [4.9.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.9.0...v4.9.1) (2026-07-24)
+
+### Bug Fixes
+
+* patch imx py image for openshift ([8232e82](https://git.va.th.ten/eos/cde/tie/imx/commit/8232e828d9adc09aa1ac32c5b701001dd28313a8))
+
 ## [4.9.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.2...v4.9.0) (2026-07-23)
 
 ### Features
