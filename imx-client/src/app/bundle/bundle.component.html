@@ -15,10 +15,8 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
             @if (isUploading) {
-
             <p class="text-muted">Validating objects in file...</p>
             } @else {
-
             <p class="text-muted">Adding items to bundle...</p>
             }
         </div>
@@ -1427,7 +1425,7 @@
                 Close
             </button>
             <button type="button" class="btn btn-sm btn-outline-success" (click)="switchToMisp()"
-                *ngIf="modalCurrentStep == 2 && environment.analyst1.enabled" [disabled]="isPublishing">
+                *ngIf="modalCurrentStep == 2" [disabled]="isPublishing">
                 <fa-icon [icon]="faUpload" class="pe-1"></fa-icon>
                 Export to MISP
             </button>
