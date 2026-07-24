@@ -447,6 +447,7 @@ export class VtDialogComponent {
             const postfix = nameSplit[nameSplit.length - 1].toLowerCase();
 
             let result: any = undefined;
+            let rawTextForUrls: string | null = null;
 
             switch (postfix) {
                 case 'json':
@@ -461,6 +462,7 @@ export class VtDialogComponent {
                         .replace(/\\r/g, ' ')
                         .replace(/\\\\\\\\/g, ' ')
                         .replace(/\\\\/g, '\\');
+                    rawTextForUrls = text;
                     result = await this.identifyStix.postIdentifyStix(text);
                     break;
                 case 'pdf':
@@ -483,36 +485,11 @@ export class VtDialogComponent {
                 return;
             }
 
-            const values: string[] = [];
-
-            for (const obj of result.objects) {
-                switch (obj.type) {
-                    case 'ipv4-addr':
-                    case 'ipv6-addr':
-                        if (obj.value) values.push(obj.value);
-                        break;
-                    case 'domain-name':
-                        if (obj.value) values.push(obj.value);
-                        break;
-                    case 'file':
-                        if (obj.hashes) {
-                            const hash =
-                                obj.hashes['SHA-256'] ||
-                                obj.hashes['SHA-1'] ||
-                                obj.hashes['MD5'] ||
-                                obj.hashes['SHA-512'] ||
-                                obj.hashes['SSDEEP'] ||
-                                obj.hashes['TLSH'];
-                            if (hash) values.push(hash);
-                        }
-                        break;
-                }
-            }
-
-            const unique = [...new Set(values)];
+            const clientUrls = rawTextForUrls ? this.extractUrlsFromRawText(rawTextForUrls) : [];
+            const unique = this.mergeExtractedIndicators(result.objects, clientUrls);
 
             if (unique.length === 0) {
-                this.extractionError = 'No VT-relevant indicators (IPs, domains, hashes) found in the file.';
+                this.extractionError = 'No VT-relevant indicators (IPs, domains, hashes, URLs) found in the file.';
                 this.isExtracting = false;
                 return;
             }
@@ -2299,54 +2276,102 @@ export class VtDialogComponent {
 
     private async extractIndicatorsFromText(text: string): Promise<string | null> {
         try {
+            // Recover full URLs (incl. query string / fragment) client-side: the server tokenizer
+            // splits on '?' and '=', which truncates URLs before they reach us.
+            const clientUrls = this.extractUrlsFromRawText(text);
+
             const result: any = await this.identifyStix.postIdentifyStix(text);
-            if (!result || !result.objects || result.objects.length === 0) {
-                return null;
-            }
+            const serverObjects = result?.objects ?? [];
 
-            const values: string[] = [];
-
-            for (const obj of result.objects) {
-                switch (obj.type) {
-                    case 'ipv4-addr':
-                    case 'ipv6-addr':
-                        if (obj.value) {
-                            values.push(obj.value);
-                        }
-                        break;
-                    case 'domain-name':
-                        if (obj.value) {
-                            values.push(obj.value);
-                        }
-                        break;
-                    case 'url':
-                        if (obj.value) {
-                            values.push(obj.value);
-                        }
-                        break;
-                    case 'file':
-                        if (obj.hashes) {
-                            const hash =
-                                obj.hashes['SHA-256'] ||
-                                obj.hashes['SHA-1'] ||
-                                obj.hashes['MD5'] ||
-                                obj.hashes['SHA-512'] ||
-                                obj.hashes['SSDEEP'] ||
-                                obj.hashes['TLSH'];
-                            if (hash) {
-                                values.push(hash);
-                            }
-                        }
-                        break;
-                }
-            }
-
-            const unique = [...new Set(values)];
-            return unique.length > 0 ? unique.join('\n') : null;
+            const merged = this.mergeExtractedIndicators(serverObjects, clientUrls);
+            return merged.length > 0 ? merged.join('\n') : null;
         } catch (e) {
             console.error('Error extracting indicators from text:', e);
             return null;
         }
+    }
+
+    /** Refangs defanged indicator notation: [.] / [] → ., stray brackets removed, hxxp(s) → http(s). */
+    private refangUrl(s: string): string {
+        return s
+            .replace(/\[\.?\]/g, '.')
+            .replace(/\[|\]/g, '')
+            .replace(/\bh[xX]{2}p(s?):/gi, 'http$1:');
+    }
+
+    /** Extracts full URLs (scheme through query string / fragment) from raw free-form text,
+     *  refanging defanged notation ([.] → ., hxxp(s) → http(s)) first so pasted defanged
+     *  indicators become real, searchable URLs. */
+    private extractUrlsFromRawText(text: string): string[] {
+        const refanged = this.refangUrl(text);
+
+        const urlRegex = /\b[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s<>"'`\]]+/g;
+        const matches = refanged.match(urlRegex) || [];
+
+        const cleaned = matches
+            .map((u: string) => u.replace(/[.,;:!?)\]}'"]+$/, ''))
+            .filter((u: string) => /:\/\/\S/.test(u));
+
+        return [...new Set(cleaned)];
+    }
+
+    /** Combines server-extracted IP/domain/hash indicators with client-extracted full URLs.
+     *  Drops server URL objects that are truncated prefixes of a client URL, and suppresses any
+     *  domain that is merely the host of an extracted URL. */
+    private mergeExtractedIndicators(serverObjects: any[], clientUrls: string[]): string[] {
+        const ips: string[] = [];
+        const domains: string[] = [];
+        const hashes: string[] = [];
+        const serverUrls: string[] = [];
+
+        for (const obj of serverObjects || []) {
+            switch (obj.type) {
+                case 'ipv4-addr':
+                case 'ipv6-addr':
+                    if (obj.value) ips.push(obj.value);
+                    break;
+                case 'domain-name':
+                    if (obj.value) domains.push(obj.value);
+                    break;
+                case 'url':
+                    if (obj.value) serverUrls.push(obj.value);
+                    break;
+                case 'file':
+                    if (obj.hashes) {
+                        const hash =
+                            obj.hashes['SHA-256'] ||
+                            obj.hashes['SHA-1'] ||
+                            obj.hashes['MD5'] ||
+                            obj.hashes['SHA-512'] ||
+                            obj.hashes['SSDEEP'] ||
+                            obj.hashes['TLSH'];
+                        if (hash) hashes.push(hash);
+                    }
+                    break;
+            }
+        }
+
+        // Refang server URLs before comparing: the server keeps defanged notation (e.g. `[.]`) and
+        // truncates at `?`/`=`, so a literal compare would miss that the client already has them.
+        const keptServerUrls = serverUrls
+            .map((su) => this.refangUrl(su))
+            .filter((su) => !clientUrls.some((cu) => cu === su || cu.startsWith(su)));
+        const urls = [...clientUrls, ...keptServerUrls];
+
+        const urlHosts = new Set<string>();
+        for (const u of urls) {
+            try {
+                urlHosts.add(new URL(u).hostname.toLowerCase());
+            } catch {
+                // ignore unparseable URLs
+            }
+        }
+
+        const filteredDomains = domains
+            .map((d) => this.refangUrl(d))
+            .filter((d) => !urlHosts.has(d.toLowerCase()));
+
+        return [...new Set([...urls, ...ips, ...filteredDomains, ...hashes])];
     }
 
     async searchVtIp(ip: string): Promise<any> {
