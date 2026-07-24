@@ -154,6 +154,7 @@ import { MispDialogComponent } from './misp-dialog/misp-dialog.component';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { AdminUsersPageComponent } from './admin-users-page/admin-users-page.component';
 import { MispResultComponent } from './misp-dialog/misp-result/misp-result.component';
+import { LoadingModalComponent } from './loading-modal/loading-modal.component';
 
 @NgModule({
     declarations: [
@@ -288,6 +289,7 @@ import { MispResultComponent } from './misp-dialog/misp-result/misp-result.compo
         MonacoEditorModule.forRoot(),
         TextFieldModule,
         VtDialogComponent,
+        LoadingModalComponent
     ],
     providers: [
         provideAppInitializer(() => {
