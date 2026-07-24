@@ -510,8 +510,12 @@ export class Analyst1DialogComponent {
                             let patterns = obj.pattern;
                             const patternMap = [];
 
+                            patterns = patterns.split(" AND ")[0];
+
                             if (patterns.startsWith('[')) patterns = patterns.substring(1);
+                            if (patterns.startsWith('(')) patterns = patterns.substring(1);
                             if (patterns.endsWith(']')) patterns = patterns.substring(0, patterns.length - 1);
+                            if (patterns.endsWith(')')) patterns = patterns.substring(0, patterns.length - 1);
 
                             let patternArr = patterns.split(' OR ');
 
