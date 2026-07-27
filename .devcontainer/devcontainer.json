@@ -8,6 +8,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "hverlin.mise-vscode",
         "ms-python.python",
         "charliermarsh.ruff",
         "dbaeumer.vscode-eslint",

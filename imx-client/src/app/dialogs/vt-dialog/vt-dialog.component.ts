@@ -32,6 +32,7 @@ export interface VtDataInput {}
 
 type IpRelationKey = 'resolutions' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
 type DomainRelationKey = 'resolutions' | 'subdomains' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
+type UrlRelationKey = 'servingIp';
 
 @Component({
     selector: 'app-vt-dialog',
@@ -219,6 +220,24 @@ export class VtDialogComponent {
     private domainExcludedObjectsStore: Map<string, any[]> = new Map();
     domainIncluded: Map<string, boolean> = new Map();
 
+    vtResultsByUrl: Map<
+        string,
+        {
+            url: string;
+            urlResult: any;
+            hasData: boolean;
+            relations?: {
+                servingIp?: { data: any; loading: boolean; loadingMore: boolean; error?: string; cursor: string | null };
+            };
+        }
+    > = new Map();
+
+    expandedUrls: Set<string> = new Set();
+    urlResultTabs: Map<string, string> = new Map();
+    private urlStixObjectIds: Map<string, string[]> = new Map();
+    private urlExcludedObjectsStore: Map<string, any[]> = new Map();
+    urlIncluded: Map<string, boolean> = new Map();
+
     placeholderTextarea;
 
     searchedHashCount = 0;
@@ -226,9 +245,10 @@ export class VtDialogComponent {
     searchedIpv4Count = 0;
     searchedIpv6Count = 0;
     searchedDomainCount = 0;
+    searchedUrlCount = 0;
 
     get totalSearchedCount(): number {
-        return this.searchedHashCount + this.searchedIpCount + this.searchedDomainCount;
+        return this.searchedHashCount + this.searchedIpCount + this.searchedDomainCount + this.searchedUrlCount;
     }
 
     isMalicious = false;
@@ -251,7 +271,7 @@ export class VtDialogComponent {
     ngOnInit(): void {
         this.disableParse = false;
 
-        this.placeholderTextarea = 'Enter file hashes, IP addresses, or domains (one per line), or paste any text to auto-extract indicators';
+        this.placeholderTextarea = 'Enter file hashes, IP addresses, domains, or URLs (one per line), or paste any text to auto-extract indicators';
 
         if (this.mode === 'embedded' && this.preloadIndicator) {
             if (this.cachedData) {
@@ -288,6 +308,12 @@ export class VtDialogComponent {
         this.domainStixObjectIds = data.domainStixObjectIds || new Map();
         this.domainIncluded = data.domainIncluded || new Map();
         this.domainExcludedObjectsStore = data.domainExcludedObjectsStore || new Map();
+        this.vtResultsByUrl = data.vtResultsByUrl || new Map();
+        this.expandedUrls = data.expandedUrls || new Set();
+        this.urlResultTabs = data.urlResultTabs || new Map();
+        this.urlStixObjectIds = data.urlStixObjectIds || new Map();
+        this.urlIncluded = data.urlIncluded || new Map();
+        this.urlExcludedObjectsStore = data.urlExcludedObjectsStore || new Map();
         this.selectAll = data.selectAll || false;
         this.isLoading = false;
     }
@@ -319,6 +345,12 @@ export class VtDialogComponent {
                 domainStixObjectIds: this.domainStixObjectIds,
                 domainIncluded: this.domainIncluded,
                 domainExcludedObjectsStore: this.domainExcludedObjectsStore,
+                vtResultsByUrl: this.vtResultsByUrl,
+                expandedUrls: this.expandedUrls,
+                urlResultTabs: this.urlResultTabs,
+                urlStixObjectIds: this.urlStixObjectIds,
+                urlIncluded: this.urlIncluded,
+                urlExcludedObjectsStore: this.urlExcludedObjectsStore,
                 selectAll: this.selectAll,
             });
         }
@@ -357,6 +389,7 @@ export class VtDialogComponent {
             this.searchedIpv4Count = 0;
             this.searchedIpv6Count = 0;
             this.searchedDomainCount = 0;
+            this.searchedUrlCount = 0;
         }
     }
 
@@ -530,6 +563,12 @@ export class VtDialogComponent {
         this.convertedDomainCommunicatingFileHashes.clear();
         this.domainIncluded.clear();
         this.domainExcludedObjectsStore.clear();
+        this.vtResultsByUrl.clear();
+        this.expandedUrls.clear();
+        this.urlResultTabs.clear();
+        this.urlStixObjectIds.clear();
+        this.urlIncluded.clear();
+        this.urlExcludedObjectsStore.clear();
 
         let classification = this.validateAndClassifyInputs(this.textBody.toString());
 
@@ -559,11 +598,16 @@ export class VtDialogComponent {
             const invalidList = classification.invalid.join(', ');
             this.announcementService.show(
                 'Invalid Input',
-                `The following entries are not valid IP addresses, hashes, or domains: ${invalidList}`,
+                `The following entries are not valid IP addresses, hashes, domains, or URLs: ${invalidList}`,
                 'warning',
                 false
             );
-            if (classification.ips.length === 0 && classification.hashes.length === 0 && classification.domains.length === 0) {
+            if (
+                classification.ips.length === 0 &&
+                classification.hashes.length === 0 &&
+                classification.domains.length === 0 &&
+                classification.urls.length === 0
+            ) {
                 this.isLoading = false;
                 return;
             }
@@ -574,7 +618,8 @@ export class VtDialogComponent {
         this.searchedIpv4Count = classification.ipv4.length;
         this.searchedIpv6Count = classification.ipv6.length;
         this.searchedDomainCount = classification.domains.length;
-        const totalIndicators = classification.ips.length + classification.hashes.length + classification.domains.length;
+        this.searchedUrlCount = classification.urls.length;
+        const totalIndicators = classification.ips.length + classification.hashes.length + classification.domains.length + classification.urls.length;
         if (totalIndicators > this.linesMax) {
             this.announcementService.show(
                 'Too Many Indicators',
@@ -595,6 +640,11 @@ export class VtDialogComponent {
             // --- Domain Processing ---
             if (classification.domains.length > 0) {
                 await this.handleDomainSearch(classification.domains);
+            }
+
+            // --- URL Processing ---
+            if (classification.urls.length > 0) {
+                await this.handleUrlSearch(classification.urls);
             }
 
             // --- Hash Processing ---
@@ -844,6 +894,52 @@ export class VtDialogComponent {
         } catch (error) {
             console.error('Error processing VT domain results:', error);
             this.announcementService.show('Processing Error', 'An error occurred while processing VirusTotal domain results', 'error', false);
+        }
+    }
+
+    async handleUrlSearch(urls: string[]): Promise<void> {
+        const promises = urls.map((url) => this.searchVtUrl(url));
+
+        try {
+            const results = await Promise.all(promises);
+
+            const relationPromises: Promise<void>[] = [];
+
+            results.forEach((result) => {
+                if (result && result.success) {
+                    if (result.vtData) {
+                        this.vtResultsByUrl.set(result.vtData.url, {
+                            url: result.vtData.url,
+                            urlResult: result.vtData.urlResult,
+                            hasData: result.vtData.hasData,
+                        });
+
+                        if (result.vtData.hasData) {
+                            relationPromises.push(this.loadAllUrlRelations(result.vtData.url));
+                        }
+                    }
+
+                    if (result.urlObj) {
+                        this.addStixObject(result.urlObj);
+                        this.trackUrlStixObject(result.vtData.url, result.urlObj.id);
+
+                        const urlIndicator = this.createUrlSearchIndicatorObject(result.vtData.url);
+                        this.addStixObject(urlIndicator);
+                        this.trackUrlStixObject(result.vtData.url, urlIndicator.id);
+                    }
+                }
+            });
+
+            await Promise.all(relationPromises);
+
+            const allErrors = results.filter((r) => r && r.errors && r.errors.length > 0).flatMap((r) => r.errors);
+
+            if (allErrors.length > 0) {
+                this.announcementService.show('VirusTotal Data Not Found', allErrors.join('\n\n'), 'error', false);
+            }
+        } catch (error) {
+            console.error('Error processing VT URL results:', error);
+            this.announcementService.show('Processing Error', 'An error occurred while processing VirusTotal URL results', 'error', false);
         }
     }
 
@@ -2079,10 +2175,12 @@ export class VtDialogComponent {
         ipv6: string[];
         hashes: string[];
         domains: string[];
+        urls: string[];
         invalid: string[];
         cidr: string[];
         hasMixed: boolean;
     } {
+        const urlRegex = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s]+$/;
         const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         const ipv6Regex =
             /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
@@ -2095,6 +2193,7 @@ export class VtDialogComponent {
         const ipv6: string[] = [];
         const hashes: string[] = [];
         const domains: string[] = [];
+        const urls: string[] = [];
         const invalid: string[] = [];
         const cidr: string[] = [];
 
@@ -2104,9 +2203,14 @@ export class VtDialogComponent {
             const trimmed = line.trim();
             if (!trimmed) return;
 
-            const defanged = trimmed.replace(/\[\.?\]/g, '.').replace(/\[|\]/g, '');
+            const defanged = trimmed
+                .replace(/\[\.?\]/g, '.')
+                .replace(/\[|\]/g, '')
+                .replace(/^h[xX]{2}p/, 'http');
 
-            if (cidrRegex.test(defanged)) {
+            if (urlRegex.test(defanged)) {
+                urls.push(defanged);
+            } else if (cidrRegex.test(defanged)) {
                 cidr.push(trimmed);
             } else if (ipv4Regex.test(defanged)) {
                 ips.push(defanged);
@@ -2128,9 +2232,20 @@ export class VtDialogComponent {
         const uniqueIpv6 = [...new Set(ipv6)];
         const uniqueHashes = [...new Set(hashes)];
         const uniqueDomains = [...new Set(domains)];
+        const uniqueUrls = [...new Set(urls)];
         const hasMixed = uniqueIps.length > 0 && uniqueHashes.length > 0;
 
-        return { ips: uniqueIps, ipv4: uniqueIpv4, ipv6: uniqueIpv6, hashes: uniqueHashes, domains: uniqueDomains, invalid, cidr, hasMixed };
+        return {
+            ips: uniqueIps,
+            ipv4: uniqueIpv4,
+            ipv6: uniqueIpv6,
+            hashes: uniqueHashes,
+            domains: uniqueDomains,
+            urls: uniqueUrls,
+            invalid,
+            cidr,
+            hasMixed,
+        };
     }
 
     private async extractIndicatorsFromText(text: string): Promise<string | null> {
@@ -2151,6 +2266,11 @@ export class VtDialogComponent {
                         }
                         break;
                     case 'domain-name':
+                        if (obj.value) {
+                            values.push(obj.value);
+                        }
+                        break;
+                    case 'url':
                         if (obj.value) {
                             values.push(obj.value);
                         }
@@ -2344,6 +2464,76 @@ export class VtDialogComponent {
         const ids = this.domainStixObjectIds.get(domain) || [];
         ids.push(objectId);
         this.domainStixObjectIds.set(domain, ids);
+    }
+
+    async searchVtUrl(url: string): Promise<any> {
+        try {
+            const vtUrlResult: any = await this.vtSearchService.postVtUrlSearch(url);
+
+            const errors: string[] = [];
+            let urlObj: any = null;
+
+            const vtData = {
+                url: url,
+                urlResult: vtUrlResult,
+                hasData: !!(vtUrlResult && vtUrlResult.data && vtUrlResult.data.attributes),
+            };
+
+            if (vtUrlResult && vtUrlResult.data) {
+                urlObj = this.createUrlSearchObject(url);
+            } else if (vtUrlResult && vtUrlResult.message) {
+                console.info(vtUrlResult.message);
+                errors.push(`No URL data returned from VirusTotal for ${url}. We have generated a STIX object to be included in your report.`);
+                urlObj = this.createUrlSearchObject(url);
+            }
+
+            return { success: true, errors, urlObj, vtData };
+        } catch (e) {
+            console.error(`Error in searchVtUrl for ${url}:`, e);
+            const urlObj = this.createUrlSearchObject(url);
+
+            return {
+                success: false,
+                errors: [`Error encountered for ${url}: ${e}`],
+                urlObj,
+                vtData: { url: url, urlResult: null, hasData: false },
+            };
+        }
+    }
+
+    private createUrlSearchObject(url: string): any {
+        const urlObj: any = {
+            type: 'url',
+            spec_version: '2.1',
+            value: url,
+        };
+        urlObj.id = 'url--' + this.stixService.getUUIDFrIdContributingPropertiesVT(urlObj);
+        return urlObj;
+    }
+
+    private createUrlSearchIndicatorObject(url: string): any {
+        const now = new Date().toISOString();
+        const indicator: any = {
+            type: 'indicator',
+            spec_version: '2.1',
+            created_by_ref: this.envService.env.defaultIdentity.id,
+            created: now,
+            modified: now,
+            name: `Malicious URL - ${url}`,
+            indicator_types: ['malicious-activity'],
+            pattern: `[url:value = '${url}']`,
+            pattern_type: 'stix',
+            pattern_version: '2.1',
+            valid_from: now,
+        };
+        indicator.id = 'indicator--' + this.stixService.getUUIDFrIdContributingPropertiesVT(indicator);
+        return indicator;
+    }
+
+    private trackUrlStixObject(url: string, objectId: string): void {
+        const ids = this.urlStixObjectIds.get(url) || [];
+        ids.push(objectId);
+        this.urlStixObjectIds.set(url, ids);
     }
 
     detectIpType(ip: string): 'ipv4-addr' | 'ipv6-addr' {
@@ -3587,6 +3777,293 @@ export class VtDialogComponent {
         return vtResult?.domainResult?.data?.attributes?.last_https_certificate ?? null;
     }
 
+    // ─── URL Tab & Expansion ────────────────────────────────────────────────
+
+    getUrlsWithResults(): string[] {
+        return Array.from(this.vtResultsByUrl.keys());
+    }
+    getVtResultForUrl(url: string): any {
+        return this.vtResultsByUrl.get(url);
+    }
+
+    toggleUrlExpansion(url: string): void {
+        if (this.expandedUrls.has(url)) {
+            this.expandedUrls.delete(url);
+        } else {
+            this.expandedUrls.add(url);
+        }
+    }
+    isUrlExpanded(url: string): boolean {
+        return this.expandedUrls.has(url);
+    }
+
+    setUrlResultTab(url: string, tab: string): void {
+        this.urlResultTabs.set(url, tab);
+    }
+    getUrlResultTab(url: string): string {
+        return this.urlResultTabs.get(url) || 'summary';
+    }
+
+    // ─── URL Include/Exclude ────────────────────────────────────────────────
+
+    isUrlIncluded(url: string): boolean {
+        return this.urlIncluded.get(url) ?? true;
+    }
+
+    toggleUrlIncluded(url: string): void {
+        const currentlyIncluded = this.isUrlIncluded(url);
+        if (currentlyIncluded) {
+            this.urlIncluded.set(url, false);
+            const idsToRemove = this.urlStixObjectIds.get(url) || [];
+            const removedObjs = this.allObjects.filter((o) => idsToRemove.includes(o.id));
+            this.urlExcludedObjectsStore.set(url, removedObjs);
+            this.allObjects = this.allObjects.filter((o) => !idsToRemove.includes(o.id));
+            for (const type of Object.keys(this.parsedObjects)) {
+                this.parsedObjects[type] = this.parsedObjects[type].filter((o: any) => !idsToRemove.includes(o.id));
+                if (this.parsedObjects[type].length === 0) delete this.parsedObjects[type];
+            }
+        } else {
+            this.urlIncluded.set(url, true);
+            const toRestore = this.urlExcludedObjectsStore.get(url) || [];
+            for (const obj of toRestore) {
+                this.allObjects.push(obj);
+                if (!this.parsedObjects[obj.type]) this.parsedObjects[obj.type] = [];
+                this.parsedObjects[obj.type].push(obj);
+            }
+            this.urlExcludedObjectsStore.delete(url);
+        }
+    }
+
+    // ─── URL Relations (tier-agnostic; degrade to N/A when unavailable) ──────
+
+    private getUrlRelation(url: string, key: UrlRelationKey): any {
+        return this.vtResultsByUrl.get(url)?.relations?.[key];
+    }
+
+    private async loadUrlRelation(
+        url: string,
+        key: UrlRelationKey,
+        label: string,
+        fetchData: (url: string) => Promise<any>
+    ): Promise<void> {
+        const vtResult = this.vtResultsByUrl.get(url);
+        if (!vtResult) return;
+        if (!vtResult.relations) vtResult.relations = {};
+        if (vtResult.relations[key]?.data !== undefined) return;
+
+        vtResult.relations[key] = { data: null, loading: true, loadingMore: false, cursor: null };
+        this.vtResultsByUrl.set(url, vtResult);
+
+        try {
+            const result: any = await fetchData(url);
+            if (result?.data) {
+                vtResult.relations[key]!.data = result;
+                vtResult.relations[key]!.cursor = result.meta?.cursor || null;
+            } else if (result?.message) {
+                // Includes the Enterprise-gated 403 case surfaced by the server as a message.
+                vtResult.relations[key]!.data = null;
+                vtResult.relations[key]!.error = result.message;
+            }
+        } catch (e) {
+            console.error(`Error fetching ${label} for ${url}:`, e);
+            vtResult.relations[key]!.error = `Error fetching ${label}: ${e}`;
+        } finally {
+            vtResult.relations[key]!.loading = false;
+            this.vtResultsByUrl.set(url, vtResult);
+        }
+    }
+
+    async loadAllUrlRelations(url: string): Promise<void> {
+        await Promise.all([
+            this.loadUrlRelation(url, 'servingIp', 'serving IP', (u) => this.vtSearchService.postVtUrlServingIp(u)),
+        ]);
+    }
+
+    // ─── URL Display Helpers ────────────────────────────────────────────────
+
+    private getUrlAttributes(url: string): any {
+        return this.vtResultsByUrl.get(url)?.urlResult?.data?.attributes ?? null;
+    }
+
+    getUrlDetectionResults(url: string): any[] {
+        const attrs = this.getUrlAttributes(url);
+        if (!attrs?.last_analysis_results) return [];
+        return Object.entries(attrs.last_analysis_results)
+            .map(([engine, data]: [string, any]) => ({ engine, ...data }))
+            .sort((a, b) => {
+                const order: any = { malicious: 0, suspicious: 1, harmless: 2, undetected: 3 };
+                return (order[a.category] ?? 4) - (order[b.category] ?? 4);
+            });
+    }
+
+    getUrlAnalysisStats(url: string): { malicious: number; suspicious: number; harmless: number; undetected: number; timeout: number } {
+        const stats = this.getUrlAttributes(url)?.last_analysis_stats ?? {};
+        return {
+            malicious: stats.malicious ?? 0,
+            suspicious: stats.suspicious ?? 0,
+            harmless: stats.harmless ?? 0,
+            undetected: stats.undetected ?? 0,
+            timeout: stats.timeout ?? 0,
+        };
+    }
+    getUrlMaliciousCount(url: string): number {
+        return this.getUrlAnalysisStats(url).malicious;
+    }
+    getUrlTotalEngines(url: string): number {
+        const s = this.getUrlAnalysisStats(url);
+        return s.malicious + s.suspicious + s.harmless + s.undetected + s.timeout;
+    }
+
+    getUrlFinalUrl(url: string): string {
+        return this.getUrlAttributes(url)?.last_final_url || url;
+    }
+    getUrlHostname(url: string): string {
+        try {
+            return new URL(this.getUrlFinalUrl(url)).hostname;
+        } catch {
+            return '';
+        }
+    }
+    getUrlServingIp(url: string): string {
+        const relData = this.getUrlRelation(url, 'servingIp')?.data?.data;
+        return relData?.id || relData?.attributes?.ip_address || this.getUrlAttributes(url)?.last_serving_ip_address || '';
+    }
+    getUrlCountry(url: string): string {
+        const servingCountry = this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.country;
+        return this.countryCodeToName(servingCountry || this.getUrlAttributes(url)?.proxy_country);
+    }
+    getUrlStatusCode(url: string): number | null {
+        return this.getUrlAttributes(url)?.last_http_response_code ?? null;
+    }
+    getUrlTitle(url: string): string {
+        return this.getUrlAttributes(url)?.title || '';
+    }
+
+    getUrlCategories(url: string): { vendor: string; category: string }[] {
+        const cats = this.getUrlAttributes(url)?.categories;
+        if (!cats) return [];
+        return Object.entries(cats).map(([vendor, category]: [string, any]) => ({ vendor, category }));
+    }
+    getUrlCategoryValues(url: string): string[] {
+        return [...new Set(this.getUrlCategories(url).map((c) => c.category))];
+    }
+    getUrlTags(url: string): string[] {
+        return this.getUrlAttributes(url)?.tags ?? [];
+    }
+
+    getUrlHtmlMeta(url: string): { name: string; value: string }[] {
+        const meta = this.getUrlAttributes(url)?.html_meta;
+        if (!meta) return [];
+        return Object.entries(meta).map(([name, values]: [string, any]) => ({
+            name,
+            value: Array.isArray(values) ? values.join(', ') : String(values),
+        }));
+    }
+    getUrlTrackers(url: string): string[] {
+        const trackers = this.getUrlAttributes(url)?.trackers;
+        return trackers ? Object.keys(trackers) : [];
+    }
+
+    getUrlFirstSubmission(url: string): number | null {
+        return this.getUrlAttributes(url)?.first_submission_date ?? null;
+    }
+    getUrlLastSubmission(url: string): number | null {
+        return this.getUrlAttributes(url)?.last_submission_date ?? null;
+    }
+    getUrlLastAnalysis(url: string): number | null {
+        return this.getUrlAttributes(url)?.last_analysis_date ?? null;
+    }
+
+    formatVtTimestampUtc(timestamp: number | null | undefined): string {
+        if (!timestamp) return 'N/A';
+        return new Date(timestamp * 1000)
+            .toISOString()
+            .replace('T', ' ')
+            .replace(/\.\d{3}Z$/, ' UTC');
+    }
+
+    getUrlResponseHeaders(url: string): { name: string; value: string }[] {
+        const headers = this.getUrlAttributes(url)?.last_http_response_headers;
+        if (!headers) return [];
+        return Object.entries(headers).map(([name, value]: [string, any]) => ({ name, value: String(value) }));
+    }
+    getUrlBodyLength(url: string): number | null {
+        return this.getUrlAttributes(url)?.last_http_response_content_length ?? null;
+    }
+    getUrlResponseSizeDisplay(url: string): string {
+        const len = this.getUrlBodyLength(url);
+        return len === null ? 'N/A' : this.formatFileSize(len);
+    }
+
+    getUrlWebTechnologies(url: string): { technology: string; version: string }[] {
+        const raw = this.getUrlAttributes(url)?.['web_technologies'];
+        if (!raw) return [];
+        const out: { technology: string; version: string }[] = [];
+        for (const [technology, entries] of Object.entries(raw as Record<string, any>)) {
+            const versions = Array.isArray(entries) ? entries : [entries];
+            const version = versions
+                .map((e: any) => e?.version)
+                .filter(Boolean)
+                .join(', ');
+            out.push({ technology, version: version || '-' });
+        }
+        return out;
+    }
+
+    getUrlCookieCount(url: string): number {
+        const cookies = this.getUrlAttributes(url)?.last_http_response_cookies;
+        return cookies ? Object.keys(cookies).length : 0;
+    }
+
+    getUrlJavascriptVariables(url: string): { name: string; type: string; value: string }[] {
+        const vars = this.getUrlAttributes(url)?.javascript_variables;
+        if (!Array.isArray(vars)) return [];
+        return vars.map((v: any) => ({
+            name: v?.name ?? '-',
+            type: v?.type ?? '-',
+            value: v?.value == null ? '-' : String(v.value),
+        }));
+    }
+
+    getUrlHttpTransactions(
+        url: string
+    ): { url: string; status: number | null; contentType: string; malicious: number; total: number; date: number | null }[] {
+        const attrs = this.getUrlAttributes(url);
+        if (!attrs) return [];
+        const headers = attrs.last_http_response_headers ?? {};
+        return [
+            {
+                url: this.getUrlFinalUrl(url),
+                status: attrs.last_http_response_code ?? null,
+                contentType: headers['content-type'] || headers['Content-Type'] || '',
+                malicious: this.getUrlMaliciousCount(url),
+                total: this.getUrlTotalEngines(url),
+                date: attrs.last_analysis_date ?? null,
+            },
+        ];
+    }
+
+    getUrlConsoleMessages(url: string): { sourceFile: string; source: string; level: string; message: string }[] {
+        const msgs = this.getUrlAttributes(url)?.console_messages;
+        if (!Array.isArray(msgs)) return [];
+        return msgs.map((m: any) => ({
+            sourceFile: m?.source_file ?? '',
+            source: 'Javascript',
+            level: (m?.level ?? '').replace('LOG_LEVEL_', '').toLowerCase() || '-',
+            message: m?.content ?? '',
+        }));
+    }
+    consoleLevelBadgeClass(level: string): string {
+        switch (level) {
+            case 'error':
+                return 'bg-danger';
+            case 'warning':
+                return 'bg-warning text-dark';
+            default:
+                return 'bg-secondary';
+        }
+    }
+
     getHashType(hash: string): string {
         const length = hash.length;
         switch (length) {
@@ -3660,6 +4137,27 @@ export class VtDialogComponent {
             lines.push(`Created Date: ${this.formatResolutionDate(attrs?.creation_date)}`);
             lines.push(`Registrant: ${attrs?.registrar || ''}`);
             lines.push(`JARM Fingerprint: ${attrs?.jarm || 'N/A'}`);
+            lines.push(`Activity: ${vendorNote}`);
+            lines.push('');
+        }
+
+        for (const url of this.getUrlsWithResults()) {
+            const vtResult = this.getVtResultForUrl(url);
+            if (!vtResult?.hasData) continue;
+
+            const maliciousCount = this.getUrlMaliciousCount(url);
+            let vendorNote = '';
+            if (maliciousCount > 0) {
+                vendorNote = `flagged as malicious by ${maliciousCount} third party security vendor${maliciousCount !== 1 ? 's' : ''}`;
+            } else if (this.getUrlTotalEngines(url) > 0) {
+                vendorNote = 'not flagged as malicious by third party security vendors';
+            }
+
+            lines.push(`URL: ${url}`);
+            lines.push(`Geolocation: ${this.getUrlCountry(url) || 'N/A'}`);
+            lines.push(`Organization: ${this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.as_owner || ''}`);
+            lines.push(`Domains Hosted:`);
+            lines.push(`pDNS Resolutions:`);
             lines.push(`Activity: ${vendorNote}`);
             lines.push('');
         }
@@ -3892,8 +4390,7 @@ export class VtDialogComponent {
                 if (relations.historicalSslCerts?.data) domainObj['Historical SSL Certs'] = relations.historicalSslCerts.data;
             }
 
-            if (Object.keys(domainObj).length > 0)
-                files.push({ name: `${domain}.json`, data: JSON.stringify(domainObj) });
+            if (Object.keys(domainObj).length > 0) files.push({ name: `${domain}.json`, data: JSON.stringify(domainObj) });
         } else if (type == 'stix') {
             const idsToAdd = this.domainStixObjectIds.get(domain) || [];
             const checkedObjects = this.allObjects.filter((o) => idsToAdd.includes(o.id));
@@ -3906,6 +4403,31 @@ export class VtDialogComponent {
 
         if (files.length == 0) return;
         this.downloadFiles(files, domain);
+    }
+
+    async downloadByUrl(url: string, type: 'stix' | 'vt') {
+        const files = [];
+
+        if (type == 'vt') {
+            const urlResult = this.vtResultsByUrl.get(url);
+            if (urlResult?.hasData == false) return;
+
+            const urlObj: any = {};
+            if (urlResult.urlResult) urlObj['URL Result'] = urlResult.urlResult.data;
+
+            if (Object.keys(urlObj).length > 0) files.push({ name: `${this.getUrlHostname(url) || 'url'}.json`, data: JSON.stringify(urlObj) });
+        } else if (type == 'stix') {
+            const idsToAdd = this.urlStixObjectIds.get(url) || [];
+            const checkedObjects = this.allObjects.filter((o) => idsToAdd.includes(o.id));
+            const uncheckedObjects = this.urlExcludedObjectsStore.get(url) || [];
+            const combinedObjects = [...checkedObjects, ...uncheckedObjects];
+            const bundle = new Bundle(combinedObjects);
+            bundle.id = `bundle--${v4()}`;
+            files.push({ name: `${this.getUrlHostname(url) || 'url'}-stix.json`, data: JSON.stringify(bundle) });
+        }
+
+        if (files.length == 0) return;
+        this.downloadFiles(files, url);
     }
 
     async downloadFiles(files, name) {

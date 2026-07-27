@@ -1,3 +1,47 @@
+## [4.10.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.0...v4.10.1) (2026-07-24)
+
+### Bug Fixes
+
+* pattern matching for stix 1.1 indicator to also account for AND operators ([8cf46f5](https://git.va.th.ten/eos/cde/tie/imx/commit/8cf46f56c299f218346d2890edaedbab439754fe))
+
+## [4.10.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.9.1...v4.10.0) (2026-07-24)
+
+### Features
+
+* add loading modal for reference checks, allow users to cancel out of the reference checking ([bec36f9](https://git.va.th.ten/eos/cde/tie/imx/commit/bec36f92a8d63f85efb1fda607bb5dd450888c99))
+
+### Bug Fixes
+
+* extension-type should be extension_type for identity contact extension ([d4c9062](https://git.va.th.ten/eos/cde/tie/imx/commit/d4c9062afa1b38bdee935b724158b34801221637))
+* extension-type typo fix for identity contact extension ([e534d0a](https://git.va.th.ten/eos/cde/tie/imx/commit/e534d0ac08739f0a85285e313b86ba841c76f6e2))
+* show export to misp button in publish modal for all deployments ([19b4eff](https://git.va.th.ten/eos/cde/tie/imx/commit/19b4eff08bf31b4676bef41d836bf0c8c188ac60))
+* stix 1.1 indicator to include indicators that has AND or OR operator without parentheses ([24ef407](https://git.va.th.ten/eos/cde/tie/imx/commit/24ef40796c6f8d5ac8ce65645ad2501f747a4f19))
+
+## [4.9.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.9.0...v4.9.1) (2026-07-24)
+
+### Bug Fixes
+
+* patch imx py image for openshift ([8232e82](https://git.va.th.ten/eos/cde/tie/imx/commit/8232e828d9adc09aa1ac32c5b701001dd28313a8))
+
+## [4.9.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.2...v4.9.0) (2026-07-23)
+
+### Features
+
+* added console messages section VT URL results ([f2b6b47](https://git.va.th.ten/eos/cde/tie/imx/commit/f2b6b4759633a41f843df01523df1d672c422e0b))
+* enriching URL VT search results, some clean up ([fd42789](https://git.va.th.ten/eos/cde/tie/imx/commit/fd427897660889b06487e27b9a545709a6c22d6b))
+* initial commit of URL searching on virustotal integration ([eb18c45](https://git.va.th.ten/eos/cde/tie/imx/commit/eb18c457b9598b39d761fef4e29941a532182965))
+
+### Bug Fixes
+
+* moving some text on VT results page ([ba4aaf7](https://git.va.th.ten/eos/cde/tie/imx/commit/ba4aaf7c14d526ae80bdab905155520784571fed))
+* updated Intel Summary for URLs to conform to info from Fusion ([cbfa908](https://git.va.th.ten/eos/cde/tie/imx/commit/cbfa9080b01880efe88ea715c371e6fe90ed9147))
+
+## [4.8.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.1...v4.8.2) (2026-07-23)
+
+### Bug Fixes
+
+* restyle standard ui to match guided styling ([1b7b109](https://git.va.th.ten/eos/cde/tie/imx/commit/1b7b109ed7817ab79964a6582974adbe550b1d12))
+
 ## [4.8.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.8.0...v4.8.1) (2026-07-21)
 
 ### Bug Fixes

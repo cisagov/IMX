@@ -15,10 +15,8 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
             @if (isUploading) {
-
             <p class="text-muted">Validating objects in file...</p>
             } @else {
-
             <p class="text-muted">Adding items to bundle...</p>
             }
         </div>
@@ -115,7 +113,6 @@
                     </span>
                     <span class="sidebar-label"> VirusTotal </span>
                 </div>
-                @if (!envService.env.aeSetting) {
                 <div title="MISP" id="open-vt-btn" (click)="openMispDialog($event, saveModal)"
                     [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
                     class="d-flex sidebar-item align-items-center">
@@ -124,7 +121,6 @@
                     </span>
                     <span class="sidebar-label"> MISP </span>
                 </div>
-                }
                 <div title="Tools" id="expand-tools-btn" (click)="clickTool($event)"
                     [ngClass]="{ 'justify-content-center': !expandSidebar, '': expandSidebar, 'expand-icon': expandSidebar }"
                     class="d-flex sidebar-item align-items-center">
@@ -373,7 +369,6 @@
                                                                                             ">Get VirusTotal
                                                                                 Insights</a>
                                                                         </li>
-                                                                        @if (!envService.env.aeSetting) {
                                                                         <li>
                                                                             <a class="dropdown-item pointer" (click)="
                                                                                                     onIntegrationAction(
@@ -385,7 +380,6 @@
                                                                                                     )
                                                                                                 ">Get MISP Events</a>
                                                                         </li>
-                                                                        }
                                                                     </ul>
                                                                 </div>
                                                                 }
@@ -1431,7 +1425,7 @@
                 Close
             </button>
             <button type="button" class="btn btn-sm btn-outline-success" (click)="switchToMisp()"
-                *ngIf="modalCurrentStep == 2 && environment.analyst1.enabled" [disabled]="isPublishing">
+                *ngIf="modalCurrentStep == 2" [disabled]="isPublishing">
                 <fa-icon [icon]="faUpload" class="pe-1"></fa-icon>
                 Export to MISP
             </button>

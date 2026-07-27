@@ -7,6 +7,12 @@ include:
     file: /ci-templates/trivy_fs.yml
   - project: eos/cde/elm/ops
     ref: main
+    file: /ci-templates/trivy_sbom.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/sonarqube.yml
+  - project: eos/cde/elm/ops
+    ref: main
     file: /ci-templates/python_lint.yml
   - project: eos/cde/elm/ops
     ref: main
@@ -31,6 +37,9 @@ stages:
   - release
 
 trivy-fs:
+  allow_failure: true
+
+sonarqube:
   allow_failure: true
 
 lint:
