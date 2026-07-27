@@ -1,3 +1,47 @@
+## 4.10.1 (2026-07-24)
+
+### Bug Fixes
+
+* pattern matching for stix 1.1 indicator to also account for AND operators 8cf46f5
+
+## 4.10.0 (2026-07-24)
+
+### Features
+
+* add loading modal for reference checks, allow users to cancel out of the reference checking bec36f9
+
+### Bug Fixes
+
+* extension-type should be extension_type for identity contact extension d4c9062
+* extension-type typo fix for identity contact extension e534d0a
+* show export to misp button in publish modal for all deployments 19b4eff
+* stix 1.1 indicator to include indicators that has AND or OR operator without parentheses 24ef407
+
+## 4.9.1 (2026-07-24)
+
+### Bug Fixes
+
+* patch imx py image for openshift 8232e82
+
+## 4.9.0 (2026-07-23)
+
+### Features
+
+* added console messages section VT URL results f2b6b47
+* enriching URL VT search results, some clean up fd42789
+* initial commit of URL searching on virustotal integration eb18c45
+
+### Bug Fixes
+
+* moving some text on VT results page ba4aaf7
+* updated Intel Summary for URLs to conform to info from Fusion cbfa908
+
+## 4.8.2 (2026-07-23)
+
+### Bug Fixes
+
+* restyle standard ui to match guided styling 1b7b109
+
 ## 4.8.1 (2026-07-21)
 
 ### Bug Fixes

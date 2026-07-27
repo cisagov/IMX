@@ -472,6 +472,14 @@ export class Analyst1DialogComponent {
                         const splitStr = obj.pattern.split(" = '");
                         let type = splitStr[0].split(':')[0].split('[')[1];
                         if (type.startsWith('(')) type = type.substring(1);
+                        if (type.includes(" AND ")) {
+                            type = type.split(" AND ")[0];
+                        }
+                        if (type.includes(" OR ")) {
+                            type = type.split(" OR ")[0];
+                        }
+                        if (type.endsWith(')'))
+                            type = type.slice(0, -1);
 
                         switch (type) {
                             case 'email-addr':
@@ -502,8 +510,12 @@ export class Analyst1DialogComponent {
                             let patterns = obj.pattern;
                             const patternMap = [];
 
+                            patterns = patterns.split(" AND ")[0];
+
                             if (patterns.startsWith('[')) patterns = patterns.substring(1);
+                            if (patterns.startsWith('(')) patterns = patterns.substring(1);
                             if (patterns.endsWith(']')) patterns = patterns.substring(0, patterns.length - 1);
+                            if (patterns.endsWith(')')) patterns = patterns.substring(0, patterns.length - 1);
 
                             let patternArr = patterns.split(' OR ');
 

@@ -425,3 +425,6 @@ tmbootpicker.efi
 !*.code-workspace
 # Built Visual Studio Code Extensions
 *.vsix
+# Playwright
+test-results
+playwright-report
