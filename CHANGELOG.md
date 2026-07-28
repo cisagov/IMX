@@ -1,3 +1,14 @@
+## [4.11.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.2...v4.11.0) (2026-07-28)
+
+### Features
+
+* create STIX objects from URL searching on VT modal ([34bb001](https://git.va.th.ten/eos/cde/tie/imx/commit/34bb001d3dad797001145b20f371a7eee2c39b7a))
+* reworked STIX obj tab to group by indicator searched ([7c4bcbd](https://git.va.th.ten/eos/cde/tie/imx/commit/7c4bcbd77d5a20a9eb87dfa37f583d21f91b4def))
+
+### Bug Fixes
+
+* preserve URL fragments/query strings when extracting indicators from free-text ([8f9e62b](https://git.va.th.ten/eos/cde/tie/imx/commit/8f9e62b0b6d304eb25994a052597796a61ad9017))
+
 ## [4.10.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.1...v4.10.2) (2026-07-28)
 
 ### Bug Fixes
