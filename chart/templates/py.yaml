@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.py.name }}
+spec:
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.py.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.py.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.py.app }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.py.podSecurityContext | nindent 8 }}
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: {{ .Values.py.name }}
+          securityContext:
+            {{- toYaml .Values.py.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.py.resources | nindent 12 }}
+          image: "{{ .Values.py.image}}:{{ .Values.py.tag }}"
+          imagePullPolicy: "{{ .Values.py.imagePullPolicy }}"
+
+          ports:
+            - containerPort: {{ .Values.py.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.py.name }}
+  labels:
+    app: {{ .Values.py.app }}
+spec:
+  type: NodePort
+  ports:
+   - port: {{ .Values.py.port }}
+     targetPort: {{ .Values.py.port }}
+  selector:
+   app: {{ .Values.py.app }}
+---

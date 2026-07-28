@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.client.name }}
+spec:
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.client.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.client.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.client.app }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.client.podSecurityContext | nindent 8 }}
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: env-json
+          configMap:
+            name: {{ .Values.env }}-env-json
+      containers:
+        - name: {{ .Values.client.name }}
+          securityContext:
+            {{- toYaml .Values.client.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.client.resources | nindent 12 }}
+          image: "{{ .Values.client.image }}:{{ .Values.client.tag }}"
+          imagePullPolicy: "{{ .Values.client.imagePullPolicy }}"
+          volumeMounts:
+            - name: env-json
+              mountPath: /usr/share/nginx/html/assets/env.json
+              subPath: env.json
+          ports:
+            - containerPort: {{ .Values.client.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.client.name }}
+  labels:
+    app: {{ .Values.client.app }}
+spec:
+  type: NodePort
+  ports:
+   - port: {{ .Values.client.port }}
+     targetPort: {{ .Values.client.port }}
+  selector:
+   app: {{ .Values.client.app }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: imx-client-route
+spec:
+  path: /
+  to:
+    name: {{ .Values.client.name }}
+    weight: 100
+    kind: Service
+  host: {{ .Values.client.host }}
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  port:
+    targetPort: {{ .Values.client.port }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.env }}-env-json
+data:
+  env.json: |
+{{ .Files.Get (printf "config/%s.json" .Values.env) | nindent 4 }}
+---
