@@ -1,3 +1,14 @@
+## 4.11.0 (2026-07-28)
+
+### Features
+
+* create STIX objects from URL searching on VT modal 34bb001
+* reworked STIX obj tab to group by indicator searched 7c4bcbd
+
+### Bug Fixes
+
+* preserve URL fragments/query strings when extracting indicators from free-text 8f9e62b
+
 ## 4.10.2 (2026-07-28)
 
 ### Bug Fixes
