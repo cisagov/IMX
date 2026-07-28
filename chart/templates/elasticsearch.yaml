@@ -35,6 +35,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.elastic.name }}
 spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 3 }}
   strategy:
     type: Recreate
   replicas: {{ .Values.elastic.replicaCount }}
