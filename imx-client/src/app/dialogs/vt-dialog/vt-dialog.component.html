@@ -4316,48 +4316,90 @@
                             <input type="checkbox" [ngModel]="selectAll" (change)="updateSelectAll()" />
                             <span>Select All</span>
                         </div>
-                        @for (map of objects2DArray; track map[0]) {
-                            @if (parsedObjects[map[0]]) {
-                                <div class="stix-category-card">
-                                    <!-- Category header (collapsible) -->
-                                    <div class="stix-category-header" (click)="toggleCategory(map[0])">
-                                        <span class="stix-category-name">{{ map[1] }}</span>
-                                        <span class="stix-count-badge">{{ parsedObjects[map[0]].length }}</span>
-                                        <span class="stix-chevron" [class.collapsed]="isCategoryCollapsed(map[0])">
-                                            <i class="bi bi-chevron-up"></i>
-                                        </span>
-                                    </div>
+                        @if (groupedView.length === 0) {
+                            <div class="alert alert-info">No STIX objects were generated for this search.</div>
+                        }
 
-                                    <!-- Items list (collapsible content) -->
-                                    @if (!isCategoryCollapsed(map[0])) {
-                                        <div class="stix-items-list">
-                                            @for (object of parsedObjects[map[0]]; track object.id; let i = $index) {
-                                                <div class="stix-item" [class.odd]="i % 2 === 1">
-                                                    <!-- Checkbox + Name on same row -->
-                                                    <div class="stix-item-row">
-                                                        <input
-                                                            type="checkbox"
-                                                            class="stix-checkbox"
-                                                            [checked]="getSelected(object.id)"
-                                                            (change)="updateSelectedObjects(object.id)"
-                                                        />
-                                                        <a class="stix-object-link" (click)="changeShow(object.id)">
-                                                            {{ getComponentDisplay(object) }}
-                                                        </a>
+                        <!-- One collapsible section per searched indicator -->
+                        @for (group of groupedView; track group.key) {
+                            <div class="stix-indicator-card" [class.excluded]="group.excluded">
+                                <div class="stix-indicator-header" (click)="toggleIndicatorSection(group.key)">
+                                    <input
+                                        type="checkbox"
+                                        class="stix-indicator-checkbox"
+                                        [checked]="group.selectState === 'all'"
+                                        [indeterminate]="group.selectState === 'some'"
+                                        [disabled]="group.excluded"
+                                        (click)="$event.stopPropagation()"
+                                        (change)="toggleIndicatorSelection(group)"
+                                        title="Select all objects for this indicator"
+                                    />
+                                    <span class="badge" [ngClass]="group.typeBadgeClass">{{ group.typeBadge }}</span>
+                                    <span class="hash-text stix-indicator-value" [title]="group.label">{{ group.label }}</span>
+                                    @if (group.excluded) {
+                                        <span class="badge bg-secondary">Excluded</span>
+                                    }
+                                    <span class="stix-count-badge">{{ group.visibleSelectedCount }} / {{ group.visibleCount }}</span>
+                                    <span class="stix-chevron" [class.collapsed]="isIndicatorCollapsed(group.key)">
+                                        <i class="bi bi-chevron-up"></i>
+                                    </span>
+                                </div>
+
+                                @if (!isIndicatorCollapsed(group.key)) {
+                                    <div class="stix-indicator-body">
+                                        @if (group.excluded) {
+                                            <div class="stix-indicator-empty">
+                                                Excluded from the STIX bundle. Re-enable this indicator on the Details tab.
+                                            </div>
+                                        } @else {
+                                            @for (cat of group.types; track cat.collapseKey) {
+                                                <div class="stix-category-card">
+                                                    <!-- Category header (collapsible) -->
+                                                    <div class="stix-category-header" (click)="toggleCategory(cat.collapseKey)">
+                                                        <span class="stix-category-name">{{ cat.label }}</span>
+                                                        <span class="stix-count-badge">{{ cat.objects.length }}</span>
+                                                        <span
+                                                            class="stix-chevron"
+                                                            [class.collapsed]="isCategoryCollapsed(cat.collapseKey)"
+                                                        >
+                                                            <i class="bi bi-chevron-up"></i>
+                                                        </span>
                                                     </div>
 
-                                                    <!-- Expanded JSON panel (conditional) -->
-                                                    @if (showId == object.id) {
-                                                        <div class="stix-json-panel">
-                                                            <pre>{{ object | json }}</pre>
+                                                    <!-- Items list (collapsible content) -->
+                                                    @if (!isCategoryCollapsed(cat.collapseKey)) {
+                                                        <div class="stix-items-list">
+                                                            @for (object of cat.objects; track object.id; let i = $index) {
+                                                                <div class="stix-item" [class.odd]="i % 2 === 1">
+                                                                    <!-- Checkbox + Name on same row -->
+                                                                    <div class="stix-item-row">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            class="stix-checkbox"
+                                                                            [checked]="getSelected(object.id)"
+                                                                            (change)="updateSelectedObjects(object.id)"
+                                                                        />
+                                                                        <a class="stix-object-link" (click)="changeShow(object.id)">
+                                                                            {{ getComponentDisplay(object) }}
+                                                                        </a>
+                                                                    </div>
+
+                                                                    <!-- Expanded JSON panel (conditional) -->
+                                                                    @if (showId == object.id) {
+                                                                        <div class="stix-json-panel">
+                                                                            <pre>{{ object | json }}</pre>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            }
                                                         </div>
                                                     }
                                                 </div>
                                             }
-                                        </div>
-                                    }
-                                </div>
-                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
                         }
                     </div>
                 }

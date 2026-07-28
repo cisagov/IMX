@@ -30,6 +30,30 @@ import { v4 } from 'uuid';
 
 export interface VtDataInput {}
 
+export type IndicatorType = 'hash' | 'ip' | 'domain' | 'url' | 'other';
+export type GroupSelectState = 'all' | 'some' | 'none';
+
+export interface StixTypeGroup {
+    type: string;
+    label: string;
+    collapseKey: string;
+    objects: any[];
+}
+
+export interface IndicatorGroup {
+    key: string;
+    type: IndicatorType;
+    value: string;
+    label: string;
+    typeBadge: string;
+    typeBadgeClass: string;
+    excluded: boolean;
+    visibleCount: number;
+    visibleSelectedCount: number;
+    selectState: GroupSelectState;
+    types: StixTypeGroup[];
+}
+
 type IpRelationKey = 'resolutions' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
 type DomainRelationKey = 'resolutions' | 'subdomains' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
 type UrlRelationKey = 'servingIp';
@@ -79,6 +103,13 @@ export class VtDialogComponent {
     extractionMessage: string = '';
     extractionError: string = '';
     collapsedCategories: Set<string> = new Set();
+
+    groupedView: IndicatorGroup[] = [];
+    collapsedIndicators: Set<string> = new Set();
+    private knownCategoryKeys: Set<string> = new Set();
+    private suppressGroupedRebuild = false;
+    /** Separator for composite collapse keys — not ':' or '|', which appear in IPv6 addresses and URLs. */
+    private static readonly CAT_SEP = '\u0001';
 
     imxServerConnectionError: string = '';
 
@@ -319,6 +350,7 @@ export class VtDialogComponent {
         this.urlExcludedObjectsStore = data.urlExcludedObjectsStore || new Map();
         this.selectAll = data.selectAll || false;
         this.isLoading = false;
+        this.rebuildGroupedView();
     }
 
     private emitCacheData(): void {
@@ -550,6 +582,10 @@ export class VtDialogComponent {
         this.urlIncluded.clear();
         this.urlExcludedObjectsStore.clear();
         this.convertedUrlServingIps.clear();
+        this.groupedView = [];
+        this.collapsedIndicators.clear();
+        this.collapsedCategories.clear();
+        this.knownCategoryKeys.clear();
 
         let classification = this.validateAndClassifyInputs(this.textBody.toString());
 
@@ -649,7 +685,10 @@ export class VtDialogComponent {
                     const promises = [];
                     const processedHashes = new Set<string>();
 
-                    this.allObjects.forEach((obj) => {
+                    // Only fan out over the files parsed from the typed hashes — allObjects also holds the
+                    // file objects the domain/URL relation conversions created, and searching those would
+                    // both spam VT and rewrite their ids out from under their relationships.
+                    result.objects.forEach((obj: any) => {
                         switch (obj.type) {
                             case 'file':
                                 if (obj.hashes && Object.keys(obj.hashes).length > 0) {
@@ -749,7 +788,10 @@ export class VtDialogComponent {
                     for (const result of results) {
                         if (result && result.success && result.vtData?.hash) {
                             const ruleIndicators = this.createRuleIndicatorsForHash(result.vtData.hash);
-                            ruleIndicators.forEach((ind) => this.addStixObject(ind));
+                            ruleIndicators.forEach((ind) => {
+                                this.addStixObject(ind);
+                                this.trackHashStixObject(result.vtData.hash, ind.id);
+                            });
                         }
                     }
 
@@ -1220,9 +1262,7 @@ export class VtDialogComponent {
     /** Builds one malware-analysis SDO per URL engine that reported malicious or suspicious,
      *  each referencing the URL SCO. Harmless/undetected/type-unsupported engines are skipped. */
     private createUrlMalwareAnalysisObjects(url: string, urlObjId: string): any[] {
-        const detections = this.getUrlDetectionResults(url).filter(
-            (d) => d.category === 'malicious' || d.category === 'suspicious'
-        );
+        const detections = this.getUrlDetectionResults(url).filter((d) => d.category === 'malicious' || d.category === 'suspicious');
 
         return detections.map((chunk, index) => {
             const date = new Date();
@@ -1327,6 +1367,8 @@ export class VtDialogComponent {
         for (const ip of this.ipStixObjectIds.keys()) {
             this.rebuildIndicatorForIp(ip);
         }
+
+        this.rebuildGroupedView();
     }
 
     updateSelectedObjects(id) {
@@ -1364,6 +1406,35 @@ export class VtDialogComponent {
 
         // Rebuild the pDNS indicator to reflect the newly selected/deselected domain
         this.onDomainObjectToggled(id);
+
+        this.rebuildGroupedView();
+    }
+
+    toggleIndicatorSelection(group: IndicatorGroup): void {
+        if (group.excluded) return;
+
+        const target = group.selectState !== 'all';
+
+        this.suppressGroupedRebuild = true;
+        try {
+            // Domains first: each one triggers rebuildIndicatorForIp, which replaces the indicator
+            // and relationship objects mid-loop, so their ids must be re-derived afterwards.
+            for (const id of this.getGroupObjectIds(group.key)) {
+                if (!id.startsWith('domain-name--')) continue;
+                if (this.getSelected(id) !== target) this.updateSelectedObjects(id);
+            }
+
+            const live = new Set(this.allObjects.map((o) => o.id));
+            for (const id of this.getGroupObjectIds(group.key)) {
+                if (id.startsWith('domain-name--') || !live.has(id)) continue;
+                // The re-check keeps the paired observed-data side effect above from double-flipping.
+                if (this.getSelected(id) !== target) this.updateSelectedObjects(id);
+            }
+        } finally {
+            this.suppressGroupedRebuild = false;
+        }
+
+        this.rebuildGroupedView();
     }
 
     /** Called after a STIX Objects tab checkbox toggles. If the toggled object is a domain-name
@@ -1498,6 +1569,181 @@ export class VtDialogComponent {
 
     isCategoryCollapsed(categoryKey: string): boolean {
         return this.collapsedCategories.has(categoryKey);
+    }
+
+    toggleIndicatorSection(key: string) {
+        if (this.collapsedIndicators.has(key)) {
+            this.collapsedIndicators.delete(key);
+        } else {
+            this.collapsedIndicators.add(key);
+        }
+    }
+
+    isIndicatorCollapsed(key: string): boolean {
+        return this.collapsedIndicators.has(key);
+    }
+
+    /** Rebuilds the STIX Objects tab view model from allObjects plus the live indicator tracking maps.
+     *  Must be called after anything that mutates allObjects, parsedObjects or selectedObjects —
+     *  rebuildIndicatorForIp in particular destroys and recreates object ids. */
+    rebuildGroupedView(): void {
+        if (this.suppressGroupedRebuild) return;
+
+        const objById = new Map<string, any>(this.allObjects.map((o): [string, any] => [o.id, o]));
+        const selected = new Set<string>(Array.isArray(this.selectedObjects) ? this.selectedObjects : []);
+        const claimed = new Set<string>();
+        const groups: IndicatorGroup[] = [];
+
+        const sources: { type: IndicatorType; values: string[]; ids: Map<string, string[]>; included: (v: string) => boolean }[] = [
+            { type: 'hash', values: this.getHashesWithResults(), ids: this.hashStixObjectIds, included: (v) => this.isHashIncluded(v) },
+            { type: 'ip', values: this.getIpsWithResults(), ids: this.ipStixObjectIds, included: (v) => this.isIpIncluded(v) },
+            {
+                type: 'domain',
+                values: this.getDomainsWithResults(),
+                ids: this.domainStixObjectIds,
+                included: (v) => this.isDomainIncluded(v),
+            },
+            { type: 'url', values: this.getUrlsWithResults(), ids: this.urlStixObjectIds, included: (v) => this.isUrlIncluded(v) },
+        ];
+
+        for (const source of sources) {
+            for (const value of source.values) {
+                const objects: any[] = [];
+                for (const id of source.ids.get(value) || []) {
+                    const obj = objById.get(id);
+                    if (!obj) continue;
+                    claimed.add(id);
+                    objects.push(obj);
+                }
+                groups.push(this.buildIndicatorGroup(`${source.type}:${value}`, source.type, value, objects, selected, !source.included(value)));
+            }
+        }
+
+        // Anything not tracked to a searched indicator still needs a home, so it stays selectable.
+        const orphans = this.allObjects.filter((o) => !claimed.has(o.id));
+        if (orphans.length > 0) {
+            groups.push(this.buildIndicatorGroup('other', 'other', '', orphans, selected, false));
+        }
+
+        this.groupedView = groups.filter((g) => g.excluded || g.visibleCount > 0);
+
+        // Drop a JSON panel left open on an object that no longer exists.
+        if (this.showId && !objById.has(String(this.showId))) this.showId = '';
+    }
+
+    private buildIndicatorGroup(
+        key: string,
+        type: IndicatorType,
+        value: string,
+        objects: any[],
+        selected: Set<string>,
+        excluded: boolean
+    ): IndicatorGroup {
+        const byType = new Map<string, any[]>();
+        for (const obj of objects) {
+            const bucket = byType.get(obj.type);
+            if (bucket) bucket.push(obj);
+            else byType.set(obj.type, [obj]);
+        }
+
+        const types: StixTypeGroup[] = [];
+        let visibleCount = 0;
+        let visibleSelectedCount = 0;
+
+        // objects2DArray is a whitelist as well as an ordering: types absent from it (observed-data,
+        // relationship) stay hidden and out of the counts, but are still toggled by the group checkbox.
+        for (const [stixType, label] of this.objects2DArray) {
+            const bucket = byType.get(stixType);
+            if (!bucket || bucket.length === 0) continue;
+
+            const collapseKey = `${key}${VtDialogComponent.CAT_SEP}${stixType}`;
+            if (!this.knownCategoryKeys.has(collapseKey)) {
+                this.knownCategoryKeys.add(collapseKey);
+                this.collapsedCategories.add(collapseKey);
+            }
+
+            types.push({ type: stixType, label, collapseKey, objects: bucket });
+            visibleCount += bucket.length;
+            visibleSelectedCount += bucket.filter((o) => selected.has(o.id)).length;
+        }
+
+        let selectState: GroupSelectState = 'none';
+        if (visibleCount > 0 && visibleSelectedCount === visibleCount) selectState = 'all';
+        else if (visibleSelectedCount > 0) selectState = 'some';
+
+        return {
+            key,
+            type,
+            value,
+            label: type === 'other' ? 'Other Objects' : value,
+            typeBadge: this.indicatorTypeBadge(type, value),
+            typeBadgeClass: this.indicatorTypeBadgeClass(type),
+            excluded,
+            visibleCount,
+            visibleSelectedCount,
+            selectState,
+            types,
+        };
+    }
+
+    private indicatorTypeBadge(type: IndicatorType, value: string): string {
+        switch (type) {
+            case 'hash':
+                return this.getHashType(value);
+            case 'ip':
+                return this.detectIpType(value) === 'ipv6-addr' ? 'IPv6' : 'IPv4';
+            case 'domain':
+                return 'Domain';
+            case 'url':
+                return 'URL';
+            default:
+                return 'Other';
+        }
+    }
+
+    /** Bootstrap badge colour for the indicator pill, mirroring the Details tab: blue for the
+     *  hash and IP pills, cyan for domain and URL, grey for the catch-all group. */
+    private indicatorTypeBadgeClass(type: IndicatorType): string {
+        switch (type) {
+            case 'hash':
+            case 'ip':
+                return 'bg-primary';
+            case 'domain':
+            case 'url':
+                return 'bg-info';
+            default:
+                return 'bg-secondary';
+        }
+    }
+
+    /** Re-derives every object id belonging to a group from the live maps, including the types the
+     *  tab hides. Always call this instead of reading a group snapshot — ids change as selections
+     *  trigger rebuildIndicatorForIp. */
+    private getGroupObjectIds(key: string): string[] {
+        if (key === 'other') {
+            const claimed = new Set<string>();
+            for (const map of [this.hashStixObjectIds, this.ipStixObjectIds, this.domainStixObjectIds, this.urlStixObjectIds]) {
+                for (const ids of map.values()) ids.forEach((id) => claimed.add(id));
+            }
+            return this.allObjects.filter((o) => !claimed.has(o.id)).map((o) => o.id);
+        }
+
+        const sep = key.indexOf(':');
+        const type = key.slice(0, sep);
+        const value = key.slice(sep + 1);
+
+        switch (type) {
+            case 'hash':
+                return [...(this.hashStixObjectIds.get(value) || [])];
+            case 'ip':
+                return [...(this.ipStixObjectIds.get(value) || [])];
+            case 'domain':
+                return [...(this.domainStixObjectIds.get(value) || [])];
+            case 'url':
+                return [...(this.urlStixObjectIds.get(value) || [])];
+            default:
+                return [];
+        }
     }
 
     getComponentDisplay(component: any): string {
@@ -2308,9 +2554,7 @@ export class VtDialogComponent {
         const urlRegex = /\b[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s<>"'`\]]+/g;
         const matches = refanged.match(urlRegex) || [];
 
-        const cleaned = matches
-            .map((u: string) => u.replace(/[.,;:!?)\]}'"]+$/, ''))
-            .filter((u: string) => /:\/\/\S/.test(u));
+        const cleaned = matches.map((u: string) => u.replace(/[.,;:!?)\]}'"]+$/, '')).filter((u: string) => /:\/\/\S/.test(u));
 
         return [...new Set(cleaned)];
     }
@@ -2353,9 +2597,7 @@ export class VtDialogComponent {
 
         // Refang server URLs before comparing: the server keeps defanged notation (e.g. `[.]`) and
         // truncates at `?`/`=`, so a literal compare would miss that the client already has them.
-        const keptServerUrls = serverUrls
-            .map((su) => this.refangUrl(su))
-            .filter((su) => !clientUrls.some((cu) => cu === su || cu.startsWith(su)));
+        const keptServerUrls = serverUrls.map((su) => this.refangUrl(su)).filter((su) => !clientUrls.some((cu) => cu === su || cu.startsWith(su)));
         const urls = [...clientUrls, ...keptServerUrls];
 
         const urlHosts = new Set<string>();
@@ -2367,9 +2609,7 @@ export class VtDialogComponent {
             }
         }
 
-        const filteredDomains = domains
-            .map((d) => this.refangUrl(d))
-            .filter((d) => !urlHosts.has(d.toLowerCase()));
+        const filteredDomains = domains.map((d) => this.refangUrl(d)).filter((d) => !urlHosts.has(d.toLowerCase()));
 
         return [...new Set([...urls, ...ips, ...filteredDomains, ...hashes])];
     }
@@ -2615,6 +2855,12 @@ export class VtDialogComponent {
         const ids = this.urlStixObjectIds.get(url) || [];
         if (!ids.includes(objectId)) ids.push(objectId);
         this.urlStixObjectIds.set(url, ids);
+    }
+
+    private trackHashStixObject(hash: string, objectId: string): void {
+        const ids = this.hashStixObjectIds.get(hash) || [];
+        if (!ids.includes(objectId)) ids.push(objectId);
+        this.hashStixObjectIds.set(hash, ids);
     }
 
     detectIpType(ip: string): 'ipv4-addr' | 'ipv6-addr' {
@@ -3623,6 +3869,8 @@ export class VtDialogComponent {
             }
             this.ipExcludedObjectsStore.delete(ip);
         }
+
+        this.rebuildGroupedView();
     }
 
     isHashIncluded(hash: string): boolean {
@@ -3651,6 +3899,8 @@ export class VtDialogComponent {
             }
             this.hashExcludedObjectsStore.delete(hash);
         }
+
+        this.rebuildGroupedView();
     }
 
     // ─── Domain Relation Loading ──────────────────────────────────────────────
@@ -3967,6 +4217,8 @@ export class VtDialogComponent {
             }
             this.domainExcludedObjectsStore.delete(domain);
         }
+
+        this.rebuildGroupedView();
     }
 
     // ─── Domain Display Helpers ─────────────────────────────────────────────
@@ -4070,6 +4322,8 @@ export class VtDialogComponent {
             }
             this.urlExcludedObjectsStore.delete(url);
         }
+
+        this.rebuildGroupedView();
     }
 
     // ─── URL Relations (tier-agnostic; degrade to N/A when unavailable) ──────
@@ -4078,12 +4332,7 @@ export class VtDialogComponent {
         return this.vtResultsByUrl.get(url)?.relations?.[key];
     }
 
-    private async loadUrlRelation(
-        url: string,
-        key: UrlRelationKey,
-        label: string,
-        fetchData: (url: string) => Promise<any>
-    ): Promise<void> {
+    private async loadUrlRelation(url: string, key: UrlRelationKey, label: string, fetchData: (url: string) => Promise<any>): Promise<void> {
         const vtResult = this.vtResultsByUrl.get(url);
         if (!vtResult) return;
         if (!vtResult.relations) vtResult.relations = {};
@@ -4112,9 +4361,7 @@ export class VtDialogComponent {
     }
 
     async loadAllUrlRelations(url: string): Promise<void> {
-        await Promise.all([
-            this.loadUrlRelation(url, 'servingIp', 'serving IP', (u) => this.vtSearchService.postVtUrlServingIp(u)),
-        ]);
+        await Promise.all([this.loadUrlRelation(url, 'servingIp', 'serving IP', (u) => this.vtSearchService.postVtUrlServingIp(u))]);
         this.convertUrlServingIpToStixObjects(url);
     }
 
