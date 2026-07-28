@@ -52,7 +52,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: imx-secrets
-                  key: basic-pass
+                  key: BASIC_PASS
 
             - name: KC_URL
               value: {{ .Values.server.keycloakUrl | quote }}
@@ -76,7 +76,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: imx-secrets
-                  key: elastic-password
+                  key: ELASTIC_PASSWORD
 
             - name: KIBANA_ENABLED
               value: {{ .Values.server.kibanaEnabled | quote }}
@@ -94,7 +94,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: imx-secrets
-                  key: taxii-pass
+                  key: TAXII_PASS
 
             - name: TAXII_A1_API_ROOT
               value: {{ .Values.server.taxiiA1ApiRoot | quote }}
@@ -121,7 +121,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: imx-secrets
-                  key: taxii-proxy-pass
+                  key: TAXII_PROXY_PASS
 
             - name: CMA_REQUIRED
               value: {{ .Values.server.cmaRequired | quote }}
@@ -136,7 +136,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: imx-secrets
-                  key: virus-total-key
+                  key: VIRUS_TOTAL_KEY
 
           ports:
             - containerPort: {{ .Values.server.port }}
