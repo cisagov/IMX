@@ -131,6 +131,7 @@ a {
 .stix-count-badge {
     background: #e5e7eb;
     color: black;
+    font-family: 'Source Sans Pro', Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
     font-size: 14px;
     font-weight: 500;
     padding: 2px 10px;
@@ -206,6 +207,79 @@ a {
     word-wrap: break-word;
     margin: 0;
     line-height: 1.5;
+}
+
+/* Indicator Sections (outer grouping of the STIX category cards) */
+.stix-indicator-card {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.stix-indicator-card.excluded {
+    opacity: 0.6;
+}
+
+.stix-indicator-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    background: #eff6ff;
+    border-bottom: 1px solid #e0e7ff;
+    transition: background-color 0.15s ease;
+}
+
+.stix-indicator-header:hover {
+    background: #e0e7ff;
+}
+
+.stix-indicator-checkbox {
+    flex-shrink: 0;
+    margin-right: 0;
+}
+
+.stix-indicator-header .badge {
+    flex: 0 0 auto;
+}
+
+.stix-indicator-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stix-indicator-header .stix-count-badge {
+    margin-left: auto;
+}
+
+.stix-indicator-body {
+    padding: 12px 12px 4px 28px;
+}
+
+.stix-indicator-body .stix-category-card {
+    margin-bottom: 8px;
+}
+
+.stix-indicator-body .stix-category-header {
+    padding: 10px 14px;
+}
+
+.stix-indicator-body .stix-category-name {
+    font-size: 14px;
+}
+
+.stix-indicator-empty {
+    padding: 8px 4px 14px;
+    font-size: 13px;
+    color: #6b7280;
+    font-style: italic;
 }
 
 table thead th {
