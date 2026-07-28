@@ -171,7 +171,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             } else {
                 identityExtension = {
                     "extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498" : {
-                        "extension-type": "propery-extension"
+                        "extension_type": "property-extension"
                     }
                 }
 

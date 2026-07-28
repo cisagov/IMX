@@ -126,6 +126,7 @@ web_modules/
 !.env.example
 env.json
 !.env.json.example
+!chart/config/env.json
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -424,3 +425,6 @@ tmbootpicker.efi
 !*.code-workspace
 # Built Visual Studio Code Extensions
 *.vsix
+# Playwright
+test-results
+playwright-report

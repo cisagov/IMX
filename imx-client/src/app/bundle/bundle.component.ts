@@ -12,7 +12,7 @@ import {
     DOCUMENT,
     NgZone,
 } from '@angular/core';
-import { forkJoin, lastValueFrom, Observable, of } from 'rxjs';
+import { catchError, forkJoin, from, lastValueFrom, Observable, of, Subject, takeUntil } from 'rxjs';
 import { Bundle } from '../models/bundle';
 import { StixService } from '../stix-service.service';
 import { STIX_OBJECTS, STIX_OBJECTS_LIST } from '../models/stix-objects';
@@ -22,7 +22,7 @@ import { EnvService } from '../env-service/env.service';
 import { AnnouncementService } from '../announcement-service/announcement-service.service';
 import { Content } from '../models/content';
 import all_schemas from './schemas.json';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { RelationshipDialogComponent } from '../query-stix/relationship-dialog/relationship-dialog/relationship-dialog.component';
 import {
     faEdit,
@@ -91,6 +91,7 @@ import { MispService } from '../misp-service/misp.service';
 import { RemoveObjectComponent } from '../remove-object/remove-object.component';
 
 import { validateStix } from '../shared/utils/validation.utils';
+import { LoadingModalComponent } from '../loading-modal/loading-modal.component';
 
 declare const require: any;
 const Validator = require('jsonschema').Validator;
@@ -296,6 +297,8 @@ export class BundleComponent implements OnInit {
     addingStixToBundle: boolean = false;
     publishA1: boolean = false;
 
+    checkRefsModalRef: MatDialogRef<LoadingModalComponent> = null;
+
     mispTitle = '';
     mispProducer = 'imx';
 
@@ -381,6 +384,9 @@ export class BundleComponent implements OnInit {
 
     autoCheck: 'true' | 'false' = 'false';
     objCheckMap: Map<string, boolean> = new Map();
+
+    private cancelDuplicate$ = new Subject<void>();
+    private cancelReferences$ = new Subject<void>();
 
     @HostListener('document:fullscreenchange', ['$event'])
     @HostListener('document:webkitfullscreenchange', ['$event'])
@@ -627,6 +633,16 @@ export class BundleComponent implements OnInit {
 
             this.clearSearchResults();
         }, 500);
+    }
+
+    ngOnDestroy() {
+        this.cancelReferences$.next();
+        this.cancelDuplicate$.next();
+
+        if (this.checkRefsModalRef !== null) {
+            this.checkRefsModalRef.close();
+            this.checkRefsModalRef = null;
+        }
     }
 
     toggleSidebar() {
@@ -991,6 +1007,7 @@ export class BundleComponent implements OnInit {
 
         this.duplicates = [];
         let originals = [];
+        this.cancelDuplicate$ = new Subject<void>();
 
         let allCheckDuplicates: Observable<any>[] = [];
         let publishedObjects: any = await db.getAllPublishedObjects();
@@ -1024,7 +1041,7 @@ export class BundleComponent implements OnInit {
             });
         }
 
-        forkJoin(allCheckDuplicates).subscribe((data: any) => {
+        forkJoin(allCheckDuplicates).pipe(takeUntil(this.cancelDuplicate$)).subscribe((data: any) => {
             data.forEach((d: any, i: number) => {
                 if (d?.body?.founds && d.body.founds.length > 0) {
                     let dupsFound = [];
@@ -1044,70 +1061,91 @@ export class BundleComponent implements OnInit {
         });
     }
 
-    checkReferences() {
+    async checkReferences() {
         this.references = [];
+        const batchSize = 5;
+        this.cancelReferences$ = new Subject<void>();
 
-        let allCheckReferences: Observable<any>[] = [];
+        try {
+            for (let i = 0; i < this.bundle.objects.length; i += batchSize) {
+                let allCheckReferences: Observable<any>[] = [];
+                const batch = this.bundle.objects.slice(i, i + batchSize);
 
-        this.bundle.objects.forEach((o: any) => {
-            let referenced = this.stixService.checkReferences(o);
+                batch.forEach((o: any) => {
+                    let referenced = this.stixService.checkReferences(o);
 
-            if (referenced) {
-                allCheckReferences.push(referenced);
-            } else {
-                allCheckReferences.push(of(null));
-            }
-        });
+                    if (referenced) {
+                        allCheckReferences.push(referenced);
+                    } else {
+                        allCheckReferences.push(of(null));
+                    }
+                });
 
-        forkJoin(allCheckReferences).subscribe((data: any) => {
-            data.forEach((d: any, i: number) => {
-                if (!d) return;
+                await new Promise((resolve, reject) => {
+                    forkJoin(allCheckReferences).pipe(
+                        takeUntil(this.cancelReferences$),
+                        catchError(err => {
+                            console.log(err);
+                            return of([]);
+                        })
+                    ).subscribe((data: any) => {
+                        if (data.length == 0)
+                            return resolve(false);
+                        data.forEach((d: any, i: number) => {
+                            if (!d) return resolve(false);
 
-                let allReferencedInRelationship: Observable<any>[] = [];
-                let allReferencedInRelationshipIndex: number[] = [];
+                            let allReferencedInRelationship: Observable<any>[] = [];
+                            let allReferencedInRelationshipIndex: number[] = [];
 
-                if (d?.body?.founds && d.body.founds.length > 0) {
-                    let refsFound = [];
-                    let rcPairs = [];
-                    d.body.founds.forEach((o) => {
-                        refsFound.push(o.object);
-                        rcPairs.push(o.fcPairs);
+                            if (d?.body?.founds && d.body.founds.length > 0) {
+                                let refsFound = [];
+                                let rcPairs = [];
+                                d.body.founds.forEach((o) => {
+                                    refsFound.push(o.object);
+                                    rcPairs.push(o.fcPairs);
 
-                        if (o.object.type === 'relationship') {
-                            let objectId = null;
+                                    if (o.object.type === 'relationship') {
+                                        let objectId = null;
 
-                            if (this.bundle.objects[i].id === o.object.source_ref) {
-                                objectId = o.object.target_ref;
-                            }
+                                        if (this.bundle.objects[i].id === o.object.source_ref) {
+                                            objectId = o.object.target_ref;
+                                        }
 
-                            if (this.bundle.objects[i].id === o.object.target_ref) {
-                                objectId = o.object.source_ref;
-                            }
+                                        if (this.bundle.objects[i].id === o.object.target_ref) {
+                                            objectId = o.object.source_ref;
+                                        }
 
-                            if (objectId) {
-                                let referenced = this.stixService.checkId(objectId);
+                                        if (objectId) {
+                                            let referenced = this.stixService.checkId(objectId);
 
-                                if (referenced) {
-                                    allReferencedInRelationship.push(referenced);
-                                    allReferencedInRelationshipIndex.push(i);
+                                            if (referenced) {
+                                                allReferencedInRelationship.push(referenced);
+                                                allReferencedInRelationshipIndex.push(i);
+                                            }
+                                        }
+                                    }
+                                });
+                                if (allReferencedInRelationship.length > 0) {
+                                    forkJoin(allReferencedInRelationship).subscribe((data: any) => {
+                                        this.pushReferencesDataForEach(data, refsFound, rcPairs, allReferencedInRelationshipIndex);
+                                    });
+                                } else {
+                                    this.references.push({
+                                        original: this.bundle.objects[i],
+                                        referenced: refsFound,
+                                        rcPairs: rcPairs,
+                                    });
                                 }
                             }
-                        }
+
+                            return resolve(true);
+                        });
                     });
-                    if (allReferencedInRelationship.length > 0) {
-                        forkJoin(allReferencedInRelationship).subscribe((data: any) => {
-                            this.pushReferencesDataForEach(data, refsFound, rcPairs, allReferencedInRelationshipIndex);
-                        });
-                    } else {
-                        this.references.push({
-                            original: this.bundle.objects[i],
-                            referenced: refsFound,
-                            rcPairs: rcPairs,
-                        });
-                    }
-                }
-            });
-        });
+                });
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     pushReferencesDataForEach(data, refsFound, rcPairs, allReferencedInRelationshipIndex) {
@@ -1286,10 +1324,42 @@ export class BundleComponent implements OnInit {
         });
     }
 
-    checkDupesAndRefs() {
+    async checkDupesAndRefs() {
         if (this.autoCheck === 'true') {
-            this.checkDuplicates();
-            this.checkReferences();
+            this.checkRefsModalRef = this.matDialog.open(LoadingModalComponent, {
+                disableClose: true,
+                hasBackdrop: true
+            });
+
+            this.checkRefsModalRef.afterClosed().subscribe((canceled) => {
+                if (canceled) {
+                    this.cancelCheckDupesAndRefs();
+                }
+            });
+
+            try {
+                this.checkDuplicates();
+                await this.checkReferences();
+            } catch (e) {
+                console.log(e);
+            }
+
+            if (this.checkRefsModalRef !== null) {
+                this.checkRefsModalRef.close();
+                this.checkRefsModalRef = null;
+            }
+        }
+    }
+
+    cancelCheckDupesAndRefs() {
+        this.cancelDuplicate$.next();
+        this.cancelReferences$.next();
+
+        this.switchAutoCheck();
+
+        if (this.checkRefsModalRef !== null) {
+            this.checkRefsModalRef.close();
+            this.checkRefsModalRef = null;
         }
     }
 
