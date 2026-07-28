@@ -1,0 +1,9 @@
+{{- if .Values.secrets.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-json
+data:
+  env.json: |
+{{ .Files.Get (print "config/env.json") | nindent 4 }}
+{{- end}}
