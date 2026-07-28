@@ -1,3 +1,9 @@
+## [4.10.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.1...v4.10.2) (2026-07-28)
+
+### Bug Fixes
+
+* reinitiated helm chart for review. Cleaned up some relevant env vars ([3692ace](https://git.va.th.ten/eos/cde/tie/imx/commit/3692acef87b2a0de2ab6fcfbf36e4382b13f70dd))
+
 ## [4.10.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.0...v4.10.1) (2026-07-24)
 
 ### Bug Fixes
