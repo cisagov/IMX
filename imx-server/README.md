@@ -7,6 +7,7 @@ The IMX Server is a backend companion to the IMX Client. It handles several back
 Before starting, ensure dependencies are running and your environment file is configured — see the root README for setup instructions.
 
 From the `imx-server/` directory, install dependencies and start the server:
+
 ```
 npm install
 npm run dev
@@ -15,6 +16,7 @@ npm run dev
 The `dev` script sets `NODE_ENV=development`, which tells the server to load `development.env`. To use a different environment, create a matching `.env` file and add a corresponding script to `package.json` with the same `NODE_ENV` prefix.
 
 To confirm the server is running (assumes No Auth mode):
+
 ```
 curl http://localhost:3000
 ```
@@ -32,7 +34,7 @@ There are three options to authenticate to the IMX Backend Server. All of which 
    - Set `AUTH` to `'keycloak'`.
    - Set `KC_URL` to the target Keycloak server.
    - Set `KC_REALM` to the target realm that the client is using.
-   - Set `KC_CERT` to `TEN` for any Keycloak instance that uses a self-signed cert.
+   - Set `KC_CERT` to `false` for any Keycloak instance that uses a self-signed cert.
    - This uses the bearer token received on the client, which is then sent to the IMX Backend Server on every HTTP call. The server validates that token with the Keycloak server specified in the environment file.
 
 3. **Hybrid Authentication**

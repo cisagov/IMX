@@ -101,7 +101,7 @@ For OIDC setup configure the env.json and IMX Server env variables respectively:
 - `env.json` - `oidc.usernameField` - {TARGET OIDC FIELD FOR USERNAME}
 - `ENV` - `OIDC_URL` - {TARGET OIDC PROVIDER API URL}
 - `ENV` - `OIDC_USER_FIELD` - {TARGET OIDC FIELD FOR USERNAME}
-- `ENV` - `OIDC_CERT` - {IF DESIRED TO BYPASS TLS VERIFICATION FOR OIDC PROVIDER SET TO "TEN"}
+- `ENV` - `OIDC_CERT` - {IF DESIRED TO BYPASS TLS VERIFICATION FOR OIDC PROVIDER SET TO "false"}
 
 ### Testing
 
