@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: imx-secrets
-                  key: kibana-password
+                  key: KIBANA_PASSWORD
 
             - name: ELASTICSEARCH_USERNAME
               value: {{ .Values.kibana.elasticsearchUsername | quote }}
@@ -59,7 +59,6 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: kibana-route
-  namespace: {{ .Values.namespace }}
 spec:
   path: /
   to:
