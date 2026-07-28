@@ -22,7 +22,7 @@ spec:
       volumes:
         - name: env-json
           configMap:
-            name: {{ .Values.env }}-env-json
+            name: env-json
       containers:
         - name: {{ .Values.client.name }}
           securityContext:
@@ -72,8 +72,8 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.env }}-env-json
+  name: env-json
 data:
   env.json: |
-{{ .Files.Get (printf "config/%s.json" .Values.env) | nindent 4 }}
+{{ .Files.Get (print "config/env.json") | nindent 4 }}
 ---
