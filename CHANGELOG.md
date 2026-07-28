@@ -1,3 +1,9 @@
+## 4.10.2 (2026-07-28)
+
+### Bug Fixes
+
+* reinitiated helm chart for review. Cleaned up some relevant env vars 3692ace
+
 ## 4.10.1 (2026-07-24)
 
 ### Bug Fixes
