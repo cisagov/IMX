@@ -88,6 +88,12 @@ spec:
             - name: SMTP_SSL
               value: {{ .Values.server.smtpSSL | quote }}
 
+            - name: SMTP_FROM
+              value: {{ .Values.server.smtpFrom | quote }}
+
+            - name: SMTP_TO
+              value: {{ .Values.server.smtpTo | quote }}
+
             - name: TAXII_URL
               value: {{ .Values.server.taxiiUrl | quote }}
 

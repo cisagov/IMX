@@ -19,6 +19,7 @@ const keycloakAuth = function (authHeader) {
 
     //Adds rejectUnauthorized call if false
     if (process.env.KC_CERT === "false" || process.env.KC_CERT === false) {
+      console.debug(`KC_CERT: ${process.env}`);
       axiosData["httpsAgent"] = new https.Agent({ rejectUnauthorized: false });
     }
     console.info(
