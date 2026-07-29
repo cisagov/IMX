@@ -95,9 +95,14 @@ export class KeycloakService {
     }
 
     getUserRoles(includeClientRoles = true): string[] {
-        if (!this.kc) return [];
+        if (!this.kc) {
+            console.debug('kc is undefined');
+            return [];
+        }
+
         const realmRoles = this.kc.realmAccess?.roles ?? [];
         const clientRoles = includeClientRoles ? Object.values(this.kc.resourceAccess ?? {}).flatMap((r: any) => r.roles ?? []) : [];
+
         return [...realmRoles, ...clientRoles];
     }
 }
