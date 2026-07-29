@@ -19,13 +19,13 @@ const keycloakAuth = function (authHeader) {
 
     //Adds rejectUnauthorized call if false
     if (process.env.KC_CERT === "false" || process.env.KC_CERT === false) {
-      console.debug(`KC_CERT: ${process.env}`);
       axiosData["httpsAgent"] = new https.Agent({ rejectUnauthorized: false });
     }
     console.info(
       "KEYCLOAK URL: " +
         `${process.env.KC_URL}realms/${process.env.KC_REALM}/protocol/openid-connect/userinfo`,
     );
+
     //Sends request to target keycloak from environment file with user info from the auth header in request
     axios
       .get(
