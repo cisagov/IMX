@@ -1,3 +1,26 @@
+## 4.11.1 (2026-07-29)
+
+### Bug Fixes
+
+* if userRoles empty on isAdmin search page, try again d4471e6
+
+## 4.11.0 (2026-07-28)
+
+### Features
+
+* create STIX objects from URL searching on VT modal 34bb001
+* reworked STIX obj tab to group by indicator searched 7c4bcbd
+
+### Bug Fixes
+
+* preserve URL fragments/query strings when extracting indicators from free-text 8f9e62b
+
+## 4.10.2 (2026-07-28)
+
+### Bug Fixes
+
+* reinitiated helm chart for review. Cleaned up some relevant env vars 3692ace
+
 ## 4.10.1 (2026-07-24)
 
 ### Bug Fixes
