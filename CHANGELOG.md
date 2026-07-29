@@ -1,3 +1,9 @@
+## 4.11.1 (2026-07-29)
+
+### Bug Fixes
+
+* if userRoles empty on isAdmin search page, try again d4471e6
+
 ## 4.11.0 (2026-07-28)
 
 ### Features
