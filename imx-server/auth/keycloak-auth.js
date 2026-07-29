@@ -59,6 +59,8 @@ const keycloakAuth = function (authHeader) {
       })
       .catch((err) => {
         console.error("ERROR AUTH KEYCLOAK");
+        console.debug(`KC_CERT: ${process.env.KC_CERT}`);
+        console.debug(`AXIOS DATA: ${JSON.stringify(axiosData)}`);
         reject(err);
       });
   });
