@@ -91,6 +91,8 @@ server:
   securityContext: {}
   smtpHost: ""
   smtpSSL: "false"
+  smtpFrom: ""
+  smtpTo: ""
   startup: "true"
   tag: v4.8.1
   taxiiA1ApiRoot: ""
