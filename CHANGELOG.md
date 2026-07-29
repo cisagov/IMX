@@ -1,3 +1,9 @@
+## [4.11.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.0...v4.11.1) (2026-07-29)
+
+### Bug Fixes
+
+* if userRoles empty on isAdmin search page, try again ([d4471e6](https://git.va.th.ten/eos/cde/tie/imx/commit/d4471e639fe07198048505ef745856515cbd1fdf))
+
 ## [4.11.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.2...v4.11.0) (2026-07-28)
 
 ### Features
