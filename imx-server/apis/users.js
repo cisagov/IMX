@@ -45,6 +45,9 @@ const getKeycloakUsers = function (authHeader) {
           return reject(err);
         });
     } catch (e) {
+      console.error("ERROR KEYCLOAK");
+      console.debug(`KC_CERT: ${process.env.KC_CERT}`);
+      console.debug(`AXIOS DATA: ${JSON.stringify(axiosData)}`);
       return reject(e);
     }
   });
