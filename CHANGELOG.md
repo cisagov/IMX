@@ -1,3 +1,26 @@
+## [4.11.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.0...v4.11.1) (2026-07-29)
+
+### Bug Fixes
+
+* if userRoles empty on isAdmin search page, try again ([d4471e6](https://git.va.th.ten/eos/cde/tie/imx/commit/d4471e639fe07198048505ef745856515cbd1fdf))
+
+## [4.11.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.2...v4.11.0) (2026-07-28)
+
+### Features
+
+* create STIX objects from URL searching on VT modal ([34bb001](https://git.va.th.ten/eos/cde/tie/imx/commit/34bb001d3dad797001145b20f371a7eee2c39b7a))
+* reworked STIX obj tab to group by indicator searched ([7c4bcbd](https://git.va.th.ten/eos/cde/tie/imx/commit/7c4bcbd77d5a20a9eb87dfa37f583d21f91b4def))
+
+### Bug Fixes
+
+* preserve URL fragments/query strings when extracting indicators from free-text ([8f9e62b](https://git.va.th.ten/eos/cde/tie/imx/commit/8f9e62b0b6d304eb25994a052597796a61ad9017))
+
+## [4.10.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.1...v4.10.2) (2026-07-28)
+
+### Bug Fixes
+
+* reinitiated helm chart for review. Cleaned up some relevant env vars ([3692ace](https://git.va.th.ten/eos/cde/tie/imx/commit/3692acef87b2a0de2ab6fcfbf36e4382b13f70dd))
+
 ## [4.10.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.0...v4.10.1) (2026-07-24)
 
 ### Bug Fixes

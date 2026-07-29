@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.kibana.name }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 3 }}
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.kibana.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.kibana.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.kibana.app }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.kibana.podSecurityContext | nindent 8 }}
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: {{ .Values.kibana.name }}
+          securityContext:
+            {{- toYaml .Values.kibana.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.kibana.resources | nindent 12 }}
+          image: "{{ .Values.kibana.image}}:{{ .Values.kibana.tag }}"
+          imagePullPolicy: "{{ .Values.kibana.imagePullPolicy }}"
+
+          env:
+            - name:  ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: KIBANA_PASSWORD
+
+            - name: ELASTICSEARCH_USERNAME
+              value: {{ .Values.kibana.elasticsearchUsername | quote }}
+
+          ports:
+            - containerPort: {{ .Values.kibana.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.kibana.name }}
+  labels:
+    app: {{ .Values.kibana.app }}
+spec:
+  type: NodePort
+  ports:
+   - port: {{ .Values.kibana.port }}
+     targetPort: {{ .Values.kibana.port }}
+  selector:
+   app: {{ .Values.kibana.app }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: kibana-route
+spec:
+  path: /
+  to:
+    name: {{ .Values.kibana.name }}
+    weight: 100
+    kind: Service
+  host: {{ .Values.kibana.host }}
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  port:
+    targetPort: {{ .Values.kibana.port }}
+---

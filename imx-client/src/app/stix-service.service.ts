@@ -2025,6 +2025,13 @@ export class StixService implements OnInit {
                     return;
                 }
 
+                // VT url SCOs store the value under `value`; the id-contributing prop is `url_value`.
+                // Bridge it the same way the non-VT id path does, so each URL gets a distinct id.
+                if (prop === 'url_value' && componentData.type === 'url') {
+                    if (componentData['value'] !== undefined) uuidString['value'] = componentData['value'];
+                    return;
+                }
+
                 if (componentData[prop] !== '') {
                     uuidString[prop] = componentData[prop];
                 }
