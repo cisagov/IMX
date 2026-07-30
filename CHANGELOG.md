@@ -1,3 +1,9 @@
+## [4.11.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.1...v4.11.2) (2026-07-30)
+
+### Bug Fixes
+
+* stix 2.1 text generation to include disclaimer if provided in env variable ([74156fb](https://git.va.th.ten/eos/cde/tie/imx/commit/74156fb51f7eb378c23591ba2cd5c752db19cc9a))
+
 ## [4.11.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.0...v4.11.1) (2026-07-29)
 
 ### Bug Fixes
