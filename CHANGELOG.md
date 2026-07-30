@@ -1,3 +1,9 @@
+## 4.11.4 (2026-07-30)
+
+### Bug Fixes
+
+* fix filter in search tab breaking due to obsolete env variable 7b02a61
+
 ## 4.11.3 (2026-07-30)
 
 ### Bug Fixes
