@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{ .Values.server.app }}
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- toYaml .Values.server.podSecurityContext | nindent 8 }}
       imagePullSecrets:

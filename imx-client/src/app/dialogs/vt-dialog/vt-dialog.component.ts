@@ -2554,7 +2554,7 @@ export class VtDialogComponent {
         const urlRegex = /\b[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s<>"'`\]]+/g;
         const matches = refanged.match(urlRegex) || [];
 
-        const cleaned = matches.map((u: string) => u.replace(/[.,;:!?)\]}'"]+$/, '')).filter((u: string) => /:\/\/\S/.test(u));
+        const cleaned = matches.map((u: string) => u.replace(/^(?=^.{1, 200})[.,;:!?)\]}'"]+$/, '')).filter((u: string) => /:\/\/\S/.test(u));
 
         return [...new Set(cleaned)];
     }

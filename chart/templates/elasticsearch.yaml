@@ -49,6 +49,7 @@ spec:
     spec:
       securityContext:
         {{- toYaml .Values.elastic.podSecurityContext | nindent 8 }}
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Values.elastic.name }}
           securityContext:

@@ -1,11 +1,22 @@
+# ./apis
+# ./assets
+# ./auth
+# ./cronjobs
+# ./database
+# ./endpoints
+# ./functions
+# ./logging
+# ./mailer
 ./node_modules
-./node_scripts
-./uploads
-./environment
-./Docker
-./moe-test
-./scripts
-./temp
+# ./startup
+./tests
+.dockerignore
+Dockerfile
+# index.js
+# package-lock.json
+# package.json
+README.md
+# startup.js
 
 .env
 .git
