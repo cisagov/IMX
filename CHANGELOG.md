@@ -1,3 +1,9 @@
+## 4.11.2 (2026-07-30)
+
+### Bug Fixes
+
+* stix 2.1 text generation to include disclaimer if provided in env variable 74156fb
+
 ## 4.11.1 (2026-07-29)
 
 ### Bug Fixes
