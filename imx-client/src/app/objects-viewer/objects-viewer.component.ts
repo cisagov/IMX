@@ -46,6 +46,7 @@ export class ObjectsViewerComponent implements OnInit {
     @Input() rcPairs: any;
     @Input() title: string;
     @Input() description: string;
+    @Input() useDefaultServerRoots = false;
 
     faEdit = faEdit;
     faInfoCircle = faInfoCircle;
@@ -100,7 +101,7 @@ export class ObjectsViewerComponent implements OnInit {
         private announcementService: AnnouncementService
     ) {}
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         let allCheckDuplicates: Observable<any>[] = [];
 
         forkJoin(allCheckDuplicates).subscribe((data: any) => {
@@ -108,6 +109,13 @@ export class ObjectsViewerComponent implements OnInit {
         });
 
         this.roots = this.stixService.apiRoots2;
+
+        if (this.useDefaultServerRoots) {
+            const defaultRoots = await this.stixService.getDefaultServerRootsForLabels();
+            if (defaultRoots?.length > 0) {
+                this.roots = defaultRoots;
+            }
+        }
     }
 
     changeShow(objIndex, rowIndex): void {
@@ -275,7 +283,13 @@ export class ObjectsViewerComponent implements OnInit {
         return !this.objects.some((o) => o.checked);
     }
 
-    showRcPair(index) {
+    getExternalId(component: any): string {
+        const ref = (component?.external_references || []).find((r: any) => r?.external_id);
+
+        return ref?.external_id || '';
+    }
+
+    showRcPair(index, component?) {
         let rcPairsAll = [];
         this.rcPairs.forEach((rc) => {
             rcPairsAll.push(Object.entries(rc));
@@ -313,6 +327,11 @@ export class ObjectsViewerComponent implements OnInit {
                 this.rcPairsMapping.push({ root: rcPair[0], collection: rcPair[1][0] });
             }
         });
+
+        const externalId = this.getExternalId(component);
+        if (externalId) {
+            rcString += `, External ID: ${externalId}`;
+        }
 
         rcString += ')';
 

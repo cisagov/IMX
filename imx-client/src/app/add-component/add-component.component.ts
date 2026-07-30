@@ -1184,6 +1184,8 @@ export class AddComponentComponent implements OnInit, OnDestroy {
         modalRef.componentInstance.rcPairs = rcPairs;
         modalRef.componentInstance.title = title;
         modalRef.componentInstance.description = description;
+        // This component only opens the viewer for duplicates, which are always searched on Default
+        modalRef.componentInstance.useDefaultServerRoots = true;
     }
 
     openNoteDialogModal() {
