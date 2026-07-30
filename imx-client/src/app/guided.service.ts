@@ -1617,11 +1617,10 @@ export class GuidedService {
                 for (let page in cachedCart) {
                     for (let type in cachedCart[page]) {
                         const stixObjects = [];
-                        if (this.simplifiedCart[type])
-                            cachedCart[page][type].forEach((elem) => {
-                                const foundObject = this.stixService.bundle.objects.find((obj) => elem.id == obj.id);
-                                if (foundObject) stixObjects.push(foundObject);
-                            });
+                        cachedCart[page][type].forEach((elem) => {
+                            const foundObject = this.stixService.bundle.objects.find((obj) => elem.id == obj.id);
+                            if (foundObject) stixObjects.push(foundObject);
+                        });
 
                         if (this.simplifiedCart[type]) {
                             stixObjects.forEach((elem) => {
