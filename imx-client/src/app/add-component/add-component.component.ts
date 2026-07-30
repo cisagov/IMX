@@ -1,6 +1,6 @@
-import { OnInit, Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { OnInit, OnDestroy, Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormModel } from '../dynamic-form-component/form-model';
 import { QuestionBase } from '../dynamic-form-component/question-base';
@@ -69,7 +69,7 @@ import { X509V3Extensions } from '../extensions/predefined/x509_v3_extensions';
     styleUrls: ['./add-component.component.css'],
     standalone: false,
 })
-export class AddComponentComponent implements OnInit {
+export class AddComponentComponent implements OnInit, OnDestroy {
     @Input() objectSelectionInput: any;
     @Input() objectPropertyTypeSelectionInput: any;
     @Input() queryParams: any;
@@ -99,6 +99,8 @@ export class AddComponentComponent implements OnInit {
     isLoading = false;
 
     deletable_notes: Set<string> = new Set();
+
+    private cancelDuplicates$ = new Subject<void>();
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,
@@ -1056,12 +1058,15 @@ export class AddComponentComponent implements OnInit {
     }
 
     checkDuplicates(componentData: any) {
-        if (this.stixService.taxiiServerType === 'custom') return;
+        // Duplicates are always searched on the Default server, regardless of which server is selected
+        if (!this.envService.env?.taxiiServer?.url) return;
 
         const missingAttributes = localStorage.getItem('missing-attributes');
         if (missingAttributes?.includes('spec_version')) {
             componentData['spec_version'] = '';
         }
+
+        this.cancelDuplicates$.next();
 
         this.duplicates = [];
         this.stixService.duplicates = [];
@@ -1070,9 +1075,9 @@ export class AddComponentComponent implements OnInit {
         this.currentComponentForDuplicates.populateFromJSON(componentData, this.stixService);
 
         let checkDuplicates: Observable<any> = null;
-        checkDuplicates = this.stixService.checkDuplicates(this.currentComponentForDuplicates);
+        checkDuplicates = this.stixService.checkDuplicates(this.currentComponentForDuplicates, true);
 
-        checkDuplicates?.subscribe((d: any) => {
+        checkDuplicates?.pipe(takeUntil(this.cancelDuplicates$)).subscribe((d: any) => {
             if (d.body?.founds?.length > 0) {
                 let dupsFound = [];
                 let rcPairs = [];
@@ -1124,6 +1129,11 @@ export class AddComponentComponent implements OnInit {
         return this.duplicates.length > 0;
     }
 
+    ngOnDestroy() {
+        this.cancelDuplicates$.next();
+        this.cancelDuplicates$.complete();
+    }
+
     @HostListener('click', ['$event'])
     viewDuplicates(event, component) {
         if (event) {
@@ -1154,7 +1164,7 @@ export class AddComponentComponent implements OnInit {
                     duplicated,
                     rcPairs,
                     'Duplicated Objects',
-                    'Existing similar objects across all roots and collections on the selected server.'
+                    'Existing similar objects across all roots and collections on the Default server.'
                 );
             }
         }
