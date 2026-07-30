@@ -1,3 +1,9 @@
+## [4.11.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.3...v4.11.4) (2026-07-30)
+
+### Bug Fixes
+
+* fix filter in search tab breaking due to obsolete env variable ([7b02a61](https://git.va.th.ten/eos/cde/tie/imx/commit/7b02a616ba53676c578a8b3a6c8cbe85aac1cec9))
+
 ## [4.11.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.2...v4.11.3) (2026-07-30)
 
 ### Bug Fixes
