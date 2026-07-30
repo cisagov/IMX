@@ -1,10 +1,22 @@
-./backup-assets
-./src/assets/env.json
-./node_modules
-./scripts
-./test_data
-./tests
 ./.angular
+./node_modules
+# ./src
+.dockerignore
+.prettierrc
+# angular.json
+# buildspec.yml
+# default.conf
+Dockerfile
+# karma.config.js
+# nginx.conf
+# package-lock.json
+# package.json
+README.md
+# tsconfig.app.json
+# tsconfig.json
+# tsconfig.spec.json
+
+./src/assets/env.json
 
 .env
 .git

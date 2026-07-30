@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{ .Values.kibana.app }}
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- toYaml .Values.kibana.podSecurityContext | nindent 8 }}
       imagePullSecrets:
