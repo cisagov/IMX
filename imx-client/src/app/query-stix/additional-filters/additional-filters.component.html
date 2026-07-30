@@ -104,7 +104,7 @@
                         @for (id of identityList; track id) {
                             <option [value]="id.id">
                                 {{ id.name }}
-                                @if (id.id == envService.env.cmaIdentity.id) {
+                                @if (id.id == envService.env?.cmaIdentity?.id) {
                                     [CMA]
                                 }
                                 &nbsp;
