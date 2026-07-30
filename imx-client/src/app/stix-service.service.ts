@@ -2858,11 +2858,19 @@ export class StixService implements OnInit {
         return tooltip;
     }
 
-    checkDuplicates(component) {
+    /**
+     * Search for existing objects similar to the one being built.
+     * @param component the object to search duplicates for
+     * @param useDefaultServer when true, search the Default TAXII server instead of the currently selected one
+     * @returns Observable HTTP Request, or null when the object has nothing searchable
+     */
+    checkDuplicates(component, useDefaultServer = false) {
+        const server = useDefaultServer ? this.envService.env.taxiiServer : this.taxiiServer;
+
         let httpHeaders = new HttpHeaders()
             .set('Accept', 'application/json')
             .set('Content-Type', 'application/json')
-            .set('Authorization', `Basic ${btoa(this.taxiiServer.username + ':' + this.taxiiServer.password)}`);
+            .set('Authorization', `Basic ${btoa(server.username + ':' + server.password)}`);
 
         let valueString = '';
 
@@ -3152,7 +3160,7 @@ export class StixService implements OnInit {
             }
         }
 
-        let url = `${this.taxiiServer.url}ext/v1.0/search/`;
+        let url = `${server.url}ext/v1.0/search/`;
         let request = `type.keyword:${component.type}`;
         if (valueString) {
             request = `${request} AND (${valueString})`;
@@ -3161,7 +3169,11 @@ export class StixService implements OnInit {
                 query: request,
             };
 
-            return this.taxiiHttpReq('post', url, { headers: httpHeaders, observe: 'response' }, requestJSON);
+            // taxiiHttpReq routes through the custom cert proxy based on the selected server,
+            // which would send a Default-targeted search to the wrong host
+            return useDefaultServer
+                ? this.httpClient.post(url, requestJSON, { headers: httpHeaders, observe: 'response' })
+                : this.taxiiHttpReq('post', url, { headers: httpHeaders, observe: 'response' }, requestJSON);
         }
 
         return null;
