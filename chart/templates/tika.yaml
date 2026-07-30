@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{ .Values.tika.app }}
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- toYaml .Values.tika.podSecurityContext | nindent 8 }}
       imagePullSecrets:

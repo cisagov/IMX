@@ -5,8 +5,8 @@ FROM $REGISTRY/node:lts-alpine AS builder
 ARG BUILD_ENV=prod
 
 WORKDIR /imx-build
-COPY ./package.json .
-RUN npm i
+COPY ./package.json ./package-lock.json ./
+RUN npm ci
 COPY . .
 RUN npm run build-$BUILD_ENV
 

@@ -219,7 +219,7 @@ class STIXHelper:
         self.indicators = []
 
         # Change all id attributes from example to CISA
-        cisa_ns = Namespace("http://www.us-cert.gov/nccic", "CISA")
+        cisa_ns = Namespace("https://www.us-cert.gov/nccic", "CISA")
         set_id_namespace(cisa_ns)
 
         datestamp = time.strftime("%Y-%m-%dT%H:%M:%S")
@@ -440,7 +440,7 @@ class STIXHelper:
         chain.kill_chain_phases = phases
         chain.number_of_phases = 7
         chain.definer = "LMCO"
-        chain.reference = "http://www.lockheedmartin.com/content/dam/lockheed/data/corporate/documents/LM-White-Paper-Intel-Driven-Defense.pdf"
+        chain.reference = "https://www.lockheedmartin.com/content/dam/lockheed/data/corporate/documents/LM-White-Paper-Intel-Driven-Defense.pdf"
         return chain
 
     # End of killChain
@@ -2027,7 +2027,7 @@ class STIXHelper:
                     phase.phase_id = ident
                     phase._ordinality = ordinality
                     phase.name = name
-                    phase.reference = "http://www.lockheedmartin.com/content/dam/lockheed/data/corporate/documents/LM-White-Paper-Intel-Driven-Defense.pdf"
+                    phase.reference = "https://www.lockheedmartin.com/content/dam/lockheed/data/corporate/documents/LM-White-Paper-Intel-Driven-Defense.pdf"
                     phase.kill_chain_id = (
                         "stix:KillChain-af3e707f-2fb9-49e5-8c37-14026ca0a5ff"
                     )
