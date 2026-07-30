@@ -13,8 +13,8 @@ RUN apk add nodejs-lts
 RUN apk add npm
 
 WORKDIR /imx-server
-COPY ./package.json .
-RUN npm install --omit dev
+COPY ./package.json ./package-lock.json ./
+RUN npm ci --omit dev
 RUN mkdir uploads
 RUN chgrp -R 0 ./uploads && chmod -R g=u ./uploads
 
