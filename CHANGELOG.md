@@ -1,3 +1,10 @@
+## [4.11.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.2...v4.11.3) (2026-07-30)
+
+### Bug Fixes
+
+* patches related to sonar qube findings ([3931458](https://git.va.th.ten/eos/cde/tie/imx/commit/3931458b83b0d9fee826c58e3be157f4f2a00a19))
+* unremoved if statement breaking categorization ([e8baa9c](https://git.va.th.ten/eos/cde/tie/imx/commit/e8baa9c3051a1e178b7efd47e3c589662615cb81))
+
 ## [4.11.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.1...v4.11.2) (2026-07-30)
 
 ### Bug Fixes
