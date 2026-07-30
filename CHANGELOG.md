@@ -1,3 +1,10 @@
+## 4.11.3 (2026-07-30)
+
+### Bug Fixes
+
+* patches related to sonar qube findings 3931458
+* unremoved if statement breaking categorization e8baa9c
+
 ## 4.11.2 (2026-07-30)
 
 ### Bug Fixes
