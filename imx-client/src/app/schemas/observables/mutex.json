@@ -1,34 +1,30 @@
 {
-  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/mutex.json",
-  "$schema": "http://json-schema.org/draft/2020-12/schema#",
-  "title": "mutex",
-  "description": "The Mutex Object represents the properties of a mutual exclusion (mutex) object.",
-  "type": "object",
-  "allOf": [
-    {
-      "$ref": "../common/cyber-observable-core.json"
-    },
-    {
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "The value of this property MUST be `mutex`.",
-          "enum": [
-            "mutex"
-          ]
+    "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/mutex.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "mutex",
+    "description": "The Mutex Object represents the properties of a mutual exclusion (mutex) object.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/cyber-observable-core.json"
         },
-        "id": {
-          "title": "id",
-          "pattern": "^mutex[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-        },
-        "name": {
-          "type": "string",
-          "description": "Specifies the name of the mutex object."
+        {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "The value of this property MUST be `mutex`.",
+                    "enum": ["mutex"]
+                },
+                "id": {
+                    "title": "id",
+                    "pattern": "^mutex--"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Specifies the name of the mutex object."
+                }
+            }
         }
-      }
-    }
-  ],
-  "required": [
-    "name"
-  ]
+    ],
+    "required": ["name"]
 }
