@@ -2163,9 +2163,10 @@
                                     [ngModelOptions]="{standalone:true}"
                                     class="form-control form-select dropdown"
                                     [(ngModel)]="question['emailAddressType']"
+                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': !question['emailAddressType'] }"
                                     [disabled]="question.readonly"
                                 >
-                                    <option value=""></option>
+                                    <option value="">Email Address Type</option>
                                     <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
                                 </select>
                             </div>
@@ -2174,11 +2175,11 @@
                                     id="email-address"
                                     [formControlName]="question.key"
                                     class="form-control form-select dropdown"
-                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage }"
+                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': emptyDropdown() }"
                                     [(ngModel)]="question.relString"
                                     [disabled]="question.readonly"
                                 >
-                                    <option value=""></option>
+                                    <option value="">Email Address Ref</option>
                                     <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
                                 </select>
                                 <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
@@ -2241,11 +2242,11 @@
                                     id="phone-number-type"
                                     [ngModelOptions]="{standalone:true}"
                                     class="form-control form-select dropdown"
-
+                                    [ngClass]="{'select-placeholder': !question['phoneType']}"
                                     [(ngModel)]="question['phoneType']"
                                     [disabled]="question.readonly"
                                 >
-                                    <option value=""></option>
+                                    <option value="">Phone Number Type</option>
                                     <option *ngFor="let opt of contactNumberOptions" [value]="opt">{{ opt }}</option>
                                 </select>
                             </div>
@@ -2254,7 +2255,8 @@
                                     id="phone-number"
                                     [formControlName]="question.key"
                                     class="form-control"
-                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage }"
+                                    placeholder="Phone Number"
+                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': emptyDropdown() }"
                                     [(ngModel)]="question.value"
                                     [disabled]="question.readonly"
                                 />
@@ -2321,10 +2323,11 @@
                                     id="social-media-type"
                                     [ngModelOptions]="{standalone:true}"
                                     class="form-control form-select dropdown"
+                                    [ngClass]="{'select-placeholder': !question['socialMediaType'] }"
                                     [(ngModel)]="question['socialMediaType']"
                                     [disabled]="question.readonly"
                                 >
-                                    <option value=""></option>
+                                    <option value="">Social Media Type</option>
                                     <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
                                 </select>
                             </div>
@@ -2333,11 +2336,11 @@
                                     id="social-media"
                                     [formControlName]="question.key"
                                     class="form-control form-select dropdown"
-                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage }"
+                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': emptyDropdown() }"
                                     [(ngModel)]="question.relString"
                                     [disabled]="question.readonly"
                                 >
-                                    <option value=""></option>
+                                    <option value="">Social Media Ref</option>
                                     <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
                                 </select>
                                 <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
