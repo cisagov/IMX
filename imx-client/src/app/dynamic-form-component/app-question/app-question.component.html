@@ -2112,6 +2112,245 @@
             </div>
         </div>
 
+        <!-- Email Address Ref (Fix Readonly)-->
+        <div class="" *ngSwitchCase="'email-address'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
+            <span *ngIf="stixService.guidedUI" class="tooltipright" [ngClass]="{ 'display-flex mt-1 pe-1': stixService.guidedUI }">
+                <p class="float-start nowrap input-header">{{ questionLabel(question) }}</p>
+                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
+                    Dropdown option displays email addresses currently in the bundle.<br />Use the text box on the right to manually<br />enter a custom
+                    email address.
+                </span>
+                <span *ngIf="tooltip" class="">
+                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                    <div class="toolttext" [innerHTML]="tooltip"></div>
+                </span>
+            </span>
+            <select
+                *ngIf="stixService.guidedUI"
+                id="email-address"
+                [formControlName]="question.key"
+                class="form-control form-select dropdown"
+                [ngClass]="{ 'mt--2': !stixService.guidedUI, '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
+                [(ngModel)]="question.relString"
+                [disabled]="question.readonly"
+            >
+                <option value=""></option>
+                <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
+            </select>
+
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col stix-title ms-0 mb-2 float-end">
+                            <span id="{{ question.key }}_title" class="tooltipright">
+                                <span class="float-start nowrap input-header">{{ questionLabel(question) }}</span>
+                                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
+                                    Dropdown option displays email addresses currently in the bundle.<br />Use the text box on the right to manually<br />enter
+                                    a custom email address.
+                                </span>
+                                <span *ngIf="tooltip" class="">
+                                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                                    <div class="toolttext" [innerHTML]="tooltip"></div>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 d-flex">
+                            <div class="me-2 w-50">
+                                <select
+                                    id="email-address-type"
+                                    [ngModelOptions]="{standalone:true}"
+                                    class="form-control form-select dropdown"
+                                    [(ngModel)]="question['emailAddressType']"
+                                    [disabled]="question.readonly"
+                                >
+                                    <option value=""></option>
+                                    <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
+                                </select>
+                            </div>
+                            <div class="me-2 w-50">
+                                <select
+                                    id="email-address"
+                                    [formControlName]="question.key"
+                                    class="form-control form-select dropdown"
+                                    [ngClass]="{ 'mt--2': !stixService.guidedUI, 'is-invalid': !isValid && validationMessage }"
+                                    [(ngModel)]="question.relString"
+                                    [disabled]="question.readonly"
+                                >
+                                    <option value=""></option>
+                                    <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
+                                </select>
+                                <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
+                                    {{ validationMessage }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phone Number (Fix Readonly)-->
+        <div class="" *ngSwitchCase="'phone-number'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
+            <span *ngIf="stixService.guidedUI" class="tooltipright" [ngClass]="{ 'display-flex mt-1 pe-1': stixService.guidedUI }">
+                <p class="float-start nowrap input-header">{{ questionLabel(question) }}</p>
+                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
+                    Dropdown option displays email addresses currently in the bundle. Choose an email address from the dropdown and optionally select an email address type and classification.
+                </span>
+                <span *ngIf="tooltip" class="">
+                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                    <div class="toolttext" [innerHTML]="tooltip"></div>
+                </span>
+            </span>
+            <select
+                *ngIf="stixService.guidedUI"
+                id="phone-number"
+                [formControlName]="question.key"
+                class="form-control form-select dropdown"
+                [ngClass]="{ 'mt--2': !stixService.guidedUI, '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
+                [(ngModel)]="question.relString"
+                [disabled]="question.readonly"
+            >
+                <option value=""></option>
+                <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
+            </select>
+
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col stix-title ms-0 mb-2 float-end">
+                            <span id="{{ question.key }}_title" class="tooltipright">
+                                <span class="float-start nowrap input-header">{{ questionLabel(question) }}</span>
+                                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
+                                    Enter a phone number and optionally select a phone type and classification.
+                                </span>
+                                <span *ngIf="tooltip" class="">
+                                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                                    <div class="toolttext" [innerHTML]="tooltip"></div>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 d-flex" style="flex-direction: column;">
+                            <div class="input-fields d-flex">
+                                <div class="me-2 w-50">
+                                <select
+                                    id="phone-number-type"
+                                    [ngModelOptions]="{standalone:true}"
+                                    class="form-control form-select dropdown"
+
+                                    [(ngModel)]="question['phoneType']"
+                                    [disabled]="question.readonly"
+                                >
+                                    <option value=""></option>
+                                    <option *ngFor="let opt of contactNumberOptions" [value]="opt">{{ opt }}</option>
+                                </select>
+                            </div>
+                            <div class="me-2 w-50">
+                                <input
+                                    id="phone-number"
+                                    [formControlName]="question.key"
+                                    class="form-control"
+                                    [ngClass]="{ 'mt--2': !stixService.guidedUI, 'is-invalid': !isValid && validationMessage }"
+                                    [(ngModel)]="question.value"
+                                    [disabled]="question.readonly"
+                                />
+                                <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
+                                    {{ validationMessage }}
+                                </div>
+                            </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media Ref (Fix Readonly)-->
+        <div class="" *ngSwitchCase="'social-media'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
+            <span *ngIf="stixService.guidedUI" class="tooltipright" [ngClass]="{ 'display-flex mt-1 pe-1': stixService.guidedUI }">
+                <p class="float-start nowrap input-header">{{ questionLabel(question) }}</p>
+                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
+                    Dropdown option displays user acocunts currently in the bundle.<br />Use the text box on the right to manually<br />enter a custom
+                    user account.
+                </span>
+                <span *ngIf="tooltip" class="">
+                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                    <div class="toolttext" [innerHTML]="tooltip"></div>
+                </span>
+            </span>
+            <select
+                *ngIf="stixService.guidedUI"
+                id="social-media"
+                [formControlName]="question.key"
+                class="form-control form-select dropdown"
+                [ngClass]="{ 'mt--2': !stixService.guidedUI, '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
+                [(ngModel)]="question.relString"
+                [disabled]="question.readonly"
+            >
+                <option value=""></option>
+                <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
+            </select>
+
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col stix-title ms-0 mb-2 float-end">
+                            <span id="{{ question.key }}_title" class="tooltipright">
+                                <span class="float-start nowrap input-header">{{ questionLabel(question) }}</span>
+                                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
+                                    Dropdown option displays user accounts currently in the bundle.<br />Use the text box on the right to manually<br />enter
+                                    a custom user account.
+                                </span>
+                                <span *ngIf="tooltip" class="">
+                                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
+                                    <div class="toolttext" [innerHTML]="tooltip"></div>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 d-flex">
+                            <div class="me-2 w-50">
+                                <select
+                                    id="social-media-type"
+                                    [ngModelOptions]="{standalone:true}"
+                                    class="form-control form-select dropdown"
+                                    [(ngModel)]="question['socialMediaType']"
+                                    [disabled]="question.readonly"
+                                >
+                                    <option value=""></option>
+                                    <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
+                                </select>
+                            </div>
+                            <div class="me-2 w-50">
+                                <select
+                                    id="social-media"
+                                    [formControlName]="question.key"
+                                    class="form-control form-select dropdown"
+                                    [ngClass]="{ 'mt--2': !stixService.guidedUI, 'is-invalid': !isValid && validationMessage }"
+                                    [(ngModel)]="question.relString"
+                                    [disabled]="question.readonly"
+                                >
+                                    <option value=""></option>
+                                    <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
+                                </select>
+                                <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
+                                    {{ validationMessage }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Sighting (Fix Readonly)-->
         <div class="" *ngSwitchCase="'sighting'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
             <span *ngIf="stixService.guidedUI" class="tooltipright" [ngClass]="{ 'mt-1 pe-1': stixService.guidedUI }">
