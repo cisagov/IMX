@@ -3238,6 +3238,8 @@ export class StixService implements OnInit {
                     valueString = `name.keyword:"${component.name}"`;
                 } else if (component.country) {
                     valueString = `country.keyword:${component.country}`;
+                } else if (component.city) {
+                    valueString = `city.keyword:"${component.city}"`;
                 } else {
                     valueString = `id.keyword:${component.id}`;
                 }
@@ -3304,14 +3306,21 @@ export class StixService implements OnInit {
         return this.taxiiHttpReq('post', url, { headers: httpHeaders, observe: 'response' }, requestJSON);
     }
 
-    getObjectFromIDHelper(ids, sendToBundle: boolean, root, collection) {
+    getObjectFromIDHelper(ids, sendToBundle: boolean, root, collection, useDefaultServer = false) {
         if (ids.length == 0) {
             return [];
         }
         let id = ids.pop();
         try {
-            let getURL = this.taxiiServer.url + 'taxii/v2.1-os/' + root + '/collections/' + collection + '/objects/?match[id]=' + id;
-            this.httpClient.get<any>(getURL, { headers: this.httpHeaders, observe: 'response' }).subscribe(
+            const server = useDefaultServer ? this.envService.env.taxiiServer : this.taxiiServer;
+            const headers = useDefaultServer
+                ? new HttpHeaders()
+                      .set('Accept', 'application/taxii+json;version=2.1')
+                      .set('Authorization', `Basic ${btoa(server.username + ':' + server.password)}`)
+                : this.httpHeaders;
+
+            let getURL = `${server.url}taxii/${this.envService.env.taxiiServer.apiVersion}/${root}/collections/${collection}/objects/?match[id]=${id}`;
+            this.httpClient.get<any>(getURL, { headers: headers, observe: 'response' }).subscribe(
                 (resp) => {
                     let obj = undefined;
                     if (resp.body['objects']) {
@@ -3328,10 +3337,10 @@ export class StixService implements OnInit {
                             } else console.error('ERROR: No objects were able to be loaded');
                             return [];
                         }
-                        this.getObjectFromIDHelper(ids, true, root, collection);
+                        this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     } else {
-                        if (obj) return this.getObjectFromIDHelper(ids, true, root, collection)?.concat([obj]);
-                        else return this.getObjectFromIDHelper(ids, true, root, collection);
+                        if (obj) return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer)?.concat([obj]);
+                        else return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     }
                 },
                 (err) => {
@@ -3343,9 +3352,9 @@ export class StixService implements OnInit {
                             } else console.error('ERROR: No objects were able to be loaded');
                             return [];
                         }
-                        this.getObjectFromIDHelper(ids, true, root, collection);
+                        this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     } else {
-                        return this.getObjectFromIDHelper(ids, true, root, collection);
+                        return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     }
                 }
             );
@@ -3358,9 +3367,9 @@ export class StixService implements OnInit {
                     } else console.error('ERROR: No objects were able to be loaded');
                     return [];
                 }
-                this.getObjectFromIDHelper(ids, true, root, collection);
+                this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
             } else {
-                return this.getObjectFromIDHelper(ids, true, root, collection);
+                return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
             }
         }
     }
