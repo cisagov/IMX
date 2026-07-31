@@ -53,7 +53,7 @@ services:
 
   opensearch:
     container_name: opensearch
-    image: opensearchproject/opensearch:2.14.0
+    image: opensearchproject/opensearch:3.7.0
     restart: unless-stopped
     mem_limit: 2g
     networks:
@@ -71,7 +71,8 @@ services:
     ports:
       - 9200:9200
     healthcheck:
-      test: ["CMD", "curl", "--user", "admin:${DB_PASS}", "http://localhost:9200"]
+      test:
+        ["CMD", "curl", "--user", "admin:${DB_PASS}", "http://localhost:9200"]
       interval: 10s
       timeout: 5s
       retries: 20
