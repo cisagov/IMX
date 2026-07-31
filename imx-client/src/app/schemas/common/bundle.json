@@ -1,214 +1,208 @@
 {
-  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/bundle.json",
-  "$schema": "http://json-schema.org/draft/2020-12/schema#",
-  "title": "bundle",
-  "description": "A Bundle is a collection of arbitrary STIX Objects and Marking Definitions grouped together in a single container.",
-  "type": "object",
-  "properties": {
-    "type": {
-      "type": "string",
-      "description": "The type of this object, which MUST be the literal `bundle`.",
-      "enum": [
-        "bundle"
-      ]
-    },
-    "id": {
-      "allOf": [
-        {
-          "type": "string",
-  "pattern": "^[a-z][a-z0-9-]+[a-z0-9]--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-          "description": "An identifier for this bundle. The id field for the Bundle is designed to help tools that may need it for processing, but tools are not required to store or track it. "
+    "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/bundle.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "bundle",
+    "description": "A Bundle is a collection of arbitrary STIX Objects and Marking Definitions grouped together in a single container.",
+    "type": "object",
+    "properties": {
+        "type": {
+            "type": "string",
+            "description": "The type of this object, which MUST be the literal `bundle`.",
+            "enum": ["bundle"]
         },
-        {
-          "pattern": "^bundle[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-        }
-      ]
-    },
-    "objects": {
-      "type": "array",
-      "description": "Specifies a set of one or more STIX Objects.",
-      "items": {
-        "anyOf": [
-          {
-            "oneOf": [
-              {
-                "$ref": "../sdos/attack-pattern.json"
-              },
-              {
-                "$ref": "../sdos/campaign.json"
-              },
-              {
-                "$ref": "../sdos/course-of-action.json"
-              },
-              {
-                "$ref": "../sdos/identity.json"
-              },
-              {
-                "$ref": "../sdos/indicator.json"
-              },
-              {
-                "$ref": "../sdos/infrastructure.json"
-              },
-              {
-                "$ref": "../sdos/intrusion-set.json"
-              },
-              {
-                "$ref": "../sdos/malware.json"
-              },
-              {
-                "$ref": "../sdos/malware-analysis.json"
-              },
-              {
-                "$ref": "../sdos/observed-data.json"
-              },
-              {
-                "$ref": "../sros/relationship.json"
-              },
-              {
-                "$ref": "../sdos/report.json"
-              },
-              {
-                "$ref": "../sros/sighting.json"
-              },
-              {
-                "$ref": "../sdos/threat-actor.json"
-              },
-              {
-                "$ref": "../sdos/tool.json"
-              },
-              {
-                "$ref": "../sdos/vulnerability.json"
-              },
-              {
-                "$ref": "../observables/artifact.json"
-              },
-              {
-                "$ref": "../observables/autonomous-system.json"
-              },
-              {
-                "$ref": "../observables/directory.json"
-              },
-              {
-                "$ref": "../observables/domain-name.json"
-              },
-              {
-                "$ref": "../observables/email-addr.json"
-              },
-              {
-                "$ref": "../observables/email-message.json"
-              },
-              {
-                "$ref": "../observables/file.json"
-              },
-              {
-                "$ref": "../observables/ipv4-addr.json"
-              },
-              {
-                "$ref": "../observables/ipv6-addr.json"
-              },
-              {
-                "$ref": "../observables/mac-addr.json"
-              },
-              {
-                "$ref": "../observables/mutex.json"
-              },
-              {
-                "$ref": "../observables/network-traffic.json"
-              },
-              {
-                "$ref": "../observables/process.json"
-              },
-              {
-                "$ref": "../observables/software.json"
-              },
-              {
-                "$ref": "../observables/url.json"
-              },
-              {
-                "$ref": "../observables/user-account.json"
-              },
-              {
-                "$ref": "../observables/windows-registry-key.json"
-              },
-              {
-                "$ref": "../observables/x509-certificate.json"
-              },
-              {
-                "$ref": "../common/language-content.json"
-              },
-              {
-                "$ref": "../common/marking-definition.json"
-              }
-            ]
-          },
-          {
+        "id": {
             "allOf": [
-              {
-                "oneOf": [
-                  {
-                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
-                  },
-                  {
-                    "$ref": "../common/cyber-observable-core.json"
-                  }
-                ]
-              },
-              {
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "description": "The type of this object, which for custom objects cannot be one of those defined in the specification.",
-                    "not": {
-                      "enum": [
-                        "attack-pattern",
-                        "campaign",
-                        "course-of-action",
-                        "identity",
-                        "indicator",
-                        "infrastructure",
-                        "intrusion-set",
-                        "malware",
-                        "observed-data",
-                        "relationship",
-                        "report",
-                        "sighting",
-                        "threat-actor",
-                        "tool",
-                        "vulnerability",
-                        "artifact",
-                        "autonomous-system",
-                        "directory",
-                        "domain-name",
-                        "email-addr",
-                        "email-message",
-                        "file",
-                        "ipv4-addr",
-                        "ipv6-addr",
-                        "mac-addr",
-                        "mutex",
-                        "network-traffic",
-                        "process",
-                        "software",
-                        "url",
-                        "user-account",
-                        "windows-registry-key",
-                        "x509-certificate",
-                        "language-content",
-                        "marking-definition"
-                      ]
-                    }
-                  }
+                {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
+                    "description": "An identifier for this bundle. The id field for the Bundle is designed to help tools that may need it for processing, but tools are not required to store or track it. "
+                },
+                {
+                    "pattern": "^bundle--"
                 }
-              }
             ]
-          }
-        ]
-      },
-      "minItems": 1
-    }
-  },
-  "required": [
-    "type",
-    "id"
-  ]
+        },
+        "objects": {
+            "type": "array",
+            "description": "Specifies a set of one or more STIX Objects.",
+            "items": {
+                "anyOf": [
+                    {
+                        "oneOf": [
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/attack-pattern.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/campaign.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/course-of-action.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/identity.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/indicator.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/infrastructure.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/intrusion-set.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/malware.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/malware-analysis.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/observed-data.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sros/relationship.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/report.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sros/sighting.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/threat-actor.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/tool.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/vulnerability.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/artifact.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/autonomous-system.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/directory.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/domain-name.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/email-addr.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/email-message.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/file.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/ipv4-addr.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/ipv6-addr.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/mac-addr.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/mutex.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/network-traffic.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/process.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/software.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/url.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/user-account.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/windows-registry-key.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/observables/x509-certificate.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/language-content.json"
+                            },
+                            {
+                                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/marking-definition.json"
+                            }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "oneOf": [
+                                    {
+                                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
+                                    },
+                                    {
+                                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/cyber-observable-core.json"
+                                    }
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "description": "The type of this object, which for custom objects cannot be one of those defined in the specification.",
+                                        "not": {
+                                            "enum": [
+                                                "attack-pattern",
+                                                "campaign",
+                                                "course-of-action",
+                                                "identity",
+                                                "indicator",
+                                                "infrastructure",
+                                                "intrusion-set",
+                                                "malware",
+                                                "observed-data",
+                                                "relationship",
+                                                "report",
+                                                "sighting",
+                                                "threat-actor",
+                                                "tool",
+                                                "vulnerability",
+                                                "artifact",
+                                                "autonomous-system",
+                                                "directory",
+                                                "domain-name",
+                                                "email-addr",
+                                                "email-message",
+                                                "file",
+                                                "ipv4-addr",
+                                                "ipv6-addr",
+                                                "mac-addr",
+                                                "mutex",
+                                                "network-traffic",
+                                                "process",
+                                                "software",
+                                                "url",
+                                                "user-account",
+                                                "windows-registry-key",
+                                                "x509-certificate",
+                                                "language-content",
+                                                "marking-definition"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "minItems": 1
+        }
+    },
+    "required": ["type", "id"]
 }
