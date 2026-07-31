@@ -1,3 +1,16 @@
+## 4.12.0 (2026-07-31)
+
+### Features
+
+* add iob extension definitions b621244
+
+### Bug Fixes
+
+* fix misp json structure 2504df3
+* fix reference link in schema 2f31427
+* update all common schemas 6b8038a
+* update validator to use updated schemas 770af47
+
 ## 4.11.4 (2026-07-30)
 
 ### Bug Fixes
