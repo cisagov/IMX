@@ -134,4 +134,10 @@
 .timezone-option:active {
     background: #e5e7eb;
 }
+
 /* End Select Time Zone */
+
+.input-header {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}

@@ -174,7 +174,7 @@
                 />
             </ng-container>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -428,7 +428,7 @@
                 </button>
             </div>
 
-            <div class="row pb-4" *ngIf="!stixService.guidedUI">
+            <div class="row pb-3" *ngIf="!stixService.guidedUI">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -601,7 +601,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -764,7 +764,7 @@
                 </div>
             </div>
 
-            <div class="row pb-4" *ngIf="!stixService.guidedUI">
+            <div class="row pb-3" *ngIf="!stixService.guidedUI">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -923,7 +923,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1080,7 +1080,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1254,7 +1254,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1393,7 +1393,7 @@
                 </ng-template>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1537,7 +1537,7 @@
                 <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
             </select>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1622,7 +1622,7 @@
                 <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
             </select>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1779,7 +1779,7 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1909,7 +1909,7 @@
                 />
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -1998,7 +1998,7 @@
                 />
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -2073,7 +2073,7 @@
                 <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
             </select>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end">
@@ -2130,7 +2130,7 @@
                 id="email-address"
                 [formControlName]="question.key"
                 class="form-control form-select dropdown"
-                [ngClass]="{ 'mt--2': !stixService.guidedUI, '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
+                [ngClass]="{ '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
                 [(ngModel)]="question.relString"
                 [disabled]="question.readonly"
             >
@@ -2156,7 +2156,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 d-flex">
+                        <div class="col-12 d-flex" style="align-items: start;">
                             <div class="me-2 w-50">
                                 <select
                                     id="email-address-type"
@@ -2169,12 +2169,12 @@
                                     <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
                                 </select>
                             </div>
-                            <div class="me-2 w-50">
+                            <div class="w-50">
                                 <select
                                     id="email-address"
                                     [formControlName]="question.key"
                                     class="form-control form-select dropdown"
-                                    [ngClass]="{ 'mt--2': !stixService.guidedUI, 'is-invalid': !isValid && validationMessage }"
+                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage }"
                                     [(ngModel)]="question.relString"
                                     [disabled]="question.readonly"
                                 >
@@ -2209,7 +2209,7 @@
                 id="phone-number"
                 [formControlName]="question.key"
                 class="form-control form-select dropdown"
-                [ngClass]="{ 'mt--2': !stixService.guidedUI, '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
+                [ngClass]="{ '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
                 [(ngModel)]="question.relString"
                 [disabled]="question.readonly"
             >
@@ -2235,7 +2235,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 d-flex" style="flex-direction: column;">
-                            <div class="input-fields d-flex">
+                            <div class="input-fields d-flex" style="align-items: start;">
                                 <div class="me-2 w-50">
                                 <select
                                     id="phone-number-type"
@@ -2249,12 +2249,12 @@
                                     <option *ngFor="let opt of contactNumberOptions" [value]="opt">{{ opt }}</option>
                                 </select>
                             </div>
-                            <div class="me-2 w-50">
+                            <div class="w-50">
                                 <input
                                     id="phone-number"
                                     [formControlName]="question.key"
                                     class="form-control"
-                                    [ngClass]="{ 'mt--2': !stixService.guidedUI, 'is-invalid': !isValid && validationMessage }"
+                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage }"
                                     [(ngModel)]="question.value"
                                     [disabled]="question.readonly"
                                 />
@@ -2289,7 +2289,7 @@
                 id="social-media"
                 [formControlName]="question.key"
                 class="form-control form-select dropdown"
-                [ngClass]="{ 'mt--2': !stixService.guidedUI, '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
+                [ngClass]="{ '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
                 [(ngModel)]="question.relString"
                 [disabled]="question.readonly"
             >
@@ -2315,7 +2315,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 d-flex">
+                        <div class="col-12 d-flex" style="align-items: start;">
                             <div class="me-2 w-50">
                                 <select
                                     id="social-media-type"
@@ -2328,12 +2328,12 @@
                                     <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
                                 </select>
                             </div>
-                            <div class="me-2 w-50">
+                            <div class="w-50">
                                 <select
                                     id="social-media"
                                     [formControlName]="question.key"
                                     class="form-control form-select dropdown"
-                                    [ngClass]="{ 'mt--2': !stixService.guidedUI, 'is-invalid': !isValid && validationMessage }"
+                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage }"
                                     [(ngModel)]="question.relString"
                                     [disabled]="question.readonly"
                                 >
@@ -2385,7 +2385,7 @@
                 />
             </div>
 
-            <div class="row pb-4" *ngIf="!stixService.guidedUI">
+            <div class="row pb-3" *ngIf="!stixService.guidedUI">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -2433,7 +2433,7 @@
 
         <!-- SCO Refs -->
         <div class="" *ngSwitchCase="'sco-refs'" [ngClass]="{ 'display-flex': stixService.guidedUI }">
-            <div *ngIf="stixService.guidedUI" class="row pb-4">
+            <div *ngIf="stixService.guidedUI" class="row pb-3">
                 <div class="display-inline-flex flex-wrap">
                     <div class="row">
                         <div class="col stix-title ms-0 justify-content-center float-end d-flex flex-column">
@@ -2534,7 +2534,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -2652,7 +2652,7 @@
                 [readonly]="question.readonly"
             />
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -2720,7 +2720,7 @@
                 </select>
             </div>
 
-            <div class="row pb-4" *ngIf="!stixService.guidedUI">
+            <div class="row pb-3" *ngIf="!stixService.guidedUI">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -2796,7 +2796,7 @@
                 </select>
             </div>
 
-            <div class="row pb-4" *ngIf="!stixService.guidedUI">
+            <div class="row pb-3" *ngIf="!stixService.guidedUI">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -2925,7 +2925,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -3081,7 +3081,7 @@
 
         <!-- Mime Question-->
         <div *ngSwitchCase="'mime'">
-            <div *ngIf="stixService.guidedUI" class="row pb-4">
+            <div *ngIf="stixService.guidedUI" class="row pb-3">
                 <div class="col d-flex">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -3124,7 +3124,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col" [ngClass]="{ 'd-flex': stixService.guidedUI }">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -3250,7 +3250,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -3369,7 +3369,7 @@
                 />
             </div>
 
-            <div class="row pb-4" *ngIf="!stixService.guidedUI">
+            <div class="row pb-3" *ngIf="!stixService.guidedUI">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -3512,7 +3512,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -3784,7 +3784,7 @@
                 </div>
             </div>
 
-            <div class="row pb-4" *ngIf="stixService.stringArrays.get(question.key) && stixService.stringArrays.get(question.key)!.length > 0">
+            <div class="row pb-3" *ngIf="stixService.stringArrays.get(question.key) && stixService.stringArrays.get(question.key)!.length > 0">
                 <div class="col">
                     <accordion>
                         <accordion-group
@@ -3818,7 +3818,7 @@
                 </div>
             </div>
             <div
-                class="row pb-4"
+                class="row pb-3"
                 *ngIf="
                     !stixService.guidedUI && (!stixService.stringArrays.get(question.key) || stixService.stringArrays.get(question.key).length === 0)
                 "
@@ -3868,7 +3868,7 @@
                 />
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -4125,7 +4125,7 @@
                 </div>
             </div>
 
-            <div class="row pb-4" *ngIf="!stixService.guidedUI">
+            <div class="row pb-3" *ngIf="!stixService.guidedUI">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -4377,7 +4377,7 @@
                 {{ dictError }}
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col-12">
@@ -4510,7 +4510,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
@@ -4623,7 +4623,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -4812,7 +4812,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -4972,7 +4972,7 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="!stixService.guidedUI" class="row pb-4">
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
@@ -5011,7 +5011,7 @@
 
         <!-- File Upload + Text Field -->
         <div *ngSwitchCase="'file-field-upload'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
-            <div class="row pb-4">
+            <div class="row pb-3">
                 <div class="col">
                     <div class="row">
                         <div class="col stix-title ms-0 mb-2 float-end d-flex flex-column">
