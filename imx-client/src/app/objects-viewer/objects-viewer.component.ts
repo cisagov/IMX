@@ -58,7 +58,7 @@ export class ObjectsViewerComponent implements OnInit {
     totalRowCount = 0;
     visibleRowCount = 0;
 
-    private hasMixedTypes = false;
+    hasMixedTypes = false;
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -141,7 +141,7 @@ export class ObjectsViewerComponent implements OnInit {
         const parts = [row.display, row.externalId, row.root, rootTitle, row.collectionId, row.collectionTitle];
 
         if (this.hasMixedTypes) {
-            parts.push(row.typeDisplayName);
+            parts.push(row.object?.type, row.typeDisplayName);
         }
 
         return parts.join(' ').toLowerCase();

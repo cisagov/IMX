@@ -20,7 +20,9 @@
                     <input
                         type="text"
                         class="form-control filter-input"
-                        placeholder="Filter by name, type, collection, or external ID"
+                        [placeholder]="
+                            hasMixedTypes ? 'Filter by name, type, collection, or external ID' : 'Filter by name, collection, or external ID'
+                        "
                         [(ngModel)]="filterText"
                         (ngModelChange)="applyFilter()"
                     />
@@ -44,11 +46,8 @@
                                     [attr.aria-label]="'Select all objects in ' + group.title"
                                 />
                             </div>
-                            <span class="root-label me-2">Root</span>
-                            <span class="hash-text">{{ group.title }}</span>
-                            @if (group.title !== group.apiPath) {
-                                <span class="metadata-label ms-3">{{ group.apiPath }}</span>
-                            }
+                            <span class="hash-text me-3">{{ group.title }}</span>
+                            <span class="metadata-label">{{ group.apiPath }}</span>
                         </div>
 
                         <div class="d-flex align-items-center">
