@@ -45,7 +45,6 @@ import timestamp from '../../schemas/common/timestamp.json';
 import urlRegex from '../../schemas/common/url-regex.json';
 import acs from '../../schemas/common/isa-acs-3-0.json';
 
-
 //OBSERVABLE
 import artifact from '../../schemas/observables/artifact.json';
 import autonomousSystem from '../../schemas/observables/autonomous-system.json';
@@ -99,34 +98,65 @@ const Validator = require('jsonschema').Validator;
  * @returns Array of errors. If properly structured STIX object with no validation error, errors array will be empty.
  */
 export function validateStix(object) {
-    let report = { errors: [] };
+    let reportResult = { errors: [] };
 
     const v = new Validator();
     initializeValidator(v);
 
-    if (all_schemas[object.type]) {
-        let schema = all_schemas[object.type]; // Locates schema of appropriate type
-        if (schema['allOf'].length < 2) {
-            // Adds in the common props if they have not already been combined
-            if (all_schemas['SDOs_SROs'].includes(object.type))
-                schema['allOf'] = (all_schemas['common_props'] as unknown as (typeof schema)['allOf']).concat(schema['allOf']);
-            else if (all_schemas['SCOs'].includes(object.type))
-                //Really just a sanity check
-                schema['allOf'] = (all_schemas['sco_common_props'] as unknown as (typeof schema)['allOf']).concat(schema['allOf']);
-        }
+    const objectTypes = {
+        artifact: artifact,
+        'autonomous-system': autonomousSystem,
+        directory: directory,
+        'domain-name': domainName,
+        'email-addr': emailAddr,
+        'email-message': emailMessage,
+        file: file,
+        'ipv4-addr': ipv4Addr,
+        'ipv6-addr': ipv6Addr,
+        'mac-addr': macAddr,
+        mutex: mutex,
+        'network-traffic': networkTraffic,
+        process: process,
+        software: software,
+        url: url,
+        'user-account': userAccount,
+        'windows-registry-key': windowsRegistryKey,
+        'x509-certificate': x509Certificate,
+        'attack-pattern': attackPattern,
+        campaign: campaign,
+        'course-of-action': courseOfAction,
+        grouping: grouping,
+        identity: identity,
+        incident: incident,
+        indicator: indicator,
+        infrastructure: infrastructure,
+        'intrusion-set': intrusionSet,
+        location: location,
+        'malware-analysis': malwareAnalysis,
+        malware: malware,
+        note: note,
+        'observed-data': observedData,
+        opinion: opinion,
+        report: report,
+        'threat-actor': threatActor,
+        tool: tool,
+        vulnerability: vulnerability,
+        relationship: relationship,
+        sighting: sighting,
+    };
 
-        validate(object, schema, report, v);
+    if (objectTypes[object.type]) {
+        validate(object, objectTypes[object.type], reportResult, v);
     }
 
     const extensionResult = validateExtension(object, v);
 
     if (extensionResult.errors) {
-        report.errors = [...report.errors, ...extensionResult.errors]
+        reportResult.errors = [...reportResult.errors, ...extensionResult.errors];
     }
 
-    return report;
+    return reportResult;
 }
-
 
 /**
  * Validates STIX Object against extension-definition specific schemas.
@@ -134,7 +164,7 @@ export function validateStix(object) {
  * @returns Array of errors. If properly structured STIX object with no validation error, errors array will be empty.
  */
 export function validateExtension(object, v = null) {
-    let report = { errors: [] }
+    let report = { errors: [] };
 
     if (v == null) {
         v = new Validator();
@@ -144,8 +174,7 @@ export function validateExtension(object, v = null) {
 
     if (object.extensions) {
         for (const extId in object.extensions) {
-            if (extension_schemas[extId])
-                validate(object, extension_schemas[extId], report, v)
+            if (extension_schemas[extId]) validate(object, extension_schemas[extId], report, v);
         }
     }
 
@@ -159,7 +188,6 @@ export function validateExtension(object, v = null) {
  * @param report the Report object to be modified in-place
  */
 function validate(object, schema, report, v) {
-
     const validateResult = v.validate(object, schema);
 
     if (validateResult.errors) {
@@ -195,77 +223,76 @@ function initializeValidator(v) {
     addSchema(v, stix1xVulnerability);
 
     //COMMON
-    addSchema(v, binary)
-    addSchema(v, bundle)
-    addSchema(v, core)
-    addSchema(v, coc)
-    addSchema(v, dictionary)
-    addSchema(v, extDef)
-    addSchema(v, extension)
-    addSchema(v, externalRef)
-    addSchema(v, granularMarking)
-    addSchema(v, hashesType)
-    addSchema(v, hex)
-    addSchema(v, identifier)
-    addSchema(v, intendedEffectStatement)
-    addSchema(v, killChainPhase)
-    addSchema(v, languageContent)
-    addSchema(v, malwareBehavior)
-    addSchema(v, malwareExtension)
-    addSchema(v, malwareMethod)
-    addSchema(v, malwareObjective)
-    addSchema(v, markingDefinition)
-    addSchema(v, objectDefinition)
-    addSchema(v, properties)
-    addSchema(v, timestamp)
-    addSchema(v, urlRegex)
+    addSchema(v, binary);
+    addSchema(v, bundle);
+    addSchema(v, core);
+    addSchema(v, coc);
+    addSchema(v, dictionary);
+    addSchema(v, extDef);
+    addSchema(v, extension);
+    addSchema(v, externalRef);
+    addSchema(v, granularMarking);
+    addSchema(v, hashesType);
+    addSchema(v, hex);
+    addSchema(v, identifier);
+    addSchema(v, intendedEffectStatement);
+    addSchema(v, killChainPhase);
+    addSchema(v, languageContent);
+    addSchema(v, malwareBehavior);
+    addSchema(v, malwareExtension);
+    addSchema(v, malwareMethod);
+    addSchema(v, malwareObjective);
+    addSchema(v, markingDefinition);
+    addSchema(v, objectDefinition);
+    addSchema(v, properties);
+    addSchema(v, timestamp);
+    addSchema(v, urlRegex);
     addSchema(v, acs);
 
     //OBSERVABLES
-    addSchema(v, artifact)
-    addSchema(v, autonomousSystem)
-    addSchema(v, directory)
-    addSchema(v, domainName)
-    addSchema(v, emailAddr)
-    addSchema(v, emailMessage)
-    addSchema(v, file)
-    addSchema(v, ipv4Addr)
-    addSchema(v, ipv6Addr)
-    addSchema(v, macAddr)
-    addSchema(v, mutex)
-    addSchema(v, networkTraffic)
-    addSchema(v, process)
-    addSchema(v, software)
-    addSchema(v, url)
-    addSchema(v, userAccount)
-    addSchema(v, windowsRegistryKey)
-    addSchema(v, x509Certificate)
-
+    addSchema(v, artifact);
+    addSchema(v, autonomousSystem);
+    addSchema(v, directory);
+    addSchema(v, domainName);
+    addSchema(v, emailAddr);
+    addSchema(v, emailMessage);
+    addSchema(v, file);
+    addSchema(v, ipv4Addr);
+    addSchema(v, ipv6Addr);
+    addSchema(v, macAddr);
+    addSchema(v, mutex);
+    addSchema(v, networkTraffic);
+    addSchema(v, process);
+    addSchema(v, software);
+    addSchema(v, url);
+    addSchema(v, userAccount);
+    addSchema(v, windowsRegistryKey);
+    addSchema(v, x509Certificate);
 
     //SDOS
-    addSchema(v, attackPattern)
-    addSchema(v, campaign)
-    addSchema(v, courseOfAction)
-    addSchema(v, grouping)
-    addSchema(v, identity)
-    addSchema(v, incident)
-    addSchema(v, indicator)
-    addSchema(v, infrastructure)
-    addSchema(v, intrusionSet)
-    addSchema(v, location)
-    addSchema(v, malwareAnalysis)
-    addSchema(v, malware)
-    addSchema(v, note)
-    addSchema(v, observedData)
-    addSchema(v, opinion)
-    addSchema(v, report)
-    addSchema(v, threatActor)
-    addSchema(v, tool)
-    addSchema(v, vulnerability)
+    addSchema(v, attackPattern);
+    addSchema(v, campaign);
+    addSchema(v, courseOfAction);
+    addSchema(v, grouping);
+    addSchema(v, identity);
+    addSchema(v, incident);
+    addSchema(v, indicator);
+    addSchema(v, infrastructure);
+    addSchema(v, intrusionSet);
+    addSchema(v, location);
+    addSchema(v, malwareAnalysis);
+    addSchema(v, malware);
+    addSchema(v, note);
+    addSchema(v, observedData);
+    addSchema(v, opinion);
+    addSchema(v, report);
+    addSchema(v, threatActor);
+    addSchema(v, tool);
+    addSchema(v, vulnerability);
 
     //SROS
-    addSchema(v, relationship)
-    addSchema(v, sighting)
+    addSchema(v, relationship);
+    addSchema(v, sighting);
 }
 
 function addSchema(v, schema) {

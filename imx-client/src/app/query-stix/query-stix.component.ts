@@ -2715,8 +2715,11 @@ export class QueryStixComponent implements OnInit, OnDestroy {
         }
 
         if (this.userRoles.length === 0) {
-            this.isAdmin = false;
-            return;
+            this.userRoles = this.keycloak.getUserRoles();
+            if (this.userRoles.length === 0) {
+                this.isAdmin = false;
+                return;
+            }
         }
 
         if (this.envService.env.taxiiServer === undefined) {

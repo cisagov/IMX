@@ -25,6 +25,7 @@ const keycloakAuth = function (authHeader) {
       "KEYCLOAK URL: " +
         `${process.env.KC_URL}realms/${process.env.KC_REALM}/protocol/openid-connect/userinfo`,
     );
+
     //Sends request to target keycloak from environment file with user info from the auth header in request
     axios
       .get(
@@ -58,6 +59,8 @@ const keycloakAuth = function (authHeader) {
       })
       .catch((err) => {
         console.error("ERROR AUTH KEYCLOAK");
+        console.debug(`KC_CERT: ${process.env.KC_CERT}`);
+        console.debug(`AXIOS DATA: ${JSON.stringify(axiosData)}`);
         reject(err);
       });
   });

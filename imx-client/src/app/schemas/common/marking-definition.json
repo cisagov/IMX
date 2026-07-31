@@ -20,18 +20,18 @@
             "description": "A name used to identify the Marking Definition."
         },
         "created_by_ref": {
-            "$ref": "../common/identifier.json",
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json",
             "description": "The created_by_ref property specifies the ID of the identity object that describes the entity that created this Marking Definition."
         },
         "created": {
-            "$ref": "../common/timestamp.json",
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
             "description": "The created property represents the time at which the first version of this Marking Definition object was created."
         },
         "external_references": {
             "type": "array",
             "description": "A list of external references which refers to non-STIX information.",
             "items": {
-                "$ref": "../common/external-reference.json"
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/external-reference.json"
             },
             "minItems": 1
         },
@@ -41,7 +41,7 @@
             "items": {
                 "allOf": [
                     {
-                        "$ref": "../common/identifier.json"
+                        "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
                     },
                     {
                         "pattern": "^marking-definition--"
@@ -54,7 +54,7 @@
             "type": "array",
             "description": "The granular_markings property specifies a list of granular markings applied to this object.",
             "items": {
-                "$ref": "granular-marking.json"
+                "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/granular-marking.json"
             },
             "minItems": 1
         },
@@ -64,7 +64,7 @@
             "minProperties": 1,
             "patternProperties": {
                 "^extension-definition--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$": {
-                    "allOf": [{ "$ref": "../common/extension.json" }]
+                    "allOf": [{ "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/extension.json" }]
                 }
             },
             "additionalProperties": false
@@ -76,7 +76,7 @@
                 "id": {
                     "allOf": [
                         {
-                            "$ref": "../common/identifier.json"
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
                         },
                         {
                             "title": "id",

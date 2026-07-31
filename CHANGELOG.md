@@ -1,3 +1,52 @@
+## 4.12.0 (2026-07-31)
+
+### Features
+
+* add iob extension definitions b621244
+
+### Bug Fixes
+
+* fix misp json structure 2504df3
+* fix reference link in schema 2f31427
+* update all common schemas 6b8038a
+* update validator to use updated schemas 770af47
+
+## 4.11.4 (2026-07-30)
+
+### Bug Fixes
+
+* fix filter in search tab breaking due to obsolete env variable 7b02a61
+
+## 4.11.3 (2026-07-30)
+
+### Bug Fixes
+
+* patches related to sonar qube findings 3931458
+* unremoved if statement breaking categorization e8baa9c
+
+## 4.11.2 (2026-07-30)
+
+### Bug Fixes
+
+* stix 2.1 text generation to include disclaimer if provided in env variable 74156fb
+
+## 4.11.1 (2026-07-29)
+
+### Bug Fixes
+
+* if userRoles empty on isAdmin search page, try again d4471e6
+
+## 4.11.0 (2026-07-28)
+
+### Features
+
+* create STIX objects from URL searching on VT modal 34bb001
+* reworked STIX obj tab to group by indicator searched 7c4bcbd
+
+### Bug Fixes
+
+* preserve URL fragments/query strings when extracting indicators from free-text 8f9e62b
+
 ## 4.10.2 (2026-07-28)
 
 ### Bug Fixes
