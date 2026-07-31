@@ -1,3 +1,16 @@
+## [4.12.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.4...v4.12.0) (2026-07-31)
+
+### Features
+
+* add iob extension definitions ([b621244](https://git.va.th.ten/eos/cde/tie/imx/commit/b62124422cfc0e4e0be281fa7e6498902164363f))
+
+### Bug Fixes
+
+* fix misp json structure ([2504df3](https://git.va.th.ten/eos/cde/tie/imx/commit/2504df3abb6e11cdb85f7021f2c47609c70ec251))
+* fix reference link in schema ([2f31427](https://git.va.th.ten/eos/cde/tie/imx/commit/2f314273afe98ba7e973af1b485dd0757f7f97ad))
+* update all common schemas ([6b8038a](https://git.va.th.ten/eos/cde/tie/imx/commit/6b8038a52e8f8c5598c9cd7740c961eebcef05b5))
+* update validator to use updated schemas ([770af47](https://git.va.th.ten/eos/cde/tie/imx/commit/770af47859eeb895feea4a04d87618d72a5f5838))
+
 ## [4.11.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.3...v4.11.4) (2026-07-30)
 
 ### Bug Fixes
