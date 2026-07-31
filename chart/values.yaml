@@ -3,6 +3,7 @@ secrets:
   basicPassword: ""
   elasticPassword: ""
   kibanaPassword: ""
+  opensearchPassword: ""
   taxiiPassword: ""
   taxiiProxyPassword: ""
   virusTotalKey: ""
@@ -36,6 +37,24 @@ elastic:
   tag: 8.18.8
   url: http://elasticsearch:9200/
   xpackSecurityEnabled: "true"
+
+opensearch:
+  app: opensearch
+  boostrapMemoryLock: "true"
+  discoveryType: single-node
+  image: docker.io/library/opensearch
+  imagePullPolicy: Always
+  name: opensearch
+  pathRepo: /opt/snapshots
+  pluginsSecurityDisabled: "true"
+  podSecurityContext: {}
+  port: 9200
+  reindexAllowList: "elasticsearch:9200"
+  replicaCount: 1
+  resources: { limits: { memory: 2Gi, ephemeral-storage: 4Gi } }
+  securityContext: {}
+  tag: 3.7.0
+  url: http://opensearch:9200/
 
 kibana:
   app: kibana
