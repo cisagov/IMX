@@ -1,83 +1,49 @@
 {
-  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/language-content.json",
-  "$schema": "http://json-schema.org/draft/2020-12/schema#",
-  "title": "language-content",
-  "description": "The language-content object represents text content for STIX Objects represented in languages other than that of the original object.",
-  "type": "object",
-  "allOf": [
-    {
-      "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
-    },
-    {
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "The type of this object, which MUST be the literal `language-content`.",
-          "enum": [
-            "language-content"
-          ]
+    "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/language-content.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "language-content",
+    "description": "The language-content object represents text content for STIX Objects represented in languages other than that of the original object.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
         },
-        "id": {
-          "title": "id",
-          "pattern": "^language-content[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-        },
-        "object_ref": {
-          "description": "Identifies the object that this Language Content applies to.",
-          "allOf": [
-            {
-              "type": "string",
-  "pattern": "^[a-z][a-z0-9-]+[a-z0-9]--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-            },
-            {
-              "not": {
-                "pattern": "^(bundle|language-content)--.+$"
-              }
+        {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "The type of this object, which MUST be the literal `language-content`.",
+                    "enum": ["language-content"]
+                },
+                "id": {
+                    "title": "id",
+                    "pattern": "^language-content--"
+                },
+                "object_ref": {
+                    "description": "Identifies the object that this Language Content applies to.",
+                    "allOf": [
+                        {
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                        },
+                        {
+                            "not": {
+                                "pattern": "^(bundle|language-content)--.+$"
+                            }
+                        }
+                    ]
+                },
+                "object_modified": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                    "description": "Identifies the modified time of the object that this Language Content applies to."
+                },
+                "contents": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/dictionary.json",
+                    "description": "Contains the actual Language Content (translation)."
+                }
             }
-          ]
         },
-        "object_modified": {
-          "type": "string",
-  "pattern": "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?Z$",
-          "description": "Identifies the modified time of the object that this Language Content applies to."
-        },
-        "contents": {
-          "type": "object",
-  "minProperties": 1,
-  "patternProperties": {
-      "^[a-zA-Z0-9_-]{0,250}$": {
-        "anyOf": [
-          {
-            "type": "array",
-            "minItems": 1
-          },
-          {
-            "type": "string"
-          },
-          {
-            "type": "integer"
-          },
-          {
-            "type": "boolean"
-          },
-          {
-            "type": "number"
-          },
-          {
-            "type": "object"
-          }
-        ]
-      }
-    },
-    "additionalProperties": false,
-          "description": "Contains the actual Language Content (translation)."
+        {
+            "required": ["object_ref", "contents"]
         }
-      }
-    },
-    {
-      "required": [
-        "object_ref",
-        "contents"
-      ]
-    }
-  ]
+    ]
 }

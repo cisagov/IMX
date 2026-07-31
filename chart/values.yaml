@@ -3,6 +3,7 @@ secrets:
   basicPassword: ""
   elasticPassword: ""
   kibanaPassword: ""
+  opensearchPassword: ""
   taxiiPassword: ""
   taxiiProxyPassword: ""
   virusTotalKey: ""
@@ -16,7 +17,7 @@ client:
   podSecurityContext: {}
   port: 8080
   replicaCount: 1
-  resources: {}
+  resources: { limits: { memory: 100Mi } }
   securityContext: {}
   tag: v4.8.1
 
@@ -31,11 +32,29 @@ elastic:
   podSecurityContext: {}
   port: 9200
   replicaCount: 1
-  resources: { limits: { memory: 2Gi } }
+  resources: { limits: { memory: 2Gi, ephemeral-storage: 4Gi } }
   securityContext: {}
   tag: 8.18.8
   url: http://elasticsearch:9200/
   xpackSecurityEnabled: "true"
+
+opensearch:
+  app: opensearch
+  boostrapMemoryLock: "true"
+  discoveryType: single-node
+  image: docker.io/library/opensearch
+  imagePullPolicy: Always
+  name: opensearch
+  pathRepo: /opt/snapshots
+  pluginsSecurityDisabled: "true"
+  podSecurityContext: {}
+  port: 9200
+  reindexAllowList: "elasticsearch:9200"
+  replicaCount: 1
+  resources: { limits: { memory: 2Gi, ephemeral-storage: 4Gi } }
+  securityContext: {}
+  tag: 3.7.0
+  url: http://opensearch:9200/
 
 kibana:
   app: kibana
@@ -60,7 +79,7 @@ py:
   podSecurityContext: {}
   port: 5000
   replicaCount: 1
-  resources: {}
+  resources: { limits: { memory: 500Mi } }
   securityContext: {}
   tag: v4.8.1
   url: http://imx-py:5000/
@@ -87,10 +106,12 @@ server:
   port: 3000
   proxyUrl: ""
   replicaCount: 1
-  resources: {}
+  resources: { limits: { memory: 500Mi, ephemeral-storage: 2Gi } }
   securityContext: {}
   smtpHost: ""
   smtpSSL: "false"
+  smtpFrom: ""
+  smtpTo: ""
   startup: "true"
   tag: v4.8.1
   taxiiA1ApiRoot: ""
@@ -110,7 +131,7 @@ tika:
   podSecurityContext: {}
   port: 9998
   replicaCount: 1
-  resources: {}
+  resources: { limits: { memory: 1000Mi } }
   securityContext: {}
   tag: 3.2.3.0
   url: http://apache-tika:9998/tika

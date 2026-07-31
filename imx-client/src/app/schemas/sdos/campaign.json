@@ -1,60 +1,54 @@
 {
-  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/campaign.json",
-  "$schema": "http://json-schema.org/draft/2020-12/schema#",
-  "title": "campaign",
-  "description": "A Campaign is a grouping of adversary behavior that describes a set of malicious activities or attacks that occur over a period of time against a specific set of targets.",
-  "type": "object",
-  "allOf": [
-    {
-      "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
-    },
-    {
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "The type of this object, which MUST be the literal `campaign`.",
-          "enum": [
-            "campaign"
-          ]
+    "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sdos/campaign.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "campaign",
+    "description": "A Campaign is a grouping of adversary behavior that describes a set of malicious activities or attacks that occur over a period of time against a specific set of targets.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
         },
-        "id": {
-          "title": "id",
-          "pattern": "^campaign[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-        },
-        "name": {
-          "type": "string",
-          "description": "The name used to identify the Campaign."
-        },
-        "description": {
-          "type": "string",
-          "description": "A description that provides more details and context about the Campaign, potentially including its purpose and its key characteristics."
-        },
-        "aliases": {
-          "type": "array",
-          "description": "Alternative names used to identify this campaign.",
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1
-        },
-        "first_seen": {
-          "type": "string",
-          "pattern": "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?Z$",
-          "description": "The time that this Campaign was first seen."
-        },
-        "last_seen": {
-          "type": "string",
-          "pattern": "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?Z$",
-          "description": "The time that this Campaign was last seen."
-        },
-        "objective": {
-          "type": "string",
-          "description": "This field defines the Campaign’s primary goal, objective, desired outcome, or intended effect."
+        {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "The type of this object, which MUST be the literal `campaign`.",
+                    "enum": ["campaign"]
+                },
+                "id": {
+                    "title": "id",
+                    "pattern": "^campaign--"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name used to identify the Campaign."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A description that provides more details and context about the Campaign, potentially including its purpose and its key characteristics."
+                },
+                "aliases": {
+                    "type": "array",
+                    "description": "Alternative names used to identify this campaign.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                },
+                "first_seen": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                    "description": "The time that this Campaign was first seen."
+                },
+                "last_seen": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                    "description": "The time that this Campaign was last seen."
+                },
+                "objective": {
+                    "type": "string",
+                    "description": "This field defines the Campaign’s primary goal, objective, desired outcome, or intended effect."
+                }
+            }
         }
-      }
-    }
-  ],
-  "required": [
-    "name"
-  ]
+    ],
+    "required": ["name"]
 }

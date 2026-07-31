@@ -137,9 +137,11 @@ export class AdditionalFiltersComponent implements OnInit {
             try {
                 this.identityList = JSON.parse(idStorage).arr;
                 if (this.stixService.taxiiServerType == 'ais' || this.stixService.taxiiServerType == 'default') {
-                    const found = this.identityList.find((ident) => ident.id == this.envService.env.cmaIdentity.id);
+                    this.envService.env.additionalIdentities?.forEach((identity) => {
+                        const found = this.identityList.find((ident) => ident.id == identity.id);
 
-                    if (!found) this.identityList.push(this.envService.env.cmaIdentity);
+                        if (!found) this.identityList.push(identity);
+                    });
                 }
             } catch (e) {
                 console.error('Error parsing saved identities with message: ', e);

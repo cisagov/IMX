@@ -1,4 +1,19 @@
 ./.venv
-./__pycache__
+# ./controllers
+# ./middleware
+# ./routes
+# ./tests
+.dockerignore
+# .python-version
+# app.py
+Dockerfile
+# gunicorn.conf.py
+# main.py
+# pyproject.toml
+README.md
+# requirement.txt
+# uv.lock
+# wsgi.py
 
+./__pycache__
 .git

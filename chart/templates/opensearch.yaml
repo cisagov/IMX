@@ -1,0 +1,113 @@
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: opensearch-data-pv-claim
+  labels:
+    app: {{ .Values.opensearch.app }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: opensearch-snapshots-pv-claim
+  labels:
+    app: {{ .Values.opensearch.app }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.opensearch.name }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 3 }}
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.opensearch.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.opensearch.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.opensearch.app }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.opensearch.podSecurityContext | nindent 8 }}
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.opensearch.name }}
+          securityContext:
+            {{- toYaml .Values.opensearch.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.opensearch.resources | nindent 12 }}
+          image: "{{ .Values.opensearch.image }}:{{ .Values.opensearch.tag }}"
+          imagePullPolicy: "{{ .Values.opensearch.imagePullPolicy }}"
+
+          env:
+            - name: discovery.type
+              value: {{ .Values.opensearch.discoveryType | quote }}
+
+            - name: plugins.security.disabled
+              value: {{ .Values.opensearch.pluginsSecurityDisabled | quote }}
+
+            - name: path.repo
+              value: {{ .Values.opensearch.pathRepo | quote }}
+
+            - name: bootstrap.memory_lock
+              value: {{ .Values.opensearch.bootstrapMemoryLock | quote }}
+
+            - name: reindex.remote.allowlist
+              value: {{ .Values.opensearch.reindexAllowList | quote }}
+
+            - name:  OPENSEARCH_INITIAL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: OPENSEARCH_PASSWORD
+
+          ports:
+            - containerPort: {{ .Values.opensearch.port }}
+
+          volumeMounts:
+            - mountPath: /usr/share/opensearchsearch/data
+              name: data
+            - mountPath: /opt/snapshots
+              name: snapshots
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: opensearch-data-pv-claim
+        - name: snapshots
+          persistentVolumeClaim:
+            claimName: opensearch-snapshots-pv-claim
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.opensearch.name }}
+  labels:
+    app: {{ .Values.opensearch.app }}
+spec:
+  type: ClusterIP
+  ports:
+   - port: {{ .Values.opensearch.port }}
+  selector:
+   app: {{ .Values.opensearch.app }}
+---

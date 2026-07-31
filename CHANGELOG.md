@@ -1,3 +1,52 @@
+## [4.12.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.4...v4.12.0) (2026-07-31)
+
+### Features
+
+* add iob extension definitions ([b621244](https://git.va.th.ten/eos/cde/tie/imx/commit/b62124422cfc0e4e0be281fa7e6498902164363f))
+
+### Bug Fixes
+
+* fix misp json structure ([2504df3](https://git.va.th.ten/eos/cde/tie/imx/commit/2504df3abb6e11cdb85f7021f2c47609c70ec251))
+* fix reference link in schema ([2f31427](https://git.va.th.ten/eos/cde/tie/imx/commit/2f314273afe98ba7e973af1b485dd0757f7f97ad))
+* update all common schemas ([6b8038a](https://git.va.th.ten/eos/cde/tie/imx/commit/6b8038a52e8f8c5598c9cd7740c961eebcef05b5))
+* update validator to use updated schemas ([770af47](https://git.va.th.ten/eos/cde/tie/imx/commit/770af47859eeb895feea4a04d87618d72a5f5838))
+
+## [4.11.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.3...v4.11.4) (2026-07-30)
+
+### Bug Fixes
+
+* fix filter in search tab breaking due to obsolete env variable ([7b02a61](https://git.va.th.ten/eos/cde/tie/imx/commit/7b02a616ba53676c578a8b3a6c8cbe85aac1cec9))
+
+## [4.11.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.2...v4.11.3) (2026-07-30)
+
+### Bug Fixes
+
+* patches related to sonar qube findings ([3931458](https://git.va.th.ten/eos/cde/tie/imx/commit/3931458b83b0d9fee826c58e3be157f4f2a00a19))
+* unremoved if statement breaking categorization ([e8baa9c](https://git.va.th.ten/eos/cde/tie/imx/commit/e8baa9c3051a1e178b7efd47e3c589662615cb81))
+
+## [4.11.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.1...v4.11.2) (2026-07-30)
+
+### Bug Fixes
+
+* stix 2.1 text generation to include disclaimer if provided in env variable ([74156fb](https://git.va.th.ten/eos/cde/tie/imx/commit/74156fb51f7eb378c23591ba2cd5c752db19cc9a))
+
+## [4.11.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.0...v4.11.1) (2026-07-29)
+
+### Bug Fixes
+
+* if userRoles empty on isAdmin search page, try again ([d4471e6](https://git.va.th.ten/eos/cde/tie/imx/commit/d4471e639fe07198048505ef745856515cbd1fdf))
+
+## [4.11.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.2...v4.11.0) (2026-07-28)
+
+### Features
+
+* create STIX objects from URL searching on VT modal ([34bb001](https://git.va.th.ten/eos/cde/tie/imx/commit/34bb001d3dad797001145b20f371a7eee2c39b7a))
+* reworked STIX obj tab to group by indicator searched ([7c4bcbd](https://git.va.th.ten/eos/cde/tie/imx/commit/7c4bcbd77d5a20a9eb87dfa37f583d21f91b4def))
+
+### Bug Fixes
+
+* preserve URL fragments/query strings when extracting indicators from free-text ([8f9e62b](https://git.va.th.ten/eos/cde/tie/imx/commit/8f9e62b0b6d304eb25994a052597796a61ad9017))
+
 ## [4.10.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.10.1...v4.10.2) (2026-07-28)
 
 ### Bug Fixes

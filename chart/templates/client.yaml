@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.client.name }}
 spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 3 }}
   strategy:
     type: Recreate
   replicas: {{ .Values.client.replicaCount }}
@@ -15,6 +16,7 @@ spec:
       labels:
         app: {{ .Values.client.app }}
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- toYaml .Values.client.podSecurityContext | nindent 8 }}
       imagePullSecrets:
@@ -22,7 +24,7 @@ spec:
       volumes:
         - name: env-json
           configMap:
-            name: {{ .Values.env }}-env-json
+            name: env-json
       containers:
         - name: {{ .Values.client.name }}
           securityContext:
@@ -68,12 +70,4 @@ spec:
     termination: edge
   port:
     targetPort: {{ .Values.client.port }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Values.env }}-env-json
-data:
-  env.json: |
-{{ .Files.Get (printf "config/%s.json" .Values.env) | nindent 4 }}
 ---
