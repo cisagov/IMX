@@ -49,6 +49,8 @@ spec:
     spec:
       securityContext:
         {{- toYaml .Values.opensearch.podSecurityContext | nindent 8 }}
+      imagePullSecrets:
+        - name: regcred
       automountServiceAccountToken: false
       containers:
         - name: {{ .Values.opensearch.name }}
