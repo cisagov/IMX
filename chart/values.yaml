@@ -90,6 +90,7 @@ server:
   auth: ""
   cmaUser: ""
   cmaRequired: []
+  database: elasticsearch
   env: "local"
   image: ""
   imagePullPolicy: Always
