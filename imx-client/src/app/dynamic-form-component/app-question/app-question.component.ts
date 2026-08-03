@@ -69,6 +69,10 @@ import { BundleObjectsQuestion } from '../question-types/question-bundle-obj';
 import { RelationshipQuestion } from '../question-types/question-rel-type';
 import { SightingQuestion } from '../question-types/question-sighting';
 import { NonBlankDropdownQuestion } from '../question-types/question-non-blank-dropdown';
+import { EmailQuestion } from '../question-types/question-email-address';
+import { SocialQuestion } from '../question-types/question-social-media';
+import { PhoneQuestion } from '../question-types/question-phone-number';
+import extension_schemas from '../../schemas/common/extension-definitions/extension-definitions.json';
 
 @Component({
     selector: 'app-question',
@@ -154,7 +158,9 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         'REG_QWORD',
         'REG_INVALID_TYPE',
     ];
-
+    // extension_schemas = extension_schemas;
+    digitalNumberOptions = extension_schemas['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].definitions["digital-number-ov"].enum;
+    contactNumberOptions = extension_schemas['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].definitions["contact-number-ov"].enum;
     timeZoneOptions: any[] = [];
     moment = moment;
     moment_tz = moment_tz;
@@ -325,6 +331,43 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
                     if (identity === this.envService.env.defaultIdentity.id) this.question.relString = this.question.options[0].key;
                     //New and Set Identity is not CISA
                     else this.question.relString = '';
+                }
+            }
+        }
+
+        // Populate Email Address Ref dropdown
+        if (this.question.key.toLowerCase() === 'email_address_ref') {
+            let emails = this.stixService.populateEmailAddressRef();
+            for (let email of emails) {
+                if (!this.question.readonly) this.question.options.push({ key: email.id, value: email.value });
+            }
+
+            if (this.question.value){
+                this.question.relString = this.question.value;
+            } else {
+                if(this.stixService.isEditing) {
+                    this.question.relString = '';
+                } else {
+                    // Retrieve it from the bundle
+                }
+            }
+        }
+
+        // Populate User Account Ref dropdown (Social Media)
+        if (this.question.key.toLowerCase() === 'user_account_ref') {
+            let socials = this.stixService.populateUserAccountRef();
+            for (let social of socials) {
+                const socialLabel = social.display_name?.trim() || social.user_id?.trim() || social.id;
+                if (!this.question.readonly) this.question.options.push({ key: social.id, value: socialLabel });
+            }
+
+            if (this.question.value){
+                this.question.relString = this.question.value;
+            } else {
+                if(this.stixService.isEditing) {
+                    this.question.relString = '';
+                } else {
+                    // Retrieve it from the bundle
                 }
             }
         }
@@ -549,7 +592,20 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
 
         // Check Custom Validation Function
         if (this.form.dirty && this.question.validatorFn) {
-            let validationResult = this.question.validatorFn(this.form.getRawValue());
+            let validationObject: any = {
+                ...this.form.getRawValue()
+            };
+
+            if(this.question instanceof PhoneQuestion) {
+                validationObject.phoneType = this.question.phoneType;
+            }
+            else if(this.question instanceof EmailQuestion) {
+                validationObject.emailAddressType = this.question.emailAddressType;
+            }
+            else if(this.question instanceof SocialQuestion) {
+                validationObject.socialMediaType = this.question.socialMediaType;
+            }
+            let validationResult = this.question.validatorFn(validationObject);
             if (typeof validationResult.errorMessage !== 'undefined') this.validationMessage = `${validationResult.errorMessage}`;
 
             if (this.question instanceof RelationshipQuestion && this.question.key === 'relationship_type' && this.question.arrOptions.length > 0) {
