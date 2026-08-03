@@ -1,3 +1,18 @@
+## [4.13.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.12.0...v4.13.0) (2026-08-03)
+
+### Features
+
+* added a few obj for dup searching, added external-id for mitre ([080179a](https://git.va.th.ten/eos/cde/tie/imx/commit/080179a80223ac4dabfa421c92c0a002e841cb56))
+* checking duplicated objects against default taxii ([1a66b26](https://git.va.th.ten/eos/cde/tie/imx/commit/1a66b2606cc6158fdc3aa32b96d1f58f8412df38))
+* implement identity contact information stix extension support in standard ([f89a01a](https://git.va.th.ten/eos/cde/tie/imx/commit/f89a01a8978b7168e50cb41b2e1f77364b916d8c))
+* rework of the Dup Obj UI + bug fixes ([f8ecdff](https://git.va.th.ten/eos/cde/tie/imx/commit/f8ecdff9fc2af37035cdf9a2ac5e317bf4cde454))
+
+### Bug Fixes
+
+* added placeholder text for new input types ([3f4b03a](https://git.va.th.ten/eos/cde/tie/imx/commit/3f4b03a0a8e293dcb879a51e1b5881aa3bf740cb))
+* placeholder text fix for non-mixed types ([454671f](https://git.va.th.ten/eos/cde/tie/imx/commit/454671faad7af938ff8fcde8ed49c537302793e9))
+* refactor standard and guided forms to match bootstrap standard styling ([20bd85c](https://git.va.th.ten/eos/cde/tie/imx/commit/20bd85c988d624a4ddf7af54b7fadc68e29f45f1))
+
 ## [4.12.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.4...v4.12.0) (2026-07-31)
 
 ### Features
