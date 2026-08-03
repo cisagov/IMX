@@ -1,3 +1,18 @@
+## 4.13.0 (2026-08-03)
+
+### Features
+
+* added a few obj for dup searching, added external-id for mitre 080179a
+* checking duplicated objects against default taxii 1a66b26
+* implement identity contact information stix extension support in standard f89a01a
+* rework of the Dup Obj UI + bug fixes f8ecdff
+
+### Bug Fixes
+
+* added placeholder text for new input types 3f4b03a
+* placeholder text fix for non-mixed types 454671f
+* refactor standard and guided forms to match bootstrap standard styling 20bd85c
+
 ## 4.12.0 (2026-07-31)
 
 ### Features
