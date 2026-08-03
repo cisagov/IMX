@@ -19,15 +19,65 @@ export abstract class FormModel {
     abstract hasObjectMarkingReferences(): boolean;
     abstract hasContents(): boolean;
     abstract hasWindows(): boolean;
+    protected stixService?: StixService;
+
     isFormValid(questions: QuestionBase<any>[], componentData: any): boolean {
         let isValid = true;
 
         for (let i = 0; i < questions.length; i++) {
+
+            if(componentData.type === 'identity') {
+                // Classification requires corresponding contact value
+                const phoneClassified = !!componentData.phone_classified?.[0];
+                const phoneDescription = !!componentData.phone_description?.trim();
+                const hasPhone = !!componentData.contact_number?.trim();
+                const emailClassified = !!componentData.email_classified?.[0];
+                const emailDescription = !!componentData.email_description?.trim();
+                const hasEmail = !!componentData.email_address_ref?.trim();
+                const socialClassified = !!componentData.social_classified?.[0];
+                const socialDescription = !!componentData.social_description?.trim();
+                const hasSocial = !!componentData.user_account_ref?.trim();
+
+                if((phoneClassified && !hasPhone) || (emailClassified && !hasEmail) || (socialClassified && !hasSocial)) {
+                    isValid = false;
+                }
+
+                if((phoneDescription && !hasPhone) || (emailDescription && !hasEmail) || (socialDescription && !hasSocial)) {
+                    isValid = false;
+                }
+
+                // Generic extension fields require at least one contact method
+                const hasGenericIdentityFields =
+                    (componentData.first_name && componentData.first_name.trim() !== '') ||
+                    (componentData.middle_name && componentData.middle_name.trim() !== '') ||
+                    (componentData.last_name && componentData.last_name.trim() !== '') ||
+                    (componentData.prefix && !!componentData.prefix?.[0]) ||
+                    (componentData.suffix && !!componentData.suffix?.[0]) ||
+                    (this.stixService.stringArrays.get('websites') && this.stixService.stringArrays.get('websites').length > 0);
+
+                const hasContactValue = hasPhone || hasEmail || hasSocial;
+
+                if(hasGenericIdentityFields && !hasContactValue) isValid = false;
+            }
+
+
+
             // Customized Validation Function
             let temp = true;
             let key = questions[i].key;
             if (questions[i].validatorFn)
-                if (key != 'created_by_ref' && key != 'sighting_of_ref') temp = questions[i].validatorFn!(componentData).valid;
+                if (key != 'created_by_ref' && key != 'sighting_of_ref') {
+
+                    // Inject UI-managed fields for validatorFn
+                    let validationObject = { ...componentData };
+                    let qAny: any = questions[i];
+
+                    if(qAny.phoneType !== undefined) validationObject.phoneType = qAny.phoneType;
+                    if(qAny.emailAddressType !== undefined) validationObject.emailAddressType = qAny.emailAddressType;
+                    if(qAny.socialMediaType !== undefined) validationObject.socialMediaType = qAny.socialMediaType;
+
+                    temp = questions[i].validatorFn!(validationObject).valid;
+                }
 
             if (componentData['type'] && componentData['type'] == 'marking-definition')
                 if (componentData['quick_add'] && componentData['quick_add'] != '') return true;

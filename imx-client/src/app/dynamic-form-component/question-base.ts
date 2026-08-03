@@ -61,6 +61,7 @@ export class QuestionBase<T> {
             revokedCol?: string;
         } = {}
     ) {
+        Object.assign(this, options);
         this.value = options.value;
         this.key = options.key || '';
         this.label = options.label || '';

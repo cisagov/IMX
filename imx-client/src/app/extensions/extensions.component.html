@@ -21,6 +21,7 @@
         <accordion>
             @for (extension of this.stixService.extensions; track extension; let i = $index) {
                 <accordion-group
+                    [ngStyle]="{ 'display': shouldHideExtension(extension) ? 'none' : 'block' }"
                     tabindex="0"
                     [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
                     [isDisabled]="propType(extension) == 'toplevel'"
