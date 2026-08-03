@@ -1,3 +1,31 @@
+## [4.13.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.12.0...v4.13.0) (2026-08-03)
+
+### Features
+
+* added a few obj for dup searching, added external-id for mitre ([080179a](https://git.va.th.ten/eos/cde/tie/imx/commit/080179a80223ac4dabfa421c92c0a002e841cb56))
+* checking duplicated objects against default taxii ([1a66b26](https://git.va.th.ten/eos/cde/tie/imx/commit/1a66b2606cc6158fdc3aa32b96d1f58f8412df38))
+* implement identity contact information stix extension support in standard ([f89a01a](https://git.va.th.ten/eos/cde/tie/imx/commit/f89a01a8978b7168e50cb41b2e1f77364b916d8c))
+* rework of the Dup Obj UI + bug fixes ([f8ecdff](https://git.va.th.ten/eos/cde/tie/imx/commit/f8ecdff9fc2af37035cdf9a2ac5e317bf4cde454))
+
+### Bug Fixes
+
+* added placeholder text for new input types ([3f4b03a](https://git.va.th.ten/eos/cde/tie/imx/commit/3f4b03a0a8e293dcb879a51e1b5881aa3bf740cb))
+* placeholder text fix for non-mixed types ([454671f](https://git.va.th.ten/eos/cde/tie/imx/commit/454671faad7af938ff8fcde8ed49c537302793e9))
+* refactor standard and guided forms to match bootstrap standard styling ([20bd85c](https://git.va.th.ten/eos/cde/tie/imx/commit/20bd85c988d624a4ddf7af54b7fadc68e29f45f1))
+
+## [4.12.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.4...v4.12.0) (2026-07-31)
+
+### Features
+
+* add iob extension definitions ([b621244](https://git.va.th.ten/eos/cde/tie/imx/commit/b62124422cfc0e4e0be281fa7e6498902164363f))
+
+### Bug Fixes
+
+* fix misp json structure ([2504df3](https://git.va.th.ten/eos/cde/tie/imx/commit/2504df3abb6e11cdb85f7021f2c47609c70ec251))
+* fix reference link in schema ([2f31427](https://git.va.th.ten/eos/cde/tie/imx/commit/2f314273afe98ba7e973af1b485dd0757f7f97ad))
+* update all common schemas ([6b8038a](https://git.va.th.ten/eos/cde/tie/imx/commit/6b8038a52e8f8c5598c9cd7740c961eebcef05b5))
+* update validator to use updated schemas ([770af47](https://git.va.th.ten/eos/cde/tie/imx/commit/770af47859eeb895feea4a04d87618d72a5f5838))
+
 ## [4.11.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.11.3...v4.11.4) (2026-07-30)
 
 ### Bug Fixes

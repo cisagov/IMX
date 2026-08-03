@@ -51,11 +51,6 @@ select.form-control {
     visibility: visible;
 }
 
-.input-header {
-    font-weight: bold;
-    color: #6f6f6f;
-}
-
 .btn-link {
     width: 100%;
     overflow: hidden;

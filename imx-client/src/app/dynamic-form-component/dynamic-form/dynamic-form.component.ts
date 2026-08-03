@@ -1,5 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { faExclamationTriangle, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { StixService } from 'src/app/stix-service.service';
@@ -33,7 +35,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     providers: [QuestionControlService],
     standalone: false,
 })
-export class DynamicFormComponent implements OnInit, OnChanges {
+export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
     @Input() currentComponent: FormModel = null;
     @Input() hasX509V3Extensions: boolean = false;
     @Input() hasExternalReferences: boolean = false;
@@ -75,6 +77,9 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     payLoad = '';
     errorMessage = '';
     showClose = false;
+
+    private checkDuplicates$ = new Subject<void>();
+    private ngUnsubscribe = new Subject<void>();
 
     topColumnProperties = 'col-6';
     topCount = 0;
@@ -195,6 +200,10 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
+        this.checkDuplicates$
+            .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
+            .subscribe(() => this.checkDuplicates.emit(this.form.getRawValue()));
+
         this.stixService.newObject = false;
         this.stixService.customTypesToAdd = [];
         this.topCount = 0;
@@ -1001,9 +1010,12 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     }
 
     checkDuplicatesCallback() {
-        setTimeout(() => {
-            this.checkDuplicates.emit(this.form.getRawValue());
-        }, 500);
+        this.checkDuplicates$.next();
+    }
+
+    ngOnDestroy() {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
     }
 
     parseProp(prop: any): string {

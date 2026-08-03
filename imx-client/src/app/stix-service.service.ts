@@ -148,6 +148,7 @@ export class StixService implements OnInit {
 
     sandbox = null;
     defaultServerApiRoots = []; // used for Guided automatic publish
+    defaultRootsForLabels: any[] = null;
     tlpOptions = null;
 
     reportName: string = '';
@@ -1180,6 +1181,63 @@ export class StixService implements OnInit {
             this.apiRootProcessingError = '**Could not retrieve API Root information from the TAXII server**';
             return null;
         }
+    }
+
+    /**
+     * API roots and collections of the Default TAXII server, used to resolve display labels
+     * for results that were searched on Default regardless of which server is selected.
+     * Label lookup only - collections are not filtered by permission, since the caller is
+     * naming collections the search already returned rather than choosing a publish target.
+     * @returns roots shaped like apiRoots2, or an empty array if Default is unreachable
+     */
+    async getDefaultServerRootsForLabels(): Promise<any[]> {
+        if (this.defaultRootsForLabels) return this.defaultRootsForLabels;
+
+        if (this.defaultServerApiRoots?.length > 0) {
+            this.defaultRootsForLabels = this.defaultServerApiRoots;
+            return this.defaultRootsForLabels;
+        }
+
+        if (!this.envService.env?.taxiiServer?.url) {
+            await this.envService.wait('taxiiServer');
+        }
+
+        const base = `${this.envService.env.taxiiServer.url}taxii/${this.envService.env.taxiiServer.apiVersion}/`;
+        const headers = new HttpHeaders()
+            .set('Accept', 'application/taxii+json;version=2.1')
+            .set('Authorization', `Basic ${btoa(this.envService.env.taxiiServer.username + ':' + this.envService.env.taxiiServer.password)}`);
+
+        const roots = [];
+
+        try {
+            const discovery: any = await lastValueFrom(this.httpClient.get(`${base}taxii2/`, { headers }));
+
+            for (const rootURL of discovery?.api_roots ?? []) {
+                const apiPath = this.retrieveAPIRoot(rootURL);
+                if (!apiPath) continue;
+
+                try {
+                    const rootInfo: any = await lastValueFrom(this.httpClient.get(`${base}${apiPath}/`, { headers }));
+                    const collectionsInfo: any = await lastValueFrom(this.httpClient.get(`${base}${apiPath}/collections/`, { headers }));
+
+                    roots.push({
+                        apiPath: apiPath,
+                        title: rootInfo?.['title'],
+                        childRoot: `${base}${apiPath}/`,
+                        collections: collectionsInfo?.collections ?? [],
+                    });
+                } catch (e) {
+                    console.error('Unable to read API root from the Default server: ', apiPath, e.message);
+                    continue;
+                }
+            }
+        } catch (e) {
+            console.error('Unable to reach the Default server for duplicate object labels: ', e.message);
+            return [];
+        }
+
+        this.defaultRootsForLabels = roots;
+        return roots;
     }
 
     async updateTaxiiServer(source, type, url = null, username = null, password = null) {
@@ -2361,6 +2419,14 @@ export class StixService implements OnInit {
         return arr;
     }
 
+    populateEmailAddressRef() {
+        return this.bundle.objects.filter(obj => obj.id.startsWith('email-addr'));
+    }
+
+    populateUserAccountRef() {
+        return this.bundle.objects.filter(obj => obj.id.startsWith('user-account'));
+    }
+
     populateSightingOfRef() {
         const regex = new RegExp(/^(\w[-[a-z0-9]+]*)--[0-9a-f]{8}\-[0-9a-f]{4}\-[45][0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/);
         let invalid_list = SCO_LIST.slice(); //Can only be an SDO or custom (not any other object type)
@@ -2886,11 +2952,19 @@ export class StixService implements OnInit {
         return tooltip;
     }
 
-    checkDuplicates(component) {
+    /**
+     * Search for existing objects similar to the one being built.
+     * @param component the object to search duplicates for
+     * @param useDefaultServer when true, search the Default TAXII server instead of the currently selected one
+     * @returns Observable HTTP Request, or null when the object has nothing searchable
+     */
+    checkDuplicates(component, useDefaultServer = false) {
+        const server = useDefaultServer ? this.envService.env.taxiiServer : this.taxiiServer;
+
         let httpHeaders = new HttpHeaders()
             .set('Accept', 'application/json')
             .set('Content-Type', 'application/json')
-            .set('Authorization', `Basic ${btoa(this.taxiiServer.username + ':' + this.taxiiServer.password)}`);
+            .set('Authorization', `Basic ${btoa(server.username + ':' + server.password)}`);
 
         let valueString = '';
 
@@ -2923,7 +2997,7 @@ export class StixService implements OnInit {
             }
             case 'identity': {
                 if (component.name) {
-                    valueString = `name.keyword:${component.name}`;
+                    valueString = `name.keyword:"${component.name}"`;
                 } else {
                     valueString = `id.keyword:${component.id}`;
                 }
@@ -3117,9 +3191,11 @@ export class StixService implements OnInit {
             }
             case 'attack-pattern':
             case 'malware':
-            case 'threat-actor': {
+            case 'threat-actor':
+            case 'campaign':
+            case 'course-of-action': {
                 if (component.name) {
-                    valueString = `name.keyword:${component.name}`;
+                    valueString = `name.keyword:"${component.name}"`;
                 }
                 break;
             }
@@ -3170,6 +3246,8 @@ export class StixService implements OnInit {
                     valueString = `name.keyword:"${component.name}"`;
                 } else if (component.country) {
                     valueString = `country.keyword:${component.country}`;
+                } else if (component.city) {
+                    valueString = `city.keyword:"${component.city}"`;
                 } else {
                     valueString = `id.keyword:${component.id}`;
                 }
@@ -3180,7 +3258,7 @@ export class StixService implements OnInit {
             }
         }
 
-        let url = `${this.taxiiServer.url}ext/v1.0/search/`;
+        let url = `${server.url}ext/v1.0/search/`;
         let request = `type.keyword:${component.type}`;
         if (valueString) {
             request = `${request} AND (${valueString})`;
@@ -3189,7 +3267,11 @@ export class StixService implements OnInit {
                 query: request,
             };
 
-            return this.taxiiHttpReq('post', url, { headers: httpHeaders, observe: 'response' }, requestJSON);
+            // taxiiHttpReq routes through the custom cert proxy based on the selected server,
+            // which would send a Default-targeted search to the wrong host
+            return useDefaultServer
+                ? this.httpClient.post(url, requestJSON, { headers: httpHeaders, observe: 'response' })
+                : this.taxiiHttpReq('post', url, { headers: httpHeaders, observe: 'response' }, requestJSON);
         }
 
         return null;
@@ -3232,14 +3314,21 @@ export class StixService implements OnInit {
         return this.taxiiHttpReq('post', url, { headers: httpHeaders, observe: 'response' }, requestJSON);
     }
 
-    getObjectFromIDHelper(ids, sendToBundle: boolean, root, collection) {
+    getObjectFromIDHelper(ids, sendToBundle: boolean, root, collection, useDefaultServer = false) {
         if (ids.length == 0) {
             return [];
         }
         let id = ids.pop();
         try {
-            let getURL = this.taxiiServer.url + 'taxii/v2.1-os/' + root + '/collections/' + collection + '/objects/?match[id]=' + id;
-            this.httpClient.get<any>(getURL, { headers: this.httpHeaders, observe: 'response' }).subscribe(
+            const server = useDefaultServer ? this.envService.env.taxiiServer : this.taxiiServer;
+            const headers = useDefaultServer
+                ? new HttpHeaders()
+                      .set('Accept', 'application/taxii+json;version=2.1')
+                      .set('Authorization', `Basic ${btoa(server.username + ':' + server.password)}`)
+                : this.httpHeaders;
+
+            let getURL = `${server.url}taxii/${this.envService.env.taxiiServer.apiVersion}/${root}/collections/${collection}/objects/?match[id]=${id}`;
+            this.httpClient.get<any>(getURL, { headers: headers, observe: 'response' }).subscribe(
                 (resp) => {
                     let obj = undefined;
                     if (resp.body['objects']) {
@@ -3256,10 +3345,10 @@ export class StixService implements OnInit {
                             } else console.error('ERROR: No objects were able to be loaded');
                             return [];
                         }
-                        this.getObjectFromIDHelper(ids, true, root, collection);
+                        this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     } else {
-                        if (obj) return this.getObjectFromIDHelper(ids, true, root, collection)?.concat([obj]);
-                        else return this.getObjectFromIDHelper(ids, true, root, collection);
+                        if (obj) return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer)?.concat([obj]);
+                        else return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     }
                 },
                 (err) => {
@@ -3271,9 +3360,9 @@ export class StixService implements OnInit {
                             } else console.error('ERROR: No objects were able to be loaded');
                             return [];
                         }
-                        this.getObjectFromIDHelper(ids, true, root, collection);
+                        this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     } else {
-                        return this.getObjectFromIDHelper(ids, true, root, collection);
+                        return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
                     }
                 }
             );
@@ -3286,9 +3375,9 @@ export class StixService implements OnInit {
                     } else console.error('ERROR: No objects were able to be loaded');
                     return [];
                 }
-                this.getObjectFromIDHelper(ids, true, root, collection);
+                this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
             } else {
-                return this.getObjectFromIDHelper(ids, true, root, collection);
+                return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
             }
         }
     }

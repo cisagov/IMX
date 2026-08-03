@@ -1,80 +1,70 @@
 {
-  "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sros/relationship.json",
-  "$schema": "http://json-schema.org/draft/2020-12/schema#",
-  "title": "relationship",
-  "description": "The Relationship object is used to link together two SDOs in order to describe how they are related to each other.",
-  "type": "object",
-  "allOf": [
-    {
-      "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
-    },
-    {
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "The type of this object, which MUST be the literal `relationship`.",
-          "enum": [
-            "relationship"
-          ]
+    "$id": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/sros/relationship.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "relationship",
+    "description": "The Relationship object is used to link together two SDOs in order to describe how they are related to each other.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/core.json"
         },
-        "id": {
-          "title": "id",
-          "pattern": "^relationship[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-        },
-        "relationship_type": {
-          "title": "relationship_type",
-          "type": "string",
-          "description": "The name used to identify the type of relationship.",
-          "pattern": "^[a-z0-9\\-]+$"
-        },
-        "description": {
-          "type": "string",
-          "description": "A description that helps provide context about the relationship."
-        },
-        "source_ref": {
-          "description": "The ID of the source (from) object.",
-          "allOf": [
-            {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9-]+[a-z0-9]--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-            },
-            {
-              "not": {
-                "pattern": "^(relationship|sighting|bundle|marking-definition|language-content)--.+$"
-              }
+        {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "The type of this object, which MUST be the literal `relationship`.",
+                    "enum": ["relationship"]
+                },
+                "id": {
+                    "title": "id",
+                    "pattern": "^relationship--"
+                },
+                "relationship_type": {
+                    "title": "relationship_type",
+                    "type": "string",
+                    "description": "The name used to identify the type of relationship.",
+                    "pattern": "^[a-z0-9\\-]+$"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A description that helps provide context about the relationship."
+                },
+                "source_ref": {
+                    "description": "The ID of the source (from) object.",
+                    "allOf": [
+                        {
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                        },
+                        {
+                            "not": {
+                                "pattern": "^(relationship|sighting|bundle|marking-definition|language-content)--.+$"
+                            }
+                        }
+                    ]
+                },
+                "target_ref": {
+                    "description": "The ID of the target (to) object.",
+                    "allOf": [
+                        {
+                            "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/identifier.json"
+                        },
+                        {
+                            "not": {
+                                "pattern": "^(relationship|sighting|bundle|marking-definition|language-content)--.+$"
+                            }
+                        }
+                    ]
+                },
+                "start_time": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                    "description": "This optional timestamp represents the earliest time at which the Relationship between the objects exists. If this property is a future timestamp, at the time the updated property is defined, then this represents an estimate by the producer of the intelligence of the earliest time at which relationship will be asserted to be true."
+                },
+                "stop_time": {
+                    "$ref": "https://raw.githubusercontent.com/oasis-open/cti-stix2-json-schemas/stix2.1/schemas/common/timestamp.json",
+                    "description": "The latest time at which the Relationship between the objects exists. If this property is a future timestamp, at the time the updated property is defined, then this represents an estimate by the producer of the intelligence of the latest time at which relationship will be asserted to be true."
+                }
             }
-          ]
-        },
-        "target_ref": {
-          "description": "The ID of the target (to) object.",
-          "allOf": [
-            {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9-]+[a-z0-9]--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-            },
-            {
-              "not": {
-                "pattern": "^(relationship|sighting|bundle|marking-definition|language-content)--.+$"
-              }
-            }
-          ]
-        },
-        "start_time": {
-          "type": "string",
-          "pattern": "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?Z$",
-          "description": "This optional timestamp represents the earliest time at which the Relationship between the objects exists. If this property is a future timestamp, at the time the updated property is defined, then this represents an estimate by the producer of the intelligence of the earliest time at which relationship will be asserted to be true."
-        },
-        "stop_time": {
-          "type": "string",
-          "pattern": "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?Z$",
-          "description": "The latest time at which the Relationship between the objects exists. If this property is a future timestamp, at the time the updated property is defined, then this represents an estimate by the producer of the intelligence of the latest time at which relationship will be asserted to be true."
         }
-      }
-    }
-  ],
-  "required": [
-    "relationship_type",
-    "source_ref",
-    "target_ref"
-  ]
+    ],
+    "required": ["relationship_type", "source_ref", "target_ref"]
 }

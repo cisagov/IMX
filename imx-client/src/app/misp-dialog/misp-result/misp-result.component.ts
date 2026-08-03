@@ -353,7 +353,9 @@ export class MispResultComponent implements OnInit {
             [
                 {
                     name: `${event.value}-misp.json`,
-                    data: JSON.stringify(event.misp),
+                    data: JSON.stringify({
+                        Event: event.misp,
+                    }),
                 },
             ],
             event.value

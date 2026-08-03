@@ -16,6 +16,7 @@
 .accordion-panel-class {
     padding: 0;
 }
+
 .tooltipright {
     position: relative;
     cursor: pointer;
@@ -123,7 +124,6 @@ th {
 
 p {
     margin-bottom: 5px !important;
-    font-size: 15px !important;
 }
 
 .add-left {
@@ -168,11 +168,6 @@ p {
 
 .description-box {
     font-size: 0.8rem;
-}
-
-.input-header {
-    font-weight: bold;
-    color: #6f6f6f;
 }
 
 .btn-primary {

@@ -1,6 +1,5 @@
 p {
     margin-bottom: 0px !important;
-    font-size: 15px !important;
 }
 
 .no-btn-decoration .btn-link {
@@ -223,21 +222,21 @@ textarea::placeholder {
     margin-top: 45px;
 }
 
-.pattern-builder-modal > .modal-dialog,
-.pattern-builder-modal > .modal-dialog > .modal-content {
+.pattern-builder-modal>.modal-dialog,
+.pattern-builder-modal>.modal-dialog>.modal-content {
     width: 80vw;
     max-width: 80vw;
 }
 
-.pattern-builder-modal-guided > .modal-dialog,
-.pattern-builder-modal-guided > .modal-dialog > .modal-content {
+.pattern-builder-modal-guided>.modal-dialog,
+.pattern-builder-modal-guided>.modal-dialog>.modal-content {
     width: 80vw;
     max-width: 80vw;
     margin-left: 125px;
 }
 
-.custom-obj-modal > .modal-dialog,
-.custom-obj-modal > .modal-dialog > .modal-content {
+.custom-obj-modal>.modal-dialog,
+.custom-obj-modal>.modal-dialog>.modal-content {
     width: 55vw;
     max-width: 55vw;
     height: 30vh;
@@ -503,11 +502,6 @@ input[readonly] {
     background-color: #e9ecef;
     opacity: 1;
     color: #495057;
-}
-
-.input-header {
-    font-weight: bold;
-    color: #6f6f6f;
 }
 
 .btn-color {
