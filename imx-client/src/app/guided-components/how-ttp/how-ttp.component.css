@@ -31,3 +31,8 @@ select option:checked {
     background-color: #999;
     color: #fff;
 }
+
+.input-header {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}

@@ -1,39 +1,37 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { Subscription, forkJoin } from 'rxjs';
+import { faAngleDoubleUp, faBan, faFileImport, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { STIX_OBJECTS } from '../models/stix-objects';
-import {
-    faEdit,
-    faTrash,
-    faSave,
-    faDownload,
-    faUndo,
-    faUpload,
-    faPlusSquare,
-    faLink,
-    faFileDownload,
-    faFileUpload,
-    faAngleDoubleUp,
-    faInfoCircle,
-    faAngleDoubleDown,
-    faFileImport,
-    faBan,
-    faBackspace,
-    faRandom,
-    faArrowLeft,
-    faArrowRight,
-    faEye,
-    faSearch,
-    faProjectDiagram,
-    faCheck,
-    faPaste,
-} from '@fortawesome/free-solid-svg-icons';
 import { StixService } from '../stix-service.service';
-import { Observable } from 'rxjs';
-import { EnvService } from '../env-service/env.service';
 import { AnnouncementService } from '../announcement-service/announcement-service.service';
+
+export interface ViewerRow {
+    object: any;
+    root: string;
+    collectionId: string;
+    collectionTitle: string;
+    display: string;
+    typeDisplayName: string;
+    externalId: string;
+    modifiedLabel: string;
+    filterKey: string;
+    checked: boolean;
+    expanded: boolean;
+}
+
+export interface RootGroup {
+    apiPath: string;
+    title: string;
+    rows: ViewerRow[];
+    expanded: boolean;
+}
+
+const COLLAPSE_THRESHOLD = 25;
+
+const TYPE_DISPLAY_NAMES = new Map<string, string>(
+    STIX_OBJECTS.flatMap((category) => category.objects.map((object): [string, string] => [object.type, object.displayName]))
+);
 
 @Component({
     selector: 'app-objects-viewer',
@@ -46,83 +44,286 @@ export class ObjectsViewerComponent implements OnInit {
     @Input() rcPairs: any;
     @Input() title: string;
     @Input() description: string;
+    @Input() useDefaultServerRoots = false;
 
-    faEdit = faEdit;
-    faInfoCircle = faInfoCircle;
-    faTrash = faTrash;
-    faAngleDoubleDown = faAngleDoubleDown;
     faAngleDoubleUp = faAngleDoubleUp;
-    faAddToBundle = faFileImport;
-    faSave = faSave;
-    faDownload = faDownload;
-    faUndo = faUndo;
-    faUpload = faUpload;
-    faPlusSquare = faPlusSquare;
-    faLink = faLink;
-    faFileDownload = faFileDownload;
-    faFileUpload = faFileUpload;
     faBan = faBan;
-    faBackspace = faBackspace;
-    faMerge = faRandom;
-    faArrowLeft = faArrowLeft;
-    faArrowRight = faArrowRight;
-    faEye = faEye;
+    faAddToBundle = faFileImport;
     faSearch = faSearch;
-    faProjectDiagram = faProjectDiagram;
-    faCheck = faCheck;
-    faPaste = faPaste;
 
-    taxiiServer = {
-        url: this.envService.env.taxiiServer.url,
-        username: this.envService.env.taxiiServer.username,
-        password: this.envService.env.taxiiServer.password,
-        certificate: null,
-        apiRoot: '',
-        childRoot: '',
-        availableCollections: [],
-        collection: null,
-    };
+    groups: RootGroup[] = [];
+    visibleGroups: RootGroup[] = [];
 
-    stixObjects = STIX_OBJECTS;
-    objectsObservable = null;
+    filterText = '';
+    totalRowCount = 0;
+    visibleRowCount = 0;
 
-    rownumber: number = -1;
-    objnumber: number = -1;
-
-    roots: any;
-    rcPairsMapping: any = [];
+    hasMixedTypes = false;
 
     constructor(
         public activeModal: NgbActiveModal,
         public stixService: StixService,
         private router: Router,
-        private envService: EnvService,
         private announcementService: AnnouncementService
     ) {}
 
-    ngOnInit(): void {
-        let allCheckDuplicates: Observable<any>[] = [];
+    async ngOnInit(): Promise<void> {
+        this.buildGroups();
 
-        forkJoin(allCheckDuplicates).subscribe((data: any) => {
-            console.info(JSON.stringify(data));
-        });
+        const roots = await this.resolveRoots();
+        this.applyRootLabels(roots);
 
-        this.roots = this.stixService.apiRoots2;
+        this.applyFilter();
     }
 
-    changeShow(objIndex, rowIndex): void {
-        if (objIndex == this.objnumber && rowIndex == this.rownumber) {
-            this.rownumber = -1;
-        } else {
-            this.objnumber = objIndex;
-            this.rownumber = rowIndex;
+    // --- Building the row model -------------------------------------------------
+
+    private buildGroups(): void {
+        const groupsByRoot = new Map<string, RootGroup>();
+
+        (this.objects || []).forEach((object: any, index: number) => {
+            const foundIn = this.rcPairs?.[index] || {};
+
+            for (const root of Object.keys(foundIn)) {
+                let group = groupsByRoot.get(root);
+
+                if (!group) {
+                    group = { apiPath: root, title: root, rows: [], expanded: false };
+                    groupsByRoot.set(root, group);
+                }
+
+                for (const collectionId of foundIn[root] || []) {
+                    group.rows.push(this.buildRow(object, root, collectionId));
+                }
+            }
+        });
+
+        this.groups = [...groupsByRoot.values()];
+        this.totalRowCount = this.groups.reduce((count, group) => count + group.rows.length, 0);
+
+        this.hasMixedTypes = new Set((this.objects || []).map((object: any) => object.type)).size > 1;
+        this.assignFilterKeys();
+
+        this.visibleGroups = this.groups;
+        this.visibleRowCount = this.totalRowCount;
+
+        const startExpanded = this.totalRowCount <= COLLAPSE_THRESHOLD;
+        for (const group of this.groups) {
+            group.expanded = startExpanded;
         }
     }
 
-    getComponentId(component: any, i: number, j: number, k: number): string {
-        let result = `${this.getComponentDisplay(component)}${i}${j}${k}`;
+    private buildRow(object: any, root: string, collectionId: string): ViewerRow {
+        return {
+            object,
+            root,
+            collectionId,
+            collectionTitle: collectionId,
+            display: this.getComponentDisplay(object),
+            typeDisplayName: this.getTypeDisplayName(object.type),
+            externalId: this.getExternalId(object),
+            modifiedLabel: this.formatModified(object.modified),
+            filterKey: '',
+            checked: false,
+            expanded: false,
+        };
+    }
 
-        return result;
+    private assignFilterKeys(): void {
+        for (const group of this.groups) {
+            for (const row of group.rows) {
+                row.filterKey = this.buildFilterKey(row, group.title);
+            }
+        }
+    }
+
+    private buildFilterKey(row: ViewerRow, rootTitle: string): string {
+        const parts = [row.display, row.externalId, row.root, rootTitle, row.collectionId, row.collectionTitle];
+
+        if (this.hasMixedTypes) {
+            parts.push(row.object?.type, row.typeDisplayName);
+        }
+
+        return parts.join(' ').toLowerCase();
+    }
+
+    // --- Resolving root and collection titles -----------------------------------
+
+    private async resolveRoots(): Promise<any[]> {
+        if (!this.useDefaultServerRoots) {
+            return this.stixService.apiRoots2 || [];
+        }
+
+        const defaultRoots = await this.stixService.getDefaultServerRootsForLabels();
+
+        return defaultRoots?.length > 0 ? defaultRoots : this.stixService.apiRoots2 || [];
+    }
+
+    private applyRootLabels(roots: any[]): void {
+        for (const group of this.groups) {
+            const root = roots.find((r) => r.apiPath === group.apiPath);
+            if (!root) continue;
+
+            group.title = root.title || group.apiPath;
+
+            for (const row of group.rows) {
+                const collection = (root.collections || []).find((c: any) => c.id === row.collectionId);
+                if (collection?.title) {
+                    row.collectionTitle = collection.title;
+                }
+            }
+        }
+
+        this.assignFilterKeys();
+    }
+
+    // --- Filtering --------------------------------------------------------------
+
+    applyFilter(): void {
+        const needle = this.filterText.trim().toLowerCase();
+
+        if (!needle) {
+            this.visibleGroups = this.groups;
+            this.visibleRowCount = this.totalRowCount;
+            return;
+        }
+
+        const matches: RootGroup[] = [];
+
+        for (const group of this.groups) {
+            const rows = group.rows.filter((row) => row.filterKey.includes(needle));
+
+            if (rows.length > 0) {
+                matches.push({ ...group, rows, expanded: true });
+            }
+        }
+
+        this.visibleGroups = matches;
+        this.visibleRowCount = matches.reduce((count, group) => count + group.rows.length, 0);
+    }
+
+    // --- Expanding and selecting ------------------------------------------------
+
+    toggleGroup(group: RootGroup): void {
+        group.expanded = !group.expanded;
+    }
+
+    toggleRow(row: ViewerRow): void {
+        row.expanded = !row.expanded;
+    }
+
+    toggleGroupSelection(group: RootGroup, event: Event): void {
+        const checked = (event.target as HTMLInputElement).checked;
+
+        for (const row of group.rows) {
+            row.checked = checked;
+        }
+    }
+
+    isGroupFullySelected(group: RootGroup): boolean {
+        return group.rows.length > 0 && group.rows.every((row) => row.checked);
+    }
+
+    isGroupPartiallySelected(group: RootGroup): boolean {
+        return group.rows.some((row) => row.checked) && !this.isGroupFullySelected(group);
+    }
+
+    disableAddToBundle(): boolean {
+        return !this.groups.some((group) => group.rows.some((row) => row.checked));
+    }
+
+    // --- Importing --------------------------------------------------------------
+
+    addToBundle(): void {
+        const seenObjectIds = new Set<string>();
+
+        for (const group of this.groups) {
+            for (const row of group.rows) {
+                if (!row.checked || seenObjectIds.has(row.object.id)) continue;
+                seenObjectIds.add(row.object.id);
+
+                this.importRow(row);
+            }
+        }
+
+        const count = seenObjectIds.size;
+        const message = count === 1 ? 'Imported 1 object from TAXII' : `Imported ${count} objects from TAXII`;
+        this.announcementService.show('Successfully imported', message, 'success', false);
+
+        this.router.navigate(['bundle']);
+
+        this.activeModal.close({ type: 'add' });
+    }
+
+    private importRow(row: ViewerRow): void {
+        const object = row.object;
+
+        this.stixService.addComponent(object);
+
+        const refs = this.collectReferencedIds(object);
+
+        if (refs.length > 0) {
+            refs.push(object.id);
+            this.stixService.getObjectFromIDHelper(refs, true, row.root, row.collectionId, this.useDefaultServerRoots);
+        }
+    }
+
+    private collectReferencedIds(object: any): string[] {
+        const refs: string[] = [];
+
+        if (object.object_refs?.length > 0) {
+            refs.push(...object.object_refs);
+        }
+
+        if (object.type === 'relationship') {
+            if (object.source_ref) refs.push(object.source_ref);
+            if (object.target_ref) refs.push(object.target_ref);
+        }
+
+        return refs;
+    }
+
+    close(): void {
+        this.activeModal.close({ type: 'cancel' });
+    }
+
+    // --- Display helpers --------------------------------------------------------
+
+    private getTypeDisplayName(type: string): string {
+        return TYPE_DISPLAY_NAMES.get(type) || type;
+    }
+
+    private formatModified(modified: string): string {
+        if (!modified) return '';
+
+        const date = new Date(modified);
+        if (isNaN(date.getTime())) return '';
+
+        const absoluteDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        const diffDays = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24));
+
+        let relativeTime: string;
+        if (diffDays === 0) {
+            relativeTime = 'today';
+        } else if (diffDays === 1) {
+            relativeTime = '1 day ago';
+        } else if (diffDays < 30) {
+            relativeTime = `${diffDays} days ago`;
+        } else if (diffDays < 365) {
+            const months = Math.floor(diffDays / 30);
+            relativeTime = months === 1 ? '1 month ago' : `${months} months ago`;
+        } else {
+            const years = Math.floor(diffDays / 365);
+            relativeTime = years === 1 ? '1 year ago' : `${years} years ago`;
+        }
+
+        return `${absoluteDate} (${relativeTime})`;
+    }
+
+    getExternalId(component: any): string {
+        const ref = (component?.external_references || []).find((r: any) => r?.external_id);
+
+        return ref?.external_id || '';
     }
 
     getComponentDisplay(component: any): string {
@@ -214,108 +415,5 @@ export class ObjectsViewerComponent implements OnInit {
 
             return componentDisplay;
         } else return component.name ? component.name : '<NO NAME>';
-    }
-
-    getStixObjectID(type): string {
-        type = type.toLowerCase();
-        type.replace(' ', '-');
-
-        return type;
-    }
-
-    addToBundle() {
-        this.objects.forEach((o, i) => {
-            if (o.checked) {
-                delete o.checked;
-                this.stixService.addComponent(o);
-
-                let refs = [];
-                if (o.object_refs && o.object_refs.length > 0) {
-                    refs = [...o.object_refs];
-                    refs.push(o.id);
-                    this.stixService.getObjectFromIDHelper(refs, true, this.rcPairsMapping[i].root, this.rcPairsMapping[i].collection);
-                }
-
-                if (o.type === 'relationship') {
-                    if (o.source_ref) {
-                        refs.push(o.source_ref);
-                    }
-
-                    if (o.target_ref) {
-                        refs.push(o.target_ref);
-                    }
-
-                    if (refs.length > 0) {
-                        refs.push(o.id);
-                        this.stixService.getObjectFromIDHelper(refs, true, this.rcPairsMapping[i].root, this.rcPairsMapping[i].collection);
-                    }
-                }
-            }
-        });
-
-        this.announcementService.show('Succesfully imported', 'Successfully imported duplicate object from TAXII', 'success', false);
-
-        this.router.navigate(['bundle']);
-
-        this.activeModal.close({ type: 'add' });
-    }
-
-    close() {
-        this.activeModal.close({ type: 'cancel' });
-    }
-
-    checkAllObjects(event, objectType: string) {
-        this.objects
-            .filter((o) => o.type === objectType)
-            .forEach((o) => {
-                o.checked = event.target.checked;
-            });
-    }
-    disableAddToBundle() {
-        return !this.objects.some((o) => o.checked);
-    }
-
-    showRcPair(index) {
-        let rcPairsAll = [];
-        this.rcPairs.forEach((rc) => {
-            rcPairsAll.push(Object.entries(rc));
-        });
-
-        let rcString = '(';
-
-        rcPairsAll[index].forEach((rcPair: any, i: number) => {
-            if (i > 0) {
-                rcString += ' | ';
-            }
-
-            rcPair.forEach((rc: any, j: number) => {
-                if (j === 0) {
-                    rcString = `${rcString}Root: ${rc}`;
-                    return;
-                } else {
-                    let rootFound = this.roots.find((r) => r.apiPath === rcPair[j - 1]);
-
-                    if (rootFound) {
-                        rcString = `${rcString}, Collection: `;
-                        let collectionNames = '';
-
-                        rc.forEach((cId) => {
-                            let collectionFound = rootFound.collections.find((c) => cId === c.id);
-                            if (collectionFound) {
-                                rcString = `${rcString} ${collectionFound.title}`;
-                            }
-                        });
-                    }
-                }
-            });
-
-            if (i === 0) {
-                this.rcPairsMapping.push({ root: rcPair[0], collection: rcPair[1][0] });
-            }
-        });
-
-        rcString += ')';
-
-        return rcString;
     }
 }

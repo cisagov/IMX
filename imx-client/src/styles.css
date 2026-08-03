@@ -93,14 +93,17 @@ body {
     width: 150px;
     height: 38px;
 }
+
 .btn-wlg {
     width: 250px;
     height: 38px;
 }
+
 .btn-fa {
     width: 42px;
     height: 38px;
 }
+
 .btn-fa-sm {
     /* width: 35px; */
     /* height: 31px; */
@@ -115,23 +118,27 @@ body {
     width: 20px !important;
     height: 20px !important;
     font-size: 12px !important;
-    padding-top:1.5px !important;
-    padding-left:3.5px !important;
+    padding-top: 1.5px !important;
+    padding-left: 3.5px !important;
 }
+
 .btn-100 {
     width: 200px;
     min-height: 38px;
     margin: 2px;
     min-width: 100px;
 }
-.btn-sm{
+
+.btn-sm {
     width: 150px;
     height: 31px;
 }
+
 .btn-wsm {
     width: 250px;
     height: 31px;
 }
+
 .btn-nsm {
     width: 34px;
     height: 31px;
@@ -141,7 +148,9 @@ body {
     background-color: rgb(48, 46, 46) !important;
     color: whitesmoke !important;
 }
-.btn-dark-gray:hover, .btn-dark-gray:disabled {
+
+.btn-dark-gray:hover,
+.btn-dark-gray:disabled {
     background-color: rgb(26, 25, 25) !important;
 }
 
@@ -152,6 +161,7 @@ body {
 .ms-15 {
     margin-left: 15px !important;
 }
+
 .me-15 {
     margin-right: 15px !important;
 }
@@ -174,7 +184,9 @@ input {
     background-color: rgb(40, 167, 69) !important;
     color: whitesmoke !important;
 }
-.btn-success:hover, .btn-success:disabled {
+
+.btn-success:hover,
+.btn-success:disabled {
     background-color: rgb(35, 144, 60) !important;
 }
 
@@ -211,7 +223,7 @@ input {
 .stix-viewer-block .stix-viewer {
     display: flex !important;
     /* width: 70%; */
-  }
+}
 
 .admin .carousel-inner {
     padding: 30px 85px !important;
@@ -280,11 +292,16 @@ input {
     width: 75px;
     height: 75px;
     animation: spin 1s linear infinite;
-  }
+}
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 #upload_spinner {
@@ -346,7 +363,7 @@ input {
 
 .tlpv1 {
     margin-left: 3.5px !important;
-    font-weight: 700 ;
+    font-weight: 700;
     font-size: 65%;
     vertical-align: bottom;
 }
@@ -385,9 +402,11 @@ input {
 .switch-text .on {
     color: rgb(108, 108, 108) !important;
 }
+
 .mb-6 {
     margin-bottom: 4rem !important
 }
+
 .mb-7 {
     margin-bottom: 5rem !important;
 }
@@ -458,7 +477,7 @@ ui-switch small {
 .content-wrapper {
     min-height: 500px;
     top: -100px;
-  }
+}
 
 .content-wrapper-short {
     min-height: 400px;
@@ -585,7 +604,7 @@ ui-switch small {
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .gr-help-section-title {
@@ -691,6 +710,7 @@ ui-switch small {
 .card-icon {
     font-size: 3rem;
 }
+
 /* End Guided UI */
 
 /* Toast Message */
@@ -769,7 +789,7 @@ pre {
 .guided-tip {
     position: relative;
     cursor: pointer;
-    margin-bottom:-5px !important;
+    margin-bottom: -5px !important;
 }
 
 .guided-tip .tip-text {
@@ -790,7 +810,7 @@ pre {
 }
 
 .tip-text {
-    min-width:200px;
+    min-width: 200px;
 }
 
 .guided-tip:hover .tip-text {
@@ -848,7 +868,7 @@ pre {
     font-family: system-ui !important;
 }
 
-.global-tlp-modal > .modal-xl {
+.global-tlp-modal>.modal-xl {
     width: 95vw;
 }
 
@@ -875,7 +895,7 @@ pre {
 /* Without this, opening a modal will always scroll to the top */
 body.modal-open {
     overflow: unset !important;
-  }
+}
 
 .fullscreen-mode .modal-dialog {
     width: 100vw !important;
@@ -903,7 +923,7 @@ body.modal-open {
 .cdk-overlay-pane .mat-autocomplete-panel {
     max-height: 400px !important;
     background-color: #f8f9fa !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 .mat-option,
@@ -982,8 +1002,8 @@ body.modal-open {
     background-color: #e9ecef !important;
 }
 
-.accordion-panel-class .card-header > div,
-.accordion-panel-class .card-header > [accordion-heading] {
+.accordion-panel-class .card-header>div,
+.accordion-panel-class .card-header>[accordion-heading] {
     padding: 12px 16px;
 }
 
@@ -1070,8 +1090,8 @@ body.modal-open {
 }
 
 .input-header-guided {
-  font-weight: bold;
-  color: #6f6f6f;
+    font-weight: bold;
+    color: #6f6f6f;
 }
 
 /* GuidedUI Styling */
@@ -1083,7 +1103,7 @@ body.modal-open {
 }
 
 .inner-row {
-    padding: 0px 0px 1.75rem;
+    padding: 0px 0px 1rem;
     flex: 1;
 }
 
@@ -1163,9 +1183,7 @@ body.modal-open {
 }
 
 .input-header {
-    color: #6f6f6f;
-    font-weight: bold;
-    margin-bottom: .5rem;
+    font-size: 1rem;
 }
 
 input::placeholder {
@@ -1246,7 +1264,7 @@ input::placeholder {
     background-color: white !important;
     border-color: #ced4da !important;
     color: #6f6f6f !important;
-  }
+}
 
 .other-refs-list {
     border: 1px solid #dee2e6;
