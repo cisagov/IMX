@@ -74,12 +74,19 @@ spec:
             - name: OIDC_CERT
               value: {{ .Values.server.keycloakCert | quote }}
 
+            - name: DB
+              value: {{ .Values.server.database | quote }}
+
             {{- if eq .Values.server.database "elasticsearch" }}
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
                   name: imx-secrets
                   key: ELASTIC_PASSWORD
+            - name: DB_URL
+              value: {{ .Values.elastic.url | quote }}
+            - name: DB_USER
+              value: {{ .Values.elastic.user | quote }}
             {{- end}}
 
             {{- if eq .Values.server.database "opensearch" }}
@@ -88,6 +95,10 @@ spec:
                 secretKeyRef:
                   name: imx-secrets
                   key: OPENSEARCH_PASSWORD
+            - name: DB_URL
+              value: {{ .Values.opensearch.url | quote }}
+            - name: DB_USER
+              value: {{ .Values.opensearch.user | quote }}
             {{- end}}
 
             - name: KIBANA_ENABLED
