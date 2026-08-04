@@ -141,11 +141,6 @@ input.form-control {
     border-radius: 0.25rem 0.25rem 0 0;
 }
 
-.input-header {
-    font-weight: bold;
-    color: #6f6f6f;
-}
-
 .btn-link {
     width: 100%;
     overflow: hidden;

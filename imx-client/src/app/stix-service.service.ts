@@ -2391,6 +2391,14 @@ export class StixService implements OnInit {
         return arr;
     }
 
+    populateEmailAddressRef() {
+        return this.bundle.objects.filter(obj => obj.id.startsWith('email-addr'));
+    }
+
+    populateUserAccountRef() {
+        return this.bundle.objects.filter(obj => obj.id.startsWith('user-account'));
+    }
+
     populateSightingOfRef() {
         const regex = new RegExp(/^(\w[-[a-z0-9]+]*)--[0-9a-f]{8}\-[0-9a-f]{4}\-[45][0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/);
         let invalid_list = SCO_LIST.slice(); //Can only be an SDO or custom (not any other object type)

@@ -1814,4 +1814,10 @@ export class ExtensionsComponent {
     notObj(ext: any): boolean {
         return !JSON.stringify(ext).includes('new-');
     }
+
+    shouldHideExtension(extension: any): boolean {
+        if(this.stixService.currentType !== 'identity') return false;
+        let extKey = Object.keys(extension)[0];
+        return extKey === 'extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498';
+    }
 }

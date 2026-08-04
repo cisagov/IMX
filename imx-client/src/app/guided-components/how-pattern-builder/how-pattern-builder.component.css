@@ -95,4 +95,10 @@
 .timezone-option:hover {
     background: #f3f4f6;
 }
+
 /* End Select Time Zone */
+
+.input-header {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}
