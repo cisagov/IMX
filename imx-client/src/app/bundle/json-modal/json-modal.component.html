@@ -10,15 +10,18 @@
     @if (showVtTab || showMispTab) {
     <ul class="nav nav-underline ms-3 mt-2">
         <li class="nav-item">
-            <a class="nav-link pointer" [class.active]="activeTab === 'json'" (click)="activeTab = 'json'">JSON</a>
+            <a class="nav-link pointer" [class.active]="activeTab === 'json'" (click)="activeTab = 'json'">Object
+                Details</a>
         </li>
         <li class="nav-item">
             <a class="nav-link pointer" [class.active]="activeTab === 'vt'" (click)="activeTab = 'vt'">VT Results</a>
         </li>
+        @if (showMispTab) {
         <li class="nav-item">
             <a class="nav-link pointer" [class.active]="activeTab === 'misp'" (click)="switchTab('misp')">MISP
                 Results</a>
         </li>
+        }
     </ul>
     }
     @if (activeTab === 'json') {

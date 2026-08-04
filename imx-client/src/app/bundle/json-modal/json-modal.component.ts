@@ -19,9 +19,10 @@ export class JsonModalComponent implements OnInit {
     @Input() objectType;
     @Input() disableEditObject!: (obj: any) => boolean;
     @Input() vtIndicator: string = '';
-    @Input() vtIndicatorType: 'hash' | 'ip' | 'domain' | null = null;
+    @Input() vtIndicatorType: 'hash' | 'ip' | 'domain' | 'url' | null = null;
     @Input() vtCachedData: any = null;
     @Input() mispResults: any[] = null;
+    @Input() mispEligible = false;
 
     activeTab: 'json' | 'vt' | 'misp' = 'json';
 
@@ -30,7 +31,7 @@ export class JsonModalComponent implements OnInit {
     }
 
     get showMispTab() {
-        return this.mispResults !== null;
+        return this.mispEligible;
     }
 
     onVtDataLoaded(data: any) {
