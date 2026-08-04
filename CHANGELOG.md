@@ -1,3 +1,9 @@
+## [4.14.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.13.0...v4.14.0) (2026-08-04)
+
+### Features
+
+* adding integrations column options for URL objects ([057dc7a](https://git.va.th.ten/eos/cde/tie/imx/commit/057dc7ab5b45156875c64e2df6265d74918fec0a))
+
 ## [4.13.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.12.0...v4.13.0) (2026-08-03)
 
 ### Features
