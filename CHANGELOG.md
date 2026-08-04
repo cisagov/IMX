@@ -1,3 +1,9 @@
+## 4.14.1 (2026-08-04)
+
+### Bug Fixes
+
+* fix various bugs in guided observable 0bf4f0c
+
 ## 4.14.0 (2026-08-04)
 
 ### Features
