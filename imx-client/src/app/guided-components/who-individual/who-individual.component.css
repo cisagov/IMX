@@ -7,3 +7,8 @@
 .tabs {
     cursor: pointer;
 }
+
+.input-header {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}

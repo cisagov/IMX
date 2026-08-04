@@ -33,17 +33,11 @@
 }
 
 .input-header {
-    color: #6f6f6f;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
     font-size: 1rem;
+    margin-bottom: .5rem;
 }
 
-input::placeholder {
-    color: #999;
-}
-
-.form-control-guided {
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+.inner-row {
+    padding: 0px 0px 1rem;
+    flex: 1;
 }

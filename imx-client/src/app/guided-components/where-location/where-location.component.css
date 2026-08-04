@@ -59,3 +59,8 @@
 .margin-border-top {
     margin-top: 1.5rem !important;
 }
+
+.input-header {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}
