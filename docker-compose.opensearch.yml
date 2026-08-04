@@ -3,8 +3,8 @@ services:
   imx-client:
     container_name: imx-client
     build:
-      context: .
-      dockerfile: ./imx-client/Dockerfile
+      context: ./imx-client
+      dockerfile: Dockerfile
       args:
         BUILD_ENV: "dev"
     restart: unless-stopped
@@ -20,8 +20,8 @@ services:
   imx-server:
     container_name: imx-server
     build:
-      context: .
-      dockerfile: ./imx-server/Dockerfile
+      context: ./imx-server
+      dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
       opensearch:
@@ -43,8 +43,8 @@ services:
   imx-py:
     container_name: imx-py
     build:
-      context: .
-      dockerfile: ./imx-py/Dockerfile
+      context: ./imx-py
+      dockerfile: Dockerfile
     restart: unless-stopped
     networks:
       - imx
