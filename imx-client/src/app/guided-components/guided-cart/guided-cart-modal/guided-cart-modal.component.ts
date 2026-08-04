@@ -108,6 +108,10 @@ export class GuidedCartModalComponent implements OnInit {
                         index = this.cart['Email Address'].findIndex((obj) => obj.id == object.id);
                         key = 'Email Address';
                         break;
+                    case 'url':
+                        index = this.cart['URL'].findIndex((obj) => obj.id == object.id);
+                        key = 'URL';
+                        break;
                     case 'artifact':
                     case 'autonomous-system':
                     case 'directory':
@@ -120,7 +124,6 @@ export class GuidedCartModalComponent implements OnInit {
                     case 'network-traffic':
                     case 'process':
                     case 'software':
-                    case 'url':
                     case 'user-account':
                     case 'windows-registry-key':
                     case 'x509-certificate':
