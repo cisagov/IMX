@@ -673,6 +673,7 @@ export class BundleComponent implements OnInit {
         modalRef.componentInstance.component = component;
         modalRef.componentInstance.objectType = objectType;
         modalRef.componentInstance.disableEditObject = this.disableEditObject.bind(this);
+        modalRef.componentInstance.mispEligible = initialTab != 'json' && this.isMispEligible(component);
 
         if (initialTab == 'vt') {
             if (this.isIntegrationEligible(component)) {
@@ -688,11 +689,7 @@ export class BundleComponent implements OnInit {
                 }
             }
         } else if (initialTab == 'misp') {
-            if (
-                (component.type === 'file' && (component.hashes?.['SHA-1'] || component.hashes?.['SHA-256'] || component.hashes?.['MD5'])) ||
-                component.type === 'ipv4-addr' ||
-                component.type === 'ipv6-addr'
-            ) {
+            if (this.isMispEligible(component)) {
                 let indicators = this.mispService.buildIndicatorString(component);
 
                 const classification = this.mispService.validateAndClassifyInputs(indicators);
@@ -1039,24 +1036,26 @@ export class BundleComponent implements OnInit {
             });
         }
 
-        forkJoin(allCheckDuplicates).pipe(takeUntil(this.cancelDuplicate$)).subscribe((data: any) => {
-            data.forEach((d: any, i: number) => {
-                if (d?.body?.founds && d.body.founds.length > 0) {
-                    let dupsFound = [];
-                    let rcPairs = [];
-                    d.body.founds.forEach((o) => {
-                        dupsFound.push(o.object);
-                        rcPairs.push(o.fcPairs);
-                    });
+        forkJoin(allCheckDuplicates)
+            .pipe(takeUntil(this.cancelDuplicate$))
+            .subscribe((data: any) => {
+                data.forEach((d: any, i: number) => {
+                    if (d?.body?.founds && d.body.founds.length > 0) {
+                        let dupsFound = [];
+                        let rcPairs = [];
+                        d.body.founds.forEach((o) => {
+                            dupsFound.push(o.object);
+                            rcPairs.push(o.fcPairs);
+                        });
 
-                    this.duplicates.push({
-                        original: originals[i],
-                        duplicated: dupsFound,
-                        rcPairs: rcPairs,
-                    });
-                }
+                        this.duplicates.push({
+                            original: originals[i],
+                            duplicated: dupsFound,
+                            rcPairs: rcPairs,
+                        });
+                    }
+                });
             });
-        });
     }
 
     async checkReferences() {
@@ -1080,65 +1079,66 @@ export class BundleComponent implements OnInit {
                 });
 
                 await new Promise((resolve, reject) => {
-                    forkJoin(allCheckReferences).pipe(
-                        takeUntil(this.cancelReferences$),
-                        catchError(err => {
-                            console.log(err);
-                            return of([]);
-                        })
-                    ).subscribe((data: any) => {
-                        if (data.length == 0)
-                            return resolve(false);
-                        data.forEach((d: any, i: number) => {
-                            if (!d) return resolve(false);
+                    forkJoin(allCheckReferences)
+                        .pipe(
+                            takeUntil(this.cancelReferences$),
+                            catchError((err) => {
+                                console.log(err);
+                                return of([]);
+                            })
+                        )
+                        .subscribe((data: any) => {
+                            if (data.length == 0) return resolve(false);
+                            data.forEach((d: any, i: number) => {
+                                if (!d) return resolve(false);
 
-                            let allReferencedInRelationship: Observable<any>[] = [];
-                            let allReferencedInRelationshipIndex: number[] = [];
+                                let allReferencedInRelationship: Observable<any>[] = [];
+                                let allReferencedInRelationshipIndex: number[] = [];
 
-                            if (d?.body?.founds && d.body.founds.length > 0) {
-                                let refsFound = [];
-                                let rcPairs = [];
-                                d.body.founds.forEach((o) => {
-                                    refsFound.push(o.object);
-                                    rcPairs.push(o.fcPairs);
+                                if (d?.body?.founds && d.body.founds.length > 0) {
+                                    let refsFound = [];
+                                    let rcPairs = [];
+                                    d.body.founds.forEach((o) => {
+                                        refsFound.push(o.object);
+                                        rcPairs.push(o.fcPairs);
 
-                                    if (o.object.type === 'relationship') {
-                                        let objectId = null;
+                                        if (o.object.type === 'relationship') {
+                                            let objectId = null;
 
-                                        if (this.bundle.objects[i].id === o.object.source_ref) {
-                                            objectId = o.object.target_ref;
-                                        }
+                                            if (this.bundle.objects[i].id === o.object.source_ref) {
+                                                objectId = o.object.target_ref;
+                                            }
 
-                                        if (this.bundle.objects[i].id === o.object.target_ref) {
-                                            objectId = o.object.source_ref;
-                                        }
+                                            if (this.bundle.objects[i].id === o.object.target_ref) {
+                                                objectId = o.object.source_ref;
+                                            }
 
-                                        if (objectId) {
-                                            let referenced = this.stixService.checkId(objectId);
+                                            if (objectId) {
+                                                let referenced = this.stixService.checkId(objectId);
 
-                                            if (referenced) {
-                                                allReferencedInRelationship.push(referenced);
-                                                allReferencedInRelationshipIndex.push(i);
+                                                if (referenced) {
+                                                    allReferencedInRelationship.push(referenced);
+                                                    allReferencedInRelationshipIndex.push(i);
+                                                }
                                             }
                                         }
+                                    });
+                                    if (allReferencedInRelationship.length > 0) {
+                                        forkJoin(allReferencedInRelationship).subscribe((data: any) => {
+                                            this.pushReferencesDataForEach(data, refsFound, rcPairs, allReferencedInRelationshipIndex);
+                                        });
+                                    } else {
+                                        this.references.push({
+                                            original: this.bundle.objects[i],
+                                            referenced: refsFound,
+                                            rcPairs: rcPairs,
+                                        });
                                     }
-                                });
-                                if (allReferencedInRelationship.length > 0) {
-                                    forkJoin(allReferencedInRelationship).subscribe((data: any) => {
-                                        this.pushReferencesDataForEach(data, refsFound, rcPairs, allReferencedInRelationshipIndex);
-                                    });
-                                } else {
-                                    this.references.push({
-                                        original: this.bundle.objects[i],
-                                        referenced: refsFound,
-                                        rcPairs: rcPairs,
-                                    });
                                 }
-                            }
 
-                            return resolve(true);
+                                return resolve(true);
+                            });
                         });
-                    });
                 });
             }
         } catch (e) {
@@ -1326,7 +1326,7 @@ export class BundleComponent implements OnInit {
         if (this.autoCheck === 'true') {
             this.checkRefsModalRef = this.matDialog.open(LoadingModalComponent, {
                 disableClose: true,
-                hasBackdrop: true
+                hasBackdrop: true,
             });
 
             this.checkRefsModalRef.afterClosed().subscribe((canceled) => {
@@ -3999,15 +3999,25 @@ export class BundleComponent implements OnInit {
             return true;
         }
         if (component.type === 'ipv4-addr' || component.type === 'ipv6-addr') {
-            return true;
+            return !!component.value;
         }
         if (component.type === 'domain-name' && component.value) {
+            return true;
+        }
+        if (component.type === 'url' && component.value) {
             return true;
         }
         return false;
     }
 
-    getIntegrationIndicator(component: any): { value: string; type: 'hash' | 'ip' | 'domain' } | null {
+    isMispEligible(component: any): boolean {
+        if (component.type === 'file') {
+            return !!(component.hashes?.['SHA-1'] || component.hashes?.['SHA-256'] || component.hashes?.['MD5']);
+        }
+        return component.type === 'ipv4-addr' || component.type === 'ipv6-addr';
+    }
+
+    getIntegrationIndicator(component: any): { value: string; type: 'hash' | 'ip' | 'domain' | 'url' } | null {
         if (component.type === 'file' && component.hashes) {
             const hashes = component.hashes;
             const value = hashes['SHA-256'] || hashes['SHA-1'] || hashes['MD5'] || hashes[Object.keys(hashes)[0]];
@@ -4018,6 +4028,9 @@ export class BundleComponent implements OnInit {
         }
         if (component.type === 'domain-name') {
             return component.value ? { value: component.value, type: 'domain' } : null;
+        }
+        if (component.type === 'url') {
+            return component.value ? { value: component.value, type: 'url' } : null;
         }
         return null;
     }
