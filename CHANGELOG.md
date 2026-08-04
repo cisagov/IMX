@@ -1,3 +1,9 @@
+## [4.14.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.0...v4.14.1) (2026-08-04)
+
+### Bug Fixes
+
+* fix various bugs in guided observable ([0bf4f0c](https://git.va.th.ten/eos/cde/tie/imx/commit/0bf4f0cbcd0c246b3606cfcce7986ea84730b17b))
+
 ## [4.14.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.13.0...v4.14.0) (2026-08-04)
 
 ### Features
