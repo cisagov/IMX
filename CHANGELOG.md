@@ -1,3 +1,9 @@
+## 4.14.0 (2026-08-04)
+
+### Features
+
+* adding integrations column options for URL objects 057dc7a
+
 ## 4.13.0 (2026-08-03)
 
 ### Features
