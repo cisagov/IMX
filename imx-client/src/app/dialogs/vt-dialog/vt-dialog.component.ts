@@ -67,7 +67,7 @@ type UrlRelationKey = 'servingIp';
 export class VtDialogComponent {
     @Input() mode: 'standalone' | 'embedded' = 'standalone';
     @Input() preloadIndicator: string = '';
-    @Input() preloadType: 'hash' | 'ip' | 'domain' | null = null;
+    @Input() preloadType: 'hash' | 'ip' | 'domain' | 'url' | null = null;
     @Input() cachedData: any = null;
     @Output() stixObjectsSelected = new EventEmitter<any[]>();
     @Output() vtDataLoaded = new EventEmitter<any>();
