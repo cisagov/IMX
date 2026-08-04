@@ -19,7 +19,7 @@
         <!-- Form Body -->
         <div class="guided-form">
             <!-- Observable Type -->
-            <div class="inner-row half-row">
+            <div class="inner-row half-row mb-4">
                 <div class="input-header">Observable Type</div>
 
                 <select
@@ -38,19 +38,6 @@
 
             <!-- Observable Value -->
             @if (observableValueDropdown) {
-                <div class="input-header">
-                    Observable Value<span class="text-danger ms-1">*</span>
-                    <span class="guided-tip">
-                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"></fa-icon>
-                        <span class="tip-text">
-                            <ul>
-                                @for (string of currentObservableInfo; track string) {
-                                    <li>{{ string }}</li>
-                                }
-                            </ul>
-                        </span>
-                    </span>
-                </div>
                 <div class="inner-row guided-observable-value-inputs">
                     <!-- Value Input Fields (Text, Numerical, Select, Hybrid, Hybrid Add, Hybrid Hybrid, Hybrid Hybrid Add) -->
                     @for (field of currentObservableInput; track field) {
@@ -59,7 +46,7 @@
                         @if (field.type === 'text' && field.show === true) {
                             <div class="guided-observable-value-input">
                                 @if (field.header) {
-                                    <div class="input-header">{{ field.header }}</div>
+                                    <div class="input-header">{{ field.header }}<span class="text-danger ms-1">*</span></div>
                                 }
 
                                 <input
@@ -76,15 +63,20 @@
                         <!-- Numerical Input Field -->
                         <!-- Used in: Autonomous System, Process -->
                         @if (field.type === 'number' && field.show === true) {
-                            <div class="guided-observable-value-input half-row">
-                                <input
-                                    type="number"
-                                    placeholder="{{ field.placeholder }}"
-                                    class="form-control form-control-guided"
-                                    [(ngModel)]="field.value"
-                                    (input)="disableAddToCart(false)"
-                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
-                                />
+                            <div class="guided-observable-header-body-wrapper">
+                                @if (field.header) {
+                                    <div class="input-header">{{ field.header }}<span class="text-danger ms-1">*</span></div>
+                                }
+                                <div class="guided-observable-value-input half-row">
+                                    <input
+                                        type="number"
+                                        placeholder="{{ field.placeholder }}"
+                                        class="form-control form-control-guided"
+                                        [(ngModel)]="field.value"
+                                        (input)="disableAddToCart(false)"
+                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                    />
+                                </div>
                             </div>
                         }
 
@@ -141,7 +133,11 @@
                         @if (field.type === 'select' && field.show === true) {
                             <!-- Used in: Email Message, Malware -->
                             @if (field.type === 'select') {
-                                <div class="guided-observable-value-input half-row">
+                                <div class="guided-observable-header-body-wrapper">
+                                    @if (field.header) {
+                                        <div class="input-header">{{ field.header }}<span class="text-danger ms-1">*</span></div>
+                                    }
+                                    <div class="guided-observable-value-input half-row">
                                     <select
                                         class="form-control form-control-guided form-select"
                                         (change)="selectChange($event)"
@@ -154,6 +150,7 @@
                                         }
                                     </select>
                                 </div>
+                                </div>
                             }
                         }
 
@@ -163,7 +160,9 @@
 
                             @if (currentObservableType == 'Network Traffic') {
                                 <div class="guided-observable-value-input guided-dual-container" style="display: block">
-                                    <div class="input-header">{{ field.header }}<span class="text-danger ms-1">*</span></div>
+                                    @if (field.header) {
+                                        <div class="input-header">{{ field.header }}<span class="text-danger ms-1">*</span></div>
+                                    }
                                     <select
                                         class="form-control form-control-guided form-select"
                                         (change)="updateCurrentPlaceholder($event, field.index)"
@@ -179,101 +178,111 @@
                                     </select>
                                 </div>
                             } @else {
-                                <div class="guided-observable-value-input guided-dual-container">
-                                    <select
-                                        class="form-control form-control-guided form-select"
-                                        (change)="updateCurrentPlaceholder($event, field.index)"
-                                        [(ngModel)]="field.currentField"
-                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.currentField) }"
-                                    >
-                                        <option disabled value="">{{ field.select_placeholder }}</option>
-                                        @for (option of field.field_options; track option) {
-                                            <option>{{ option }}</option>
-                                        }
-                                    </select>
-                                    <input
-                                        type="text"
-                                        placeholder="{{ field.currentPlaceholder }}"
-                                        class="form-control form-control-guided"
-                                        [disabled]="field.currentPlaceholder == ''"
-                                        [(ngModel)]="field.value"
-                                        (input)="disableAddToCart(false)"
-                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
-                                    />
+                                <div class="guided-observable-header-body-wrapper">
+                                    @if (field.header) {
+                                        <div class="input-header">{{ field.header }}<span class="text-danger ms-1">*</span></div>
+                                    }
+                                    <div class="guided-observable-value-input guided-dual-container">
+                                        <select
+                                            class="form-control form-control-guided form-select"
+                                            (change)="updateCurrentPlaceholder($event, field.index)"
+                                            [(ngModel)]="field.currentField"
+                                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.currentField) }"
+                                        >
+                                            <option disabled value="">{{ field.select_placeholder }}</option>
+                                            @for (option of field.field_options; track option) {
+                                                <option>{{ option }}</option>
+                                            }
+                                        </select>
+                                        <input
+                                            type="text"
+                                            placeholder="{{ field.currentPlaceholder }}"
+                                            class="form-control form-control-guided"
+                                            [disabled]="field.currentPlaceholder == ''"
+                                            [(ngModel)]="field.value"
+                                            (input)="disableAddToCart(false)"
+                                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                        />
+                                    </div>
                                 </div>
+
                             }
                         }
 
                         <!-- Hybrid w Add Input -->
                         @if (field.type === 'hybrid-add' && field.show === true) {
                             <!-- Used in: Network Traffic -->
-                            <div class="guided-observable-value-input half-row">
-                                <!-- Protocol Dropdown -->
-                                <div class="network-traffic-dropdown" style="display: flex; gap: 1rem; margin-bottom: 0.5rem">
-                                    <div class="timezone-input-container">
-                                        <input
-                                            type="text"
-                                            class="form-control form-control-guided"
-                                            [placeholder]="field.select_placeholder"
-                                            [(ngModel)]="field.value"
-                                            (ngModelChange)="filterProtocolOptions(field, $event)"
-                                            (focus)="showProtocolDropdown = true"
-                                            (blur)="showProtocolDropdown = false"
-                                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
-                                        />
-                                        @if (showProtocolDropdown && filteredProtocolOptions.length > 0) {
-                                            <div class="autocomplete-dropdown">
-                                                @for (opt of filteredProtocolOptions; track opt) {
-                                                    <div class="autocomplete-option" (mousedown)="selectProtocol(field, opt)">{{ opt }}</div>
-                                                }
-                                            </div>
+                            <div class="guided">
+                                @if (field.header) {
+                                    <div class="input-header">
+                                        {{ field.header }}<span class="text-danger ms-1">*</span>
+                                        @if (field.arr.length > 0) {
+                                            <span class="badge bg-secondary ms-2 omr-count-badge">{{ field.arr.length }} added</span>
                                         }
-                                    </div>
-                                    <button
-                                        class="btn btn-color btn-add-ref"
-                                        style="display: inline-flex"
-                                        type="button"
-                                        [disabled]="!field.field_options.includes(field.value)"
-                                        (click)="addFieldArr(field)"
-                                    >
-                                        <fa-icon [icon]="faPlus"></fa-icon>
-                                        <span>Add</span>
-                                    </button>
-                                </div>
-
-                                <!-- Protocols Multiselect list -->
-                                <div class="input-header" style="margin-top: 1rem">
-                                    <span>Protocols</span>
-                                    @if (field.arr.length > 0) {
-                                        <span class="badge bg-secondary ms-2 omr-count-badge">{{ field.arr.length }} added</span>
-                                    }
-                                </div>
-                                @if (field.arr.length > 0) {
-                                    <div class="other-refs-list" style="margin-bottom: 1rem">
-                                        @for (item of field.arr; track item; let i = $index) {
-                                            <div
-                                                id="other_list{{ i }}"
-                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
-                                            >
-                                                <span class="ref-name">{{ field.arr[i] }}</span>
-                                                <button
-                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
-                                                    style="display: flex"
-                                                    type="button"
-                                                    id="other_list{{ i }}_delete"
-                                                    (click)="deleteFieldArr(i, field)"
-                                                >
-                                                    <fa-icon [icon]="faTrash"></fa-icon>
-                                                </button>
-                                            </div>
-                                        }
-                                    </div>
-                                } @else {
-                                    <div class="empty-refs-state" style="margin-bottom: 1rem; padding: 0; text-align: left">
-                                        No Protocols added yet.
                                     </div>
                                 }
+                                <div class="guided-observable-value-input half-row">
+                                    <!-- Protocol Dropdown -->
+                                    <div class="network-traffic-dropdown" style="display: flex; gap: 1rem; margin-bottom: 0.5rem">
+                                        <div class="timezone-input-container">
+                                            <input
+                                                type="text"
+                                                class="form-control form-control-guided"
+                                                [placeholder]="field.select_placeholder"
+                                                [(ngModel)]="field.value"
+                                                (ngModelChange)="filterProtocolOptions(field, $event)"
+                                                (focus)="showProtocolDropdown = true"
+                                                (blur)="showProtocolDropdown = false"
+                                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(field.value) }"
+                                            />
+                                            @if (showProtocolDropdown && filteredProtocolOptions.length > 0) {
+                                                <div class="autocomplete-dropdown">
+                                                    @for (opt of filteredProtocolOptions; track opt) {
+                                                        <div class="autocomplete-option" (mousedown)="selectProtocol(field, opt)">{{ opt }}</div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <button
+                                            class="btn btn-color btn-add-ref"
+                                            style="display: inline-flex"
+                                            type="button"
+                                            [disabled]="!field.field_options.includes(field.value)"
+                                            (click)="addFieldArr(field)"
+                                        >
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
+
+                                    @if (field.arr.length > 0) {
+                                        <div class="other-refs-list">
+                                            @for (item of field.arr; track item; let i = $index) {
+                                                <div
+                                                    id="other_list{{ i }}"
+                                                    class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                                >
+                                                    <span class="ref-name">{{ field.arr[i] }}</span>
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_delete"
+                                                        (click)="deleteFieldArr(i, field)"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    } @else {
+                                        <div class="empty-refs-state" style="padding: .25rem 0rem 0rem 0rem; text-align: left">
+                                            No Protocols added yet.
+                                        </div>
+                                    }
+                                </div>
                             </div>
+
                         }
 
                         <!-- Hybrid Hybrid Input -->
@@ -298,8 +307,8 @@
                         @if (field.type === 'hybrid-hybrid-add' && field.show === true) {
                             <!-- Used in: Malware Analysis -->
                             <div class="guided-observable-value-input">
-                                <div class="input-header" style="margin-top: 1rem">
-                                    <span>Result or Analysis SCO References<span class="text-danger ms-1">*</span></span>
+                                <div class="input-header">
+                                    <span>Result or Analysis References<span class="text-danger ms-1">*</span></span>
                                 </div>
                                 <div class="guided-dual-container" style="margin-bottom: 0.5rem">
                                     <div class="select-input-container w-100">
@@ -376,7 +385,7 @@
                                     </div>
                                 } @else {
                                     <div class="empty-refs-state" style="margin-bottom: 1rem; padding: 0; text-align: left">
-                                        No Result or Analysis SCO Refs added yet.
+                                        No Result or Analysis Refs added yet.
                                     </div>
                                 }
                             </div>
@@ -397,7 +406,7 @@
                 <div class="input-header">
                     First Observed
                     <span class="guided-tip">
-                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
+                        <fa-icon class="ps-1" [icon]="faInfoCircle" />
                         <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('first_observed')"></span>
                     </span>
                 </div>
@@ -532,70 +541,75 @@
             </div>
 
             <!-- Observable Relationship -->
+            @if (showObservableAlignment) {
             <div class="inner-row">
-                @if (showObservableAlignment) {
-                    <div *ngIf="currentObservableType" class="input-header">
-                        Observable Relationship
-                        <span class="guided-tip">
-                            <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
-                            <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('observable_relationship')"></span>
-                        </span>
-                    </div>
+                <div *ngIf="currentObservableType" class="input-header">
+                    Observable Relationship
+                    <span class="guided-tip">
+                        <fa-icon class="ps-1" [icon]="faInfoCircle"/>
+                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('observable_relationship')"></span>
+                    </span>
+                </div>
 
-                    <div class="guided-dual-container">
+                <div class="guided-dual-container">
+                    <select
+                        class="form-control form-control-guided form-select"
+                        type="text"
+                        (change)="disableAddToCart(false)"
+                        [(ngModel)]="currentObservableAlignment"
+                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentObservableAlignment) }"
+                    >
+                        <option disabled selected value="">Select Observable Alignment</option>
+                        <option>Target</option>
+                        <option>Attacker</option>
+                        <option>Unknown</option>
+                        <option>Benign</option>
+                    </select>
+
+                    @if (currentObservableAlignment != 'Attacker' && currentObservableAlignment != 'Target') {
+                        <input
+                            type="text"
+                            placeholder="{{ alignmentPlaceholder[currentObservableAlignment] }}"
+                            [disabled]="true"
+                            class="form-control form-control-guided form-select"
+                        />
+                    }
+                    @if (currentObservableAlignment == 'Target') {
                         <select
                             class="form-control form-control-guided form-select"
                             type="text"
+                            [(ngModel)]="currentTarget"
                             (change)="disableAddToCart(false)"
-                            [(ngModel)]="currentObservableAlignment"
-                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentObservableAlignment) }"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentTarget) }"
                         >
-                            <option disabled selected value="">Select Observable Alignment</option>
-                            <option>Target</option>
-                            <option>Attacker</option>
-                            <option>Unknown</option>
-                            <option>Benign</option>
+                            <option disabled selected value="">Select Target Name</option>
+                            @for (target of listOfTargets; track target) {
+                                <option [value]="target.id">{{ target.name }}</option>
+                            }
                         </select>
-
-                        @if (currentObservableAlignment != 'Attacker' && currentObservableAlignment != 'Target') {
-                            <input
-                                type="text"
-                                placeholder="{{ alignmentPlaceholder[currentObservableAlignment] }}"
-                                [disabled]="true"
-                                class="form-control form-control-guided form-select"
-                            />
-                        }
-                        @if (currentObservableAlignment == 'Target') {
-                            <select
-                                class="form-control form-control-guided form-select"
-                                type="text"
-                                [(ngModel)]="currentTarget"
-                                (change)="disableAddToCart(false)"
-                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentTarget) }"
-                            >
-                                <option disabled selected value="">Select Target Name</option>
-                                @for (target of listOfTargets; track target) {
-                                    <option [value]="target.id">{{ target.name }}</option>
-                                }
-                            </select>
-                        }
-                        @if (currentObservableAlignment == 'Attacker') {
-                            <select
-                                class="form-control form-control-guided form-select"
-                                type="text"
-                                [(ngModel)]="currentAttacker"
-                                (change)="disableAddToCart(false)"
-                                [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentAttacker) }"
-                            >
-                                <option disabled selected style="color: #999" value="">Select Attacker Name</option>
-                                @for (attacker of listOfAttackers; track attacker) {
-                                    <option [value]="attacker.id">{{ attacker.name }}</option>
-                                }
-                            </select>
-                        }
-                    </div>
-                }
+                    }
+                    @if (currentObservableAlignment == 'Attacker') {
+                        <select
+                            class="form-control form-control-guided form-select"
+                            type="text"
+                            [(ngModel)]="currentAttacker"
+                            (change)="disableAddToCart(false)"
+                            [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentAttacker) }"
+                        >
+                            <option disabled selected style="color: #999" value="">Select Attacker Name</option>
+                            @for (attacker of listOfAttackers; track attacker) {
+                                <option [value]="attacker.id">{{ attacker.name }}</option>
+                            }
+                        </select>
+                    }
+                </div>
             </div>
+            }
+            @if(observableErrorMessage) {
+                <div class="observable-datetime-error-message" style="margin-top: 0.5rem">
+                    <p class="hint" style="color: red; margin-bottom: 0rem">{{ observableErrorMessage }}</p>
+                </div>
+            }
         </div>
 
         <!-- Help Section -->
