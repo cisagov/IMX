@@ -369,6 +369,7 @@
                                                                                             ">Get VirusTotal
                                                                                 Insights</a>
                                                                         </li>
+                                                                        @if (isMispEligible(component)) {
                                                                         <li>
                                                                             <a class="dropdown-item pointer" (click)="
                                                                                                     onIntegrationAction(
@@ -380,6 +381,7 @@
                                                                                                     )
                                                                                                 ">Get MISP Events</a>
                                                                         </li>
+                                                                        }
                                                                     </ul>
                                                                 </div>
                                                                 }
