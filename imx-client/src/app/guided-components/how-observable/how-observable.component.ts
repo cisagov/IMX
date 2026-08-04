@@ -65,7 +65,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
     observableAlignmentDropdown: boolean = false;
     showObservableAlignment: boolean = false;
     showObservableTime: boolean = false;
-
+    observableErrorMessage: string | null = null;
     cartIds: number[] = [];
     objectIds: string[] = [];
     editMode: boolean = false;
@@ -137,7 +137,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         ],
         'Malware Analysis': [
             'Product Name: Should be ALL lowercase with words separated by a dash "-"',
-            'Result or Analysis SCO Refs is required to create a Malware Analysis Object',
+            'Result or Analysis Refs is required to create a Malware Analysis Object',
         ],
         Mutex: ['Properties of a Mutual Exclusion Object', 'Suggested details include: name and if known associated application or system resource'],
         'Network Traffic': [
@@ -172,6 +172,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         Artifact: [
             {
                 index: 0,
+                header: 'Payload Bin / URL',
                 field_options: ['URL', 'Payload Bin'],
                 placeholders: {
                     URL: 'Enter URL or URI',
@@ -187,6 +188,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
             },
             {
                 index: 1,
+                header: 'Hash Type',
                 field_options: ['MD5', 'SHA-1', 'SHA-256', 'SHA-512', 'SHA3-256', 'SHA3-512', 'SSDEEP', 'TLSH'],
                 placeholders: {
                     MD5: 'Enter MD5',
@@ -210,6 +212,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'Autonomous System': [
             {
                 placeholder: 'Enter Number',
+                header: 'Number',
                 type: 'number',
                 value: '',
                 currentField: 'number',
@@ -220,6 +223,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         Directory: [
             {
                 placeholder: 'Enter Path',
+                header: 'Path',
                 type: 'text',
                 value: '',
                 currentField: 'path',
@@ -230,6 +234,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'Domain Name': [
             {
                 placeholder: 'Enter Domain Name',
+                header: 'Domain Name',
                 type: 'text',
                 value: '',
                 currentField: 'value',
@@ -240,6 +245,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'Email Address': [
             {
                 placeholder: 'Enter Email Address',
+                header: 'Email Address',
                 type: 'text',
                 value: '',
                 currentField: 'value',
@@ -251,6 +257,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
             {
                 index: 0,
                 placeholder: 'Is Body Multipart?',
+                header: 'Is Body Multipart?',
                 type: 'select',
                 options: ['true', 'false'],
                 value: '',
@@ -260,6 +267,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
             },
             {
                 index: 1,
+                header: 'Body Multipart',
                 currentPlaceholder: 'Build Body Multipart -->',
                 type: 'text-modal-add',
                 value: '',
@@ -282,6 +290,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
             {
                 index: 0,
                 placeholder: 'Enter Name',
+                header: 'Name',
                 type: 'text',
                 value: '',
                 currentField: 'name',
@@ -290,6 +299,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
             },
             {
                 index: 1,
+                header: 'Hash Type',
                 field_options: ['MD5', 'SHA-1', 'SHA-256', 'SHA-512', 'SHA3-256', 'SHA3-512', 'SSDEEP', 'TLSH'],
                 placeholders: {
                     MD5: 'Enter MD5',
@@ -313,6 +323,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'IPv4 Address': [
             {
                 placeholder: 'Enter IPv4',
+                header: 'IPv4 Address',
                 type: 'text',
                 value: '',
                 currentField: 'value',
@@ -323,6 +334,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'IPv6 Address': [
             {
                 placeholder: 'Enter IPv6',
+                header: 'IPv6 Address',
                 type: 'text',
                 value: '',
                 currentField: 'value',
@@ -333,6 +345,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'Mac Address': [
             {
                 placeholder: 'Enter Mac Address',
+                header: 'MAC Address',
                 type: 'text',
                 value: '',
                 currentField: 'value',
@@ -343,6 +356,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         Malware: [
             {
                 index: 0,
+                header: 'Name',
                 placeholder: 'Enter Name',
                 type: 'text',
                 value: '',
@@ -352,6 +366,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
             },
             {
                 index: 1,
+                header: 'Is Family?',
                 placeholder: 'Is Family?',
                 type: 'select',
                 options: [true, false],
@@ -364,6 +379,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'Malware Analysis': [
             {
                 index: 0,
+                header: 'Product',
                 placeholder: 'Enter Product',
                 type: 'text',
                 value: '',
@@ -373,20 +389,21 @@ export class HowObservableComponent implements OnInit, OnDestroy {
             },
             {
                 index: 1,
-                field_options: ['Result', 'Analysis Sco Refs'],
+                header: 'Result or Analysis References',
+                field_options: ['Result', 'Analysis References'],
                 placeholders: {
                     Result: 'Enter Result',
-                    'Analysis Sco Refs': 'Enter Ref',
+                    'Analysis References': 'Enter Ref',
                 },
                 hybrid_placeholder: '',
                 hybrid_options: [],
                 select_placeholder: 'Select Field',
                 currentPlaceholder: '',
                 currentField: '',
-                type: 'hybrid-hybrid',
+                type: 'hybrid-hybrid-add',
                 type_options: {
                     Result: 'hybrid-hybrid-add',
-                    'Analysis Sco Refs': 'hybrid-hybrid-add',
+                    'Analysis References': 'hybrid-hybrid-add',
                 },
                 value: '',
                 show: true,
@@ -398,6 +415,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         Mutex: [
             {
                 placeholder: 'Enter Name',
+                header: 'Name',
                 type: 'text',
                 value: '',
                 currentField: 'name',
@@ -408,6 +426,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'Network Traffic': [
             {
                 index: 0,
+                header: 'Protocol',
                 field_options: this.networkTrafficOptions,
                 placeholders: {},
                 currentPlaceholder: 'Enter Protocol',
@@ -453,6 +472,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         Process: [
             {
                 placeholder: 'Enter Process ID',
+                header: 'Process ID',
                 type: 'number',
                 value: '',
                 currentField: 'pid',
@@ -463,6 +483,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         Software: [
             {
                 placeholder: 'Enter Name',
+                header: 'Name',
                 type: 'text',
                 value: '',
                 currentField: 'name',
@@ -473,6 +494,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         URL: [
             {
                 placeholder: 'Enter URL or URI',
+                header: 'URL',
                 type: 'text',
                 value: '',
                 currentField: 'value',
@@ -483,6 +505,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'User Account': [
             {
                 placeholder: 'Enter User ID',
+                header: 'User ID',
                 type: 'text',
                 value: '',
                 currentField: 'user_id',
@@ -493,6 +516,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'Windows Registry Key': [
             {
                 placeholder: 'Enter Registry Key',
+                header: 'Registry Key',
                 type: 'text',
                 value: '',
                 currentField: 'key',
@@ -503,6 +527,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         'X509 Certificate': [
             {
                 placeholder: 'Enter Serial Number',
+                header: 'Serial Number',
                 type: 'text',
                 value: '',
                 currentField: 'serial_number',
@@ -1259,7 +1284,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                                 tempObj['resultArr'] = [capitalizedResult];
                             }
                             if (event.analysis_sco_refs) {
-                                if (!target) target = 'Analysis Sco Refs';
+                                if (!target) target = 'Analysis References';
                                 tempObj['arr'] = event.analysis_sco_refs;
                             }
 
@@ -1350,6 +1375,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                 result = 'dst_ref';
                 break;
             case 'Analysis Sco Refs':
+            case 'Analysis References':
                 result = 'analysis_sco_refs';
                 break;
             default:
@@ -1383,6 +1409,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                     value: r,
                 }));
             case 'Analysis Sco Refs':
+            case 'Analysis References':
                 const options = [];
 
                 this.stixService.bundle.objects.forEach((obj) => {
@@ -1666,6 +1693,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                 return true;
             case 'Analysis Sco Refs':
             case 'analysis_sco_refs':
+            case 'Analysis References':
                 if ((input.arr && input.arr.length > 0) || (input.resultArr && input.resultArr.length > 0)) {
                     input.error = '';
                 } else {
@@ -1958,5 +1986,27 @@ export class HowObservableComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.cartSubscriptions.forEach((sub) => sub.unsubscribe());
+    }
+
+    ngDoCheck() {
+        let missing: string[] = [];
+
+        if(this.firstObserved === '' || this.firstObservedTimeZone === ''){
+            missing.push('First Observed');
+        }
+        if(this.lastObserved === '' || this.lastObservedTimeZone === ''){
+            missing.push('Last Observed');
+        }
+        if(this.numberObserved === '' || this.numberObserved === null){
+            missing.push('Number Observed');
+        }
+
+        let anyFilled = this.firstObserved !== '' || this.lastObserved !== '' || (this.numberObserved !== '' && this.numberObserved !== null);
+
+        if(anyFilled && missing.length) {
+            this.observableErrorMessage = `Please complete the following: ${missing.join(', ')}.`;
+        }else {
+            this.observableErrorMessage = null;
+        }
     }
 }
