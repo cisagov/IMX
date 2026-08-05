@@ -144,6 +144,7 @@ export class VtDialogComponent {
         ['malware-analysis', 'Malware Analysis'],
         ['malware', 'Malware'],
         ['indicator', 'Indicator'],
+        ['note', 'Note'],
     ];
 
     vtHashResult: any = {};
@@ -853,6 +854,11 @@ export class VtDialogComponent {
                         this.parsedObjects['indicator'].push(simpleIpIndicator);
                         this.trackIpStixObject(result.vtData.ip, simpleIpIndicator.id);
                     }
+
+                    if (result.whoisNoteObj && !this.hasWhoisNoteFor(result.whoisNoteObj.object_refs[0])) {
+                        this.addStixObject(result.whoisNoteObj);
+                        this.trackIpStixObject(result.vtData.ip, result.whoisNoteObj.id);
+                    }
                 }
             });
 
@@ -903,6 +909,11 @@ export class VtDialogComponent {
                     if (result.x509CertObj) {
                         this.addStixObject(result.x509CertObj);
                         this.trackDomainStixObject(result.vtData.domain, result.x509CertObj.id);
+                    }
+
+                    if (result.whoisNoteObj && !this.hasWhoisNoteFor(result.whoisNoteObj.object_refs[0])) {
+                        this.addStixObject(result.whoisNoteObj);
+                        this.trackDomainStixObject(result.vtData.domain, result.whoisNoteObj.id);
                     }
                 }
             });
@@ -2620,6 +2631,7 @@ export class VtDialogComponent {
 
             const errors: string[] = [];
             let ipObj: any = null;
+            let whoisNoteObj: any = null;
 
             const vtData = {
                 ip: ip,
@@ -2630,6 +2642,11 @@ export class VtDialogComponent {
             if (vtIpResult && vtIpResult.data) {
                 const ipType = this.detectIpType(ip);
                 ipObj = this.createIpObject(ip, ipType);
+
+                const rawWhois = vtIpResult.data.attributes?.whois;
+                if (rawWhois?.trim()) {
+                    whoisNoteObj = this.createWhoisNoteObject(ip, ipObj.id, rawWhois, vtIpResult.data.attributes?.whois_date);
+                }
             } else if (vtIpResult && vtIpResult.message) {
                 console.info(vtIpResult.message);
                 errors.push(`No IP data returned from VirusTotal for ${ip}. We have generated a STIX object to be included in your report.`);
@@ -2642,6 +2659,7 @@ export class VtDialogComponent {
                 success: true,
                 errors,
                 ipObj,
+                whoisNoteObj,
                 vtData,
             };
         } catch (e) {
@@ -2654,6 +2672,7 @@ export class VtDialogComponent {
                 success: false,
                 errors: [`Error encountered for ${ip}: ${e}`],
                 ipObj,
+                whoisNoteObj: null,
                 vtData: {
                     ip: ip,
                     ipResult: null,
@@ -2670,6 +2689,7 @@ export class VtDialogComponent {
             const errors: string[] = [];
             let domainObj: any = null;
             let x509CertObj: any = null;
+            let whoisNoteObj: any = null;
 
             const vtData = {
                 domain: domain,
@@ -2683,13 +2703,18 @@ export class VtDialogComponent {
                 if (cert) {
                     x509CertObj = this.createX509CertificateObject(cert);
                 }
+
+                const rawWhois = vtDomainResult.data.attributes?.whois;
+                if (rawWhois?.trim()) {
+                    whoisNoteObj = this.createWhoisNoteObject(domain, domainObj.id, rawWhois, vtDomainResult.data.attributes?.whois_date);
+                }
             } else if (vtDomainResult && vtDomainResult.message) {
                 console.info(vtDomainResult.message);
                 errors.push(`No domain data returned from VirusTotal for ${domain}. We have generated a STIX object to be included in your report.`);
                 domainObj = this.createDomainSearchObject(domain);
             }
 
-            return { success: true, errors, domainObj, x509CertObj, vtData };
+            return { success: true, errors, domainObj, x509CertObj, whoisNoteObj, vtData };
         } catch (e) {
             console.error(`Error in searchVtDomain for ${domain}:`, e);
             const domainObj = this.createDomainSearchObject(domain);
@@ -2699,6 +2724,7 @@ export class VtDialogComponent {
                 errors: [`Error encountered for ${domain}: ${e}`],
                 domainObj,
                 x509CertObj: null,
+                whoisNoteObj: null,
                 vtData: { domain: domain, domainResult: null, hasData: false },
             };
         }
@@ -2932,6 +2958,29 @@ export class VtDialogComponent {
             obj.description = `VirusTotal passive DNS resolution. Domain threat score: ${malicious} malicious, ${suspicious} suspicious out of ${total} engines.`;
         }
         return obj;
+    }
+
+    // STIX 2.1 has no WHOIS object, so the raw registration blob is carried verbatim on a note
+    // referencing the domain-name / ip SCO the search already created.
+    private createWhoisNoteObject(subjectValue: string, subjectId: string, rawWhois: string, whoisDate?: number): any {
+        const now = new Date().toISOString();
+        const note: any = {
+            type: 'note',
+            spec_version: '2.1',
+            created_by_ref: this.envService.env.defaultIdentity.id,
+            created: now,
+            modified: now,
+            abstract: `WHOIS record for ${subjectValue}${whoisDate ? ` (${this.formatWhoisDate(whoisDate)})` : ''}`,
+            content: rawWhois.trim(),
+            object_refs: [subjectId],
+        };
+        note.id = 'note--' + this.stixService.getUUIDFrIdContributingPropertiesVT(note);
+        return note;
+    }
+
+    // Note ids are random v4 (SDOs have no id-contributing properties), so dedup on the subject ref.
+    private hasWhoisNoteFor(subjectId: string): boolean {
+        return this.allObjects.some((o) => o.type === 'note' && o.object_refs?.[0] === subjectId);
     }
 
     private addStixObject(obj: any): void {
