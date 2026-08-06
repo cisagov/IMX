@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
-      opensearch:
+      elasticsearch:
         condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -48,31 +48,29 @@ services:
     restart: unless-stopped
     networks:
       - imx
-    ports:
-      - 5000:5000
+    # ports:
+    #   - 5000:5000
 
-  opensearch:
-    container_name: opensearch
-    image: opensearchproject/opensearch:3.7.0
+  elasticsearch:
+    container_name: elasticsearch-imx
+    image: elasticsearch:8.19.16
     restart: unless-stopped
     mem_limit: 2g
     networks:
       - imx
     environment:
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${DB_PASS}
+      - ELASTIC_PASSWORD=${DB_PASS}
       - discovery.type=single-node
       - path.repo=/opt/snapshots
-      - plugins.security.disabled=true
-      - bootstrap.memory_lock=true
-      - reindex.remote.allowlist=elasticsearch:9200
+      - xpack.security.enabled=true
     volumes:
-      - imx-os-data:/usr/share/opensearch/data
+      - imx-data:/usr/share/elasticsearch/data
       - ./snapshots:/opt/snapshots
-    ports:
-      - 9200:9200
+    # ports:
+    #   - 9200:9200
     healthcheck:
       test:
-        ["CMD", "curl", "--user", "admin:${DB_PASS}", "http://localhost:9200"]
+        ["CMD", "curl", "--user", "elastic:${DB_PASS}", "http://localhost:9200"]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -89,5 +87,5 @@ networks:
     name: imx
 
 volumes:
-  imx-os-data:
+  imx-data:
     driver: local
