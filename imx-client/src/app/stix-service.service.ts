@@ -3286,72 +3286,29 @@ export class StixService implements OnInit {
         return this.taxiiHttpReq('post', url, { headers: httpHeaders, observe: 'response' }, requestJSON);
     }
 
-    getObjectFromIDHelper(ids, sendToBundle: boolean, root, collection, useDefaultServer = false) {
-        if (ids.length == 0) {
-            return [];
-        }
-        let id = ids.pop();
-        try {
-            const server = useDefaultServer ? this.envService.env.taxiiServer : this.taxiiServer;
-            const headers = useDefaultServer
-                ? new HttpHeaders()
-                      .set('Accept', 'application/taxii+json;version=2.1')
-                      .set('Authorization', `Basic ${btoa(server.username + ':' + server.password)}`)
-                : this.httpHeaders;
+    async fetchObjectsByIds(ids: string[], root: string, collection: string, useDefaultServer = false): Promise<any[]> {
+        const server = useDefaultServer ? this.envService.env.taxiiServer : this.taxiiServer;
+        const headers = useDefaultServer
+            ? new HttpHeaders()
+                  .set('Accept', 'application/taxii+json;version=2.1')
+                  .set('Authorization', `Basic ${btoa(server.username + ':' + server.password)}`)
+            : this.httpHeaders;
 
-            let getURL = `${server.url}taxii/${this.envService.env.taxiiServer.apiVersion}/${root}/collections/${collection}/objects/?match[id]=${id}`;
-            this.httpClient.get<any>(getURL, { headers: headers, observe: 'response' }).subscribe(
-                (resp) => {
-                    let obj = undefined;
-                    if (resp.body['objects']) {
-                        obj = resp.body['objects'][0];
-                    }
-                    if (sendToBundle) {
-                        if (obj) this.objectsToLoad.push(obj);
-                        if (ids.length == 0) {
-                            if (this.objectsToLoad.length > 0) {
-                                this.hasObjectsToLoad = true;
-                                if (this.getGuided()) {
-                                } else {
-                                }
-                            } else console.error('ERROR: No objects were able to be loaded');
-                            return [];
-                        }
-                        this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
-                    } else {
-                        if (obj) return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer)?.concat([obj]);
-                        else return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
-                    }
-                },
-                (err) => {
-                    console.error('Unable to get query results. Error code: %s, URL: %s ', err.status, err.url);
-                    if (sendToBundle) {
-                        if (ids.length == 0) {
-                            if (this.objectsToLoad.length > 0) {
-                                this.hasObjectsToLoad = true;
-                            } else console.error('ERROR: No objects were able to be loaded');
-                            return [];
-                        }
-                        this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
-                    } else {
-                        return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
-                    }
-                }
-            );
-        } catch (e) {
-            console.error('Error getting object by ID: ' + e);
-            if (sendToBundle) {
-                if (ids.length == 0) {
-                    if (this.objectsToLoad.length > 0) {
-                        this.hasObjectsToLoad = true;
-                    } else console.error('ERROR: No objects were able to be loaded');
-                    return [];
-                }
-                this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
-            } else {
-                return this.getObjectFromIDHelper(ids, true, root, collection, useDefaultServer);
+        const objects = [];
+
+        for (const id of ids) {
+            const getURL = `${server.url}taxii/${this.envService.env.taxiiServer.apiVersion}/${root}/collections/${collection}/objects/?match[id]=${id}`;
+
+            try {
+                const resp = await lastValueFrom(this.httpClient.get<any>(getURL, { headers: headers, observe: 'response' }));
+                const obj = resp.body?.['objects']?.[0];
+                if (obj) objects.push(obj);
+            } catch (err) {
+                console.error('Unable to get object by ID: %s, Error code: %s', id, err?.status);
             }
         }
+
+        return objects;
     }
 
     deleteProp(key: string): void {

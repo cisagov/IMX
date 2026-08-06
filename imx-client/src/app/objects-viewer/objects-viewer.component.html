@@ -121,7 +121,7 @@
     </div>
 
     <div class="modal-footer">
-        <button class="btn btn-sm btn-outline-secondary me-3" type="button" (click)="close()">
+        <button class="btn btn-sm btn-outline-secondary me-3" type="button" [disabled]="isImporting" (click)="close()">
             <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
             Cancel
         </button>
@@ -129,11 +129,14 @@
             class="btn btn-sm btn-outline-success text-nowrap"
             style="width: 200px"
             type="button"
-            [disabled]="disableAddToBundle()"
+            [disabled]="disableAddToBundle() || isImporting"
             (click)="addToBundle()"
         >
+            @if (isImporting) {
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            Updating... } @else {
             <fa-icon [icon]="faAddToBundle" class="pe-1"></fa-icon>
-            Update From Server
+            Update From Server }
         </button>
     </div>
 </div>
