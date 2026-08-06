@@ -1,4 +1,4 @@
-{{- if eq .Values.server.database "opensearch" }}
+{{- if ne .Values.server.database "elasticsearch" }}
 ---
 
 kind: PersistentVolumeClaim
