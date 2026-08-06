@@ -59,6 +59,7 @@ export class ObjectsViewerComponent implements OnInit {
     visibleRowCount = 0;
 
     hasMixedTypes = false;
+    isImporting = false;
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -234,37 +235,49 @@ export class ObjectsViewerComponent implements OnInit {
 
     // --- Importing --------------------------------------------------------------
 
-    addToBundle(): void {
-        const seenObjectIds = new Set<string>();
+    async addToBundle(): Promise<void> {
+        this.isImporting = true;
 
-        for (const group of this.groups) {
-            for (const row of group.rows) {
-                if (!row.checked || seenObjectIds.has(row.object.id)) continue;
-                seenObjectIds.add(row.object.id);
+        try {
+            const seenObjectIds = new Set<string>();
+            const rowsToImport: ViewerRow[] = [];
 
-                this.importRow(row);
+            for (const group of this.groups) {
+                for (const row of group.rows) {
+                    if (!row.checked || seenObjectIds.has(row.object.id)) continue;
+                    seenObjectIds.add(row.object.id);
+
+                    rowsToImport.push(row);
+                }
             }
-        }
 
-        const count = seenObjectIds.size;
-        const message = count === 1 ? 'Imported 1 object from TAXII' : `Imported ${count} objects from TAXII`;
-        this.announcementService.show('Successfully imported', message, 'success', false);
+            for (const row of rowsToImport) {
+                await this.stixService.addComponent(row.object);
+            }
 
-        this.router.navigate(['bundle']);
+            // Pull in any referenced objects the bundle is missing so relationships are not left dangling
+            for (const row of rowsToImport) {
+                const refs = this.collectReferencedIds(row.object).filter((id) => !seenObjectIds.has(id) && !this.stixService.getObjectFromID(id));
 
-        this.activeModal.close({ type: 'add' });
-    }
+                if (refs.length === 0) continue;
 
-    private importRow(row: ViewerRow): void {
-        const object = row.object;
+                const fetched = await this.stixService.fetchObjectsByIds(refs, row.root, row.collectionId, this.useDefaultServerRoots);
 
-        this.stixService.addComponent(object);
+                for (const object of fetched) {
+                    seenObjectIds.add(object.id);
+                    await this.stixService.addComponent(object);
+                }
+            }
 
-        const refs = this.collectReferencedIds(object);
+            const count = seenObjectIds.size;
+            const message = count === 1 ? 'Imported 1 object from TAXII' : `Imported ${count} objects from TAXII`;
+            this.announcementService.show('Successfully imported', message, 'success', false);
 
-        if (refs.length > 0) {
-            refs.push(object.id);
-            this.stixService.getObjectFromIDHelper(refs, true, row.root, row.collectionId, this.useDefaultServerRoots);
+            this.router.navigate(['bundle']);
+
+            this.activeModal.close({ type: 'add' });
+        } finally {
+            this.isImporting = false;
         }
     }
 

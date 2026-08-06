@@ -346,10 +346,10 @@
                                                             </td>
                                                             @if (!guidedUI) {
                                                             <td (click)="$event.stopPropagation()"
-                                                                class="d-flex justify-content-center"
+                                                                class="integrations-cell"
                                                                 [ngClass]="{ highlight: highlightSearch(component) }">
                                                                 @if (isIntegrationEligible(component)) {
-                                                                <div class="dropdown">
+                                                                <div class="dropdown d-inline-block">
                                                                     <div class="integration-trigger" role="button"
                                                                         data-bs-toggle="dropdown" aria-expanded="false"
                                                                         aria-label="Integrations" title="Integrations">
@@ -511,10 +511,10 @@
                                                                     </span>
                                                                 </td>
                                                                 <td (click)="$event.stopPropagation()"
-                                                                    class="d-flex justify-content-center"
+                                                                    class="integrations-cell"
                                                                     [ngClass]="{ highlight: highlightSearch(component) }">
                                                                     @if (isIntegrationEligible(component)) {
-                                                                    <div class="dropdown">
+                                                                    <div class="dropdown d-inline-block">
                                                                         <div class="integration-trigger" role="button"
                                                                             data-bs-toggle="dropdown"
                                                                             aria-expanded="false"
@@ -609,10 +609,10 @@
                                                                     </span>
                                                                 </td>
                                                                 <td (click)="$event.stopPropagation()"
-                                                                    class="d-flex justify-content-center"
+                                                                    class="integrations-cell"
                                                                     [ngClass]="{ highlight: highlightSearch(component) }">
                                                                     @if (isIntegrationEligible(component)) {
-                                                                    <div class="dropdown">
+                                                                    <div class="dropdown d-inline-block">
                                                                         <div class="integration-trigger" role="button"
                                                                             data-bs-toggle="dropdown"
                                                                             aria-expanded="false"
