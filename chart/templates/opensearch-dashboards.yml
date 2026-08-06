@@ -1,0 +1,75 @@
+{{- if ne .Values.server.database "elasticsearch" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.dashboard.name }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 3 }}
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.dashboard.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.dashboard.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.dashboard.app }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.dashboard.podSecurityContext | nindent 8 }}
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: {{ .Values.dashboard.name }}
+          securityContext:
+            {{- toYaml .Values.dashboard.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.dashboard.resources | nindent 12 }}
+          image: "{{ .Values.dashboard.image}}:{{ .Values.dashboard.tag }}"
+          imagePullPolicy: "{{ .Values.dashboard.imagePullPolicy }}"
+
+          env:
+            - name: OPENSEARCH_HOSTS
+              value: {{ .Values.opensearch.url | quote }}
+
+            - name: DISABLE_SECURITY_DASHBOARDS_PLUGIN
+              value: {{ .Values.dashboard.disableSecurity | quote }}
+
+          ports:
+            - containerPort: {{ .Values.dashboard.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.dashboard.name }}
+  labels:
+    app: {{ .Values.dashboard.app }}
+spec:
+  type: NodePort
+  ports:
+   - port: {{ .Values.dashboard.port }}
+     targetPort: {{ .Values.dashboard.port }}
+  selector:
+   app: {{ .Values.dashboard.app }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: dashboard-route
+spec:
+  path: /
+  to:
+    name: {{ .Values.dashboard.name }}
+    weight: 100
+    kind: Service
+  host: {{ .Values.dashboard.host }}
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  port:
+    targetPort: {{ .Values.dashboard.port }}
+---
+{{- end}}
