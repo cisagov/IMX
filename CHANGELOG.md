@@ -1,3 +1,9 @@
+## [4.14.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.1...v4.14.2) (2026-08-07)
+
+### Bug Fixes
+
+* make opensearch the default db ([723bf64](https://git.va.th.ten/eos/cde/tie/imx/commit/723bf640245033610480ae2134aa38f02ad8fce2))
+
 ## [4.14.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.0...v4.14.1) (2026-08-04)
 
 ### Bug Fixes
