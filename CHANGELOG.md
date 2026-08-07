@@ -1,3 +1,9 @@
+## 4.14.2 (2026-08-07)
+
+### Bug Fixes
+
+* make opensearch the default db 723bf64
+
 ## 4.14.1 (2026-08-04)
 
 ### Bug Fixes
