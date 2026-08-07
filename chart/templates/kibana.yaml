@@ -1,3 +1,4 @@
+{{- if eq .Values.server.database "elasticsearch" }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -74,3 +75,4 @@ spec:
   port:
     targetPort: {{ .Values.kibana.port }}
 ---
+{{- end}}

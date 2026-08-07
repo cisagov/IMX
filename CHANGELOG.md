@@ -1,3 +1,23 @@
+## [4.14.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.3...v4.14.4) (2026-08-07)
+
+### Bug Fixes
+
+* fix loading indicator not showing up when switching from guided to editor on startup ([f19caa6](https://git.va.th.ten/eos/cde/tie/imx/commit/f19caa631f86f67cbfaa91b2e7db70ed010e7098))
+* initialize to start loading on page refresh ([90f1432](https://git.va.th.ten/eos/cde/tie/imx/commit/90f1432c1fc6cd1e0432ebe33729d108ece1f9ee))
+
+## [4.14.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.2...v4.14.3) (2026-08-07)
+
+### Bug Fixes
+
+* download new bundle ([a83dacc](https://git.va.th.ten/eos/cde/tie/imx/commit/a83dacc9a2908fe53afec4227894eb0d0249bcf2))
+* rerendering issue on analyst1 and duplicate object removal ([606c888](https://git.va.th.ten/eos/cde/tie/imx/commit/606c8884d448d073dc8bad3cb09a4ee58c1fcfa6))
+
+## [4.14.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.1...v4.14.2) (2026-08-07)
+
+### Bug Fixes
+
+* make opensearch the default db ([723bf64](https://git.va.th.ten/eos/cde/tie/imx/commit/723bf640245033610480ae2134aa38f02ad8fce2))
+
 ## [4.14.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.0...v4.14.1) (2026-08-04)
 
 ### Bug Fixes

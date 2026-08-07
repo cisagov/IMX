@@ -106,7 +106,7 @@ export class ConfigComponent implements OnInit {
             availableCollections: [],
             collection: null,
         };
-        this.initialize(false);
+        this.initialize(true);
         this.stixService.getData().subscribe((data) => {
             switch (data.type) {
                 case 'config-loading':
@@ -129,7 +129,7 @@ export class ConfigComponent implements OnInit {
         console.debug(this.taxiiServer);
         this.isLoading = false;
         this.saved = false;
-        if (type === 'pfte') this.taxiiServerType === 'ais';
+        if (type === 'pfte') this.taxiiServerType = 'ais';
         else this.taxiiServerType = type;
 
         if (type === 'default') {
