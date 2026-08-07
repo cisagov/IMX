@@ -1,3 +1,10 @@
+## 4.14.4 (2026-08-07)
+
+### Bug Fixes
+
+* fix loading indicator not showing up when switching from guided to editor on startup f19caa6
+* initialize to start loading on page refresh 90f1432
+
 ## 4.14.3 (2026-08-07)
 
 ### Bug Fixes
