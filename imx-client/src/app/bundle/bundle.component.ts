@@ -3179,11 +3179,8 @@ export class BundleComponent implements OnInit {
         await this.envService.checkAuth('/bundle');
         if (this.bundle.type === undefined || this.bundle.id === '' || this.bundle.id === undefined) {
             this.bundle = this.stixService.refreshBundle();
-        }
+        } else this.bundle = this.stixService.refreshBundle(false, this.bundle.id);
 
-        if (guided) {
-            this.bundle = this.stixService.refreshBundle(false, this.bundle.id);
-        }
         let tempBundle = {
             type: this.bundle.type,
             id: this.bundle.id,
