@@ -1,3 +1,10 @@
+## [4.14.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.3...v4.14.4) (2026-08-07)
+
+### Bug Fixes
+
+* fix loading indicator not showing up when switching from guided to editor on startup ([f19caa6](https://git.va.th.ten/eos/cde/tie/imx/commit/f19caa631f86f67cbfaa91b2e7db70ed010e7098))
+* initialize to start loading on page refresh ([90f1432](https://git.va.th.ten/eos/cde/tie/imx/commit/90f1432c1fc6cd1e0432ebe33729d108ece1f9ee))
+
 ## [4.14.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.2...v4.14.3) (2026-08-07)
 
 ### Bug Fixes
