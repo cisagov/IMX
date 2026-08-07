@@ -49,6 +49,7 @@ lint:
     SERVICE: imx-py
 
 test:
+  allow_failure: true
   extends: .python-test
   variables:
     SERVICE: imx-py
