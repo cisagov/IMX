@@ -4193,6 +4193,7 @@ export class BundleComponent implements OnInit {
                     this.addingStixToBundle = true;
                     setTimeout(() => {
                         this.addingStixToBundle = false;
+                        this.clearSearch();
                     }, 1500);
                 }
             })
@@ -4901,7 +4902,9 @@ export class BundleComponent implements OnInit {
     //Derek - This will cause issues when it comes to sub-sub+ properties and minimum property/count requirements
     promptDelete(deleteModal): void {
         // Calling directly from StixService breaks the modal iterating (opens all at once)
+
         this.opened = true;
+
         this.promptDel = this.stixService.promptDelete;
         this.stixService.promptDelete = [];
         this.editedRef = this.stixService.origID.length > 0;
@@ -4949,6 +4952,8 @@ export class BundleComponent implements OnInit {
                 }
                 this.promptDeleteHelper(deleteModal, reqs);
             });
+        } else {
+            this.clearSearchResults();
         }
     }
 
@@ -5051,7 +5056,6 @@ export class BundleComponent implements OnInit {
 
     selectMisp(misp) {
         this.mispUrl = misp.url;
-        this.mispApi = misp.api;
     }
 
     openMispDialog(event, modal) {
