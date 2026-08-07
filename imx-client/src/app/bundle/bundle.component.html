@@ -485,11 +485,11 @@
                                                                 @if (!guidedUI) {
                                                                     <td
                                                                         (click)="$event.stopPropagation()"
-                                                                        class="d-flex justify-content-center"
+                                                                        class="integrations-cell"
                                                                         [ngClass]="{ highlight: highlightSearch(component) }"
                                                                     >
                                                                         @if (isIntegrationEligible(component)) {
-                                                                            <div class="dropdown">
+                                                                            <div class="dropdown d-inline-block">
                                                                                 <div
                                                                                     class="integration-trigger"
                                                                                     role="button"
@@ -693,11 +693,11 @@
                                                                     </td>
                                                                     <td
                                                                         (click)="$event.stopPropagation()"
-                                                                        class="d-flex justify-content-center"
+                                                                        class="integrations-cell"
                                                                         [ngClass]="{ highlight: highlightSearch(component) }"
                                                                     >
                                                                         @if (isIntegrationEligible(component)) {
-                                                                            <div class="dropdown">
+                                                                            <div class="dropdown d-inline-block">
                                                                                 <div
                                                                                     class="integration-trigger"
                                                                                     role="button"
@@ -815,11 +815,11 @@
                                                                     </td>
                                                                     <td
                                                                         (click)="$event.stopPropagation()"
-                                                                        class="d-flex justify-content-center"
+                                                                        class="integrations-cell"
                                                                         [ngClass]="{ highlight: highlightSearch(component) }"
                                                                     >
                                                                         @if (isIntegrationEligible(component)) {
-                                                                            <div class="dropdown">
+                                                                            <div class="dropdown d-inline-block">
                                                                                 <div
                                                                                     class="integration-trigger"
                                                                                     role="button"

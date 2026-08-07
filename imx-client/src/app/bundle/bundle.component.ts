@@ -1319,6 +1319,7 @@ export class BundleComponent implements OnInit {
             if (resp.type === 'add') {
                 setTimeout(() => {
                     this.checkDupesAndRefs();
+                    this.updateGroupByTLP();
                 }, 500);
             }
         });

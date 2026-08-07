@@ -840,6 +840,10 @@ th {
     text-align: start !important;
 }
 
+.object-table td.integrations-cell {
+    text-align: center !important;
+}
+
 .object-table th {
     text-align: start !important;
 }
