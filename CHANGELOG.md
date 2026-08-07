@@ -1,3 +1,10 @@
+## 4.14.3 (2026-08-07)
+
+### Bug Fixes
+
+* download new bundle a83dacc
+* rerendering issue on analyst1 and duplicate object removal 606c888
+
 ## 4.14.2 (2026-08-07)
 
 ### Bug Fixes
