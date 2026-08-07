@@ -21,6 +21,20 @@ client:
   securityContext: {}
   tag: v4.8.1
 
+dashboard:
+  app: opensearch-dashboard
+  name: opensearch-dashboard
+  replicaCount: 1
+  podSecurityContext: {}
+  securityContext: {}
+  resources: { limits: { memory: 2Gi } }
+  image: docker.io/library/opensearchproject/opensearch-dashboards
+  tag: 3.7.0
+  imagePullPolicy: Always
+  port: 5601
+  host: ""
+  disableSecurity: "true"
+
 elastic:
   app: elasticsearch
   discoveryType: single-node
@@ -43,7 +57,7 @@ opensearch:
   app: opensearch
   boostrapMemoryLock: "true"
   discoveryType: single-node
-  image: docker.io/library/opensearch
+  image: docker.io/library/opensearchproject/opensearch
   imagePullPolicy: Always
   name: opensearch
   pathRepo: /opt/snapshots
