@@ -1,3 +1,23 @@
+## 4.14.4 (2026-08-07)
+
+### Bug Fixes
+
+* fix loading indicator not showing up when switching from guided to editor on startup f19caa6
+* initialize to start loading on page refresh 90f1432
+
+## 4.14.3 (2026-08-07)
+
+### Bug Fixes
+
+* download new bundle a83dacc
+* rerendering issue on analyst1 and duplicate object removal 606c888
+
+## 4.14.2 (2026-08-07)
+
+### Bug Fixes
+
+* make opensearch the default db 723bf64
+
 ## 4.14.1 (2026-08-04)
 
 ### Bug Fixes

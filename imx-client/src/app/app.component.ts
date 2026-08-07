@@ -266,7 +266,7 @@ export class AppComponent implements OnInit {
         } else {
             this.stixService.setGuided(false);
             this.editorType = 'bundle';
-            this.configComponent.initialize(false);
+            this.configComponent.initialize(true);
             this.router.navigate(['/bundle']);
         }
 
