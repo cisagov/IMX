@@ -89,7 +89,7 @@ spec:
               value: {{ .Values.elastic.user | quote }}
             {{- end}}
 
-            {{- if eq .Values.server.database "opensearch" }}
+            {{- if ne .Values.server.database "elasticsearch" }}
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:

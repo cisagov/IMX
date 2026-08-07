@@ -1,3 +1,4 @@
+{{- if eq .Values.server.database "elasticsearch" }}
 ---
 
 kind: PersistentVolumeClaim
@@ -108,3 +109,4 @@ spec:
   selector:
    app: {{ .Values.elastic.app }}
 ---
+{{- end}}
