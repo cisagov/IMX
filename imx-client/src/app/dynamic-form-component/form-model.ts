@@ -27,24 +27,12 @@ export abstract class FormModel {
         for (let i = 0; i < questions.length; i++) {
 
             if(componentData.type === 'identity') {
-                // Classification requires corresponding contact value
-                const phoneClassified = !!componentData.phone_classified?.[0];
-                const phoneDescription = !!componentData.phone_description?.trim();
-                const hasPhone = !!componentData.contact_number?.trim();
-                const emailClassified = !!componentData.email_classified?.[0];
-                const emailDescription = !!componentData.email_description?.trim();
-                const hasEmail = !!componentData.email_address_ref?.trim();
-                const socialClassified = !!componentData.social_classified?.[0];
-                const socialDescription = !!componentData.social_description?.trim();
-                const hasSocial = !!componentData.user_account_ref?.trim();
-
-                if((phoneClassified && !hasPhone) || (emailClassified && !hasEmail) || (socialClassified && !hasSocial)) {
-                    isValid = false;
-                }
-
-                if((phoneDescription && !hasPhone) || (emailDescription && !hasEmail) || (socialDescription && !hasSocial)) {
-                    isValid = false;
-                }
+                let phoneEntries = this.stixService.modalObjectArray.filter(obj => obj.contact_number);
+                let hasPhones = phoneEntries.length > 0;
+                let emailEntries = this.stixService.modalObjectArray.filter(obj => obj.email_address_ref);
+                let hasEmails = emailEntries.length > 0;
+                let socialEntries = this.stixService.modalObjectArray.filter(obj => obj.user_account_ref);
+                let hasSocials = socialEntries.length > 0;
 
                 // Generic extension fields require at least one contact method
                 const hasGenericIdentityFields =
@@ -55,7 +43,7 @@ export abstract class FormModel {
                     (componentData.suffix && !!componentData.suffix?.[0]) ||
                     (this.stixService.stringArrays.get('websites') && this.stixService.stringArrays.get('websites').length > 0);
 
-                const hasContactValue = hasPhone || hasEmail || hasSocial;
+                const hasContactValue = hasPhones || hasEmails || hasSocials;
 
                 if(hasGenericIdentityFields && !hasContactValue) isValid = false;
             }
