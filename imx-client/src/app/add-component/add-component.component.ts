@@ -655,22 +655,6 @@ export class AddComponentComponent implements OnInit, OnDestroy {
                     undefined
                 );
 
-                if(sdoToEdit?.type === 'identity') {
-                    let phoneQuestion: any = pristineQuestions.find(q => q.key === 'contact_number');
-                    if(phoneQuestion) {
-                        phoneQuestion.phoneType = sdoToEdit.phone_type || '';
-                    }
-
-                    let emailQuestion: any = pristineQuestions.find(q => q.key === 'email_address_ref');
-                    if(emailQuestion) {
-                        emailQuestion.emailAddressType = sdoToEdit.email_digital_contact_type || '';
-                    }
-
-                    let socialQuestion: any = pristineQuestions.find(q => q.key === 'user_account_ref');
-                    if(socialQuestion) {
-                        socialQuestion.socialMediaType = sdoToEdit.social_digital_contact_type || '';
-                    }
-                }
 
                 this.ifSdoToEditGranularMarkings(sdoToEdit);
                 this.ifSdoToEditExternalReferences(sdoToEdit);
@@ -1330,33 +1314,30 @@ export class AddComponentComponent implements OnInit, OnDestroy {
             this.checkIsGuidedSetObjectRefs();
 
             if(componentData.type === 'identity') {
-                let emailQuestion: any = this.questions.find(q => q.key === 'email_address_ref');
-                let phoneQuestion: any = this.questions.find(q => q.key === 'contact_number');
-                let socialQuestion: any = this.questions.find(q => q.key === 'user_account_ref');
+                let emailEntries: any = this.stixService.modalObjectArray.filter(obj => obj.email_address_ref !== undefined && obj.email_address_ref !== null);
+                let phoneEntries: any = this.stixService.modalObjectArray.filter(obj => obj.contact_number !== undefined && obj.contact_number !== null);
+                let socialEntries: any = this.stixService.modalObjectArray.filter(obj => obj.user_account_ref !== undefined && obj.user_account_ref !== null);
 
-                // Phone/Email/Social Type
-                if(emailQuestion.emailAddressType && emailQuestion.emailAddressType.trim() !== '')
-                    componentData.email_digital_contact_type = emailQuestion.emailAddressType;
-                if(phoneQuestion.phoneType && phoneQuestion.phoneType.trim() !== '')
-                    componentData.contact_number_type = phoneQuestion.phoneType;
-                if(socialQuestion.socialMediaType && socialQuestion.socialMediaType.trim() !== '')
-                    componentData.social_digital_contact_type = socialQuestion.socialMediaType;
+                componentData.email_addresses = emailEntries.map(entry => ({
+                    email_address_ref: entry.email_address_ref,
+                    digital_contact_type: entry.digital_contact_type || '',
+                    description: entry.description || '',
+                    classified: entry.classified ?? false
+                }));
 
-                // Phone/Email/Social Classification
-                if(emailQuestion.emailClassified && emailQuestion.emailClassified.trim() !== '')
-                    componentData.email_classified = emailQuestion.emailClassified;
-                if(phoneQuestion.phoneClassified && phoneQuestion.phoneClassified.trim() !== '')
-                    componentData.phone_classified = phoneQuestion.phoneClassified;
-                if(socialQuestion.socialClassified && socialQuestion.socialClassified.trim() !== '')
-                    componentData.social_classified = socialQuestion.socialClassified;
+                componentData.contact_numbers = phoneEntries.map(entry => ({
+                    contact_number: entry.contact_number,
+                    contact_number_type: entry.contact_number_type || '',
+                    description: entry.description || '',
+                    classified: entry.classified ?? false
+                }));
 
-                // Phone/Email/Social Description
-                if(emailQuestion.emailDescription && emailQuestion.emailDescription.trim() !== '')
-                    componentData.email_description = emailQuestion.emailDescription;
-                if(phoneQuestion.phoneDescription && phoneQuestion.phoneDescription.trim() !== '')
-                    componentData.phone_description = phoneQuestion.phoneDescription;
-                if(socialQuestion.socialDescription && socialQuestion.socialDescription.trim() !== '')
-                    componentData.social_description = socialQuestion.socialDescription;
+                componentData.social_media_accounts = socialEntries.map(entry => ({
+                    user_account_ref: entry.user_account_ref,
+                    digital_contact_type: entry.digital_contact_type || '',
+                    description: entry.description || '',
+                    classified: entry.classified ?? false
+                }));
             }
 
             this.currentComponent.populateFromJSON(componentData, this.stixService);
@@ -1371,13 +1352,17 @@ export class AddComponentComponent implements OnInit, OnDestroy {
 
             // Check that extension fields exist, if not remove
             if(this.stixService.isEditing && componentData.type === 'identity') {
+                // TODO: Update logic that removes the extension field if not used
                 // Determine if extension-related fields still exist in componentData
-                let hasPhone = componentData.contact_number && componentData.contact_number.trim()!== '';
-                let hasEmail = componentData.email_address_ref && componentData.email_address_ref.trim()!== '';
-                let hasSocial = componentData.user_account_ref && componentData.user_account_ref.trim()!== '';
+                let hasContactInfo = this.stixService.modalObjectArray.some(obj =>
+                    obj.contact_number ||
+                    obj.email_address_ref ||
+                    obj.user_account_ref
+
+                );
 
                 // If editing and NO relevant fields exist => remove the extension
-                if(this.stixService.isEditing && !hasPhone && !hasEmail && !hasSocial) {
+                if(this.stixService.isEditing && !hasContactInfo) {
                     let existingExtIndex = this.stixService.extensions?.findIndex(ext => ext[this.EXT_ID]);
                     if(this.stixService.extensions && this.stixService.extensions[existingExtIndex]?.[this.EXT_ID]) {
                         delete this.stixService.extensions[existingExtIndex][this.EXT_ID];
@@ -1553,9 +1538,7 @@ export class AddComponentComponent implements OnInit, OnDestroy {
                 case 'email_address_ref':
                 case 'contact_number':
                 case "contact_number_type":
-                case "email_digital_contact_type":
                 case "user_account_ref":
-                case "social_digital_contact_type":
                 case 'first_name':
                 case 'middle_name':
                 case 'last_name':
@@ -1563,6 +1546,9 @@ export class AddComponentComponent implements OnInit, OnDestroy {
                 case 'suffix':
                 case 'websites':
                 case "phone_type":
+                case "email_addresses":
+                case "contact_numbers":
+                case "social_media_accounts":
                     delete myobject[x];
                     break;
                 case 'loaded':
@@ -1641,13 +1627,13 @@ export class AddComponentComponent implements OnInit, OnDestroy {
     buildIdentityExtension(componentData: any) {
         // let identity: any = this.currentComponent;
         let identity: any = componentData;
-        let phone = identity.contact_number?.trim() || '';
-        let emailRef = identity.email_address_ref?.trim() || '';
-        let socialRef = identity.user_account_ref?.trim() || '';
+        let emailEntries: any = this.stixService.modalObjectArray.filter(obj => obj.email_address_ref !== undefined && obj.email_address_ref !== null);
+        let phoneEntries: any = this.stixService.modalObjectArray.filter(obj => obj.contact_number !== undefined && obj.contact_number !== null);
+        let socialEntries: any = this.stixService.modalObjectArray.filter(obj => obj.user_account_ref !== undefined && obj.user_account_ref !== null);
 
-        let hasPhone = phone !== '';
-        let hasEmail = emailRef !== '';
-        let hasSocial = socialRef !== '';
+        let hasPhone = phoneEntries.length > 0;
+        let hasEmail = emailEntries.length > 0;
+        let hasSocial = socialEntries.length > 0;
 
         // If no contact value is present, return null
         if (!hasPhone && !hasEmail && !hasSocial) { return null; }
@@ -1680,51 +1666,30 @@ export class AddComponentComponent implements OnInit, OnDestroy {
         Object.assign(identityExtension[this.EXT_ID], genericExtension);
 
         if(hasPhone) {
-            let phoneType = identity.contact_number_type?.trim() || '';
-            let phoneDescription = identity.phone_description?.trim() || '';
-            let phoneClassified = identity.phone_classified?.[0] === 'true';
-
-            let phoneObject: any = {
-                contact_number: phone,
-                classified: phoneClassified
-            }
-
-            if(phoneType) phoneObject.contact_number_type = phoneType;
-            if(phoneDescription) phoneObject.description = phoneDescription;
-
-            identityExtension[this.EXT_ID].contact_numbers = [phoneObject];
+            identityExtension[this.EXT_ID].contact_numbers = phoneEntries.map(entry => ({
+                contact_number: entry.contact_number,
+                contact_number_type: entry.contact_number_type,
+                description: entry.description,
+                classified: entry.classified ?? false
+            }));
         }
 
         if(hasEmail) {
-            let emailType = identity.email_digital_contact_type?.trim() || '';
-            let emailDescription = identity.email_description?.trim() || '';
-            let emailClassified = identity.email_classified?.[0] === 'true';
-
-            let emailObject: any = {
-                email_address_ref: emailRef,
-                classified: emailClassified
-            }
-
-            if(emailType) emailObject.digital_contact_type = emailType;
-            if(emailDescription) emailObject.description = emailDescription;
-
-            identityExtension[this.EXT_ID].email_addresses = [emailObject];
+            identityExtension[this.EXT_ID].email_addresses = emailEntries.map(entry => ({
+                email_address_ref: entry.email_address_ref,
+                digital_contact_type: entry.digital_contact_type,
+                description: entry.description,
+                classified: entry.classified ?? false
+            }));
         }
 
         if(hasSocial) {
-            let socialType = identity.social_digital_contact_type?.trim() || '';
-            let socialDescription = identity.social_description?.trim() || '';
-            let socialClassified = identity.social_classified?.[0] === 'true';
-
-            let socialObject: any = {
-                user_account_ref: socialRef,
-                classified: socialClassified
-            }
-
-            if(socialType) socialObject.digital_contact_type = socialType;
-            if(socialDescription) socialObject.description = socialDescription;
-
-            identityExtension[this.EXT_ID].social_media_accounts = [socialObject];
+            identityExtension[this.EXT_ID].social_media_accounts = socialEntries.map(entry => ({
+                user_account_ref: entry.user_account_ref,
+                digital_contact_type: entry.digital_contact_type,
+                description: entry.description,
+                classified: entry.classified ?? false
+            }));
         }
 
         return identityExtension;
@@ -1749,46 +1714,58 @@ export class AddComponentComponent implements OnInit, OnDestroy {
             sdoToEdit.websites = ext.websites;
 
 
-        // Inject Phone Number
-        let phone = ext.contact_numbers?.[0]?.contact_number;
+        // Inject Phone Number Reference
+        let phoneEntries = ext.contact_numbers || [];
 
-        if(phone) {
-            let phoneType = ext.contact_numbers?.[0]?.contact_number_type;
-            let phoneClassified = ext.contact_numbers?.[0]?.classified;
-            let phoneDescription = ext.contact_numbers?.[0]?.description;
+        phoneEntries.forEach(phone => {
 
-             sdoToEdit.contact_number = phone;
-             sdoToEdit.phone_type = phoneType;
-             sdoToEdit.phone_classified = phoneClassified ? true : false;
-             sdoToEdit.phone_description = phoneDescription;
-        }
+            let entry: any = {
+                contact_number: phone.contact_number,
+                classified: phone.classified ?? false
+            }
+
+            if(phone.contact_number_type && phone.contact_number_type.trim() !== '')
+                entry.contact_number_type = phone.contact_number_type.trim();
+            if(phone.description && phone.description.trim() !== '')
+                entry.description = phone.description.trim();
+
+            this.stixService.modalObjectArray.push(entry);
+        });
 
         // Inject Email Address Reference
-        let emailRef = ext.email_addresses?.[0]?.email_address_ref;
+        let emailEntries = ext.email_addresses || [];
 
-        if(emailRef) {
-            let emailType = ext.email_addresses?.[0]?.digital_contact_type;
-            let emailClassified = ext.email_addresses?.[0]?.classified;
-            let emailDescription = ext.email_addresses?.[0]?.description;
+        emailEntries.forEach(email => {
 
-            sdoToEdit.email_address_ref = emailRef;
-            sdoToEdit.email_digital_contact_type = emailType;
-            sdoToEdit.email_classified = emailClassified ? true : false;
-            sdoToEdit.email_description = emailDescription;
-        }
+            let entry: any = {
+                email_address_ref: email.email_address_ref,
+                classified: email.classified ?? false
+            }
+
+            if(email.digital_contact_type && email.digital_contact_type.trim() !== '')
+                entry.digital_contact_type = email.digital_contact_type.trim();
+            if(email.description && email.description.trim() !== '')
+                entry.description = email.description.trim();
+
+            this.stixService.modalObjectArray.push(entry);
+        });
 
         // Inject Social Media Reference
-        let socialRef = ext.social_media_accounts?.[0]?.user_account_ref;
+        let socialEntries = ext.social_media_accounts || [];
 
-        if(socialRef) {
-            let socialType = ext.social_media_accounts?.[0]?.digital_contact_type;
-            let socialClassified = ext.social_media_accounts?.[0]?.classified;
-            let socialDescription = ext.social_media_accounts?.[0]?.description;
+        socialEntries.forEach(social => {
 
-            sdoToEdit.user_account_ref = socialRef;
-            sdoToEdit.social_digital_contact_type = socialType;
-            sdoToEdit.social_classified = socialClassified ? true : false;
-            sdoToEdit.social_description = socialDescription;
-        }
+            let entry: any = {
+                user_account_ref: social.user_account_ref,
+                classified: social.classified ?? false
+            }
+
+            if(social.digital_contact_type && social.digital_contact_type.trim() !== '')
+                entry.digital_contact_type = social.digital_contact_type.trim();
+            if(social.description && social.description.trim() !== '')
+                entry.description = social.description.trim();
+
+            this.stixService.modalObjectArray.push(entry);
+        });
     }
 }

@@ -101,6 +101,7 @@ import { HowPatternBuilderComponent } from './guided-components/how-pattern-buil
 import { HowObservableComponent } from './guided-components/how-observable/how-observable.component';
 import { PatternBuilderComponent } from './dialogs/pattern-builder/pattern-builder.component';
 import { MultipartDialogComponent } from './dialogs/multipart-dialog/multipart-dialog.component';
+import { IdentityExtensionDialogComponent } from './dialogs/identity-extension-dialog/identity-extension-dialog.component';
 import { WindowsValueDialogComponent } from './dialogs/windows-value-dialog/windows-value-dialog.component';
 import { HowEventDetectionComponent } from './guided-components/how-event-detection/how-event-detection.component';
 import { WhenSightingComponent } from './guided-components/when-sighting/when-sighting.component';
@@ -229,6 +230,7 @@ import { LoadingModalComponent } from './loading-modal/loading-modal.component';
         HowObservableComponent,
         PatternBuilderComponent,
         MultipartDialogComponent,
+        IdentityExtensionDialogComponent,
         WindowsValueDialogComponent,
         HowEventDetectionComponent,
         WhenSightingComponent,

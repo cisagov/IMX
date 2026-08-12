@@ -99,7 +99,7 @@
                                 }
                             </div>
                         }
-                        <div [ngClass]="{ 'ps-5 main-table mt-5 mb-5 col-10': !stixService.guidedUI, 'col-12': stixService.guidedUI }">
+                        <div [ngClass]="{ 'ps-5 main-table mt-3 mb-5 col-10': !stixService.guidedUI, 'col-12': stixService.guidedUI }">
                             <div class="row" [ngClass]="{ 'ps-3': !stixService.guidedUI }">
                                 @for (question of questions; track question) {
                                     <div
@@ -205,7 +205,7 @@
                                     }
                                 </div>
                             }
-                            @if (stixService.toplevel && stixService.toplevel.length > 0) {
+                            @if (stixService.toplevel && stixService.toplevel.length > 0 && !isIdentity()) {
                                 <div class="row ps-3 pe-0 pb-1 pt-3" id="toplevelRow">
                                     <div class="pe-2 ps-0">
                                         <app-toplevel-property class="w-100"></app-toplevel-property>

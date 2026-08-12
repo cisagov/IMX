@@ -1,0 +1,140 @@
+<div class="dialog">
+    <!-- Header -->
+    <div class="modal-header justify-content-between align-items-center">
+        <h5 class="modal-title mb-0" id="publish-modal-title">
+            {{modalType}}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+        <!-- Contact Information Reference -->
+        <div class="omr-section-body" style="padding-top: 0rem;">
+            <div class="form-header">
+                <label class="form-label omr-field-label">{{getReferenceHeader(modalType)}}<span class="text-danger ms-1">*</span></label>
+                <span class="guided-tip">
+                    <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; " />
+                    <span class="tip-text" [innerHTML]="getTipByLabel('contact_info')"></span>
+                </span>
+            </div>
+
+            <div class="d-flex gap-2 mb-3" style="flex-direction: column;">
+                <!-- Dropdown of references -->
+                @if(modalType === 'Email Address' || modalType === 'Social Media'){
+                    @if(this.stixService.guidedUI){
+                        @if(modalType === 'Email Address'){
+                            <input
+                                id="contact_info"
+                                class="form-control"
+                                placeholder="Email Address"
+                                [ngClass]="{ 'is-invalid': contactError, 'select-placeholder': contactError }"
+                                [(ngModel)]="contact_info"
+                                (ngModelChange)="validateContactInfo(modalType)"
+                            />
+                        }
+                    } @else {
+                        <select
+                            [(ngModel)]="contact_info"
+                            [ngClass]="{ 'select-placeholder': !contact_info, 'is-invalid': !contact_info }"
+                            id="contact_select"
+                            class="form-control"
+                            (ngModelChange)="validateContactInfo(modalType)"
+                        >
+                            <option value="" selected>Select {{getReferenceHeader(modalType)}}</option>
+                            @if(modalType === 'Email Address'){
+                                @for(opt of emailRefOptions; track opt) {
+                                    <option [value]="opt.id">{{opt.value}}</option>
+                                }
+                            }
+                            @if(modalType === 'Social Media'){
+                                @for(opt of socialRefOptions; track opt) {
+                                    <option [value]="opt.id">{{ opt.user_id || opt.display_name || 'Unnamed User Account' }}</option>
+                                }
+                            }
+                        </select>
+                    }
+
+                }
+                @if(modalType === 'Phone Number'){
+                    <input
+                        id="contact_input"
+                        class="form-control"
+                        placeholder="Phone Number"
+                        [ngClass]="{ 'is-invalid': contactError, 'select-placeholder': validateContactInfo(modalType) }"
+                        [(ngModel)]="contact_info"
+                        (ngModelChange)="validateContactInfo(modalType)"
+                    />
+                }
+                @if(contactErrorMessage) {
+                    <div class="invalid-feedback" id="name_error">{{contactErrorMessage}}</div>
+                }
+            </div>
+
+            <!-- Contact Information Type -->
+            <div class="mb-3">
+                <label class="form-label omr-field-label">{{getReferenceHeader(modalType)}} Type</label>
+                <select
+                    id="email_type_select"
+                    [(ngModel)]="contact_type"
+                    class="form-control form-select dropdown"
+                    [ngClass]="{ 'select-placeholder': !contact_type }"
+                >
+                    <option value="">{{modalType}} Type</option>
+                    @if(modalType === 'Email Address' || modalType === 'Social Media'){
+                        <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
+                    }
+                    @if(modalType === 'Phone Number'){
+                        <option *ngFor="let opt of contactNumberOptions" [value]="opt">{{ opt }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Classified Checkbox -->
+            <div class="mb-3">
+                <label class="form-label omr-field-label">Classified</label>
+                <div class="form-check mt-1">
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="contact_classified_checkbox"
+                        [(ngModel)]="contact_classified"
+                    />
+                    <label class="form-check-label" style="font-size: 14px;" for="contact_classified_checkbox">Mark this {{getReferenceHeader(modalType)}} as classified</label>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label class="form-label omr-field-label">Description</label>
+                <input
+                    type="text"
+                    id="contact_description_input"
+                    [(ngModel)]="contact_description"
+                    class="form-control"
+                    placeholder="Enter description"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer d-flex justify-content-end gap-2">
+        <button id="obj_marking_refs_cancel" type="button" class="btn btn-outline-secondary" (click)="onX()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button
+            id="obj_marking_refs_add"
+            type="button"
+            class="btn btn-outline-success"
+            (click)="onConfirm()"
+            [ngClass]="{ 'btn-disabled': contactError }"
+            [disabled]="contactError"
+        >
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+            Confirm
+        </button>
+    </div>
+</div>
