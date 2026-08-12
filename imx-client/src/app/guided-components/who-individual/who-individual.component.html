@@ -76,116 +76,105 @@
                             </div>
                         </div>
 
-                        <!-- Phone Number & Type -->
-                        <div class="guided-dual-container">
-                            <!-- Phone Type -->
-                            <div class="inner-row">
-                                <div class="input-header">
-                                    Phone Type
-                                </div>
-                                <select
-                                    class="form-control form-control-guided form-select"
-                                    [(ngModel)]="currentPhoneType"
-                                    (ngModelChange)="enableAddToCart($event)"
-                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentPhoneType) }"
-                                >
-                                    <option disabled selected value="">Select Phone Type</option>
-                                    @for (option of phoneTypeOptions; track option) {
-                                        <option [value]="option.key">{{ option.value }}</option>
-                                    }
-                                </select>
+                        <!-- Multiple Phone Number Fields -->
+                        <div class="inner-row">
+                            <div class="input-header">
+                                Phone Numbers
+                                @if (contact_numbers.length > 0) {
+                                    <span class="badge bg-secondary ms-2 omr-count-badge">{{ contact_numbers.length }} Numbers Added</span>
+                                }
                             </div>
 
-                            <!-- Phone Number -->
-                            <div class="inner-row">
-                                <div class="input-header">
-                                    Phone Number
-                                    <span class="guided-tip">
-                                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
-                                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('individual_phone')"></span>
-                                    </span>
+                            <!-- Multi-select dropdown -->
+                            @if (
+                                !(this.guidedComponent.showContinue() &&
+                                this.guidedService.currentCartIndex !== null &&
+                                this.guidedComponent.menuSelection !== 'build-review' &&
+                                this.guidedComponent.menuSelection !== 'publish-review' &&
+                                this.guidedComponent.menuSelection !== 'publish-success')
+                            ){
+                                <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                    <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('phone_number')">
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                        <span>Add</span>
+                                    </button>
                                 </div>
-                                <div class="input-group">
-                                    <input
-                                        type="text"
-                                        class="form-control form-control-guided"
-                                        placeholder="Enter phone number"
-                                        [ngClass]="{ 'is-invalid': phoneError }"
-                                        (blur)="checkError('phone')"
-                                        (keyup)="enableAddToCart($event)"
-                                        [(ngModel)]="phone"
-                                        ,
-                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(phone) }"
-                                    />
-                                    <div *ngIf="phoneError" class="invalid-feedback">Must be a valid phone number</div>
+                            }
+
+                            @if (contact_numbers.length > 0) {
+                                <div class="other-refs-list">
+                                    @for (number of contact_numbers; track number; let i = $index) {
+                                        <div
+                                            id="other_list{{ i }}"
+                                            class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                        >
+                                            <span class="ref-name">{{ number.contact_number }} <span class="select-placeholder-guided">{{displayContactInfoDetails(number, 'phone_number')}}</span></span>
+                                            <button
+                                                class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                style="display: flex"
+                                                type="button"
+                                                id="other_list{{ i }}_delete"
+                                                (click)="deleteModalObject(number, 'phone_number')"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    }
                                 </div>
-                                <div class="form-check mt-2">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="phoneClassified"
-                                        name="phoneClassified"
-                                        [(ngModel)]="phoneClassified"
-                                    />
-                                    <label class="form-check-label" for="phoneClassified">Classified</label>
-                                </div>
-                            </div>
+                            } @else {
+                                <div class="empty-refs-state">No Phone Numbers added yet.</div>
+                            }
                         </div>
 
-                        <!-- Email Address & Type -->
-                        <div class="guided-dual-container">
-                            <!-- Email Address Type -->
-                            <div class="inner-row">
-                                <div class="input-header">
-                                    Email Type
-                                </div>
-                                <select
-                                    class="form-control form-control-guided form-select"
-                                    [(ngModel)]="currentEmailType"
-                                    (change)="enableAddToCart($event)"
-                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(currentEmailType) }"
-                                >
-                                    <option disabled selected value="">Select Email Type</option>
-                                    @for (option of emailTypeOptions; track option) {
-                                        <option [value]="option.key">{{ option.value }}</option>
-                                    }
-                                </select>
+                        <!-- Email Address -->
+                        <div class="inner-row">
+                            <div class="input-header">
+                                Email Addresses
+                                @if (email_addresses.length > 0) {
+                                    <span class="badge bg-secondary ms-2 omr-count-badge">{{ email_addresses.length }} Email Addresses Added</span>
+                                }
                             </div>
 
-                            <!-- Email Address -->
-                            <div class="inner-row">
-                                <div class="input-header">
-                                    Email Address
-                                    <span class="guided-tip">
-                                        <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold"> </fa-icon>
-                                        <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('individual_email')"> </span>
-                                    </span>
+                            <!-- Multi-select dropdown -->
+                            @if (
+                                !(this.guidedComponent.showContinue() &&
+                                this.guidedService.currentCartIndex !== null &&
+                                this.guidedComponent.menuSelection !== 'build-review' &&
+                                this.guidedComponent.menuSelection !== 'publish-review' &&
+                                this.guidedComponent.menuSelection !== 'publish-success')
+                            ){
+                                <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                    <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('email_address')">
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                        <span>Add</span>
+                                    </button>
                                 </div>
-                                <div class="input-group">
-                                    <input
-                                        type="text"
-                                        class="form-control form-control-guided"
-                                        placeholder="Enter email"
-                                        [ngClass]="{ 'is-invalid': emailError }"
-                                        (blur)="checkError('email')"
-                                        (keyup)="enableAddToCart($event)"
-                                        [(ngModel)]="email"
-                                        ,
-                                        [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(email) }"
-                                    />
-                                    <div *ngIf="emailError" class="invalid-feedback">Must be a valid email address</div>
+                            }
+
+                            @if (email_addresses.length > 0) {
+                                <div class="other-refs-list">
+                                    @for (email of email_addresses; track email; let i = $index) {
+                                        <div
+                                            id="other_list{{ i }}"
+                                            class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                        >
+                                            <span class="ref-name">{{ email.email_address_ref }} <span class="select-placeholder-guided">{{displayContactInfoDetails(email, 'email_address')}}</span></span>
+
+                                            <button
+                                                class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                style="display: flex"
+                                                type="button"
+                                                id="other_list{{ i }}_delete"
+                                                (click)="deleteModalObject(email, 'email_address')"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    }
                                 </div>
-                                <div class="form-check mt-2">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="emailClassified"
-                                        name="emailClassified"
-                                        [(ngModel)]="emailClassified"
-                                    />
-                                    <label class="form-check-label" for="emailClassified">Classified</label>
-                                </div>
-                            </div>
+                            } @else {
+                                <div class="empty-refs-state">No Email Addresses added yet.</div>
+                            }
                         </div>
                     </div>
                 </div>
