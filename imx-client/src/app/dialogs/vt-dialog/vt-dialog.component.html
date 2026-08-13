@@ -4409,7 +4409,7 @@
                             <div class="d-flex justify-content-end mb-3">
                                 <button class="btn btn-sm btn-outline-primary" (click)="copyIntelSummary()">Copy All</button>
                             </div>
-                            <div
+                            <pre
                                 style="
                                     white-space: pre-wrap;
                                     font-family: monospace;
@@ -4418,10 +4418,9 @@
                                     padding: 12px;
                                     border: 1px solid #dee2e6;
                                     border-radius: 4px;
+                                    margin: 0;
                                 "
-                            >
-                                {{ getIntelSummaryText() }}
-                            </div>
+                            >{{ getIntelSummaryText() }}</pre>
                         } @else {
                             <div class="alert alert-info">No VirusTotal results available.</div>
                         }
