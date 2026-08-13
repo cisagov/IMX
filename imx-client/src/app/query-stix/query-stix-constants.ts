@@ -48,6 +48,13 @@ export const STIXObjectTypes = [
     'malware-behavior',
     'malware-method',
     'malware-objective',
+    'x-oca-asset',
+    'x-oca-behavior',
+    'x-oca-detection',
+    'x-oca-detector',
+    'x-oca-event',
+    'x-oca-geo',
+    'x-oca-playbook',
 ];
 
 export interface SelectedObject {
