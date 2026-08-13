@@ -1,3 +1,14 @@
+## [4.15.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.4...v4.15.0) (2026-08-07)
+
+### Features
+
+* note stix object for whois data on ip/domain searches ([7b18683](https://git.va.th.ten/eos/cde/tie/imx/commit/7b186839fe1d93cb9897a19e5b6445c446dba498))
+
+### Bug Fixes
+
+* re-rendering issue for openObjectViewerModal fxn ([ad2e8ab](https://git.va.th.ten/eos/cde/tie/imx/commit/ad2e8abb472cebb4cc8eb4c95eeeff9033d5a5ad))
+* updated flow for ref obj import from modal & fixed whitespace in row ([17c1aa1](https://git.va.th.ten/eos/cde/tie/imx/commit/17c1aa18dff64b6cd902a8ecbdcbf41e28473f8b))
+
 ## [4.14.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.3...v4.14.4) (2026-08-07)
 
 ### Bug Fixes
