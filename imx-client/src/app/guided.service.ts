@@ -370,9 +370,25 @@ export class GuidedService {
                         regData.push(this.cleanItem(newObject));
                     } else {
                         let tempObject: any = this.cleanItem(newObject);
+
+                        if(newObject.extensions) {
+                            tempObject.extensions = newObject.extensions
+                        }
                         delete tempObject.cartId;
+
+                        // Remove stale extension when edited identity no longer has any
+                        if(!tempObject.extensions && stixObject.extensions) {
+                            delete stixObject.extensions;
+                        }
+
                         for (let field in tempObject) {
                             if (field === 'id') continue;
+
+                            // Deep update extensions properly
+                            if(field === 'extensions') {
+                                stixObject.extensions = tempObject.extensions;
+                                continue;
+                            }
                             stixObject[field] = tempObject[field];
                         }
 

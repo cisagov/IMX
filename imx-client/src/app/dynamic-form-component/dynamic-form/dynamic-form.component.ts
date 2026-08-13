@@ -105,11 +105,13 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
     origTopLevelProps = '';
     origTimezones = '';
     origMalwareCorpus = '';
+    origModalObjectArray = '';
 
     currObjectMarkingRefs = '';
     currGranularMarkings = '';
     currExternalRefs = '';
     currExtensions = '';
+    currModalObjectArray = '';
     currLabels = '';
     currResolvesToRefs = '';
     currHashes = '';
@@ -356,6 +358,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
         this.origGranularMarkings = JSON.stringify(this.stixService.granularMarkings);
         this.origExternalRefs = JSON.stringify(this.stixService.externalReferences);
         this.origExtensions = JSON.stringify(this.stixService.extensions);
+        this.origModalObjectArray = JSON.stringify(this.stixService.modalObjectArray);
         this.origLabels = JSON.stringify(this.stixService.stringArrays.get('labels'));
         if (!this.origLabels) this.origLabels = JSON.stringify([]);
         this.origResolvesToRefs = JSON.stringify(this.stixService.stringArrays.get('resolves_to_refs'));
@@ -659,6 +662,9 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
                 case 'language-content':
                     label = 'contents';
                     break;
+                case 'identity':
+                    label = 'contact_information';
+                    break;
             }
 
             if (label != '') {
@@ -939,6 +945,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
         this.currGranularMarkings = JSON.stringify(this.stixService.granularMarkings);
         this.currExternalRefs = JSON.stringify(this.stixService.externalReferences);
         this.currExtensions = JSON.stringify(this.stixService.extensions);
+        this.currModalObjectArray = JSON.stringify(this.stixService.modalObjectArray);
         this.currLabels = JSON.stringify(this.stixService.stringArrays.get('labels'));
         if (!this.currLabels) this.currLabels = JSON.stringify([]);
         this.currResolvesToRefs = JSON.stringify(this.stixService.stringArrays.get('resolves_to_refs'));
@@ -959,6 +966,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
             this.currGranularMarkings !== this.origGranularMarkings ||
             this.currExternalRefs !== this.origExternalRefs ||
             this.currExtensions !== this.origExtensions ||
+            this.currModalObjectArray !== this.origModalObjectArray ||
             this.currLabels !== this.origLabels ||
             this.currResolvesToRefs !== this.origResolvesToRefs ||
             this.currHashes !== this.origHashes ||
