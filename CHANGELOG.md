@@ -1,3 +1,13 @@
+## 4.17.1 (2026-08-13)
+
+### Bug Fixes
+
+* adjust guided identity extension to accept multiple contact information objects c48ca8e
+* adjust standard identity extension to accept multiple contact information objects f4439db
+* allow editing contact information in guided, styling adjustments fc53cb6
+* preserve observables to persist after identity object creation 7c78875
+* remove the extension array if no extensions are left b779636
+
 ## 4.17.0 (2026-08-13)
 
 ### Features
