@@ -86,20 +86,12 @@
                             </div>
 
                             <!-- Multi-select dropdown -->
-                            @if (
-                                !(this.guidedComponent.showContinue() &&
-                                this.guidedService.currentCartIndex !== null &&
-                                this.guidedComponent.menuSelection !== 'build-review' &&
-                                this.guidedComponent.menuSelection !== 'publish-review' &&
-                                this.guidedComponent.menuSelection !== 'publish-success')
-                            ){
-                                <div class="d-flex gap-2" style="padding-bottom: 1rem">
-                                    <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('phone_number')">
-                                        <fa-icon [icon]="faPlus"></fa-icon>
-                                        <span>Add</span>
-                                    </button>
-                                </div>
-                            }
+                            <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('phone_number')">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                    <span>Add</span>
+                                </button>
+                            </div>
 
                             @if (contact_numbers.length > 0) {
                                 <div class="other-refs-list">
@@ -136,20 +128,12 @@
                             </div>
 
                             <!-- Multi-select dropdown -->
-                            @if (
-                                !(this.guidedComponent.showContinue() &&
-                                this.guidedService.currentCartIndex !== null &&
-                                this.guidedComponent.menuSelection !== 'build-review' &&
-                                this.guidedComponent.menuSelection !== 'publish-review' &&
-                                this.guidedComponent.menuSelection !== 'publish-success')
-                            ){
-                                <div class="d-flex gap-2" style="padding-bottom: 1rem">
-                                    <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('email_address')">
-                                        <fa-icon [icon]="faPlus"></fa-icon>
-                                        <span>Add</span>
-                                    </button>
-                                </div>
-                            }
+                            <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('email_address')">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                    <span>Add</span>
+                                </button>
+                            </div>
 
                             @if (email_addresses.length > 0) {
                                 <div class="other-refs-list">

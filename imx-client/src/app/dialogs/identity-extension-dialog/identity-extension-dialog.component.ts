@@ -152,7 +152,7 @@ export class IdentityExtensionDialogComponent implements OnInit {
         Object.keys(entry).forEach(k => {
             if(entry[k] === '' || entry[k] === null || entry[k] === undefined) delete entry[k];
         })
-        this.dialogRef.close(entry); // TODO: check if this works
+        this.dialogRef.close(entry);
     }
 
     getReferenceHeader(modalType: string) {

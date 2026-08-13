@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@
 import { identity, Subscription } from 'rxjs';
 import { AddComponentComponent } from 'src/app/add-component/add-component.component';
 import { GuidedService } from 'src/app/guided.service';
-import { GuidedComponent } from '../../guided/guided.component';
 import { StixService } from 'src/app/stix-service.service';
 import { faMale, faUser, faUserAlt, faQuestionCircle, faInfoCircle, faTrash, faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { IdentityExtensionDialogComponent } from 'src/app/dialogs/identity-extension-dialog/identity-extension-dialog.component';
@@ -118,7 +117,6 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         public guidedService: GuidedService,
         public stixService: StixService,
         public identityDialog: MatDialog,
-        public guidedComponent: GuidedComponent
     ) {}
 
     ngOnInit(): void {
@@ -222,11 +220,16 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
                         return emailAddressObject;
                     })
 
-                    this.guidedService.syncCart("how-observable", { "Email Address": emailObservableList });
+                    let existingObservables = this.guidedService.cart['how-observable'] || {};
+                    let mergedObservables = {
+                            ...existingObservables,
+                            "Email Address": emailObservableList
+                    };
+                    this.guidedService.syncCart("how-observable", mergedObservables);
                     let emailBucket = this.guidedService.cart['how-observable']['Email Address'];
 
                     emailBucket.forEach((email, index) => {
-                        let emailEntry = this.email_addresses[index]; // TODO: search by id, don't rely on index
+                        let emailEntry = this.email_addresses[index];
                         ext.push({
                             email_address_ref: email.id,
                             digital_contact_type: emailEntry.digital_contact_type,
