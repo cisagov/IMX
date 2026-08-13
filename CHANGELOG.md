@@ -1,3 +1,9 @@
+## [4.17.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.1...v4.17.2) (2026-08-13)
+
+### Bug Fixes
+
+* updated URL intel summary tab + few other things ([3cbf6eb](https://git.va.th.ten/eos/cde/tie/imx/commit/3cbf6eb350a2e2195c90e317fad0d082d25f91c9))
+
 ## [4.17.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.0...v4.17.1) (2026-08-13)
 
 ### Bug Fixes
