@@ -1,3 +1,9 @@
+## 4.17.0 (2026-08-13)
+
+### Features
+
+* implement wildcard search for misp integration e41d029
+
 ## 4.16.0 (2026-08-13)
 
 ### Features
