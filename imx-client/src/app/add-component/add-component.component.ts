@@ -1352,7 +1352,6 @@ export class AddComponentComponent implements OnInit, OnDestroy {
 
             // Check that extension fields exist, if not remove
             if(this.stixService.isEditing && componentData.type === 'identity') {
-                // TODO: Update logic that removes the extension field if not used
                 // Determine if extension-related fields still exist in componentData
                 let hasContactInfo = this.stixService.modalObjectArray.some(obj =>
                     obj.contact_number ||
