@@ -1,3 +1,9 @@
+## [4.16.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.15.0...v4.16.0) (2026-08-13)
+
+### Features
+
+* added IOB support to editor & search ([e1f4d13](https://git.va.th.ten/eos/cde/tie/imx/commit/e1f4d130f3c416f09b8b760d4147eea6ef7ecd16))
+
 ## [4.15.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.4...v4.15.0) (2026-08-07)
 
 ### Features
