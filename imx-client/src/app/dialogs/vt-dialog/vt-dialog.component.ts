@@ -56,7 +56,7 @@ export interface IndicatorGroup {
 
 type IpRelationKey = 'resolutions' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
 type DomainRelationKey = 'resolutions' | 'subdomains' | 'communicatingFiles' | 'referrerFiles' | 'historicalWhois' | 'historicalSslCerts';
-type UrlRelationKey = 'servingIp';
+type UrlRelationKey = 'servingIp' | 'hostDomain';
 
 @Component({
     selector: 'app-vt-dialog',
@@ -263,6 +263,7 @@ export class VtDialogComponent {
             hasData: boolean;
             relations?: {
                 servingIp?: { data: any; loading: boolean; loadingMore: boolean; error?: string; cursor: string | null };
+                hostDomain?: { data: any; loading: boolean; loadingMore: boolean; error?: string; cursor: string | null };
             };
         }
     > = new Map();
@@ -4412,6 +4413,11 @@ export class VtDialogComponent {
     async loadAllUrlRelations(url: string): Promise<void> {
         await Promise.all([this.loadUrlRelation(url, 'servingIp', 'serving IP', (u) => this.vtSearchService.postVtUrlServingIp(u))]);
         this.convertUrlServingIpToStixObjects(url);
+
+        const host = this.getUrlSubmittedHost(url);
+        if (host && !this.isIpHostedUrl(url)) {
+            await this.loadUrlRelation(url, 'hostDomain', 'host domain', () => this.vtSearchService.postVtDomainSearch(host));
+        }
     }
 
     // ─── URL Display Helpers ────────────────────────────────────────────────
@@ -4459,6 +4465,18 @@ export class VtDialogComponent {
             return '';
         }
     }
+    private getUrlSubmittedHost(url: string): string {
+        try {
+            return new URL(url).hostname;
+        } catch {
+            return '';
+        }
+    }
+    private isIpHostedUrl(url: string): boolean {
+        const host = this.getUrlSubmittedHost(url);
+        return /^(?:\d{1,3}\.){3}\d{1,3}$/.test(host) || host.startsWith('[');
+    }
+
     getUrlServingIp(url: string): string {
         const relData = this.getUrlRelation(url, 'servingIp')?.data?.data;
         return relData?.id || relData?.attributes?.ip_address || this.getUrlAttributes(url)?.last_serving_ip_address || '';
@@ -4623,6 +4641,11 @@ export class VtDialogComponent {
         return entry ? entry.value : code;
     }
 
+    private formatIsoDate(timestamp: number): string {
+        if (!timestamp) return 'N/A';
+        return new Date(timestamp * 1000).toISOString().slice(0, 10);
+    }
+
     getIntelSummaryText(): string {
         const lines: string[] = [];
 
@@ -4669,7 +4692,7 @@ export class VtDialogComponent {
 
             lines.push(`Domain: ${domain}`);
             lines.push(`Host IP: ${aRecords}`);
-            lines.push(`Created Date: ${this.formatResolutionDate(attrs?.creation_date)}`);
+            lines.push(`Created Date: ${this.formatIsoDate(attrs?.creation_date)}`);
             lines.push(`Registrant: ${attrs?.registrar || ''}`);
             lines.push(`JARM Fingerprint: ${attrs?.jarm || 'N/A'}`);
             lines.push(`Activity: ${vendorNote}`);
@@ -4689,10 +4712,21 @@ export class VtDialogComponent {
             }
 
             lines.push(`URL: ${url}`);
-            lines.push(`Geolocation: ${this.getUrlCountry(url) || 'N/A'}`);
-            lines.push(`Organization: ${this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.as_owner || ''}`);
-            lines.push(`Domains Hosted:`);
-            lines.push(`pDNS Resolutions:`);
+
+            if (this.isIpHostedUrl(url)) {
+                lines.push(`Geolocation: ${this.getUrlCountry(url) || 'N/A'}`);
+                lines.push(`Organization: ${this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.as_owner || ''}`);
+                lines.push(`Domains Hosted:`);
+                lines.push(`pDNS Resolutions:`);
+                lines.push(`JARM fingerprint: ${this.getUrlRelation(url, 'servingIp')?.data?.data?.attributes?.jarm || 'N/A'}`);
+            } else {
+                const hostAttrs = this.getUrlRelation(url, 'hostDomain')?.data?.data?.attributes;
+                lines.push(`Host IP: ${this.getUrlServingIp(url)}`);
+                lines.push(`Created Date: ${this.formatIsoDate(hostAttrs?.creation_date)}`);
+                lines.push(`Registrant: ${hostAttrs?.registrar || ''}`);
+                lines.push(`JARM Fingerprint: ${hostAttrs?.jarm || 'N/A'}`);
+            }
+
             lines.push(`Activity: ${vendorNote}`);
             lines.push('');
         }
