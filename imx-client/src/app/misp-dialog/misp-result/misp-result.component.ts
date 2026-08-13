@@ -36,6 +36,9 @@ export class MispResultComponent implements OnInit {
     faDownload = faDownload;
     faCaretDown = faCaretDown;
 
+    allSelected = false;
+    allExpanded = false;
+
     constructor(
         public readonly mispService: MispService,
         public readonly stixService: StixService,
@@ -142,7 +145,7 @@ export class MispResultComponent implements OnInit {
         const collapsedTypes = new Set();
         const collapsedObjects = new Set();
 
-        event.stix2.objects.forEach((obj) => {
+        event.stix.objects.forEach((obj) => {
             if (!stixObjects[obj.type]) {
                 stixObjects[obj.type] = [];
             }
@@ -173,7 +176,7 @@ export class MispResultComponent implements OnInit {
 
     selectAll(event, clickEvent) {
         if (clickEvent) {
-            event.stix2.objects.forEach((elem) => {
+            event.stix.objects.forEach((elem) => {
                 const stixObj = event.checkedObjectsMap.get(elem.id);
                 stixObj.checked = true;
 
@@ -352,20 +355,20 @@ export class MispResultComponent implements OnInit {
         this.downloadFiles(
             [
                 {
-                    name: `${event.value}-misp.json`,
+                    name: `${event.searchall}-misp.json`,
                     data: JSON.stringify({
                         Event: event.misp,
                     }),
                 },
             ],
-            event.value
+            event.searchall
         );
     }
 
     downloadStix(event) {
         const objectsToDownload = [];
 
-        event.stix2.objects.forEach((elem) => {
+        event.stix.objects.forEach((elem) => {
             const stixObj = event.checkedObjectsMap.get(elem.id);
             if (stixObj.checked) objectsToDownload.push(elem);
         });
@@ -376,11 +379,11 @@ export class MispResultComponent implements OnInit {
         this.downloadFiles(
             [
                 {
-                    name: `${event.value}-stix.json`,
+                    name: `${event.searchall}-stix.json`,
                     data: JSON.stringify(bundle),
                 },
             ],
-            event.value
+            event.searchall
         );
     }
 
@@ -394,5 +397,15 @@ export class MispResultComponent implements OnInit {
             link.click();
             window.URL.revokeObjectURL(url);
         });
+    }
+
+    selectAllEvents() {
+        this.allSelected = !this.allSelected;
+        this.results.forEach((result) => (result.checked = this.allSelected));
+    }
+
+    expandAllEvents() {
+        this.allExpanded = !this.allExpanded;
+        this.results.forEach((result) => (result.expanded = this.allExpanded));
     }
 }
