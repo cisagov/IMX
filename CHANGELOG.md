@@ -1,3 +1,14 @@
+## 4.15.0 (2026-08-07)
+
+### Features
+
+* note stix object for whois data on ip/domain searches 7b18683
+
+### Bug Fixes
+
+* re-rendering issue for openObjectViewerModal fxn ad2e8ab
+* updated flow for ref obj import from modal & fixed whitespace in row 17c1aa1
+
 ## 4.14.4 (2026-08-07)
 
 ### Bug Fixes
