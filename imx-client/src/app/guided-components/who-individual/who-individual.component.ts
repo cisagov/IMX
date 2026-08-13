@@ -623,7 +623,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             this.contact_numbers = this.contact_numbers.filter((obj) => obj !== currObject);
             let identityList = this.guidedService.cart['who-individual']?.["Identity"];
             if(identityList){
-                let identityObj = identityList.find(o => o.cartId === this.cartId[0]); // probably wrong
+                let identityObj = identityList.find(o => o.cartId === this.cartId[0]);
                 if(identityObj?.extensions) {
                      const ext = identityObj.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
                      if(ext?.contact_numbers) {
@@ -644,6 +644,25 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
         if(type === 'email_address'){
             this.email_addresses = this.email_addresses.filter((obj) => obj !== currObject);
+            let identityList = this.guidedService.cart['who-individual']?.["Identity"];
+            if(identityList){
+                let identityObj = identityList.find(o => o.cartId === this.cartId[0]);
+                if(identityObj?.extensions) {
+                     const ext = identityObj.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                     if(ext?.email_addresses) {
+                        ext.email_addresses = ext.email_addresses.filter(c => c.email_address_ref !== currObject.email_address_ref);
+                     }
+
+                     // If both arrays are empty, remove the extension entirely
+                     const noPhones = !ext.contact_numbers || ext.contact_numbers.length === 0;
+                     const noEmails = !ext.email_addresses || ext.email_addresses.length === 0;
+
+                     if(noPhones && noEmails) {
+                        delete identityObj.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                        if(Object.keys(identityObj.extensions).length === 0) delete identityObj.extensions;
+                     }
+                }
+            }
         }
     }
 
