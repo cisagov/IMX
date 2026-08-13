@@ -1,3 +1,9 @@
+## 4.17.2 (2026-08-13)
+
+### Bug Fixes
+
+* updated URL intel summary tab + few other things 3cbf6eb
+
 ## 4.17.1 (2026-08-13)
 
 ### Bug Fixes
