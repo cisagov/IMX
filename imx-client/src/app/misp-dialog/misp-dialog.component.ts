@@ -58,56 +58,21 @@ export class MispDialogComponent implements OnInit {
         try {
             await this.envService.checkAuth('/bundle');
             this.isLoading = true;
+            let indicators;
 
-            let classification = this.mispService.validateAndClassifyInputs(this.textBody.toString());
-
-            if (classification.invalid.length > 0) {
-                const extracted = await this.extractIndicatorsFromText(this.textBody.toString());
-                if (extracted) {
-                    this.textBody = extracted;
-                    classification = this.mispService.validateAndClassifyInputs(extracted);
-                }
-            }
-
-            if (classification.cidr.length > 0) {
-                const cidrList = classification.cidr.join(', ');
-                this.announcementService.show(
-                    'Invalid Input',
-                    `CIDR ranges are not supported, please enter individual IP addresses: ${cidrList}`,
-                    'warning',
-                    false
-                );
-                this.isLoading = false;
-                return;
-            }
-
-            if (classification.invalid.length > 0) {
-                const invalidList = classification.invalid.join(', ');
-                this.announcementService.show(
-                    'Invalid Input',
-                    `The following entries are not valid IP addresses or hashes: ${invalidList}`,
-                    'warning',
-                    false
-                );
-                if (classification.sha1.length === 0 && classification.sha256.length === 0 && classification.md5.length === 0) {
-                    this.isLoading = false;
-                    return;
-                }
-            }
-
-            const totalIndicators = classification.sha1.length + classification.sha256.length + classification.md5.length;
-            if (totalIndicators > this.linesMax) {
-                this.announcementService.show(
-                    'Too Many Indicators',
-                    `Found ${totalIndicators} indicators but the maximum is ${this.linesMax}. Please reduce the number of IPs/hashes.`,
-                    'warning',
-                    false
-                );
-                this.isLoading = false;
-                return;
-            }
-
-            const indicators = this.mispService.mapClassification(classification);
+            // if (!freeText)
+            //     indicators = await this.onParseType();
+            // else {
+            const splitRegex = /[,\s;!?=<>]+|\r|\n/;
+            indicators = [];
+            this.textBody
+                .toString()
+                .split(splitRegex)
+                .filter((word) => word.trim() !== '')
+                .forEach((searchValue) => {
+                    indicators.push({ searchall: `${searchValue}` });
+                });
+            // }
 
             this.results = await this.mispService.searchMisp(indicators);
             this.hasResult = true;
@@ -116,6 +81,58 @@ export class MispDialogComponent implements OnInit {
             this.announcementService.show('Error while searching', `${err.message}`, 'error', false);
             this.isLoading = false;
         }
+    }
+
+    async onParseType() {
+        let classification = this.mispService.validateAndClassifyInputs(this.textBody.toString());
+
+        if (classification.invalid.length > 0) {
+            const extracted = await this.extractIndicatorsFromText(this.textBody.toString());
+            if (extracted) {
+                this.textBody = extracted;
+                classification = this.mispService.validateAndClassifyInputs(extracted);
+            }
+        }
+
+        if (classification.cidr.length > 0) {
+            const cidrList = classification.cidr.join(', ');
+            this.announcementService.show(
+                'Invalid Input',
+                `CIDR ranges are not supported, please enter individual IP addresses: ${cidrList}`,
+                'warning',
+                false
+            );
+            this.isLoading = false;
+            return [];
+        }
+
+        if (classification.invalid.length > 0) {
+            const invalidList = classification.invalid.join(', ');
+            this.announcementService.show(
+                'Invalid Input',
+                `The following entries are not valid IP addresses or hashes: ${invalidList}`,
+                'warning',
+                false
+            );
+            if (classification.sha1.length === 0 && classification.sha256.length === 0 && classification.md5.length === 0) {
+                this.isLoading = false;
+                return [];
+            }
+        }
+
+        const totalIndicators = classification.sha1.length + classification.sha256.length + classification.md5.length;
+        if (totalIndicators > this.linesMax) {
+            this.announcementService.show(
+                'Too Many Indicators',
+                `Found ${totalIndicators} indicators but the maximum is ${this.linesMax}. Please reduce the number of IPs/hashes.`,
+                'warning',
+                false
+            );
+            this.isLoading = false;
+            return [];
+        }
+
+        return this.mispService.mapClassification(classification);
     }
 
     onX() {

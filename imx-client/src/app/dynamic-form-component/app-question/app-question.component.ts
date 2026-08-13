@@ -54,6 +54,7 @@ import { DynamicFormComponent } from '../dynamic-form/dynamic-form.component';
 import { faArrowRight, faBan, faArrowLeft, faSave, faUndo, faPlusCircle, faTools } from '@fortawesome/free-solid-svg-icons';
 import { PatternBuilderComponent } from 'src/app/dialogs/pattern-builder/pattern-builder.component';
 import { MultipartDialogComponent } from 'src/app/dialogs/multipart-dialog/multipart-dialog.component';
+import { IdentityExtensionDialogComponent } from 'src/app/dialogs/identity-extension-dialog/identity-extension-dialog.component';
 import { WindowsValueDialogComponent } from 'src/app/dialogs/windows-value-dialog/windows-value-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment';
@@ -209,6 +210,7 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         public dynamicForm: DynamicFormComponent,
         public patternBuilderDialog: MatDialog,
         public multipartDialog: MatDialog,
+        public identityDialog: MatDialog,
         public windowsValueDialog: MatDialog,
         private decider: DeciderServiceService,
         private envService: EnvService,
@@ -1332,7 +1334,109 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
                     }
                 });
                 break;
+            case 'email_address':
+                let emailRefs = this.getEmailExtensionRefs();
+                let emailIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
+                    data: {
+                        type: 'Email Address',
+                        entry: this.currentModalObject,
+                        allowedRefs: emailRefs
+                     },
+                    minHeight: '450px',
+                    maxHeight: '90vh',
+                    width: '750px',
+                    maxWidth: '95vw',
+                });
+
+                emailIdentityRef.afterClosed().subscribe((result) => {
+                    if (result) {
+
+                        Object.keys(this.currentModalObject).forEach(key => {
+                            if(!(key in result))
+                                delete this.currentModalObject[key];
+                        });
+
+                        Object.assign(this.currentModalObject, result);
+                        this.addModalObject('email_address');
+                        this.isAddEnabled.emit();
+                    }
+                });
+                break;
+            case 'phone_number':
+                let phoneIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
+                    data: {
+                        type: 'Phone Number',
+                        entry: this.currentModalObject
+                     },
+                    minHeight: '450px',
+                    maxHeight: '90vh',
+                    width: '750px',
+                    maxWidth: '95vw',
+                });
+
+                phoneIdentityRef.afterClosed().subscribe((result) => {
+                    if (result) {
+
+                        Object.keys(this.currentModalObject).forEach(key => {
+                            if(!(key in result))
+                                delete this.currentModalObject[key];
+                        });
+
+                        Object.assign(this.currentModalObject, result);
+                        this.addModalObject('phone_number');
+                        this.isAddEnabled.emit();
+                    }
+                });
+                break;
+            case 'social_media':
+                let socialRefs = this.getSocialExtensionRefs();
+                let socialIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
+                    data: {
+                        type: 'Social Media',
+                        entry: this.currentModalObject,
+                        allowedRefs: socialRefs
+                     },
+                    minHeight: '450px',
+                    maxHeight: '90vh',
+                    width: '750px',
+                    maxWidth: '95vw',
+                });
+
+                socialIdentityRef.afterClosed().subscribe((result) => {
+                    if (result) {
+
+                        Object.keys(this.currentModalObject).forEach(key => {
+                            if(!(key in result))
+                                delete this.currentModalObject[key];
+                        });
+
+                        Object.assign(this.currentModalObject, result);
+                        this.addModalObject('social_media');
+                        this.isAddEnabled.emit();
+                    }
+                });
+                break;
         }
+    }
+
+    getEmailExtensionRefs() {
+        let result = this.stixService.bundle.objects;
+        return result.filter((obj) => obj.type === 'email-addr');
+    }
+
+    getSocialExtensionRefs() {
+        let result = this.stixService.bundle.objects;
+        return result.filter((obj) => obj.type === 'user-account');
+    }
+
+    getFilteredModalObjectArray(type: string) {
+        if(type === 'email_address')
+            return this.stixService.modalObjectArray.filter(obj => obj.email_address_ref !== undefined && obj.email_address_ref !== null);
+        else if (type === 'phone_number')
+            return this.stixService.modalObjectArray.filter(obj => obj.contact_number !== undefined && obj.contact_number !== null);
+        else if(type === 'social_media')
+            return this.stixService.modalObjectArray.filter(obj => obj.user_account_ref !== undefined && obj.user_account_ref !== null);
+        else return null;
     }
 
     getEmailMessageAllowedRefs() {
@@ -1612,6 +1716,23 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         } else heading = curr['body_raw_ref'];
 
         return heading;
+    }
+
+    getIdentityHeading(curr: any, type: string): string {
+        let result = null;
+
+        if (type === 'email_address')
+            result = this.getObjectById(curr.email_address_ref).value;
+        if (type === 'phone_number')
+            result = curr.contact_number;
+        if (type === 'social_media')
+            result = this.getObjectById(curr.user_account_ref).user_id || this.getObjectById(curr.user_account_ref).display_name || this.getObjectById(curr.user_account_ref).id;
+        return result;
+    }
+
+    getUserAccountHeading(curr: any): string {
+        let userAccountObject = this.getObjectById(curr.user_account_ref);
+        return userAccountObject.value;
     }
 
     getExtTypeOpt(options: { key: string; value: string }[]): { key: string; value: string }[] {

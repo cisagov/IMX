@@ -2112,242 +2112,456 @@
             </div>
         </div>
 
-        <!-- Email Address Ref (Fix Readonly)-->
-        <div class="" *ngSwitchCase="'email-address'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
-            <span *ngIf="stixService.guidedUI" class="tooltipright" [ngClass]="{ 'display-flex mt-1 pe-1': stixService.guidedUI }">
-                <p class="float-start nowrap input-header">{{ questionLabel(question) }}</p>
-                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
-                    Dropdown option displays email addresses currently in the bundle.<br />Use the text box on the right to manually<br />enter a custom
-                    email address.
-                </span>
-                <span *ngIf="tooltip" class="">
-                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                    <div class="toolttext" [innerHTML]="tooltip"></div>
-                </span>
-            </span>
-            <select
-                *ngIf="stixService.guidedUI"
-                id="email-address"
-                [formControlName]="question.key"
-                class="form-control form-select dropdown"
-                [ngClass]="{ '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
-                [(ngModel)]="question.relString"
-                [disabled]="question.readonly"
-            >
-                <option value=""></option>
-                <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
-            </select>
-
-            <div *ngIf="!stixService.guidedUI" class="row pb-3">
-                <div class="col">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 float-end">
-                            <span id="{{ question.key }}_title" class="tooltipright">
-                                <span class="float-start nowrap input-header">{{ questionLabel(question) }}</span>
-                                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
-                                    Dropdown option displays email addresses currently in the bundle.<br />Use the text box on the right to manually<br />enter
-                                    a custom email address.
+        <!-- Phone Number Contact Information (No Readonly) -->
+        <div class="" *ngSwitchCase="'phone-number'" [ngClass]="{ 'display-flex input-group w-100 p-0 ms-15': stixService.guidedUI }">
+            <div *ngIf="stixService.guidedUI" class="row w-100 p-0">
+                <div class="col-12 p-0">
+                    <div class="row w-100 m-0">
+                        <div class="col-12 p-0" [ngClass]="{ 'display-inline-flex': stixService.guidedUI }">
+                            <div [ngClass]="{ 'float-start display-flex  ': stixService.guidedUI }">
+                                <span class="nowrap" [ngClass]="{ ' mt-1 pe-1': stixService.guidedUI }">
+                                    <p class="input-header">{{ questionLabel(question) }}</p>
                                 </span>
-                                <span *ngIf="tooltip" class="">
-                                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                                    <div class="toolttext" [innerHTML]="tooltip"></div>
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 d-flex" style="align-items: start;">
-                            <div class="me-2 w-50">
-                                <select
-                                    id="email-address-type"
-                                    [ngModelOptions]="{standalone:true}"
-                                    class="form-control form-select dropdown"
-                                    [(ngModel)]="question['emailAddressType']"
-                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': !question['emailAddressType'] }"
-                                    [disabled]="question.readonly"
-                                >
-                                    <option value="">Email Address Type</option>
-                                    <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
-                                </select>
-                            </div>
-                            <div class="w-50">
-                                <select
-                                    id="email-address"
-                                    [formControlName]="question.key"
-                                    class="form-control form-select dropdown"
-                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': emptyDropdown() }"
-                                    [(ngModel)]="question.relString"
-                                    [disabled]="question.readonly"
-                                >
-                                    <option value="">Email Address Ref</option>
-                                    <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
-                                </select>
-                                <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
-                                    {{ validationMessage }}
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Phone Number (Fix Readonly)-->
-        <div class="" *ngSwitchCase="'phone-number'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
-            <span *ngIf="stixService.guidedUI" class="tooltipright" [ngClass]="{ 'display-flex mt-1 pe-1': stixService.guidedUI }">
-                <p class="float-start nowrap input-header">{{ questionLabel(question) }}</p>
-                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
-                    Dropdown option displays email addresses currently in the bundle. Choose an email address from the dropdown and optionally select an email address type and classification.
-                </span>
-                <span *ngIf="tooltip" class="">
-                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                    <div class="toolttext" [innerHTML]="tooltip"></div>
-                </span>
-            </span>
-            <select
-                *ngIf="stixService.guidedUI"
-                id="phone-number"
-                [formControlName]="question.key"
-                class="form-control form-select dropdown"
-                [ngClass]="{ '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
-                [(ngModel)]="question.relString"
-                [disabled]="question.readonly"
-            >
-                <option value=""></option>
-                <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
-            </select>
-
-            <div *ngIf="!stixService.guidedUI" class="row pb-3">
-                <div class="col">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 float-end">
-                            <span id="{{ question.key }}_title" class="tooltipright">
-                                <span class="float-start nowrap input-header">{{ questionLabel(question) }}</span>
-                                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
-                                    Enter a phone number and optionally select a phone type and classification.
-                                </span>
-                                <span *ngIf="tooltip" class="">
-                                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                                    <div class="toolttext" [innerHTML]="tooltip"></div>
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 d-flex" style="flex-direction: column;">
-                            <div class="input-fields d-flex" style="align-items: start;">
-                                <div class="me-2 w-50">
-                                <select
-                                    id="phone-number-type"
-                                    [ngModelOptions]="{standalone:true}"
-                                    class="form-control form-select dropdown"
-                                    [ngClass]="{'select-placeholder': !question['phoneType']}"
-                                    [(ngModel)]="question['phoneType']"
-                                    [disabled]="question.readonly"
-                                >
-                                    <option value="">Phone Number Type</option>
-                                    <option *ngFor="let opt of contactNumberOptions" [value]="opt">{{ opt }}</option>
-                                </select>
-                            </div>
-                            <div class="w-50">
                                 <input
-                                    id="phone-number"
-                                    [formControlName]="question.key"
+                                    *ngIf="stixService.guidedUI"
+                                    type="text"
                                     class="form-control"
-                                    placeholder="Phone Number"
-                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': emptyDropdown() }"
-                                    [(ngModel)]="question.value"
-                                    [disabled]="question.readonly"
+                                    [formControlName]="question.key"
+                                    [id]="question.key"
+                                    [placeholder]="question.placeholder"
+                                    [value]="question.value"
+                                    readonly="true"
+                                    style="text-align: center"
                                 />
-                                <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
-                                    {{ validationMessage }}
+                            </div>
+                            <div class="input-group" [ngClass]="{ 'float-start': stixService.guidedUI }">
+                                <input
+                                    *ngIf="!stixService.guidedUI"
+                                    type="text"
+                                    class="form-control"
+                                    [formControlName]="question.key"
+                                    [id]="question.key"
+                                    [placeholder]="question.placeholder"
+                                    [value]="question.value"
+                                    readonly="true"
+                                    style="text-align: center"
+                                />
+                                <ng-container *ngIf="!question.readonly">
+                                    <button
+                                        class="btn btn-fa-sm btn-color"
+                                        type="button"
+                                        (click)="openModal('phone_number')"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="getFilteredModalObjectArray('phone_number') && getFilteredModalObjectArray('phone_number').length > 0" class="col-12 p-0">
+                    <div class="form-group mt-2 bump">
+                        <accordion>
+                            <accordion-group
+                                *ngFor="let x of getFilteredModalObjectArray('phone_number'); let i = index"
+                                [heading]="getBody_MultipartHeading(x)"
+                                [panelClass]="'accordion-panel-class'"
+                            >
+                                <div *ngIf="!this.stixService.customObjReadOnly" class="row">
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-fa btn-color me-2" (click)="editModalObject(x, 'phone_number', i)">
+                                            <fa-icon [icon]="faEdit"></fa-icon>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-fa btn-warning"
+                                            style="background-color: rgb(210, 0, 0)"
+                                            (click)="deleteModalObject(x)"
+                                        >
+                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <pre>{{ x | json }}</pre>
+                            </accordion-group>
+                        </accordion>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
+                <div class="col">
+                        <div class="col stix-title ms-0 d-flex flex-column">
+                            <div id="{{ question.key }}_title" class="d-flex">
+                                <p class="input-header">{{ questionLabel(question) }}</p>
+                                <div class="col">
+                                    <div class="d-flex" [ngClass]="{ 'is-invalid': !isValid }">
+                                        <ng-container *ngIf="!question.readonly">
+                                            <button
+                                                id="{{ question.key }}_add"
+                                                class="btn btn-fa-sm btn-color ms-auto"
+                                                type="button"
+                                                (click)="openModal('phone_number')"
+                                            >
+                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                            </button>
+                                        </ng-container>
+                                    </div>
+                                    <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
+                                        {{ validationMessage }}
+                                    </div>
                                 </div>
                             </div>
-                            </div>
+                        </div>
 
+                    <!-- Accordion for Non-Guided -->
+                    <div *ngIf="getFilteredModalObjectArray('phone_number') && getFilteredModalObjectArray('phone_number').length > 0" class="row">
+                        <div class="col" style="text-decoration: none !important">
+                            <!-- template for json   -->
+                            <accordion>
+                                <accordion-group
+                                    *ngFor="let x of getFilteredModalObjectArray('phone_number'); let i = index"
+                                    tabindex="0"
+                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
+                                    [isDisabled]="false"
+                                >
+                                    <div
+                                        id="{{ question.key }}_list{{ i }}"
+                                        *ngIf="!this.stixService.customObjReadOnly"
+                                        class="row justify-content-between d-flex pt-0 pb-0"
+                                        accordion-heading
+                                        type="button"
+                                    >
+                                        <div class="col d-flex justify-content-between align-items-center">
+                                            <div class="btn btn-link">
+                                                {{ getIdentityHeading(x, 'phone_number') }}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-sm btn-color me-2 list-trash"
+                                                (click)="editModalObject(x, 'phone_number', i)"
+                                            >
+                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                            </button>
+                                            <button
+                                                id="{{ question.key }}_list{{ i }}_delete"
+                                                class="btn btn-fa-sm btn-color list-trash"
+                                                type="button"
+                                                [disabled]="question.readonly"
+                                                (click)="deleteModalObject(x)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </div>
 
+                                    <pre>{{ x | json }}</pre>
+                                </accordion-group>
+                            </accordion>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Social Media Ref (Fix Readonly)-->
-        <div class="" *ngSwitchCase="'social-media'" [ngClass]="{ 'display-flex ': stixService.guidedUI }">
-            <span *ngIf="stixService.guidedUI" class="tooltipright" [ngClass]="{ 'display-flex mt-1 pe-1': stixService.guidedUI }">
-                <p class="float-start nowrap input-header">{{ questionLabel(question) }}</p>
-                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
-                    Dropdown option displays user acocunts currently in the bundle.<br />Use the text box on the right to manually<br />enter a custom
-                    user account.
-                </span>
-                <span *ngIf="tooltip" class="">
-                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                    <div class="toolttext" [innerHTML]="tooltip"></div>
-                </span>
-            </span>
-            <select
-                *ngIf="stixService.guidedUI"
-                id="social-media"
-                [formControlName]="question.key"
-                class="form-control form-select dropdown"
-                [ngClass]="{ '': stixService.guidedUI, 'select-placeholder': emptyDropdown() }"
-                [(ngModel)]="question.relString"
-                [disabled]="question.readonly"
-            >
-                <option value=""></option>
-                <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
-            </select>
+        <!-- Email Address Contact Information (No Readonly) -->
+        <div class="" *ngSwitchCase="'email-address'" [ngClass]="{ 'display-flex input-group w-100 p-0 ms-15': stixService.guidedUI }">
+            <div *ngIf="stixService.guidedUI" class="row w-100 p-0">
+                <div class="col-12 p-0">
+                    <div class="row w-100 m-0">
+                        <div class="col-12 p-0" [ngClass]="{ 'display-inline-flex': stixService.guidedUI }">
+                            <div [ngClass]="{ 'float-start display-flex  ': stixService.guidedUI }">
+                                <span class="nowrap" [ngClass]="{ ' mt-1 pe-1': stixService.guidedUI }">
+                                    <p class="input-header">{{ questionLabel(question) }}</p>
+                                </span>
+                                <input
+                                    *ngIf="stixService.guidedUI"
+                                    type="text"
+                                    class="form-control"
+                                    [formControlName]="question.key"
+                                    [id]="question.key"
+                                    [placeholder]="question.placeholder"
+                                    [value]="question.value"
+                                    readonly="true"
+                                    style="text-align: center"
+                                />
+                            </div>
+                            <div class="input-group" [ngClass]="{ 'float-start': stixService.guidedUI }">
+                                <input
+                                    *ngIf="!stixService.guidedUI"
+                                    type="text"
+                                    class="form-control"
+                                    [formControlName]="question.key"
+                                    [id]="question.key"
+                                    [placeholder]="question.placeholder"
+                                    [value]="question.value"
+                                    readonly="true"
+                                    style="text-align: center"
+                                />
+                                <ng-container *ngIf="!question.readonly">
+                                    <button
+                                        class="btn btn-fa-sm btn-color"
+                                        type="button"
+                                        (click)="openModal('email_address')"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="getFilteredModalObjectArray('email_address') && getFilteredModalObjectArray('email_address').length > 0" class="col-12 p-0">
+                    <div class="form-group mt-2 bump">
+                        <accordion>
+                            <accordion-group
+                                *ngFor="let x of getFilteredModalObjectArray('email_address'); let i = index"
+                                [heading]="getBody_MultipartHeading(x)"
+                                [panelClass]="'accordion-panel-class'"
+                            >
+                                <div *ngIf="!this.stixService.customObjReadOnly" class="row">
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-fa btn-color me-2" (click)="editModalObject(x, 'email_address', i)">
+                                            <fa-icon [icon]="faEdit"></fa-icon>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-fa btn-warning"
+                                            style="background-color: rgb(210, 0, 0)"
+                                            (click)="deleteModalObject(x)"
+                                        >
+                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <pre>{{ x | json }}</pre>
+                            </accordion-group>
+                        </accordion>
+                    </div>
+                </div>
+            </div>
 
             <div *ngIf="!stixService.guidedUI" class="row pb-3">
                 <div class="col">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 float-end">
-                            <span id="{{ question.key }}_title" class="tooltipright">
-                                <span class="float-start nowrap input-header">{{ questionLabel(question) }}</span>
-                                <span class="float-start" *ngIf="!tooltip" class="toolttext text-center">
-                                    Dropdown option displays user accounts currently in the bundle.<br />Use the text box on the right to manually<br />enter
-                                    a custom user account.
-                                </span>
-                                <span *ngIf="tooltip" class="">
-                                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                                    <div class="toolttext" [innerHTML]="tooltip"></div>
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 d-flex" style="align-items: start;">
-                            <div class="me-2 w-50">
-                                <select
-                                    id="social-media-type"
-                                    [ngModelOptions]="{standalone:true}"
-                                    class="form-control form-select dropdown"
-                                    [ngClass]="{'select-placeholder': !question['socialMediaType'] }"
-                                    [(ngModel)]="question['socialMediaType']"
-                                    [disabled]="question.readonly"
-                                >
-                                    <option value="">Social Media Type</option>
-                                    <option *ngFor="let opt of digitalNumberOptions" [value]="opt">{{ opt }}</option>
-                                </select>
-                            </div>
-                            <div class="w-50">
-                                <select
-                                    id="social-media"
-                                    [formControlName]="question.key"
-                                    class="form-control form-select dropdown"
-                                    [ngClass]="{ 'is-invalid': !isValid && validationMessage, 'select-placeholder': emptyDropdown() }"
-                                    [(ngModel)]="question.relString"
-                                    [disabled]="question.readonly"
-                                >
-                                    <option value="">Social Media Ref</option>
-                                    <option *ngFor="let opt of question.options" [value]="opt.key">{{ opt.value }}</option>
-                                </select>
-                                <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
-                                    {{ validationMessage }}
+                        <div class="col stix-title ms-0 d-flex flex-column">
+                            <div id="{{ question.key }}_title" class="d-flex">
+                                <p class="input-header">{{ questionLabel(question) }}</p>
+                                <div class="col">
+                                    <div class="d-flex" [ngClass]="{ 'is-invalid': !isValid }">
+                                        <ng-container *ngIf="!question.readonly">
+                                            <button
+                                                id="{{ question.key }}_add"
+                                                class="btn btn-fa-sm btn-color ms-auto"
+                                                type="button"
+                                                (click)="openModal('email_address')"
+                                            >
+                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                            </button>
+                                        </ng-container>
+                                    </div>
+                                    <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
+                                        {{ validationMessage }}
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
+                    <!-- Accordion for Non-Guided -->
+                    <div *ngIf="getFilteredModalObjectArray('email_address') && getFilteredModalObjectArray('email_address').length > 0" class="row">
+                        <div class="col" style="text-decoration: none !important">
+                            <!-- template for json   -->
+                            <accordion>
+                                <accordion-group
+                                    *ngFor="let x of getFilteredModalObjectArray('email_address'); let i = index"
+                                    tabindex="0"
+                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
+                                    [isDisabled]="false"
+                                >
+                                    <div
+                                        id="{{ question.key }}_list{{ i }}"
+                                        *ngIf="!this.stixService.customObjReadOnly"
+                                        class="row justify-content-between d-flex pt-0 pb-0"
+                                        accordion-heading
+                                        type="button"
+                                    >
+                                        <div class="col d-flex justify-content-between align-items-center">
+                                            <div class="btn btn-link">
+                                                {{ getIdentityHeading(x, 'email_address') }}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-sm btn-color me-2 list-trash"
+                                                (click)="editModalObject(x, 'email_address', i)"
+                                            >
+                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                            </button>
+                                            <button
+                                                id="{{ question.key }}_list{{ i }}_delete"
+                                                class="btn btn-fa-sm btn-color list-trash"
+                                                type="button"
+                                                [disabled]="question.readonly"
+                                                (click)="deleteModalObject(x)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <pre>{{ x | json }}</pre>
+                                </accordion-group>
+                            </accordion>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media Contact Information (No Readonly) -->
+        <div class="" *ngSwitchCase="'social-media'" [ngClass]="{ 'display-flex input-group w-100 p-0 ms-15': stixService.guidedUI }">
+            <div *ngIf="stixService.guidedUI" class="row w-100 p-0">
+                <div class="col-12 p-0">
+                    <div class="row w-100 m-0">
+                        <div class="col-12 p-0" [ngClass]="{ 'display-inline-flex': stixService.guidedUI }">
+                            <div [ngClass]="{ 'float-start display-flex  ': stixService.guidedUI }">
+                                <span class="nowrap" [ngClass]="{ ' mt-1 pe-1': stixService.guidedUI }">
+                                    <p class="input-header">{{ questionLabel(question) }}</p>
+                                </span>
+                                <input
+                                    *ngIf="stixService.guidedUI"
+                                    type="text"
+                                    class="form-control"
+                                    [formControlName]="question.key"
+                                    [id]="question.key"
+                                    [placeholder]="question.placeholder"
+                                    [value]="question.value"
+                                    readonly="true"
+                                    style="text-align: center"
+                                />
+                            </div>
+                            <div class="input-group" [ngClass]="{ 'float-start': stixService.guidedUI }">
+                                <input
+                                    *ngIf="!stixService.guidedUI"
+                                    type="text"
+                                    class="form-control"
+                                    [formControlName]="question.key"
+                                    [id]="question.key"
+                                    [placeholder]="question.placeholder"
+                                    [value]="question.value"
+                                    readonly="true"
+                                    style="text-align: center"
+                                />
+                                <ng-container *ngIf="!question.readonly">
+                                    <button
+                                        class="btn btn-fa-sm btn-color"
+                                        type="button"
+                                        (click)="openModal('social_media')"
+                                    >
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="getFilteredModalObjectArray('social_media') && getFilteredModalObjectArray('social_media').length > 0" class="col-12 p-0">
+                    <div class="form-group mt-2 bump">
+                        <accordion>
+                            <accordion-group
+                                *ngFor="let x of getFilteredModalObjectArray('social_media'); let i = index"
+                                [heading]="getBody_MultipartHeading(x)"
+                                [panelClass]="'accordion-panel-class'"
+                            >
+                                <div *ngIf="!this.stixService.customObjReadOnly" class="row">
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-fa btn-color me-2" (click)="editModalObject(x, 'social_media', i)">
+                                            <fa-icon [icon]="faEdit"></fa-icon>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-fa btn-warning"
+                                            style="background-color: rgb(210, 0, 0)"
+                                            (click)="deleteModalObject(x)"
+                                        >
+                                            <fa-icon [icon]="faTrash"></fa-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <pre>{{ x | json }}</pre>
+                            </accordion-group>
+                        </accordion>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="!stixService.guidedUI" class="row pb-3">
+                <div class="col">
+                        <div class="col stix-title ms-0 d-flex flex-column">
+                            <div id="{{ question.key }}_title" class="d-flex">
+                                <p class="input-header">{{ questionLabel(question) }}</p>
+                                <div class="col">
+                                    <div class="d-flex" [ngClass]="{ 'is-invalid': !isValid }">
+                                        <ng-container *ngIf="!question.readonly">
+                                            <button
+                                                id="{{ question.key }}_add"
+                                                class="btn btn-fa-sm btn-color ms-auto"
+                                                type="button"
+                                                (click)="openModal('social_media')"
+                                            >
+                                                <fa-icon [icon]="faPlus"></fa-icon>
+                                            </button>
+                                        </ng-container>
+                                    </div>
+                                    <div id="{{ question.key }}_error" class="invalid-feedback" *ngIf="!isValid">
+                                        {{ validationMessage }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- Accordion for Non-Guided -->
+                    <div *ngIf="getFilteredModalObjectArray('social_media') && getFilteredModalObjectArray('social_media').length > 0" class="row">
+                        <div class="col" style="text-decoration: none !important">
+                            <!-- template for json   -->
+                            <accordion>
+                                <accordion-group
+                                    *ngFor="let x of getFilteredModalObjectArray('social_media'); let i = index"
+                                    tabindex="0"
+                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
+                                    [isDisabled]="false"
+                                >
+                                    <div
+                                        id="{{ question.key }}_list{{ i }}"
+                                        *ngIf="!this.stixService.customObjReadOnly"
+                                        class="row justify-content-between d-flex pt-0 pb-0"
+                                        accordion-heading
+                                        type="button"
+                                    >
+                                        <div class="col d-flex justify-content-between align-items-center">
+                                            <div class="btn btn-link">
+                                                {{ getIdentityHeading(x, 'social_media') }}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                class="btn btn-fa-sm btn-color me-2 list-trash"
+                                                (click)="editModalObject(x, 'social_media', i)"
+                                            >
+                                                <fa-icon [icon]="faEdit"></fa-icon>
+                                            </button>
+                                            <button
+                                                id="{{ question.key }}_list{{ i }}_delete"
+                                                class="btn btn-fa-sm btn-color list-trash"
+                                                type="button"
+                                                [disabled]="question.readonly"
+                                                (click)="deleteModalObject(x)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <pre>{{ x | json }}</pre>
+                                </accordion-group>
+                            </accordion>
                         </div>
                     </div>
                 </div>

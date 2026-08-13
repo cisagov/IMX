@@ -1,3 +1,25 @@
+## [4.17.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.0...v4.17.1) (2026-08-13)
+
+### Bug Fixes
+
+* adjust guided identity extension to accept multiple contact information objects ([c48ca8e](https://git.va.th.ten/eos/cde/tie/imx/commit/c48ca8e8c508b16ec5b1c443a4a964fe9398d011))
+* adjust standard identity extension to accept multiple contact information objects ([f4439db](https://git.va.th.ten/eos/cde/tie/imx/commit/f4439db3e22f86c04047e85ba43465dfb482dbe2))
+* allow editing contact information in guided, styling adjustments ([fc53cb6](https://git.va.th.ten/eos/cde/tie/imx/commit/fc53cb62c2bbd13f9aebacbde29995f9bdc71e2e))
+* preserve observables to persist after identity object creation ([7c78875](https://git.va.th.ten/eos/cde/tie/imx/commit/7c788752e2f056033ada7e02f57d62e0b808c7d2))
+* remove the extension array if no extensions are left ([b779636](https://git.va.th.ten/eos/cde/tie/imx/commit/b779636aa8e3161be9529f76d6dd811806513b35))
+
+## [4.17.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.16.0...v4.17.0) (2026-08-13)
+
+### Features
+
+* implement wildcard search for misp integration ([e41d029](https://git.va.th.ten/eos/cde/tie/imx/commit/e41d02934c489ade5e1bda920137ebf7e2a96a03))
+
+## [4.16.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.15.0...v4.16.0) (2026-08-13)
+
+### Features
+
+* added IOB support to editor & search ([e1f4d13](https://git.va.th.ten/eos/cde/tie/imx/commit/e1f4d130f3c416f09b8b760d4147eea6ef7ecd16))
+
 ## [4.15.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.14.4...v4.15.0) (2026-08-07)
 
 ### Features
