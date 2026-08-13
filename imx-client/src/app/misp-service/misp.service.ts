@@ -25,43 +25,43 @@ export class MispService {
 
                     const addedSet = new Set();
 
-                    result.data.forEach((elem) => {
-                        if (elem.misp?.response?.length == 0 && elem.stix2?.objects?.length == 0) {
+                    result.data.forEach((searchResult) => {
+                        if (!searchResult.misp && searchResult?.stix?.objects?.length == 0) {
                             return;
                         }
 
-                        if (!elem.type) {
-                            const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-                            const ipv6Regex =
-                                /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
-                            if (ipv4Regex.test(elem.value)) elem.type = 'IPv4';
-                            else if (ipv6Regex.test(elem.value)) elem.type = 'IPv6';
-                            else elem.type = 'Unidentified';
-                        }
+                        // if (!elem.type) {
+                        //     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                        //     const ipv6Regex =
+                        //         /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+                        //     if (ipv4Regex.test(elem.value)) elem.type = 'IPv4';
+                        //     else if (ipv6Regex.test(elem.value)) elem.type = 'IPv6';
+                        //     else elem.type = 'Unidentified';
+                        // }
 
-                        elem.expanded = false;
-                        elem.checked = true;
-                        elem.selectAll = true;
-                        elem.tab = 'misp';
-                        elem.misp = elem.misp.response[0].Event;
-                        elem.eventId = elem.misp.id;
+                        searchResult.expanded = false;
+                        searchResult.checked = false;
+                        searchResult.selectAll = true;
+                        searchResult.tab = 'misp';
+                        searchResult.misp = searchResult.misp.Event;
+                        searchResult.eventId = searchResult.misp.id;
 
-                        elem.checkedObjectsMap = new Map();
+                        searchResult.checkedObjectsMap = new Map();
 
-                        elem.stix2?.objects.forEach((stixObj) => {
-                            elem.checkedObjectsMap.set(stixObj.id, { checked: true, object: stixObj });
+                        searchResult.stix?.objects.forEach((stixObj) => {
+                            searchResult.checkedObjectsMap.set(stixObj.id, { checked: true, object: stixObj });
                         });
 
-                        if (!addedSet.has(elem.eventId)) {
-                            events.push(elem);
-                            addedSet.add(elem.eventId);
+                        if (!addedSet.has(searchResult.eventId)) {
+                            events.push(searchResult);
+                            addedSet.add(searchResult.eventId);
                         } else {
-                            const foundEvent = events.find((event) => event.eventId == elem.eventId);
+                            const foundEvent = events.find((event) => event.eventId == searchResult.eventId);
 
                             if (foundEvent) {
                                 if (!foundEvent.additionalValues) foundEvent.additionalValues = [];
 
-                                foundEvent.additionalValues.push({ type: elem.type, value: elem.value });
+                                foundEvent.additionalValues.push({ searchall: searchResult.searchall });
                             }
                         }
                     });
