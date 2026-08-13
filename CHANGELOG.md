@@ -1,3 +1,9 @@
+## [4.17.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.16.0...v4.17.0) (2026-08-13)
+
+### Features
+
+* implement wildcard search for misp integration ([e41d029](https://git.va.th.ten/eos/cde/tie/imx/commit/e41d02934c489ade5e1bda920137ebf7e2a96a03))
+
 ## [4.16.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.15.0...v4.16.0) (2026-08-13)
 
 ### Features
