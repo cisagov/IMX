@@ -1,3 +1,15 @@
+## 4.17.0 (2026-08-13)
+
+### Features
+
+* implement wildcard search for misp integration e41d029
+
+## 4.16.0 (2026-08-13)
+
+### Features
+
+* added IOB support to editor & search e1f4d13
+
 ## 4.15.0 (2026-08-07)
 
 ### Features

@@ -1,4 +1,20 @@
 <div>
+    <div id="misp-result-header" class="mb-2">
+        <div class="d-flex justify-content-end pt-2 pb-2 ps-4 pe-3">
+            <div class="pe-3">
+                @if (allExpanded) {
+                    <button class="btn btn-sm btn-outline-secondary me-2" (click)="expandAllEvents()">Collapse All</button>
+                } @else {
+                    <button class="btn btn-sm btn-outline-secondary me-2" (click)="expandAllEvents()">Expand All</button>
+                }
+                @if (allSelected) {
+                    <button class="btn btn-sm btn-outline-secondary" (click)="selectAllEvents()">Deselect All</button>
+                } @else {
+                    <button class="btn btn-sm btn-outline-secondary" (click)="selectAllEvents()">Select All</button>
+                }
+            </div>
+        </div>
+    </div>
     @for (found of results; track found; let ind = $index) {
         <div id="{{ found.eventId }}-card" class="dashboard-card main-card mb-3">
             <div class="d-flex flex-column ps-4 pe-4 pb-3">
@@ -17,10 +33,10 @@
                                 />
                             </div>
                             <div>
-                                <span class="badge bg-primary me-2">
+                                <!-- <span class="badge bg-primary me-2">
                                     {{ found.type.toUpperCase() }}
-                                </span>
-                                <span class="badge bg-success me-3">{{ found.value }}</span>
+                                </span> -->
+                                <span class="badge bg-success me-3">{{ found.searchall }}</span>
                                 <span class="hash-text">{{ found.misp.info }}</span>
                             </div>
                         </div>
@@ -96,28 +112,18 @@
                                 <h5 class="misp-section-header mb-3">Search Values</h5>
                                 <div class="misp-properties section-content">
                                     <div class="misp-property-row">
-                                        <div class="misp-property-label" id="{{ found.eventId }}-search-value">
-                                            <span class="badge bg-primary" style="font-size: 14px">
-                                                {{ found.type.toUpperCase() }}
-                                            </span>
-                                        </div>
                                         <div class="misp-property-value">
                                             <span class="badge bg-success" style="font-size: 14px">
-                                                {{ found.value }}
+                                                {{ found.searchall }}
                                             </span>
                                         </div>
                                     </div>
 
                                     @for (value of found.additionalValues; track value.value; let ind = $index) {
                                         <div class="misp-property-row" id="{{ found.eventId }}-additional-{{ ind }}">
-                                            <div class="misp-property-label">
-                                                <span class="badge bg-primary" style="font-size: 14px">
-                                                    {{ value.type.toUpperCase() }}
-                                                </span>
-                                            </div>
                                             <div class="misp-property-value">
                                                 <span class="badge bg-success" style="font-size: 14px">
-                                                    {{ value.value }}
+                                                    {{ value.searchall }}
                                                 </span>
                                             </div>
                                         </div>
