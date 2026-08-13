@@ -394,6 +394,77 @@ export const STIX_OBJECTS = [
             },
         ],
     },
+    {
+        type: 'iob',
+        displayName: 'Indicators of Behavior',
+        objects: [
+            {
+                displayName: 'OCA Asset',
+                type: 'x-oca-asset',
+                routeName: 'x-oca-asset',
+                objectType: 'iob',
+                description:
+                    'A component of telemetry that describes an asset and its properties, providing<br>context for the events observed on it. References the IP addresses, MAC addresses,<br>operating system, and geolocation associated with the host.',
+            },
+            {
+                displayName: 'OCA Behavior',
+                type: 'x-oca-behavior',
+                routeName: 'x-oca-behavior',
+                objectType: 'iob',
+                description:
+                    'Behavior objects define adversary behaviors associated with higher level MITRE ATT&CK tactics<br>and techniques. The Attack Pattern SDO may have multiple behaviors associated with it. For example,<br>a spearphishing attack may employ multiple behaviors (usage of email attachments,<br>process modifying a registry key, network patterns, etc.).',
+            },
+            {
+                displayName: 'OCA Detection',
+                type: 'x-oca-detection',
+                routeName: 'x-oca-detection',
+                objectType: 'iob',
+                description: 'Detections contain logic to detect an adversary behavior.',
+            },
+            {
+                displayName: 'OCA Detector',
+                type: 'x-oca-detector',
+                routeName: 'x-oca-detector',
+                objectType: 'iob',
+                description:
+                    'Detector objects define tools, software, products, etc. that are capable of<br>performing detection. They should likely be related to one or more Detection objects.',
+            },
+            {
+                displayName: 'OCA Event',
+                type: 'x-oca-event',
+                routeName: 'x-oca-event',
+                objectType: 'iob',
+                description:
+                    'Adds the concept of an event, which STIX lacks because it was created for threat<br>intelligence rather than SIEM or EDR data. Captures the action that occurred,<br>where it occurred, and its outcome, referencing the related Cyber Observable Objects.',
+            },
+            {
+                displayName: 'OCA Geo',
+                type: 'x-oca-geo',
+                routeName: 'x-oca-geo',
+                objectType: 'iob',
+                description:
+                    'Geolocation information for an observed entity. Mimics the attributes of the<br>Location SDO so that geolocation can be referenced from telemetry objects.',
+            },
+            {
+                displayName: 'OCA Playbook',
+                type: 'x-oca-playbook',
+                routeName: 'x-oca-playbook',
+                objectType: 'iob',
+                description:
+                    'A Playbook object represents a structured process, such as an<br>orchestration workflow, alongside associated metadata.',
+            },
+        ],
+    },
+];
+
+export const IOB_OBJECTS_LIST = [
+    'x-oca-asset',
+    'x-oca-behavior',
+    'x-oca-detection',
+    'x-oca-detector',
+    'x-oca-event',
+    'x-oca-geo',
+    'x-oca-playbook',
 ];
 export const STIX_OBJECTS_LIST = [
     'attack-pattern',
@@ -445,4 +516,11 @@ export const STIX_OBJECTS_LIST = [
     'malware-behavior',
     'malware-method',
     'malware-objective',
+    'x-oca-asset',
+    'x-oca-behavior',
+    'x-oca-detection',
+    'x-oca-detector',
+    'x-oca-event',
+    'x-oca-geo',
+    'x-oca-playbook',
 ];

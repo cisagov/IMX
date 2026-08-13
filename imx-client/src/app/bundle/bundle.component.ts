@@ -15,7 +15,7 @@ import {
 import { catchError, forkJoin, from, lastValueFrom, Observable, of, Subject, takeUntil } from 'rxjs';
 import { Bundle } from '../models/bundle';
 import { StixService } from '../stix-service.service';
-import { STIX_OBJECTS, STIX_OBJECTS_LIST } from '../models/stix-objects';
+import { IOB_OBJECTS_LIST, STIX_OBJECTS, STIX_OBJECTS_LIST } from '../models/stix-objects';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EnvService } from '../env-service/env.service';
@@ -3985,6 +3985,8 @@ export class BundleComponent implements OnInit {
     }
 
     disableEditObject(obj: any) {
+        if (IOB_OBJECTS_LIST.includes(obj.type)) return true;
+
         return (
             obj.created_by_ref &&
             obj.created_by_ref !== this.envService.env.defaultIdentity.id &&
