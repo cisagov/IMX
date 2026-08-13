@@ -1,9 +1,27 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { identity, Subscription } from 'rxjs';
 import { AddComponentComponent } from 'src/app/add-component/add-component.component';
 import { GuidedService } from 'src/app/guided.service';
 import { StixService } from 'src/app/stix-service.service';
-import { faMale, faUser, faUserAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faMale, faUser, faUserAlt, faQuestionCircle, faInfoCircle, faTrash, faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { IdentityExtensionDialogComponent } from 'src/app/dialogs/identity-extension-dialog/identity-extension-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+
+
+export interface EmailAddressEntry {
+    description?: string;
+    classified: boolean;
+    digital_contact_type?: string;
+    email_address_ref: string;
+}
+
+export interface PhoneNumberEntry {
+    description?: string;
+    classified: boolean;
+    contact_number_type?: string;
+    contact_number: string;
+}
+
 @Component({
     selector: 'app-who-individual',
     templateUrl: './who-individual.component.html',
@@ -27,9 +45,11 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
     faUserAlt = faUserAlt;
     faQuestionCircle = faQuestionCircle;
     faInfoCircle = faInfoCircle;
+    faTrash = faTrash;
+    faEdit = faEdit;
+    faPlus = faPlus;
 
     identityIOC = null;
-    // name = null; // name is deprecated; Using targetName and attackerName instead
     targetName = null;
     attackerName = null;
     contactInfo = null;
@@ -52,8 +72,6 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
     currentAttackerName = '';
     currentAttackerRoles = [];
     currentAttackerMotivation = '';
-    currentPhoneType = '';
-    currentEmailType = '';
     types = [];
     data = [];
 
@@ -64,6 +82,9 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
     disableWhoType = false;
     disableTargetType = false;
     disableAttackerType = false;
+
+    email_addresses?: EmailAddressEntry[] = [];
+    contact_numbers?: PhoneNumberEntry[] = [];
 
     motivationOptions: any[] = [
         { key: 'accidental', value: 'Accidental' },
@@ -94,7 +115,8 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     constructor(
         public guidedService: GuidedService,
-        public stixService: StixService
+        public stixService: StixService,
+        public identityDialog: MatDialog,
     ) {}
 
     ngOnInit(): void {
@@ -156,61 +178,76 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         if (this.isTarget && !this.isOrganization) {
             identityObject['name'] = this.targetName ? this.targetName.trim() : this.guidedService.autoGenerateNameFromPage('target');
             identityObject['contact_information'] = this.contactInfo ? this.contactInfo.trim() : null;
-            // identityObject['sectors'] = [this.sector];
             identityObject['identity_class'] = 'individual';
             identityObject['cartId'] = this.cartId[0] ? this.cartId[0] : null;
 
             // Generate Identity Extension
-            let hasPhone = !!this.phone;
-            let hasEmail = !!this.email;
+            let hasPhone = this.contact_numbers && this.contact_numbers.length > 0;
+            let hasEmail = this.email_addresses && this.email_addresses.length > 0;
             let identityExtension: any = null;
             let emailAddressObject: any = null;
 
-            if(!hasPhone && !hasEmail) {
-
-            } else {
+            if(hasPhone || hasEmail) {
                 identityExtension = {
                     "extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498" : {
                         "extension_type": "property-extension"
                     }
-                }
+                };
 
                 if(hasPhone) {
-                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].contact_numbers = [];
-                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].contact_numbers.push({
-                        "contact_number": this.phone.trim(),
-                        "contact_number_type": this.phoneTypeOptions.find(o => o.key === this.currentPhoneType).key,
-                        "classified": this.phoneClassified
-                    })
+                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].contact_numbers = this.contact_numbers.map(entry => ({
+                        contact_number: entry.contact_number.trim(),
+                        contact_number_type: entry.contact_number_type,
+                        classified: entry.classified ?? false,
+                        description: entry.description
+                    }));
                 }
 
                 if(hasEmail) {
-                    emailAddressObject = {
-                        "type": 'email-addr',
-                        "spec_version": "2.1",
-                        "value": this.email.trim(),
-                    }
 
-                    emailAddressObject["id"] = this.getStixId(emailAddressObject, "email-addr");
-                    emailAddressObject["display_name"] = this.email.trim();
-                    this.guidedService.syncCart("how-observable", { "Email Address": [emailAddressObject] });
+                    let ext = identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].email_addresses = [];
 
+                    let emailObservableList = this.email_addresses.map((email, index) => {
+                        const emailAddressObject = {
+                            "type": 'email-addr',
+                            "spec_version": "2.1",
+                            "value": email.email_address_ref, // Actually just the value
+                            cartId: index + 1
+                        };
+
+                        emailAddressObject["id"] = this.getStixId(emailAddressObject, "email-addr");
+                        emailAddressObject["display_name"] = email.email_address_ref.trim();
+                        return emailAddressObject;
+                    })
+
+                    let existingObservables = this.guidedService.cart['how-observable'] || {};
+                    let mergedObservables = {
+                            ...existingObservables,
+                            "Email Address": emailObservableList
+                    };
+                    this.guidedService.syncCart("how-observable", mergedObservables);
                     let emailBucket = this.guidedService.cart['how-observable']['Email Address'];
-                    let createdEmailObj = emailBucket[emailBucket.length - 1];
-                    let emailObjId = createdEmailObj.id;
 
-                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].email_addresses = [];
-                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].email_addresses.push({
-                        "email_address_ref": emailObjId,
-                        "digital_contact_type": this.emailTypeOptions.find(o => o.key === this.currentEmailType).key,
-                        "classified": this.emailClassified
+                    emailBucket.forEach((email, index) => {
+                        let emailEntry = this.email_addresses[index];
+                        ext.push({
+                            email_address_ref: email.id,
+                            digital_contact_type: emailEntry.digital_contact_type,
+                            classified: emailEntry.classified ?? false,
+                            description: emailEntry.description
+                        })
                     })
                 }
             }
 
-            if(identityExtension) {
+            if(hasPhone || hasEmail) {
                 identityObject['extensions'] = identityExtension;
+            } else {
+                if(this.editMode && identityObject.extensions){
+                    delete identityObject.extensions;
+                }
             }
+
             emitObj.push.push(identityObject);
         } else if (this.isTarget && this.isOrganization) {
             this.linkId++;
@@ -328,19 +365,31 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             this.cartId = [event.cartId];
 
             // Fill out extension details
-            let identityExtension = event.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498']
-            if(identityExtension?.contact_numbers){
-                this.phone = identityExtension?.contact_numbers[0].contact_number;
-                this.currentPhoneType = identityExtension?.contact_numbers[0].contact_number_type;
-                this.phoneClassified = identityExtension?.contact_numbers[0].classified;
-            }
+            let identityExtension: any;
+            if(event.extensions) {
+                identityExtension = event.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498']
 
-            if(identityExtension?.email_addresses){
-                let emailAddressRef = identityExtension.email_addresses[0].email_address_ref
-                let emailCartRef = this.guidedService.cart['how-observable']['Email Address']?.find(o => o.id === emailAddressRef);
-                this.email = emailCartRef ? emailCartRef.value : null;
-                this.currentEmailType = this.email ? identityExtension?.email_addresses[0].digital_contact_type : '';
-                this.emailClassified = this.email ? identityExtension?.email_addresses[0].classified : ''
+                if(identityExtension?.contact_numbers){
+                    this.contact_numbers = identityExtension.contact_numbers;
+                }
+
+                if(identityExtension?.email_addresses){
+                    this.email_addresses = identityExtension.email_addresses;
+                    // Switch ref for the display_name for this specific case
+                    this.email_addresses.forEach(email => {
+                        email.email_address_ref = this.guidedService.cart['how-observable']['Email Address'].find(obj => obj.id === email.email_address_ref).value;
+                    });
+                }
+
+                // Cleanup stale extension inside edit object if empty
+                if(identityExtension) {
+                    let noPhones = !identityExtension.contact_numbers || identityExtension.contact_numbers.length === 0;
+                    let noEmails = !identityExtension.email_addresses || identityExtension.email_addresses.length === 0;
+                    if(noPhones && noEmails) {
+                        delete event.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                        if(Object.keys(event.extensions).length === 0) delete event.extensions;
+                    }
+                }
             }
 
         } else {
@@ -381,9 +430,6 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
         if(this.isTarget) {
             if(!this.targetName) { this.guidedService.cartDisabled$.next(true); return; }
-
-            if(!!this.phone && !this.currentPhoneType) { this.guidedService.cartDisabled$.next(true); return; }
-            if(!!this.email && !this.currentEmailType) { this.guidedService.cartDisabled$.next(true); return; }
         }
 
         let disableContinue = true;
@@ -497,11 +543,9 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         this.cartId = [];
 
         this.currentAttackerMotivation = '';
-        this.currentPhoneType = '';
-        this.currentEmailType = '';
-        this.phoneClassified = false;
-        this.emailClassified = false;
         this.attackerUnknown = false;
+        this.contact_numbers = [];
+        this.email_addresses = [];
 
         this.disableWhoType = false;
         this.disableAttackerType = false;
@@ -528,5 +572,164 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         }
 
         return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
+    }
+
+    openModal(modal, currObj?: any): void {
+        switch (modal) {
+            case 'phone_number':
+                let phoneIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
+                    data: {
+                        type: 'Phone Number',
+                        entry: this.contact_numbers,
+                        guidedEditing: currObj? true:false,
+                        currObj: currObj
+                    },
+                    minHeight: '500px',
+                    maxHeight: '90vh',
+                    width: '800px',
+                    maxWidth: '95vw',
+                });
+
+                phoneIdentityRef.afterClosed().subscribe((result) => {
+                    if(!result) return;
+
+                    if(currObj) {
+                        let index = this.contact_numbers.indexOf(currObj);
+                        if(index !== -1) this.contact_numbers[index] = result;
+                    } else {
+                        this.contact_numbers.push(result);
+                    }
+
+                    this.enableAddToCart(null);
+                });
+                break;
+            case 'email_address':
+                let emailIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
+                    data: {
+                        type: 'Email Address',
+                        entry: this.email_addresses,
+                        guidedEditing: currObj? true:false,
+                        currObj: currObj? currObj:null
+                    },
+                    minHeight: '500px',
+                    maxHeight: '90vh',
+                    width: '800px',
+                    maxWidth: '95vw',
+                });
+
+                emailIdentityRef.afterClosed().subscribe((result) => {
+                    if(!result) return;
+
+                    if(currObj) {
+                        let index = this.email_addresses.indexOf(currObj);
+                        if(index !== -1) this.email_addresses[index] = result;
+                    } else {
+                        this.email_addresses.push(result);
+                    }
+
+                    this.enableAddToCart(null);
+                });
+                break;
+        }
+    }
+
+    deleteModalObject(currObject: any, type: string): void {
+
+        if(type === 'phone_number'){
+            this.contact_numbers = this.contact_numbers.filter((obj) => obj !== currObject);
+            let identityList = this.guidedService.cart['who-individual']?.["Identity"];
+            if(identityList){
+                let identityObj = identityList.find(o => o.cartId === this.cartId[0]);
+                if(identityObj?.extensions) {
+                     const ext = identityObj.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                     if(ext?.contact_numbers) {
+                        ext.contact_numbers = ext.contact_numbers.filter(c => c.contact_number !== currObject.contact_number);
+                     }
+
+                     // If both arrays are empty, remove the extension entirely
+                     const noPhones = !ext.contact_numbers || ext.contact_numbers.length === 0;
+                     const noEmails = !ext.email_addresses || ext.email_addresses.length === 0;
+
+                     if(noPhones && noEmails) {
+                        delete identityObj.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                        if(Object.keys(identityObj.extensions).length === 0) delete identityObj.extensions;
+                     }
+                }
+            }
+        }
+
+        if(type === 'email_address'){
+            this.email_addresses = this.email_addresses.filter((obj) => obj !== currObject);
+            let identityList = this.guidedService.cart['who-individual']?.["Identity"];
+            if(identityList){
+                let identityObj = identityList.find(o => o.cartId === this.cartId[0]);
+                if(identityObj?.extensions) {
+                     const ext = identityObj.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                     if(ext?.email_addresses) {
+                        ext.email_addresses = ext.email_addresses.filter(c => c.email_address_ref !== currObject.email_address_ref);
+                     }
+
+                     // If both arrays are empty, remove the extension entirely
+                     const noPhones = !ext.contact_numbers || ext.contact_numbers.length === 0;
+                     const noEmails = !ext.email_addresses || ext.email_addresses.length === 0;
+
+                     if(noPhones && noEmails) {
+                        delete identityObj.extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                        if(Object.keys(identityObj.extensions).length === 0) delete identityObj.extensions;
+                     }
+                }
+            }
+        }
+    }
+
+    editModalObject(currObject: any, type: string) {
+        this.openModal(type, currObject);
+    }
+
+    displayContactInfoDetails(object: any, type: string): string {
+        if(!object) return '';
+
+        if(type === 'phone_number'){
+            let contact_number_type = object.contact_number_type || '';
+            let classified = object.classified ? 'classified' : 'unclassified';
+            let description = '';
+
+            if(object.description?.trim()) {
+                description = object.description.trim();
+                if(description.length > 30) {
+                    description = description.substring(0,30).trim() + '...';
+                }
+            }
+
+            let parts = [];
+            if(contact_number_type) parts.push(contact_number_type);
+            parts.push(classified);
+            if(description) parts.push(description);
+
+            if(parts.length === 0) return '';
+            return `(${parts.join(', ')})`;
+        }
+
+        if(type === 'email_address'){
+            let digital_contact_type = object.digital_contact_type || '';
+            let classified = object.classified ? 'classified' : 'unclassified';
+            let description = '';
+
+            if(object.description?.trim()) {
+                description = object.description.trim();
+                if(description.length > 30) {
+                    description = description.substring(0,30).trim() + '...';
+                }
+            }
+
+            let parts = [];
+            if(digital_contact_type) parts.push(digital_contact_type);
+            parts.push(classified);
+            if(description) parts.push(description);
+
+            if(parts.length === 0) return '';
+            return `(${parts.join(', ')})`;
+        }
+        return '';
     }
 }
