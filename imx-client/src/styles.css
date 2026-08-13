@@ -1060,7 +1060,7 @@ body.modal-open {
 .list-trash-guided {
     min-height: 1.5rem;
     height: 1.5rem;
-    min-width: 2.25rem;
+    /* min-width: 2.25rem; */
     width: 2.25rem;
     align-items: center;
 }

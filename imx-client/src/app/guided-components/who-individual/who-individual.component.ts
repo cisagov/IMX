@@ -574,14 +574,16 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
     }
 
-    openModal(modal, editing?): void {
+    openModal(modal, currObj?: any): void {
         switch (modal) {
             case 'phone_number':
                 let phoneIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
                     data: {
                         type: 'Phone Number',
-                        entry: this.contact_numbers
-                        },
+                        entry: this.contact_numbers,
+                        guidedEditing: currObj? true:false,
+                        currObj: currObj
+                    },
                     minHeight: '500px',
                     maxHeight: '90vh',
                     width: '800px',
@@ -589,18 +591,26 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
                 });
 
                 phoneIdentityRef.afterClosed().subscribe((result) => {
-                    if (result) {
+                    if(!result) return;
+
+                    if(currObj) {
+                        let index = this.contact_numbers.indexOf(currObj);
+                        if(index !== -1) this.contact_numbers[index] = result;
+                    } else {
                         this.contact_numbers.push(result);
-                        this.enableAddToCart(null);
                     }
+
+                    this.enableAddToCart(null);
                 });
                 break;
             case 'email_address':
                 let emailIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
                     data: {
                         type: 'Email Address',
-                        entry: this.email_addresses
-                        },
+                        entry: this.email_addresses,
+                        guidedEditing: currObj? true:false,
+                        currObj: currObj? currObj:null
+                    },
                     minHeight: '500px',
                     maxHeight: '90vh',
                     width: '800px',
@@ -608,10 +618,16 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
                 });
 
                 emailIdentityRef.afterClosed().subscribe((result) => {
-                    if (result) {
+                    if(!result) return;
+
+                    if(currObj) {
+                        let index = this.email_addresses.indexOf(currObj);
+                        if(index !== -1) this.email_addresses[index] = result;
+                    } else {
                         this.email_addresses.push(result);
-                        this.enableAddToCart(null);
                     }
+
+                    this.enableAddToCart(null);
                 });
                 break;
         }
@@ -664,6 +680,10 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
                 }
             }
         }
+    }
+
+    editModalObject(currObject: any, type: string) {
+        this.openModal(type, currObject);
     }
 
     displayContactInfoDetails(object: any, type: string): string {

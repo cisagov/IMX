@@ -75,6 +75,10 @@ export class IdentityExtensionDialogComponent implements OnInit {
             display_name: o.display_name
         }));
 
+        if(this.data.guidedEditing) {
+            this.data.entry = this.data.currObj || null;
+        }
+
         if(this.data?.entry) {
             let entry = this.data.entry;
             if(this.modalType === 'Email Address') {

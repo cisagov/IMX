@@ -20,7 +20,7 @@
         <!-- Form Body -->
         <div class="guided-form">
             <!-- Target/Attacker -->
-            <div class="inner-row mb-4 col-6" style="padding-right: 1rem">
+            <div class="inner-row col-6" style="padding-right: 1rem">
                 <div class="input-header">Target or Attacker</div>
                 <select
                     class="form-select form-control form-control-guided"
@@ -41,7 +41,7 @@
 
             <!-- Individual/Organization -->
             @if (targetAttackerType === 'target') {
-                <div class="inner-row mb-4 col-6" style="padding-right: 1rem">
+                <div class="inner-row col-6" style="padding-right: 1rem">
                     <div class="input-header">Individual or Organization</div>
                     <select
                         class="disabled form-select form-control form-control-guided"
@@ -101,15 +101,28 @@
                                             class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
                                         >
                                             <span class="ref-name">{{ number.contact_number }} <span class="select-placeholder-guided">{{displayContactInfoDetails(number, 'phone_number')}}</span></span>
-                                            <button
-                                                class="btn btn-fa-sm btn-color list-trash list-trash-guided"
-                                                style="display: flex"
-                                                type="button"
-                                                id="other_list{{ i }}_delete"
-                                                (click)="deleteModalObject(number, 'phone_number')"
-                                            >
-                                                <fa-icon [icon]="faTrash"></fa-icon>
-                                            </button>
+
+                                            <div class="d-flex" style="gap: .5rem">
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_edit"
+                                                    (click)="editModalObject(number, 'phone_number')"
+                                                >
+                                                    <fa-icon [icon]="faEdit"></fa-icon>
+                                                </button>
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_delete"
+                                                    (click)="deleteModalObject(number, 'phone_number')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </div>
+
                                         </div>
                                     }
                                 </div>
@@ -143,16 +156,27 @@
                                             class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
                                         >
                                             <span class="ref-name">{{ email.email_address_ref }} <span class="select-placeholder-guided">{{displayContactInfoDetails(email, 'email_address')}}</span></span>
+                                            <div class="d-flex" style="gap: .5rem">
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_edit"
+                                                    (click)="editModalObject(email, 'email_address')"
+                                                >
+                                                    <fa-icon [icon]="faEdit"></fa-icon>
+                                                </button>
+                                                <button
+                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                    style="display: flex"
+                                                    type="button"
+                                                    id="other_list{{ i }}_delete"
+                                                    (click)="deleteModalObject(email, 'email_address')"
+                                                >
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                                </button>
+                                            </div>
 
-                                            <button
-                                                class="btn btn-fa-sm btn-color list-trash list-trash-guided"
-                                                style="display: flex"
-                                                type="button"
-                                                id="other_list{{ i }}_delete"
-                                                (click)="deleteModalObject(email, 'email_address')"
-                                            >
-                                                <fa-icon [icon]="faTrash"></fa-icon>
-                                            </button>
                                         </div>
                                     }
                                 </div>
