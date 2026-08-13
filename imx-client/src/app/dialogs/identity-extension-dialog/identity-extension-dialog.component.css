@@ -157,16 +157,11 @@ th {
 }
 
 .omr-section-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    padding: 8px 14px;
     font-size: 13px;
     font-weight: 600;
     color: #495057;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    display: flex;
-    align-items: center;
 }
 
 .omr-section-body {

@@ -14,7 +14,7 @@
         <!-- Contact Information Reference -->
         <div class="omr-section-body" style="padding-top: 0rem;">
             <div class="form-header">
-                <label class="form-label omr-field-label">{{getReferenceHeader(modalType)}}<span class="text-danger ms-1">*</span></label>
+                <label class="form-label omr-section-header">{{getReferenceHeader(modalType)}}<span class="text-danger ms-1">*</span></label>
                 <span class="guided-tip">
                     <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; " />
                     <span class="tip-text" [innerHTML]="getTipByLabel('contact_info')"></span>
@@ -75,7 +75,7 @@
 
             <!-- Contact Information Type -->
             <div class="mb-3">
-                <label class="form-label omr-field-label">{{getReferenceHeader(modalType)}} Type</label>
+                <label class="form-label omr-section-header">{{getReferenceHeader(modalType)}} Type</label>
                 <select
                     id="email_type_select"
                     [(ngModel)]="contact_type"
@@ -94,7 +94,7 @@
 
             <!-- Classified Checkbox -->
             <div class="mb-3">
-                <label class="form-label omr-field-label">Classified</label>
+                <label class="form-label omr-section-header">Classified</label>
                 <div class="form-check mt-1">
                     <input
                         type="checkbox"
@@ -108,7 +108,7 @@
 
             <!-- Description -->
             <div class="mb-3">
-                <label class="form-label omr-field-label">Description</label>
+                <label class="form-label omr-section-header">Description</label>
                 <input
                     type="text"
                     id="contact_description_input"
