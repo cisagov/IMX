@@ -214,26 +214,62 @@
                         <!-- Sector -->
                         <div class="inner-row">
                             <div class="input-header">
-                                Sector
+                                Sectors
                                 <span class="guided-tip">
-                                    <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
                                     <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('sectors')"></span>
                                 </span>
+                                @if (sectors.length > 0) {
+                                    <span class="badge bg-secondary ms-2 omr-count-badge">{{ sectors.length }} selected</span>
+                                }
                             </div>
 
-                            <select
-                                class="form-control form-control-guided form-select w-100"
-                                [disabled]="!nameAndContacts"
-                                id="sector"
-                                name="sector"
-                                [(ngModel)]="sector"
-                                (change)="sectorHandler($event)"
-                            >
-                                <option value=""></option>
-                                @for (sector of guidedService.identitySectors; track sector; let i = $index) {
-                                    <option [value]="sector.key" [title]="sector?.value">{{ sector?.value }}</option>
-                                }
-                            </select>
+                            <!-- Multi-select dropdown -->
+                            <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                <select
+                                    [(ngModel)]="selectedSector"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(selectedSector) }"
+                                    class="form-control form-control-guided form-select"
+                                    style="min-width: 220px"
+                                >
+                                    <option [ngValue]="null" disabled>Select a Sector</option>
+
+                                    @for (option of availableSectorOptions; track option) {
+                                        <option [value]="option.value">
+                                            {{ option?.value }}
+                                        </option>
+                                    }
+                                </select>
+
+                                <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="addSector(selectedSector)">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                    <span>Add</span>
+                                </button>
+                            </div>
+
+                            @if (sectors.length > 0) {
+                                <div class="other-refs-list">
+                                    @for (sector of sectors; track sector; let i = $index) {
+                                        <div
+                                            id="other_list{{ i }}"
+                                            class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                        >
+                                            <span class="ref-name">{{ sector }}</span>
+                                            <button
+                                                class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                style="display: flex"
+                                                type="button"
+                                                id="other_list{{ i }}_delete"
+                                                (click)="deleteSector(sector)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            } @else {
+                                <div class="empty-refs-state">No Sectors added yet.</div>
+                            }
                         </div>
                     </div>
                 </div>

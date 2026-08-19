@@ -53,7 +53,8 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
     targetName = null;
     attackerName = null;
     contactInfo = null;
-    sector = null;
+    selectedSector: string | null = null;
+    sectors = [];
     isOrganization = false;
     whoType = null;
     nameAndContacts = null;
@@ -266,7 +267,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
                 const itemParsed = item.split(',');
                 thisItem['name'] = itemParsed[0] ? itemParsed[0].trim() : null;
                 thisItem['contact_information'] = itemParsed[1] ? itemParsed.slice(1).join(',').trim() : null;
-                thisItem['sectors'] = this.sector ? [this.sector] : [null];
+                thisItem['sectors'] = this.sectors ? this.sectors : [null];
                 thisItem['identity_class'] = 'organization';
                 thisItem['cartId'] = this.cartId[i] ? this.cartId[i] : null;
                 thisItem['linkId'] = this.linkId;
@@ -341,7 +342,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             this.disableWhoType = true;
             this.isOrganization = true;
 
-            this.sector = event.arr[0].sectors[0];
+            this.sectors = event.arr[0].sectors;
 
             let tempString = '';
             for (let obj of event.arr) {
@@ -421,7 +422,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     sectorHandler(event) {
         if (event && event.target && event.target.value) {
-            this.sector = event.target.value;
+            this.sectors = event.target.value;
         }
     }
 
@@ -429,7 +430,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         this.combineContacts();
 
         if(this.isTarget) {
-            if(!this.targetName) { this.guidedService.cartDisabled$.next(true); return; }
+            //if(!this.targetName) { this.guidedService.cartDisabled$.next(true); return; }
         }
 
         let disableContinue = true;
@@ -448,7 +449,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     changeWhoType(event) {
         if (event && event.target && event.target.value) {
-            this.sector = '';
+            this.sectors = [];
 
             if (event.target.value === 'organization') {
                 this.isOrganization = true;
@@ -533,7 +534,8 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         this.contactInfo = '';
         this.phone = '';
         this.email = '';
-        this.sector = '';
+        this.sectors = [];
+        this.selectedSector = null;
         this.isOrganization = false;
         this.whoType = 'individual';
         this.nameAndContacts = '';
@@ -731,5 +733,23 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             return `(${parts.join(', ')})`;
         }
         return '';
+    }
+
+    get availableSectorOptions() {
+        return this.guidedService.identitySectors.filter(
+            (sector) => !this.sectors.includes(sector)
+        );
+    }
+
+    addSector(sector: string) {
+        if (!sector) return;
+        if (!this.sectors.includes(sector)) {
+            this.sectors.push(sector);
+        }
+        this.selectedSector = null;
+    }
+
+    deleteSector(sector: string) {
+        this.sectors = this.sectors.filter((m) => m !== sector);
     }
 }
