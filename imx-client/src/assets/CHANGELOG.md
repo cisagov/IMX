@@ -1,3 +1,24 @@
+## [4.18.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.18.0...v4.18.1) (2026-08-21)
+
+### Bug Fixes
+
+* update get kc users if only oidc ([c0c6603](https://git.va.th.ten/eos/cde/tie/imx/commit/c0c66035eb503cfdb4d275e90c79e53085a6bbad))
+
+## [4.18.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.3...v4.18.0) (2026-08-21)
+
+### Features
+
+* allow IOB editing using the custom obj form ([8e48694](https://git.va.th.ten/eos/cde/tie/imx/commit/8e4869432f9243ddaba03e22b3970858b781a37e))
+
+## [4.17.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.2...v4.17.3) (2026-08-21)
+
+### Bug Fixes
+
+* cleanup oidc implementation ([ca47a3a](https://git.va.th.ten/eos/cde/tie/imx/commit/ca47a3a7222b24a66d465b344ca9312ced52a443))
+* ng update angular cli v20.3.27 ([cd04ac3](https://git.va.th.ten/eos/cde/tie/imx/commit/cd04ac3dddaa49122fba1e8e97f508637402fc0f))
+* ng update angular core v20.3.27 ([889889b](https://git.va.th.ten/eos/cde/tie/imx/commit/889889bc970c0975ed6a1068690303d4c4f32508))
+* npm audit fix client ([52ef27c](https://git.va.th.ten/eos/cde/tie/imx/commit/52ef27c299e7d5976d1d98a0cec5ca734b64146f))
+
 ## [4.17.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.1...v4.17.2) (2026-08-13)
 
 ### Bug Fixes
