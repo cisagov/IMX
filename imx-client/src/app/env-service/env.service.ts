@@ -199,17 +199,17 @@ export class EnvService {
                         .catch(async (error) => {
                             if (error.status === 0) {
                                 await this.logSessionTimeout();
-                                // await this.oidc.login();
+                                await this.oidc.login();
                                 resolve(true);
                             } else {
                                 console.error(error);
-                                // await this.oidc.login();
+                                await this.oidc.login();
                                 reject(error);
                             }
                         });
                 } catch (err) {
                     console.error(err);
-                    // await this.oidc.login();
+                    await this.oidc.login();
                 }
             } else {
                 this.keycloakUser = {
