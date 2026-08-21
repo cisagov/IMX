@@ -20,6 +20,11 @@ const usersEndpoints = function (app, logger) {
       if (process.env.AUTH === "keycloak" || process.env.AUTH === "hybrid")
         users = await getKeycloakUsers(authHeader);
       else if (process.env.AUTH.includes("oidc")) {
+        //OIDC DOES NOT HAVE AN API FOR GETTING ALL USERS
+        //EVERY OIDC PROVIDER DOES THIS DIFFERENTLY
+        //SWITCH STATEMENT DETERMINES OIDC PROVIDER
+        //BASED OFF PROVIDER CALLS API TO GET ALL USERS
+        //IF ISSUER DOES NOT HAVE A CASE IN SWITCH STATEMENT IT IS CURRENTLY NOT SUPPORTTED FOR THE FEATURE
         switch (determineIssuer(decodedToken)) {
           case "keycloak":
             users = await getKeycloakUsers(authHeader);
