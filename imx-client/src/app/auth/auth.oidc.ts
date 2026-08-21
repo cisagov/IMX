@@ -18,7 +18,7 @@ export class AuthOidc {
 
         try {
             if (!loggedIn) {
-                await this.oidc.logout();
+                // await this.oidc.logout();
                 return false;
             }
         } catch (err) {
@@ -27,7 +27,7 @@ export class AuthOidc {
 
         // Force the user to log in if currently unauthenticated.
         if (!loggedIn) {
-            await this.oidc.login();
+            // await this.oidc.login();
         }
 
         let roles = await this.oidc.getRoles();

@@ -76,6 +76,7 @@ export class EnvService {
             }
 
             if (this.env.keycloak?.enabled) {
+                console.info('USING KEYCLOAK');
                 this.keycloak
                     .init({
                         url: this.env.keycloak.url,
@@ -93,6 +94,7 @@ export class EnvService {
                         this.apiError = true;
                     });
             } else if (this.env.oidc?.enabled) {
+                console.info('USING OIDC');
                 this.oidc
                     .init({
                         apiRoot: this.env.oidc.apiRoot,
@@ -110,6 +112,7 @@ export class EnvService {
                         this.apiError = true;
                     });
             } else {
+                console.info('USING NO AUTH');
                 this.init = true;
             }
 
@@ -196,17 +199,17 @@ export class EnvService {
                         .catch(async (error) => {
                             if (error.status === 0) {
                                 await this.logSessionTimeout();
-                                await this.oidc.login();
+                                // await this.oidc.login();
                                 resolve(true);
                             } else {
                                 console.error(error);
-                                await this.oidc.login();
+                                // await this.oidc.login();
                                 reject(error);
                             }
                         });
                 } catch (err) {
                     console.error(err);
-                    await this.oidc.login();
+                    // await this.oidc.login();
                 }
             } else {
                 this.keycloakUser = {
