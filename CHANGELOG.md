@@ -1,3 +1,9 @@
+## [4.18.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.18.0...v4.18.1) (2026-08-21)
+
+### Bug Fixes
+
+* update get kc users if only oidc ([c0c6603](https://git.va.th.ten/eos/cde/tie/imx/commit/c0c66035eb503cfdb4d275e90c79e53085a6bbad))
+
 ## [4.18.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.3...v4.18.0) (2026-08-21)
 
 ### Features
