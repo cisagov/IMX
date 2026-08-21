@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { faTrash, faTrashAlt, faPlus, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faTrashAlt, faPlus, faBan, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { StixService } from 'src/app/stix-service.service';
 import { EnvService } from 'src/app/env-service/env.service';
 
@@ -19,8 +19,6 @@ export class AdminRwComponent implements OnInit {
     @Input() public collectionsExisting: [];
 
     cId: string;
-    reader: string;
-    writer: string;
     readers: string[];
     writers: string[];
 
@@ -28,13 +26,12 @@ export class AdminRwComponent implements OnInit {
     faTrash = faTrash;
     faTrashAlt = faTrashAlt;
     faBan = faBan;
+    faInfoCircle = faInfoCircle;
 
     rwCidTemp: string;
     useExistingCollection: boolean;
 
     existingRoles = [];
-    existingReaderRoles = [];
-    existingWriterRoles = [];
 
     httpHeaders: any;
 
@@ -52,6 +49,9 @@ export class AdminRwComponent implements OnInit {
         this.rwCidTemp = this.rw.cId;
         this.useExistingCollection = false;
 
+        this.rw.readers ??= [];
+        this.rw.writers ??= [];
+
         this.httpHeaders = new HttpHeaders()
             .set('Accept', 'application/taxii+json;version=2.1')
             .set('Authorization', `Basic ${btoa(this.envService.env.taxiiServer.username + ':' + this.envService.env.taxiiServer.password)}`)
@@ -61,9 +61,6 @@ export class AdminRwComponent implements OnInit {
             .get<any>(this.stixService.getBaseURLs().baseAdminURL + 'roles', { headers: this.httpHeaders, observe: 'response' })
             .subscribe((resp) => {
                 this.existingRoles = resp.body;
-
-                this.existingReaderRoles = this.existingRoles.filter((r) => !this.rw?.readers.some((ur) => ur === r));
-                this.existingWriterRoles = this.existingRoles.filter((r) => !this.rw?.writers.some((ur) => ur === r));
             });
     }
 
@@ -79,22 +76,16 @@ export class AdminRwComponent implements OnInit {
         return collections;
     }
 
-    collectionTitleChange(event) {
-        if (event.target.value) {
-            const collection: any = this.collectionsForAllApiRoots.find((c: any) => c.title === event.target.value);
-
-            if (collection) {
-                this.rw.cId = collection.id;
-                this.useExistingCollection = true;
-            } else {
-                this.rw.cId = this.rwCidTemp;
-                this.useExistingCollection = false;
-            }
-            return;
-        }
-
+    setCollectionMode(useExisting: boolean) {
+        this.useExistingCollection = useExisting;
+        this.collectionTitle = '';
         this.rw.cId = this.rwCidTemp;
-        this.useExistingCollection = false;
+    }
+
+    collectionTitleChange(event) {
+        const collection: any = this.collectionsForAllApiRoots.find((c: any) => c.title === event.target.value);
+
+        this.rw.cId = collection ? collection.id : this.rwCidTemp;
     }
 
     close() {
@@ -104,48 +95,46 @@ export class AdminRwComponent implements OnInit {
         this.activeModal.close(data);
     }
 
-    addReader() {
-        this.rw.readers.push(this.reader);
+    selectedRoles(type): string[] {
+        return (type === 'reader' ? this.rw?.readers : this.rw?.writers) ?? [];
+    }
 
-        const index = this.existingReaderRoles.indexOf(this.reader);
+    isSelected(role, type) {
+        return this.selectedRoles(type).includes(role);
+    }
+
+    toggleRole(role, type) {
+        const roles = this.selectedRoles(type);
+        const index = roles.indexOf(role);
+
         if (index >= 0) {
-            this.existingReaderRoles.splice(index, 1);
+            roles.splice(index, 1);
+        } else {
+            roles.push(role);
         }
-
-        this.reader = undefined;
     }
 
-    removeReader(i) {
-        const reader = this.rw.readers.splice(i, 1);
-
-        const index = this.existingReaderRoles.indexOf(reader[0]);
-        if (index < 0) {
-            this.existingReaderRoles.push(reader[0]);
-        }
-
-        this.reader = undefined;
+    removeRole(i, type) {
+        this.selectedRoles(type).splice(i, 1);
     }
 
-    addWriter() {
-        this.rw.writers.push(this.writer);
-
-        const index = this.existingWriterRoles.indexOf(this.writer);
-        if (index >= 0) {
-            this.existingWriterRoles.splice(index, 1);
-        }
-
-        this.writer = undefined;
+    allSelected(type) {
+        return this.existingRoles.length > 0 && this.existingRoles.every((r) => this.isSelected(r, type));
     }
 
-    removeWriter(i) {
-        const writer = this.rw.writers.splice(i, 1);
+    toggleSelectAll(type) {
+        const roles = this.selectedRoles(type);
 
-        const index = this.existingWriterRoles.indexOf(writer[0]);
-        if (index < 0) {
-            this.existingWriterRoles.push(writer[0]);
+        if (this.allSelected(type)) {
+            roles.length = 0;
+        } else {
+            this.existingRoles.filter((r) => !roles.includes(r)).forEach((r) => roles.push(r));
         }
+    }
 
-        this.writer = undefined;
+    toggleLabel(type) {
+        const count = this.selectedRoles(type).length;
+        return count ? `${count} selected` : 'Select groups...';
     }
 
     add() {
@@ -168,17 +157,7 @@ export class AdminRwComponent implements OnInit {
     }
 
     addButtonText() {
-        return this.newRW ? 'ADD' : 'UPDATE';
-    }
-
-    selectRole(event: any, type) {
-        if (event?.target?.value) {
-            if (type === 'reader') {
-                this.reader = event.target.value;
-            } else {
-                this.writer = event.target.value;
-            }
-        }
+        return this.newRW ? 'Add' : 'Update';
     }
 
     disableRW(type) {
