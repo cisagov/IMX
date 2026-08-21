@@ -1,3 +1,9 @@
+## [4.18.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.3...v4.18.0) (2026-08-21)
+
+### Features
+
+* allow IOB editing using the custom obj form ([8e48694](https://git.va.th.ten/eos/cde/tie/imx/commit/8e4869432f9243ddaba03e22b3970858b781a37e))
+
 ## [4.17.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.2...v4.17.3) (2026-08-21)
 
 ### Bug Fixes
