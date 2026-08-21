@@ -85,7 +85,7 @@ export class AdminService {
                     .set('Authorization', `Basic ${btoa(this.envService.env.adminServer.username + ':' + this.envService.env.adminServer.password)}`)
                     .set('Content-Type', `application/taxii+json;version=2.1`);
 
-                const url = `${this.envService.env.imxServer.url}/keycloak-users`;
+                const url = `${this.envService.env.imxServer.url}/sso-users`;
 
                 this.httpClient.get(url, { headers: imxHttpHeaders }).subscribe({
                     next: (result: any) => {
