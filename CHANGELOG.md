@@ -1,3 +1,12 @@
+## [4.17.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.2...v4.17.3) (2026-08-21)
+
+### Bug Fixes
+
+* cleanup oidc implementation ([ca47a3a](https://git.va.th.ten/eos/cde/tie/imx/commit/ca47a3a7222b24a66d465b344ca9312ced52a443))
+* ng update angular cli v20.3.27 ([cd04ac3](https://git.va.th.ten/eos/cde/tie/imx/commit/cd04ac3dddaa49122fba1e8e97f508637402fc0f))
+* ng update angular core v20.3.27 ([889889b](https://git.va.th.ten/eos/cde/tie/imx/commit/889889bc970c0975ed6a1068690303d4c4f32508))
+* npm audit fix client ([52ef27c](https://git.va.th.ten/eos/cde/tie/imx/commit/52ef27c299e7d5976d1d98a0cec5ca734b64146f))
+
 ## [4.17.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.17.1...v4.17.2) (2026-08-13)
 
 ### Bug Fixes
