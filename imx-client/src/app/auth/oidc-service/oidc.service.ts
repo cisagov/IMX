@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User, UserManager } from 'oidc-client-ts';
-import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 export interface OidcBootstrapConfig {
     apiRoot: string;
@@ -22,7 +22,7 @@ export class OidcService {
     private apiRoot: string = '';
     private usernameField: string = '';
 
-    constructor(private readonly httpClient: HttpClient) {}
+    constructor(private readonly router: Router) {}
 
     async getRoles(): Promise<any> {
         try {
@@ -72,8 +72,11 @@ export class OidcService {
     }
 
     async init(config: OidcBootstrapConfig): Promise<boolean> {
-        if (this.initialized) {
-            return await this.isLoggedIn();
+        try {
+            this.initialized = localStorage.getItem('oidc_init') === 'true';
+        } catch (err) {
+            console.error(err);
+            this.initialized = false;
         }
         const settings = {
             authority: config.stsAuthority,
@@ -88,11 +91,17 @@ export class OidcService {
         this.usernameField = config.usernameField;
 
         this.userManager = new UserManager(settings);
-        this.initialized = true;
 
+        if (this.initialized === true && window.location.href.includes('signin-callback')) {
+            await this.userManager.signinCallback();
+            this.router.navigate(['']);
+        }
+
+        this.initialized = true;
+        localStorage.setItem('oidc_init', 'true');
         let authenticated = await this.isLoggedIn();
 
-        if (!authenticated) {
+        if (!authenticated && !window.location.href.includes('signin-callback')) {
             this.login();
         }
 
