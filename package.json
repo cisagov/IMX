@@ -1,6 +1,6 @@
 {
   "name": "imx",
-  "version": "4.18.1",
+  "version": "4.19.0",
   "description": "IMX is a tool used to create reports that cater to the STIX specification and it compliant with storing these reports within TAXII Servers.",
   "main": "index.js",
   "scripts": {},
