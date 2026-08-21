@@ -272,7 +272,7 @@
                 </svg>
                 Help
             </button>
-            <div class="dropdown-menu" style="transform: translate3d(0px, -180px, 0px)" aria-labelledby="dropdownMenuButton">
+            <div class="dropdown-menu" style="transform: translate3d(0px, -180px, 0px); width: 500px; height: 500px; overflow-y: scroll;" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" routerLink="/config">TAXII Server: {{ this.getServerDisplay() }}</a>
                 @if (environment.isSupportEnabled) {
                     <a (click)="openSupportModal(supportModal, 'Request a New Feature')" class="dropdown-item">Request Feature</a>
@@ -280,6 +280,28 @@
                 @if (environment.isSupportEnabled) {
                     <a (click)="openSupportModal(supportModal, 'Submit an Issue')" class="dropdown-item">Request Support</a>
                 }
+
+                <!-- Release Notes -->
+                <div class="dropdown-divider"></div>
+                <div class="px-3 py-2">
+                    <strong>Release Notes</strong>
+                    @for(v of markdownChangelog; track v.version) {
+                        <div class="mt-2">
+                            <strong>{{v.version}}</strong> - {{v.date}}
+                        </div>
+                        @for(section of v.sections; track section.title) {
+                            <div class="fw-semibold mt-1">
+                                {{section.title}}
+                            </div>
+                            <ul class="ms-3">
+                                @for(item of section.items; track item) {
+                                    <li>{{item}}</li>
+                                }
+                            </ul>
+                        }
+                        <hr />
+                    }
+                </div>
             </div>
         </div>
     </div>
