@@ -1,3 +1,9 @@
+## 4.18.0 (2026-08-21)
+
+### Features
+
+* allow IOB editing using the custom obj form 8e48694
+
 ## 4.17.3 (2026-08-21)
 
 ### Bug Fixes
