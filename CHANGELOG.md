@@ -1,3 +1,9 @@
+## 4.18.1 (2026-08-21)
+
+### Bug Fixes
+
+* update get kc users if only oidc c0c6603
+
 ## 4.18.0 (2026-08-21)
 
 ### Features
