@@ -1,3 +1,11 @@
+## 4.19.1 (2026-08-24)
+
+### Bug Fixes
+
+* added contact information field back in standard 8c0096a
+* change sector to a multi dropdown selection 03da6ba
+* fixed guided organization identity bug and added extension support ea3e55c
+
 ## 4.19.0 (2026-08-21)
 
 ### Features
