@@ -126,7 +126,6 @@ export class ConfigComponent implements OnInit {
     }
 
     serverSettingsChanged(type: string, auth): void {
-        console.debug(this.taxiiServer);
         this.isLoading = false;
         this.saved = false;
         if (type === 'pfte') this.taxiiServerType = 'ais';
@@ -214,8 +213,6 @@ export class ConfigComponent implements OnInit {
             this.taxiiServer.childRoot = null;
             this.taxiiServer.collection = null;
         }
-        console.debug('After server change');
-        console.debug(this.taxiiServer);
         if (type != 'custom') {
             this.saveConfig(auth);
         }

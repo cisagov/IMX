@@ -1,3 +1,35 @@
+## 4.19.0 (2026-08-21)
+
+### Features
+
+* release notes in the help icon 28d1e60
+
+### Bug Fixes
+
+* revert formatonsave back to true 37f28bd
+* update client changelog 6311ded
+
+## 4.18.1 (2026-08-21)
+
+### Bug Fixes
+
+* update get kc users if only oidc c0c6603
+
+## 4.18.0 (2026-08-21)
+
+### Features
+
+* allow IOB editing using the custom obj form 8e48694
+
+## 4.17.3 (2026-08-21)
+
+### Bug Fixes
+
+* cleanup oidc implementation ca47a3a
+* ng update angular cli v20.3.27 cd04ac3
+* ng update angular core v20.3.27 889889b
+* npm audit fix client 52ef27c
+
 ## 4.17.2 (2026-08-13)
 
 ### Bug Fixes
