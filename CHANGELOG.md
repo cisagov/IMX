@@ -1,3 +1,11 @@
+## [4.19.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.0...v4.19.1) (2026-08-24)
+
+### Bug Fixes
+
+* added contact information field back in standard ([8c0096a](https://git.va.th.ten/eos/cde/tie/imx/commit/8c0096adf521d130941b6fe34cc72f74b8357f29))
+* change sector to a multi dropdown selection ([03da6ba](https://git.va.th.ten/eos/cde/tie/imx/commit/03da6ba910740262637fa41e5b09fa6e57565ace))
+* fixed guided organization identity bug and added extension support ([ea3e55c](https://git.va.th.ten/eos/cde/tie/imx/commit/ea3e55cb450f1a0163f281dadc144c24f4a7e4ea))
+
 ## [4.19.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.18.1...v4.19.0) (2026-08-21)
 
 ### Features
