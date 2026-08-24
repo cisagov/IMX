@@ -1,3 +1,14 @@
+## [4.19.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.18.1...v4.19.0) (2026-08-21)
+
+### Features
+
+* release notes in the help icon ([28d1e60](https://git.va.th.ten/eos/cde/tie/imx/commit/28d1e60f4d02b066594852b08340eb07c48fceb1))
+
+### Bug Fixes
+
+* revert formatonsave back to true ([37f28bd](https://git.va.th.ten/eos/cde/tie/imx/commit/37f28bd0933c16bf4d8fd61f9d4a0cd48bb4fda3))
+* update client changelog ([6311ded](https://git.va.th.ten/eos/cde/tie/imx/commit/6311ded09953e6bdab0aeacd3dff2f7b00f2eb9e))
+
 ## [4.18.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.18.0...v4.18.1) (2026-08-21)
 
 ### Bug Fixes
