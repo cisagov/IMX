@@ -2392,11 +2392,11 @@ export class StixService implements OnInit {
     }
 
     populateEmailAddressRef() {
-        return this.bundle.objects.filter(obj => obj.id.startsWith('email-addr'));
+        return this.bundle.objects.filter((obj) => obj.id.startsWith('email-addr'));
     }
 
     populateUserAccountRef() {
-        return this.bundle.objects.filter(obj => obj.id.startsWith('user-account'));
+        return this.bundle.objects.filter((obj) => obj.id.startsWith('user-account'));
     }
 
     populateSightingOfRef() {
