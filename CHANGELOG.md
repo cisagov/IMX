@@ -1,3 +1,9 @@
+## 4.19.2 (2026-08-24)
+
+### Bug Fixes
+
+* update nginx max body size limit for imx server d762733
+
 ## 4.19.1 (2026-08-24)
 
 ### Bug Fixes
