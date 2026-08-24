@@ -1,3 +1,9 @@
+## [4.19.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.1...v4.19.2) (2026-08-24)
+
+### Bug Fixes
+
+* update nginx max body size limit for imx server ([d762733](https://git.va.th.ten/eos/cde/tie/imx/commit/d7627338e315df2a36a5c26bc3f73a8ddb1e7e5c))
+
 ## [4.19.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.0...v4.19.1) (2026-08-24)
 
 ### Bug Fixes
