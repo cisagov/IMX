@@ -1410,11 +1410,6 @@ export class BundleComponent implements OnInit {
                 if (this.stixService.importReportName && !this.stixService.reportName)
                     this.stixService.setReportName(this.stixService.importReportName);
 
-                if (localStorage.getItem('creating-bundle-from-report') == 'true' && this.isDiscarding) {
-                    const reportN = localStorage.getItem('creating-bundle-from-report-name');
-                    if (reportN) this.stixService.setReportName(reportN);
-                }
-
                 // Reset Values
                 this.stixService.importReportName = '';
                 this.importingObjects = false;
@@ -1426,8 +1421,6 @@ export class BundleComponent implements OnInit {
                 this.isUploading = false;
                 this.isDiscarding = false;
                 this.isMerging = false;
-                localStorage.setItem('creating-bundle-from-report', 'false');
-                localStorage.removeItem('creating-bundle-from-report-name');
             });
         } else {
             this.importingObjects = false;
@@ -1560,6 +1553,12 @@ export class BundleComponent implements OnInit {
                 }
                 this.updateGroupByTLP();
                 this.loadVersioning();
+
+                if (localStorage.getItem('creating-bundle-from-report') == 'true') {
+                    const reportN = localStorage.getItem('creating-bundle-from-report-name');
+                    if (reportN) this.stixService.setReportName(reportN);
+                }
+
                 setTimeout(() => {
                     this.checkDupesAndRefs();
                 }, 500);
@@ -1584,6 +1583,8 @@ export class BundleComponent implements OnInit {
                 this.stixService.newVersionObjects = [];
                 this.stixService.uploadErrors = '';
                 this.newVersionObjectsLoad = [];
+                localStorage.setItem('creating-bundle-from-report', 'false');
+                localStorage.removeItem('creating-bundle-from-report-name');
                 this.clearSearchResults();
             }
         });
@@ -1615,6 +1616,11 @@ export class BundleComponent implements OnInit {
                     );
                 }
 
+                if (localStorage.getItem('creating-bundle-from-report') == 'true' && !this.stixService.reportName) {
+                    const reportN = localStorage.getItem('creating-bundle-from-report-name');
+                    if (reportN) this.stixService.setReportName(reportN);
+                }
+
                 setTimeout(() => {
                     this.checkDupesAndRefs();
                 }, 500);
@@ -1637,6 +1643,8 @@ export class BundleComponent implements OnInit {
                 this.isMerging = false;
                 this.loadingBundle = false;
                 this.stixService.newVersionObjects = [];
+                localStorage.setItem('creating-bundle-from-report', 'false');
+                localStorage.removeItem('creating-bundle-from-report-name');
                 this.updateGroupByTLP();
                 this.clearSearchResults();
             }
@@ -1708,7 +1716,6 @@ export class BundleComponent implements OnInit {
     updateSaveModal(event) {
         if (event.status === 'save') {
             this.savingModalData = event;
-
             if (event.isNew === true) {
                 this.saveBundle(event.destination).then((data) => {
                     this.stixService.setReportName(event.name);
