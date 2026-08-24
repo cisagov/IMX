@@ -76,164 +76,315 @@
                             </div>
                         </div>
 
-                        <!-- Multiple Phone Number Fields -->
-                        <div class="inner-row">
-                            <div class="input-header">
-                                Phone Numbers
+                        <!-- Phone Numbers & Email Addresses -->
+                        <div class="guided-dual-container">
+                            <!-- Phone Numbers -->
+                            <div class="inner-row">
+                                <div class="input-header d-flex" style="justify-content: space-between;">
+                                    <div class="input-header-title">
+                                        Phone Numbers
+                                        @if (contact_numbers.length > 0) {
+                                            <span class="badge bg-secondary ms-2 omr-count-badge">{{ contact_numbers.length }} Numbers Added</span>
+                                        }
+                                    </div>
+                                    <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                        <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('phone_number')">
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 @if (contact_numbers.length > 0) {
-                                    <span class="badge bg-secondary ms-2 omr-count-badge">{{ contact_numbers.length }} Numbers Added</span>
+                                    <div class="other-refs-list">
+                                        @for (number of contact_numbers; track number; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">{{ number.contact_number }} <span class="select-placeholder-guided">{{displayContactInfoDetails(number, 'phone_number')}}</span></span>
+
+                                                <div class="d-flex" style="gap: .5rem">
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_edit"
+                                                        (click)="editModalObject(number, 'phone_number')"
+                                                    >
+                                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_delete"
+                                                        (click)="deleteModalObject(number, 'phone_number')"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="empty-refs-state">No Phone Numbers added yet.</div>
                                 }
                             </div>
 
-                            <!-- Multi-select dropdown -->
-                            <div class="d-flex gap-2" style="padding-bottom: 1rem">
-                                <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('phone_number')">
-                                    <fa-icon [icon]="faPlus"></fa-icon>
-                                    <span>Add</span>
-                                </button>
-                            </div>
-
-                            @if (contact_numbers.length > 0) {
-                                <div class="other-refs-list">
-                                    @for (number of contact_numbers; track number; let i = $index) {
-                                        <div
-                                            id="other_list{{ i }}"
-                                            class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
-                                        >
-                                            <span class="ref-name">{{ number.contact_number }} <span class="select-placeholder-guided">{{displayContactInfoDetails(number, 'phone_number')}}</span></span>
-
-                                            <div class="d-flex" style="gap: .5rem">
-                                                <button
-                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
-                                                    style="display: flex"
-                                                    type="button"
-                                                    id="other_list{{ i }}_edit"
-                                                    (click)="editModalObject(number, 'phone_number')"
-                                                >
-                                                    <fa-icon [icon]="faEdit"></fa-icon>
-                                                </button>
-                                                <button
-                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
-                                                    style="display: flex"
-                                                    type="button"
-                                                    id="other_list{{ i }}_delete"
-                                                    (click)="deleteModalObject(number, 'phone_number')"
-                                                >
-                                                    <fa-icon [icon]="faTrash"></fa-icon>
-                                                </button>
-                                            </div>
-
-                                        </div>
-                                    }
+                            <!-- Email Addresses -->
+                            <div class="inner-row">
+                                <div class="input-header d-flex" style="justify-content: space-between;">
+                                    <div class="input-header-title">
+                                        Email Addresses
+                                        @if (email_addresses.length > 0) {
+                                            <span class="badge bg-secondary ms-2 omr-count-badge">{{ email_addresses.length }} Email Addresses Added</span>
+                                        }
+                                    </div>
+                                    <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                        <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('email_address')">
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
                                 </div>
-                            } @else {
-                                <div class="empty-refs-state">No Phone Numbers added yet.</div>
-                            }
-                        </div>
 
-                        <!-- Email Address -->
-                        <div class="inner-row">
-                            <div class="input-header">
-                                Email Addresses
+                                <!-- Multi-select dropdown -->
                                 @if (email_addresses.length > 0) {
-                                    <span class="badge bg-secondary ms-2 omr-count-badge">{{ email_addresses.length }} Email Addresses Added</span>
+                                    <div class="other-refs-list">
+                                        @for (email of email_addresses; track email; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">{{ email.email_address_ref }} <span class="select-placeholder-guided">{{displayContactInfoDetails(email, 'email_address')}}</span></span>
+                                                <div class="d-flex" style="gap: .5rem">
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_edit"
+                                                        (click)="editModalObject(email, 'email_address')"
+                                                    >
+                                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_delete"
+                                                        (click)="deleteModalObject(email, 'email_address')"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="empty-refs-state">No Email Addresses added yet.</div>
                                 }
                             </div>
-
-                            <!-- Multi-select dropdown -->
-                            <div class="d-flex gap-2" style="padding-bottom: 1rem">
-                                <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('email_address')">
-                                    <fa-icon [icon]="faPlus"></fa-icon>
-                                    <span>Add</span>
-                                </button>
-                            </div>
-
-                            @if (email_addresses.length > 0) {
-                                <div class="other-refs-list">
-                                    @for (email of email_addresses; track email; let i = $index) {
-                                        <div
-                                            id="other_list{{ i }}"
-                                            class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
-                                        >
-                                            <span class="ref-name">{{ email.email_address_ref }} <span class="select-placeholder-guided">{{displayContactInfoDetails(email, 'email_address')}}</span></span>
-                                            <div class="d-flex" style="gap: .5rem">
-                                                <button
-                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
-                                                    style="display: flex"
-                                                    type="button"
-                                                    id="other_list{{ i }}_edit"
-                                                    (click)="editModalObject(email, 'email_address')"
-                                                >
-                                                    <fa-icon [icon]="faEdit"></fa-icon>
-                                                </button>
-                                                <button
-                                                    class="btn btn-fa-sm btn-color list-trash list-trash-guided"
-                                                    style="display: flex"
-                                                    type="button"
-                                                    id="other_list{{ i }}_delete"
-                                                    (click)="deleteModalObject(email, 'email_address')"
-                                                >
-                                                    <fa-icon [icon]="faTrash"></fa-icon>
-                                                </button>
-                                            </div>
-
-                                        </div>
-                                    }
-                                </div>
-                            } @else {
-                                <div class="empty-refs-state">No Email Addresses added yet.</div>
-                            }
                         </div>
+
                     </div>
                 </div>
             }
             @if (whoType === 'organization' && targetAttackerType === 'target') {
                 <div class="d-flex flex-column align-items-center w-100">
                     <div class="target-inputs col-12">
-                        <!-- Target(s) Name & Contact Info -->
+
+                        <!-- Organization Name -->
                         <div class="inner-row">
-                            <div class="input-header">
-                                Target(s) name and Contact information<span class="text-danger ms-1">*</span>
-                                <span class="guided-tip">
-                                    <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
-                                    <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('organiztion_target')"></span>
-                                </span>
+                            <div class="input-header">Organization Name<span class="text-danger ms-1">*</span></div>
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    class="form-control form-control-guided"
+                                    placeholder="Enter Organization Name"
+                                    (keyup)="enableAddToCart($event)"
+                                    [(ngModel)]="targetOrganizationName"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(targetOrganizationName) }"
+                                />
                             </div>
-                            <textarea
-                                class="form-control form-control-guided w-100 mt-2 mb-2"
-                                name="name"
-                                id="nameAndContacts"
-                                rows="5"
-                                placeholder="Add multiple target names and associated contact information in the following format:&#10;name, phone, email;&#10;name, phone, email;&#10;"
-                                [(ngModel)]="nameAndContacts"
-                                (keyup)="enableAddToCart($event)"
-                            >
-                            </textarea>
+                        </div>
+
+                        <!-- Phone Numbers & Email Addresses -->
+                        <div class="guided-dual-container">
+                            <!-- Phone Numbers -->
+                            <div class="inner-row">
+                               <div class="input-header d-flex" style="justify-content: space-between;">
+                                    <div class="input-header-title">
+                                        Phone Numbers
+                                        @if (contact_numbers.length > 0) {
+                                            <span class="badge bg-secondary ms-2 omr-count-badge">{{ contact_numbers.length }} Numbers Added</span>
+                                        }
+                                    </div>
+                                    <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                        <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('phone_number')">
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <!-- Multi-select dropdown -->
+                                @if (contact_numbers.length > 0) {
+                                    <div class="other-refs-list">
+                                        @for (number of contact_numbers; track number; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">{{ number.contact_number }} <span class="select-placeholder-guided">{{displayContactInfoDetails(number, 'phone_number')}}</span></span>
+
+                                                <div class="d-flex" style="gap: .5rem">
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_edit"
+                                                        (click)="editModalObject(number, 'phone_number')"
+                                                    >
+                                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_delete"
+                                                        (click)="deleteModalObject(number, 'phone_number')"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="empty-refs-state">No Phone Numbers added yet.</div>
+                                }
+                            </div>
+
+                            <!-- Email Addresses -->
+                            <div class="inner-row col-6" style="padding-right: 1rem">
+                                <div class="input-header d-flex" style="justify-content: space-between;">
+                                    <div class="input-header-title">
+                                        Email Addresses
+                                        @if (email_addresses.length > 0) {
+                                            <span class="badge bg-secondary ms-2 omr-count-badge">{{ email_addresses.length }} Email Addresses Added</span>
+                                        }
+                                    </div>
+                                    <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                        <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="openModal('email_address')">
+                                            <fa-icon [icon]="faPlus"></fa-icon>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Multi-select dropdown -->
+                                @if (email_addresses.length > 0) {
+                                    <div class="other-refs-list">
+                                        @for (email of email_addresses; track email; let i = $index) {
+                                            <div
+                                                id="other_list{{ i }}"
+                                                class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                            >
+                                                <span class="ref-name">{{ email.email_address_ref }} <span class="select-placeholder-guided">{{displayContactInfoDetails(email, 'email_address')}}</span></span>
+                                                <div class="d-flex" style="gap: .5rem">
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_edit"
+                                                        (click)="editModalObject(email, 'email_address')"
+                                                    >
+                                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                        style="display: flex"
+                                                        type="button"
+                                                        id="other_list{{ i }}_delete"
+                                                        (click)="deleteModalObject(email, 'email_address')"
+                                                    >
+                                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="empty-refs-state">No Email Addresses added yet.</div>
+                                }
+                            </div>
                         </div>
 
                         <!-- Sector -->
                         <div class="inner-row">
                             <div class="input-header">
-                                Sector
+                                Sectors
                                 <span class="guided-tip">
-                                    <fa-icon class="ps-1" [icon]="faInfoCircle"></fa-icon>
+                                    <fa-icon class="ps-1" [icon]="faInfoCircle" style="color: #6f6f6f; font-weight: bold" />
                                     <span class="tip-text" [innerHTML]="guidedService.getTipByLabel('sectors')"></span>
                                 </span>
+                                @if (sectors.length > 0) {
+                                    <span class="badge bg-secondary ms-2 omr-count-badge">{{ sectors.length }} selected</span>
+                                }
                             </div>
 
-                            <select
-                                class="form-control form-control-guided form-select w-100"
-                                [disabled]="!nameAndContacts"
-                                id="sector"
-                                name="sector"
-                                [(ngModel)]="sector"
-                                (change)="sectorHandler($event)"
-                            >
-                                <option value=""></option>
-                                @for (sector of guidedService.identitySectors; track sector; let i = $index) {
-                                    <option [value]="sector.key" [title]="sector?.value">{{ sector?.value }}</option>
-                                }
-                            </select>
+                            <!-- Multi-select dropdown -->
+                            <div class="d-flex gap-2" style="padding-bottom: 1rem">
+                                <select
+                                    [(ngModel)]="selectedSector"
+                                    [ngClass]="{ 'select-placeholder-guided': guidedService.emptyDropdown(selectedSector) }"
+                                    class="form-control form-control-guided form-select"
+                                    style="min-width: 220px"
+                                >
+                                    <option [ngValue]="null" disabled>Select a Sector</option>
+
+                                    @for (option of availableSectorOptions; track option) {
+                                        <option [value]="option.value">
+                                            {{ option?.value }}
+                                        </option>
+                                    }
+                                </select>
+
+                                <button class="btn btn-color btn-add-ref" style="display: inline-flex" (click)="addSector(selectedSector)">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                    <span>Add</span>
+                                </button>
+                            </div>
+
+                            @if (sectors.length > 0) {
+                                <div class="other-refs-list">
+                                    @for (sector of sectors; track sector; let i = $index) {
+                                        <div
+                                            id="other_list{{ i }}"
+                                            class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
+                                        >
+                                            <span class="ref-name">{{ sector }}</span>
+                                            <button
+                                                class="btn btn-fa-sm btn-color list-trash list-trash-guided"
+                                                style="display: flex"
+                                                type="button"
+                                                id="other_list{{ i }}_delete"
+                                                (click)="deleteSector(sector)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            } @else {
+                                <div class="empty-refs-state">No Sectors added yet.</div>
+                            }
                         </div>
                     </div>
                 </div>
