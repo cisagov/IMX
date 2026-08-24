@@ -1,3 +1,14 @@
+## 4.19.0 (2026-08-21)
+
+### Features
+
+* release notes in the help icon 28d1e60
+
+### Bug Fixes
+
+* revert formatonsave back to true 37f28bd
+* update client changelog 6311ded
+
 ## 4.18.1 (2026-08-21)
 
 ### Bug Fixes
