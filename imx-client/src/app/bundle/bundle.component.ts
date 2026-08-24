@@ -3876,8 +3876,11 @@ export class BundleComponent implements OnInit {
             localStorage.setItem('missing-attributes', '');
         }
 
-        this.editObjectNotGuidedUI(custom, obj, isNewVersion);
-        this.editObjectIsGuidedUI(obj, custom, isNewVersion);
+        // IOBs have no form model in COMPONENT_MAP, so they are edited through the custom object form
+        const isCustom = custom || IOB_OBJECTS_LIST.includes(obj.type);
+
+        this.editObjectNotGuidedUI(isCustom, obj, isNewVersion);
+        this.editObjectIsGuidedUI(obj, isCustom, isNewVersion);
     }
 
     setGuidedServiceEditCartTypeOnTargetPage(page, typeOnTargetPage, item) {
@@ -3994,8 +3997,6 @@ export class BundleComponent implements OnInit {
     }
 
     disableEditObject(obj: any) {
-        if (IOB_OBJECTS_LIST.includes(obj.type)) return true;
-
         return (
             obj.created_by_ref &&
             obj.created_by_ref !== this.envService.env.defaultIdentity.id &&

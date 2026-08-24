@@ -380,7 +380,7 @@ export class AdminApiRootComponent implements OnInit {
     }
 
     upsertRW(inputRW = null) {
-        this.modalRef = this.modalService.open(AdminRwComponent);
+        this.modalRef = this.modalService.open(AdminRwComponent, { size: 'lg', scrollable: true });
 
         let rw = {};
         if (inputRW) {
