@@ -158,6 +158,8 @@ export class CustomObjectComponent implements OnInit {
             this.currentObject['spec_version'] = '2.1';
             this.currentObject['extensions'] = new Map();
         } else {
+            this.stixService.customObjReadOnly = false;
+
             const url = window.location.href;
             if (url.includes('revocation=true')) {
                 this.stixService.customObjReadOnly = true;
@@ -203,7 +205,7 @@ export class CustomObjectComponent implements OnInit {
             if (this.stixService.extensions.length > 0) {
                 this.setTypes(currObject);
             } else {
-                console.error('ERROR: Custom Objects MUST have an extension type');
+                // IOBs such as x-oca-asset/event/geo carry no extension definition
                 this.customObjType = 'new-sdo';
                 this.capitalizedCustomObjType = 'SDO';
             }
@@ -316,31 +318,12 @@ export class CustomObjectComponent implements OnInit {
     loadCustomProps(currObject: any, x: any): void {
         let type = typeof currObject[x];
 
-        if (type == 'string' || type == 'boolean') {
+        if (type == 'string' || type == 'boolean' || type == 'number') {
             this.currentObject[x] = currObject[x];
             this.customStringPropKeys.push(x);
-        } else if (type == 'number') {
-            this.currentObject[x] = parseInt(currObject[x]) || undefined;
-            this.customStringPropKeys.push(x);
-        } else if (currObject[x].length && currObject[x].length > 0) {
-            this.currentObject[x] = [];
-            this.customArrPropKeys.push(x);
-            for (let i of currObject[x]) {
-                this.currentObject[x].push(i);
-            }
         } else {
-            this.currentObject[x] = {};
+            this.currentObject[x] = JSON.parse(JSON.stringify(currObject[x]));
             this.customArrPropKeys.push(x);
-
-            let curr = JSON.stringify(currObject[x]);
-            curr = curr.substring(1, curr.length - 2); // Removes bracket and trailing quote (fencepost problem)
-            let split = curr.split('",');
-            for (let i of split) {
-                const key = i.slice(1, i.indexOf(':') - 1); // Removes Preceding and trailing quote
-                const value = i.slice(i.indexOf(':') + 2); // Removes Preceding quote
-
-                this.currentObject[x][key] = value;
-            }
         }
     }
 
@@ -404,11 +387,15 @@ export class CustomObjectComponent implements OnInit {
             }
             this.stixService.extensions = [];
         }
-        if (!this.currentObject['extensions'][this.parent]) {
+        if (this.parent && !this.currentObject['extensions'][this.parent]) {
             this.currentObject['extensions'][this.parent] = { extension_type: this.customObjType };
         }
 
-        this.stixService.addComponent(JSON.parse(JSON.stringify(this.currentObject)));
+        const payload = JSON.parse(JSON.stringify(this.currentObject));
+        // Don't hand back an empty extensions block to objects that never had one
+        if (payload['extensions'] && Object.keys(payload['extensions']).length === 0) delete payload['extensions'];
+
+        this.stixService.addComponent(payload);
         if (this.stixService.new_notes.size > 0) {
             this.stixService.new_notes.forEach((value, key) => this.stixService.addComponent(Object.assign({}, value)));
         }
@@ -572,7 +559,7 @@ export class CustomObjectComponent implements OnInit {
 
         // ---    END OF GRANULAR MARKING SELECTORS   ---
 
-        let ret = (!this.newObj && this.stixService.customObjInfo['parent']) || (this.newObj && this.checkType(this.currentObject['type']));
+        let ret = !this.newObj || this.checkType(this.currentObject['type']);
 
         if (this.stixService.customObjInfo['type']) {
             this.customObjType = this.stixService.customObjInfo['type'];
