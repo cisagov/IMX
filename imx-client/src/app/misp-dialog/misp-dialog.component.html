@@ -30,7 +30,7 @@
                 <div class="row mt-5 d-flex justify-content-center">
                     <div class="col-9">
                         <div class="form-group ms-2 mt-2">
-                            <label class="dialogLabel mb-1">MD5, SHA-1, SHA-256, IPv4, Or IPv6 (max 100 indicators)</label>
+                            <label class="dialogLabel mb-1">Enter search value separated by commas or new lines (max 100 indicators)</label>
                             <textarea
                                 class="form-control ps-3 pe-3 pt-3 pb-3"
                                 wrap="soft"
@@ -39,7 +39,7 @@
                                 cdkAutosizeMinRows="1"
                                 cdkAutosizeMaxRows="7"
                                 [(ngModel)]="textBody"
-                                placeholder="Enter MD5, SHA-1, SHA-256 (one per line), or paste any text to auto-extract indicators"
+                                placeholder="Enter search value separated by commas or new lines"
                                 [disabled]="isLoading"
                             ></textarea>
                         </div>
