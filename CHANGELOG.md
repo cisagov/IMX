@@ -1,3 +1,9 @@
+## 4.19.4 (2026-08-25)
+
+### Bug Fixes
+
+* reorganized build context to mount changelog 9e901bf
+
 ## 4.19.3 (2026-08-25)
 
 ### Bug Fixes
