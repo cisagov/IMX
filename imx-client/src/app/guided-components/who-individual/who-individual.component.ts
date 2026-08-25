@@ -51,9 +51,11 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     identityIOC = null;
     targetName = null;
+    targetOrganizationName = null;
     attackerName = null;
     contactInfo = null;
-    sector = null;
+    selectedSector: string | null = null;
+    sectors = [];
     isOrganization = false;
     whoType = null;
     nameAndContacts = null;
@@ -251,30 +253,80 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             emitObj.push.push(identityObject);
         } else if (this.isTarget && this.isOrganization) {
             this.linkId++;
-            let tempIdentityList = [];
 
-            let nameAndContactsList = this.nameAndContacts.split(';');
-            nameAndContactsList = nameAndContactsList.filter((item) => !!item);
-            for (let i in nameAndContactsList) {
-                let item = nameAndContactsList[i];
+            identityObject['name'] = this.targetOrganizationName ? this.targetOrganizationName.trim() : this.guidedService.autoGenerateNameFromPage('target');
+            // identityObject['contact_information'] = this.contactInfo ? this.contactInfo.trim() : null;
+            identityObject['identity_class'] = 'organization';
+            identityObject['cartId'] = this.cartId[0] ? this.cartId[0] : null;
+            identityObject['sectors'] = this.sectors ? this.sectors : [null];
+            // identityObject['linkId'] = this.linkId;
 
-                let thisItem = {
-                    type: 'identity',
-                    spec_version: '2.1',
+            let hasPhone = this.contact_numbers && this.contact_numbers.length > 0;
+            let hasEmail = this.email_addresses && this.email_addresses.length > 0;
+            let identityExtension: any = null;
+
+            if(hasPhone || hasEmail) {
+                identityExtension = {
+                    "extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498" : {
+                        "extension_type": "property-extension"
+                    }
                 };
 
-                const itemParsed = item.split(',');
-                thisItem['name'] = itemParsed[0] ? itemParsed[0].trim() : null;
-                thisItem['contact_information'] = itemParsed[1] ? itemParsed.slice(1).join(',').trim() : null;
-                thisItem['sectors'] = this.sector ? [this.sector] : [null];
-                thisItem['identity_class'] = 'organization';
-                thisItem['cartId'] = this.cartId[i] ? this.cartId[i] : null;
-                thisItem['linkId'] = this.linkId;
+                if(hasPhone) {
+                    identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].contact_numbers = this.contact_numbers.map(entry => ({
+                        contact_number: entry.contact_number.trim(),
+                        contact_number_type: entry.contact_number_type,
+                        classified: entry.classified ?? false,
+                        description: entry.description
+                    }));
+                }
 
-                if (thisItem['name'] !== '') tempIdentityList.push(thisItem);
+                if(hasEmail) {
+
+                    let ext = identityExtension['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].email_addresses = [];
+
+                    let emailObservableList = this.email_addresses.map((email, index) => {
+                        const emailAddressObject = {
+                            "type": 'email-addr',
+                            "spec_version": "2.1",
+                            "value": email.email_address_ref, // Actually just the value
+                            cartId: index + 1
+                        };
+
+                        emailAddressObject["id"] = this.getStixId(emailAddressObject, "email-addr");
+                        emailAddressObject["display_name"] = email.email_address_ref.trim();
+                        return emailAddressObject;
+                    })
+
+                    let existingObservables = this.guidedService.cart['how-observable'] || {};
+                    let mergedObservables = {
+                            ...existingObservables,
+                            "Email Address": emailObservableList
+                    };
+                    this.guidedService.syncCart("how-observable", mergedObservables);
+                    let emailBucket = this.guidedService.cart['how-observable']['Email Address'];
+
+                    emailBucket.forEach((email, index) => {
+                        let emailEntry = this.email_addresses[index];
+                        ext.push({
+                            email_address_ref: email.id,
+                            digital_contact_type: emailEntry.digital_contact_type,
+                            classified: emailEntry.classified ?? false,
+                            description: emailEntry.description
+                        })
+                    })
+                }
             }
 
-            emitObj.push = tempIdentityList;
+            if(hasPhone || hasEmail) {
+                identityObject['extensions'] = identityExtension;
+            } else {
+                if(this.editMode && identityObject.extensions){
+                    delete identityObject.extensions;
+                }
+            }
+
+            emitObj.push.push(identityObject);
         } else {
             let threatActorObject = {
                 type: 'threat-actor',
@@ -341,15 +393,45 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             this.disableWhoType = true;
             this.isOrganization = true;
 
-            this.sector = event.arr[0].sectors[0];
+            this.sectors = event.arr[0].sectors;
+            this.cartId = event.arr[0].cartId;
+            this.targetOrganizationName = event.arr[0].name;
+            // let tempString = '';
+            // for (let obj of event.arr) {
+            //     tempString = `${tempString}${obj.name}${obj.contact_information ? ', ' + obj.contact_information + ';' : ';'}\n`;
+            //     this.cartId.push(obj.cartId);
+            // }
 
-            let tempString = '';
-            for (let obj of event.arr) {
-                tempString = `${tempString}${obj.name}${obj.contact_information ? ', ' + obj.contact_information + ';' : ';'}\n`;
-                this.cartId.push(obj.cartId);
+            // this.nameAndContacts = tempString;
+
+            // Fill out extension details
+            let identityExtension: any;
+            if(event.arr[0].extensions) {
+                identityExtension = event.arr[0].extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498']
+
+                if(identityExtension?.contact_numbers){
+                    this.contact_numbers = identityExtension.contact_numbers;
+                }
+
+                if(identityExtension?.email_addresses){
+                    this.email_addresses = identityExtension.email_addresses;
+                    // Switch ref for the display_name for this specific case
+                    this.email_addresses.forEach(email => {
+                        email.email_address_ref = this.guidedService.cart['how-observable']['Email Address'].find(obj => obj.id === email.email_address_ref).value;
+                    });
+                }
+
+                // Cleanup stale extension inside edit object if empty
+                if(identityExtension) {
+                    let noPhones = !identityExtension.contact_numbers || identityExtension.contact_numbers.length === 0;
+                    let noEmails = !identityExtension.email_addresses || identityExtension.email_addresses.length === 0;
+                    if(noPhones && noEmails) {
+                        delete event.arr[0].extensions['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'];
+                        if(Object.keys(event.arr[0].extensions).length === 0) delete event.arr[0].extensions;
+                    }
+                }
             }
 
-            this.nameAndContacts = tempString;
         } else if (event.type === 'identity') {
             this.isTarget = true;
             this.targetAttackerType = 'target';
@@ -421,7 +503,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     sectorHandler(event) {
         if (event && event.target && event.target.value) {
-            this.sector = event.target.value;
+            this.sectors = event.target.value;
         }
     }
 
@@ -429,16 +511,21 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         this.combineContacts();
 
         if(this.isTarget) {
-            if(!this.targetName) { this.guidedService.cartDisabled$.next(true); return; }
+            //if(!this.targetName) { this.guidedService.cartDisabled$.next(true); return; }
         }
 
         let disableContinue = true;
         if (!this.isOrganization && (!!this.targetName || !!this.contactInfo)) {
             disableContinue = false;
         }
-        if (this.isOrganization && this.nameAndContacts && this.nameAndContacts.length > 0) {
+        if (this.isOrganization && !!this.targetOrganizationName) {
             disableContinue = false;
         }
+
+        // if (this.isOrganization && this.nameAndContacts && this.nameAndContacts.length > 0) {
+        //     disableContinue = false;
+        // }
+
         if (!this.isTarget && (!!this.attackerName || !!this.currentAttackerMotivation || this.attackerUnknown)) {
             disableContinue = false;
         }
@@ -448,7 +535,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
 
     changeWhoType(event) {
         if (event && event.target && event.target.value) {
-            this.sector = '';
+            this.sectors = [];
 
             if (event.target.value === 'organization') {
                 this.isOrganization = true;
@@ -529,11 +616,13 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         this.whoType = null;
         this.targetAttackerType = null;
         this.targetName = '';
+        this.targetOrganizationName = '';
         this.attackerName = '';
         this.contactInfo = '';
         this.phone = '';
         this.email = '';
-        this.sector = '';
+        this.sectors = [];
+        this.selectedSector = null;
         this.isOrganization = false;
         this.whoType = 'individual';
         this.nameAndContacts = '';
@@ -731,5 +820,23 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             return `(${parts.join(', ')})`;
         }
         return '';
+    }
+
+    get availableSectorOptions() {
+        return this.guidedService.identitySectors.filter(
+            (sector) => !this.sectors.includes(sector)
+        );
+    }
+
+    addSector(sector: string) {
+        if (!sector) return;
+        if (!this.sectors.includes(sector)) {
+            this.sectors.push(sector);
+        }
+        this.selectedSector = null;
+    }
+
+    deleteSector(sector: string) {
+        this.sectors = this.sectors.filter((m) => m !== sector);
     }
 }
