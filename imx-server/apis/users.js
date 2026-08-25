@@ -73,7 +73,14 @@ const getKeycloakUsers = function (authHeader) {
 const getKeycloakUserRoles = function (user, header) {
   return new Promise(async (resolve, reject) => {
     try {
-      const url = `${process.env.KC_URL}admin/realms/${process.env.KC_REALM}/users/${user.id}/role-mappings/realm`;
+      let url = `${process.env.KC_URL}admin/realms/${process.env.KC_REALM}/users/${user.id}/role-mappings/realm`;
+      if (process.env.AUTH.includes("oidc")) {
+        let kc_url = process.env.OIDC_URL.replace(
+          "/protocol/openid-connect",
+          "",
+        );
+        url = `${kc_url.replace("/realms", "/admin/realms")}/users/${user.id}/role-mappings/realm`;
+      }
 
       const result = await axios.get(url, header);
 
@@ -95,7 +102,7 @@ const getKeycloakUserRoles = function (user, header) {
 
       return resolve(userRoles);
     } catch (e) {
-      console.error(`Failed to retrieve roles for user: ${user.username}`, err);
+      console.error(`Failed to retrieve roles for user: ${user.username}`, e);
       return reject(e);
     }
   });
