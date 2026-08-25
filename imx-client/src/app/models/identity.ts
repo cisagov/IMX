@@ -47,33 +47,15 @@ export class Identity extends FormModel {
     created_by_ref?: string;
 
     // Identity Contact Information Extension
+    contact_numbers?: PhoneNumberEntry[] = [];
+    email_addresses?: EmailAddressEntry[] = [];
+    social_media_accounts?: SocialMediaEntry[] = [];
     websites?: string[];
     first_name?: string;
     middle_name?: string;
     last_name?: string;
     prefix?: string;
     suffix?: string;
-    // contact_numbers?: string[];
-    // email_addresses?: string[];
-    // social_media_accounts?: string[];
-
-
-    // Contact Number Object Type
-    contact_numbers?: PhoneNumberEntry[] = [];
-    // contact_number?: string;
-    // phone_description?: string;
-    // phone_classified?: boolean;
-    // contact_number_type?: string;
-
-    // Email Contact Object Type
-    email_addresses?: EmailAddressEntry[] = [];
-
-    // Social Media Contact Object Type
-    social_media_accounts?: SocialMediaEntry[] = [];
-    // social_description?: string;
-    // user_account_ref?: string; // For social media
-    // social_classified?: boolean;
-    // social_digital_contact_type?: string;
 
     name?: string;
     description?: string;
@@ -108,23 +90,9 @@ export class Identity extends FormModel {
         last_name?: string | '',
         prefix?: string | '',
         suffix?: string | '',
-
-        // Contact Number Object Type
-        // contact_number?: string | '',
-        // phone_description?: string | '',
-        // phone_classified?: boolean,
-        // contact_number_type?: string | '',
-
-        // Email Contact Object Type
         email_addresses?: EmailAddressEntry[] | [],
         contact_numbers?: PhoneNumberEntry[] | [],
         social_media_accounts?: SocialMediaEntry[] | [],
-
-        // Social Media Contact Object Type
-        // social_description?: string | '',
-        // user_account_ref?: string | '', // For social media
-        // social_classified?: boolean,
-        // social_digital_contact_type?: string | '',
 
         name?: string | '',
         description?: string | '',
@@ -155,20 +123,9 @@ export class Identity extends FormModel {
         this.last_name = last_name;
         this.prefix = prefix;
         this.suffix = suffix;
-
-        // this.contact_number = contact_number;
-        // this.phone_classified = phone_classified;
-        // this.phone_description = phone_description;
-        // this.contact_number_type = contact_number_type;
-
         this.email_addresses = email_addresses;
         this.contact_numbers = contact_numbers;
         this.social_media_accounts = social_media_accounts;
-
-        // this.user_account_ref = user_account_ref;
-        // this.social_classified = social_classified;
-        // this.social_description = social_description;
-        // this.social_digital_contact_type = social_digital_contact_type;
 
         this.name = name;
         this.description = description;
@@ -426,6 +383,14 @@ export class Identity extends FormModel {
                 },
                 required: false,
                 columnWidth: 'col-3 name',
+                nonGuidedCol: 'col-6 pe-5',
+            }),
+            new TextboxQuestion({
+                key: 'contact_information',
+                label: 'Contact Information',
+                order: 12.5,
+                required: false,
+                columnWidth: 'col-6',
                 nonGuidedCol: 'col-6 pe-5',
             }),
             new DropdownQuestion({
@@ -709,14 +674,6 @@ export class Identity extends FormModel {
         this.prefix = extension.prefix || '';
         this.suffix = extension.suffix || '';
         this.websites = extension.websites || [];
-
-
-        // if(Array.isArray(extension.contact_numbers) && extension.contact_numbers.length > 0) {
-        //     this.contact_number = extension.contact_numbers[0]?.contact_number || '';
-        //     this.contact_number_type = extension.contact_numbers[0]?.contact_number_type || '';
-        //     this.phone_classified = extension.classified;
-        //     this.phone_description = extension.description;
-        // }
 
         if(Array.isArray(extension.contact_numbers) && extension.contact_numbers.length > 0) {
 
