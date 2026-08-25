@@ -160,8 +160,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         'REG_INVALID_TYPE',
     ];
     // extension_schemas = extension_schemas;
-    digitalNumberOptions = extension_schemas['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].definitions["digital-number-ov"].enum;
-    contactNumberOptions = extension_schemas['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].definitions["contact-number-ov"].enum;
+    digitalNumberOptions = extension_schemas['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].definitions['digital-number-ov'].enum;
+    contactNumberOptions = extension_schemas['extension-definition--66e2492a-bbd3-4be6-88f5-cc91a017a498'].definitions['contact-number-ov'].enum;
     timeZoneOptions: any[] = [];
     moment = moment;
     moment_tz = moment_tz;
@@ -236,6 +236,7 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         if (this.question.key === 'spec_version' && missingAttributes?.includes('spec_version')) {
             this.isSpecVersionReadOnly = false;
             this.question.value = '';
+            localStorage.removeItem('missing-attributes');
             this.isAddEnabled.emit();
         }
     }
@@ -247,6 +248,7 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         if (this.question.key === 'spec_version' && missingAttributes?.includes('spec_version')) {
             this.isSpecVersionReadOnly = false;
             this.question.value = '';
+            localStorage.removeItem('missing-attributes');
             this.isAddEnabled.emit();
         }
 
@@ -344,10 +346,10 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
                 if (!this.question.readonly) this.question.options.push({ key: email.id, value: email.value });
             }
 
-            if (this.question.value){
+            if (this.question.value) {
                 this.question.relString = this.question.value;
             } else {
-                if(this.stixService.isEditing) {
+                if (this.stixService.isEditing) {
                     this.question.relString = '';
                 } else {
                     // Retrieve it from the bundle
@@ -363,10 +365,10 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
                 if (!this.question.readonly) this.question.options.push({ key: social.id, value: socialLabel });
             }
 
-            if (this.question.value){
+            if (this.question.value) {
                 this.question.relString = this.question.value;
             } else {
-                if(this.stixService.isEditing) {
+                if (this.stixService.isEditing) {
                     this.question.relString = '';
                 } else {
                     // Retrieve it from the bundle
@@ -595,16 +597,14 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         // Check Custom Validation Function
         if (this.form.dirty && this.question.validatorFn) {
             let validationObject: any = {
-                ...this.form.getRawValue()
+                ...this.form.getRawValue(),
             };
 
-            if(this.question instanceof PhoneQuestion) {
+            if (this.question instanceof PhoneQuestion) {
                 validationObject.phoneType = this.question.phoneType;
-            }
-            else if(this.question instanceof EmailQuestion) {
+            } else if (this.question instanceof EmailQuestion) {
                 validationObject.emailAddressType = this.question.emailAddressType;
-            }
-            else if(this.question instanceof SocialQuestion) {
+            } else if (this.question instanceof SocialQuestion) {
                 validationObject.socialMediaType = this.question.socialMediaType;
             }
             let validationResult = this.question.validatorFn(validationObject);
@@ -1340,8 +1340,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
                     data: {
                         type: 'Email Address',
                         entry: this.currentModalObject,
-                        allowedRefs: emailRefs
-                     },
+                        allowedRefs: emailRefs,
+                    },
                     minHeight: '450px',
                     maxHeight: '90vh',
                     width: '750px',
@@ -1350,10 +1350,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
 
                 emailIdentityRef.afterClosed().subscribe((result) => {
                     if (result) {
-
-                        Object.keys(this.currentModalObject).forEach(key => {
-                            if(!(key in result))
-                                delete this.currentModalObject[key];
+                        Object.keys(this.currentModalObject).forEach((key) => {
+                            if (!(key in result)) delete this.currentModalObject[key];
                         });
 
                         Object.assign(this.currentModalObject, result);
@@ -1366,8 +1364,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
                 let phoneIdentityRef = this.identityDialog.open(IdentityExtensionDialogComponent, {
                     data: {
                         type: 'Phone Number',
-                        entry: this.currentModalObject
-                     },
+                        entry: this.currentModalObject,
+                    },
                     minHeight: '450px',
                     maxHeight: '90vh',
                     width: '750px',
@@ -1376,10 +1374,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
 
                 phoneIdentityRef.afterClosed().subscribe((result) => {
                     if (result) {
-
-                        Object.keys(this.currentModalObject).forEach(key => {
-                            if(!(key in result))
-                                delete this.currentModalObject[key];
+                        Object.keys(this.currentModalObject).forEach((key) => {
+                            if (!(key in result)) delete this.currentModalObject[key];
                         });
 
                         Object.assign(this.currentModalObject, result);
@@ -1394,8 +1390,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
                     data: {
                         type: 'Social Media',
                         entry: this.currentModalObject,
-                        allowedRefs: socialRefs
-                     },
+                        allowedRefs: socialRefs,
+                    },
                     minHeight: '450px',
                     maxHeight: '90vh',
                     width: '750px',
@@ -1404,10 +1400,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
 
                 socialIdentityRef.afterClosed().subscribe((result) => {
                     if (result) {
-
-                        Object.keys(this.currentModalObject).forEach(key => {
-                            if(!(key in result))
-                                delete this.currentModalObject[key];
+                        Object.keys(this.currentModalObject).forEach((key) => {
+                            if (!(key in result)) delete this.currentModalObject[key];
                         });
 
                         Object.assign(this.currentModalObject, result);
@@ -1430,12 +1424,12 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
     }
 
     getFilteredModalObjectArray(type: string) {
-        if(type === 'email_address')
-            return this.stixService.modalObjectArray.filter(obj => obj.email_address_ref !== undefined && obj.email_address_ref !== null);
+        if (type === 'email_address')
+            return this.stixService.modalObjectArray.filter((obj) => obj.email_address_ref !== undefined && obj.email_address_ref !== null);
         else if (type === 'phone_number')
-            return this.stixService.modalObjectArray.filter(obj => obj.contact_number !== undefined && obj.contact_number !== null);
-        else if(type === 'social_media')
-            return this.stixService.modalObjectArray.filter(obj => obj.user_account_ref !== undefined && obj.user_account_ref !== null);
+            return this.stixService.modalObjectArray.filter((obj) => obj.contact_number !== undefined && obj.contact_number !== null);
+        else if (type === 'social_media')
+            return this.stixService.modalObjectArray.filter((obj) => obj.user_account_ref !== undefined && obj.user_account_ref !== null);
         else return null;
     }
 
@@ -1721,12 +1715,13 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
     getIdentityHeading(curr: any, type: string): string {
         let result = null;
 
-        if (type === 'email_address')
-            result = this.getObjectById(curr.email_address_ref).value;
-        if (type === 'phone_number')
-            result = curr.contact_number;
+        if (type === 'email_address') result = this.getObjectById(curr.email_address_ref).value;
+        if (type === 'phone_number') result = curr.contact_number;
         if (type === 'social_media')
-            result = this.getObjectById(curr.user_account_ref).user_id || this.getObjectById(curr.user_account_ref).display_name || this.getObjectById(curr.user_account_ref).id;
+            result =
+                this.getObjectById(curr.user_account_ref).user_id ||
+                this.getObjectById(curr.user_account_ref).display_name ||
+                this.getObjectById(curr.user_account_ref).id;
         return result;
     }
 
