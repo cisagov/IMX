@@ -1,3 +1,9 @@
+## 4.19.5 (2026-08-25)
+
+### Bug Fixes
+
+* sso users for oidc keycloak 1151731
+
 ## 4.19.4 (2026-08-25)
 
 ### Bug Fixes
