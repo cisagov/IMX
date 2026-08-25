@@ -1,3 +1,9 @@
+## [4.19.5](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.4...v4.19.5) (2026-08-25)
+
+### Bug Fixes
+
+* sso users for oidc keycloak ([1151731](https://git.va.th.ten/eos/cde/tie/imx/commit/11517310cb03e815330c6581c558062bbe51509c))
+
 ## [4.19.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.3...v4.19.4) (2026-08-25)
 
 ### Bug Fixes
