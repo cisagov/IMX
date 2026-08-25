@@ -1,3 +1,11 @@
+## [4.19.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.2...v4.19.3) (2026-08-25)
+
+### Bug Fixes
+
+* fix undefined error if tag is not present ([33bc57d](https://git.va.th.ten/eos/cde/tie/imx/commit/33bc57d5ff3b2117e4ce66acbd5f5cfd1fa4a22c))
+* report name not changing when importing from search page ([54147fe](https://git.va.th.ten/eos/cde/tie/imx/commit/54147fe1b70c0dab1c741060dfd41f6770d3f9a7))
+* spec version not properly setting itself to readonly ([fe8600f](https://git.va.th.ten/eos/cde/tie/imx/commit/fe8600f076011951e8d5f33da92434e8490af545))
+
 ## [4.19.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.1...v4.19.2) (2026-08-24)
 
 ### Bug Fixes
