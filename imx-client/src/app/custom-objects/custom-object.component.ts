@@ -115,6 +115,7 @@ export class CustomObjectComponent implements OnInit {
     deletable_notes: Set<string> = new Set();
     notes;
     new_notes;
+    isSpecVersionReadOnly = true;
 
     constructor(
         private router: Router,
@@ -270,6 +271,13 @@ export class CustomObjectComponent implements OnInit {
                         this.loadCustomProps(currObject, x);
                     }
                 }
+            }
+
+            const missingAttributes = localStorage.getItem('missing-attributes');
+            if (missingAttributes?.includes('spec_version')) {
+                this.isSpecVersionReadOnly = false;
+                this.currentObject['spec_version'] = '';
+                localStorage.removeItem('missing-attributes');
             }
 
             this.stixService.bundle.objects.forEach((elem) => {
@@ -443,37 +451,43 @@ export class CustomObjectComponent implements OnInit {
     }
 
     isFormChanged(): boolean {
-        const prev = JSON.parse(JSON.stringify(this.prevObj));
-        const curr = JSON.parse(JSON.stringify(this.currentObject));
+        let prev, curr, prevGranular, prevExtensions, prevExternal;
+        if (this.prevObj) {
+            prev = JSON.parse(JSON.stringify(this.prevObj));
+            prevGranular = prev.granular_markings;
+            prevExternal = prev.external_references;
+            prevExtensions = prev.extensions;
 
-        const prevGranular = prev.granular_markings;
-        const prevExternal = prev.external_references;
-        const prevExtensions = prev.extensions;
+            delete prev.type;
+            delete prev.id;
+            delete prev.spec_version;
+            delete prev.created;
+            delete prev.modified;
+            delete prev.external_references;
+            delete prev.granular_markings;
+            delete prev.extensions;
+        }
 
-        delete prev.type;
-        delete prev.id;
-        delete prev.spec_version;
-        delete prev.created;
-        delete prev.modified;
-        delete prev.external_references;
-        delete prev.granular_markings;
-        delete prev.extensions;
-        delete curr.type;
-        delete curr.id;
-        delete curr.spec_version;
-        delete curr.created;
-        delete curr.modified;
-        delete curr.extensions;
+        if (this.currentObject) {
+            curr = JSON.parse(JSON.stringify(this.currentObject));
 
-        if (JSON.stringify(prev) != JSON.stringify(curr)) {
+            delete curr.type;
+            delete curr.id;
+            delete curr.spec_version;
+            delete curr.created;
+            delete curr.modified;
+            delete curr.extensions;
+        }
+
+        if (prev && curr && JSON.stringify(prev) != JSON.stringify(curr)) {
             return true;
         }
 
-        if (JSON.stringify(prevGranular) != JSON.stringify(this.stixService.granularMarkings)) {
+        if (prevGranular && JSON.stringify(prevGranular) != JSON.stringify(this.stixService.granularMarkings)) {
             return true;
         }
 
-        if (JSON.stringify(prevExternal) != JSON.stringify(this.stixService.externalReferences)) {
+        if (prevExternal && JSON.stringify(prevExternal) != JSON.stringify(this.stixService.externalReferences)) {
             return true;
         }
 

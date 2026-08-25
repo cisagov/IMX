@@ -79,7 +79,7 @@ export class MispResultComponent implements OnInit {
             });
         });
 
-        event.misp.Tag.forEach((tag) => {
+        event.misp.Tag?.forEach((tag) => {
             if (tag.name.startsWith('tlp:')) {
                 this.determineTlp(tag);
             } else {
@@ -115,8 +115,8 @@ export class MispResultComponent implements OnInit {
     }
 
     getTagCount(event) {
-        let attributeCount = event.misp.Attribute.length;
-        event.misp.Object.forEach((obj) => {
+        let attributeCount = event.misp.Attribute?.length;
+        event.misp.Object?.forEach((obj) => {
             if (obj.Attribute) {
                 attributeCount += obj.Attribute.length;
             }
@@ -127,7 +127,7 @@ export class MispResultComponent implements OnInit {
 
     getObjectAttributes(event) {
         let attributes = [];
-        event.misp.Object.forEach((obj) => {
+        event.misp.Object?.forEach((obj) => {
             if (obj.Attribute) {
                 attributes = [...attributes, ...obj.Attribute];
             }

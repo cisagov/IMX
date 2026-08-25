@@ -155,7 +155,11 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <input class="form-control" [(ngModel)]="this.currentObject['spec_version']" readonly />
+                                                        <input
+                                                            [readonly]="isSpecVersionReadOnly"
+                                                            class="form-control"
+                                                            [(ngModel)]="this.currentObject['spec_version']"
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
