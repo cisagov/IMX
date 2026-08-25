@@ -25,6 +25,7 @@ description = "Initial steps for build locally"
 run = """
 cp .env.example .env
 cp env.json.example env.json
+cp env.json.example ./imx-client/src/assets/env.json
 docker compose up -d --build
 """
 

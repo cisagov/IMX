@@ -3,8 +3,8 @@ services:
   imx-client:
     container_name: imx-client
     build:
-      context: ./imx-client
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: imx-client/Dockerfile
       args:
         BUILD_ENV: "dev"
     restart: unless-stopped
