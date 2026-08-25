@@ -1,3 +1,11 @@
+## 4.19.3 (2026-08-25)
+
+### Bug Fixes
+
+* fix undefined error if tag is not present 33bc57d
+* report name not changing when importing from search page 54147fe
+* spec version not properly setting itself to readonly fe8600f
+
 ## 4.19.2 (2026-08-24)
 
 ### Bug Fixes
