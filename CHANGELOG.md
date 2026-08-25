@@ -1,3 +1,9 @@
+## [4.19.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.3...v4.19.4) (2026-08-25)
+
+### Bug Fixes
+
+* reorganized build context to mount changelog ([9e901bf](https://git.va.th.ten/eos/cde/tie/imx/commit/9e901bf0edca13a25824656c4ae77e7cc7526ce7))
+
 ## [4.19.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.2...v4.19.3) (2026-08-25)
 
 ### Bug Fixes
