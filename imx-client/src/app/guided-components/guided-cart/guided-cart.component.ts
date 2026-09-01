@@ -88,7 +88,7 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
 
                     let name = this.guidedService.getObjectTypeName(obj.type);
 
-                    if (this.cart[name] && obj.cartId) {
+                    if (this.cart[name] && obj.cartId) { // Existing Object
                         let objFound = false;
 
                         for (let j in this.editObjects) {
@@ -99,12 +99,7 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
                                 for (let k in this.cart[name]) {
                                     if (this.cart[name][k].cartId === obj.cartId) {
                                         obj['display_name'] = this.getDisplayName(obj, this.cart[name].length, this.cart[name][k].display_name);
-                                        if (this.cart[name][k].id) {
-                                            obj.id = this.cart[name][k].id;
-                                        } else {
-                                            obj.id = this.getStixId(obj, name);
-                                        }
-
+                                        obj.id = this.getStixId(obj, name);
                                         this.cart[name][k] = obj;
                                         break;
                                     }
@@ -124,7 +119,7 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
                             obj['display_name'] = this.getDisplayName(obj, this.cart[name].length, '');
                             this.cart[name].push(obj);
                         }
-                    } else if (this.cart[name]) {
+                    } else if (this.cart[name]) { // Existing Object, no ID
                         this.cartId++;
                         obj.cartId = this.cartId;
 
@@ -136,7 +131,7 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
                         this.cart[name].push(obj);
 
                         this.cartLength++;
-                    } else {
+                    } else { // Fresh new STIX Object
                         this.cartId++;
                         obj.cartId = this.cartId;
 
@@ -176,14 +171,13 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getStixId(object, typeName) {
-        if (this.guidedService.editCart && this.guidedService.editCart[this.currentMode] && this.guidedService.editCart[this.currentMode][typeName]) {
-            for (let oldObject of this.guidedService.editCart[this.currentMode][typeName]) {
-                if (oldObject.cartId === object.cartId) {
-                    return oldObject.id;
-                }
-            }
-        }
-
+        // if (this.guidedService.editCart && this.guidedService.editCart[this.currentMode] && this.guidedService.editCart[this.currentMode][typeName]) {
+        //     for (let oldObject of this.guidedService.editCart[this.currentMode][typeName]) {
+        //         if (oldObject.cartId === object.cartId) {
+        //             return oldObject.id;
+        //         }
+        //     }
+        // }
         return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
     }
 
