@@ -353,47 +353,85 @@ export class GuidedService {
         let regTypes = [];
         let regData = [];
 
-        if (!this.editCart['report-assessment']) {
-            this.currentReport = this.cart['report-assessment']['report'][0];
-        }
+        // Determine the current report
+        this.currentReport = this.cart['report-assessment']['report'][0];
 
         for (let page in this.editCart) {
             if (page === 'report-assessment') continue;
 
             for (let type in this.cart[page]) {
                 for (let newObject of this.cart[page][type]) {
-                    let oldObject = this.getObjectInCart(page, type, newObject.cartId);
-                    let stixObject = oldObject === null ? null : this.getStixFromBundle(oldObject);
 
-                    if (oldObject === null || stixObject === null) {
+                    // Retrieve the old object id
+                    const oldObjectRef = this.editCart[page][type].find(obj => obj.cartId === newObject.cartId);
+                    const oldId = oldObjectRef ? oldObjectRef.id : null;
+                    const oldObject = oldId ? this.getObjectInCart(page, type, oldId) : null;
+                    const oldBundleObject = oldObject ? this.getStixFromBundle(oldObject) : null;
+
+                    // CASE 1: New Object
+                    if (!oldObject || !oldBundleObject) {
                         regTypes.push(type);
                         regData.push(this.cleanItem(newObject));
-                    } else {
-                        let tempObject: any = this.cleanItem(newObject);
+                        continue;
+                    }
 
-                        if(newObject.extensions) {
-                            tempObject.extensions = newObject.extensions
+                    // CASE 2: Edit Object
+                    const edited: any = this.cleanItem(newObject);
+
+                    if(newObject.extensions){
+                        edited.extensions = newObject.extensions;
+                    }
+                    delete edited.cartId;
+
+                    const cleanedOld = this.cleanItem(oldBundleObject);
+                    const cleanedNew = this.cleanItem(edited);
+                    if(JSON.stringify(cleanedOld) === JSON.stringify(cleanedNew)) continue;
+
+                    // Remove Stale Extension Container
+                    if(!edited.extensions && oldBundleObject.extensions) {
+                        delete oldBundleObject.extensions;
+                    }
+
+                    // Apply edited fields onto bundle object
+                    for(let field in edited) {
+                        if(field === 'extensions'){
+                            oldBundleObject.extensions = edited.extensions;
+                            continue;
                         }
-                        delete tempObject.cartId;
+                        oldBundleObject[field] = edited[field];
+                    }
 
-                        // Remove stale extension when edited identity no longer has any
-                        if(!tempObject.extensions && stixObject.extensions) {
-                            delete stixObject.extensions;
+                    // Detect ID Change
+                    const idChanged = oldObject.id !== edited.id;
+                    if(idChanged) {
+                        // Clean up transitive references
+                        const transitiveRefs = this.stixService.findAllTransitiveReferences(oldObject.id);
+                        for(const refObj of transitiveRefs) {
+                            this.replaceIdInObject(refObj, oldObject.id, edited.id);
+                            await this.stixService.addComponent(refObj);
                         }
+                        await this.stixService.removeComponent(oldObject.id);
+                    }
 
-                        for (let field in tempObject) {
-                            if (field === 'id') continue;
+                    // Update bundle object ID
+                    oldBundleObject.id = edited.id;
+                    newObject.id = edited.id;
 
-                            // Deep update extensions properly
-                            if(field === 'extensions') {
-                                stixObject.extensions = tempObject.extensions;
-                                continue;
-                            }
-                            stixObject[field] = tempObject[field];
-                        }
+                    // Insert edited object into bundle
+                    await this.stixService.addComponent(oldBundleObject);
 
-                        newObject.id = stixObject.id;
-                        await this.stixService.addComponent(stixObject);
+                    // Sync Cart with updated bundle object
+                    const cleaned:any = this.cleanItem(oldBundleObject);
+
+                    // Overwrite the cart entry that corresponds to this edit
+                    this.cart[page][type] = this.cart[page][type].map(obj =>
+                        obj.cartId === newObject.cartId ? {...cleaned, cartId: obj.cartId } : obj
+                    );
+
+                    if(this.simplifiedCart[type]){
+                        this.simplifiedCart[type] = this.simplifiedCart[type].map(obj =>
+                            obj.cartId === newObject.cartId ? {...cleaned, cartId: obj.cartId } : obj
+                        );
                     }
                 }
             }
@@ -403,26 +441,49 @@ export class GuidedService {
 
         if (this.editCart['Incident'] || this.editCart['what-impact']) await this.updateIncident();
 
-        this.cart['report-assessment']['report'] = [this.currentReport];
-        let tempReport = {};
-        for (let field in this.currentReport) {
-            if (field === 'cartId') continue;
-            if (this.currentReport[field] === null) continue;
+        // Rebuild report ONLY if user edited the report itself
+        const editingReport = this.editCart['report-assessment'] && this.editCart['report-assessment']['report'];
 
-            tempReport[field] = this.currentReport[field];
+        if(editingReport) {
+            this.cart['report-assessment']['report'] = [this.currentReport];
+
+            let tempReport = {};
+            for (let field in this.currentReport) {
+                if (field === 'cartId') continue;
+                if (this.currentReport[field] === null) continue;
+
+                tempReport[field] = this.currentReport[field];
+            }
+
+            await this.reconstructRelationships();
+            await this.addComponents(['report'], [tempReport]);
         }
 
-        await this.reconstructRelationships();
-
-        await this.addComponents(['report'], [tempReport]);
-
+        // Remove observables queued for deletion
         for (const observable of this.observablesToRemove) {
             await this.stixService.removeComponent(observable);
         }
 
-        localStorage.setItem('cached-cart', JSON.stringify(this.cachedCart));
+        const cached = JSON.parse(localStorage.getItem('cached-cart') || '[]');
+        const reportId = this.currentReport?.id;
+
+        const merged = cached.map(entry => {
+            const entryReportId = entry?.['report-assessment']?.['report']?.[0]?.id;
+            return entryReportId === reportId ? this.cart : entry;
+        });
+
+        localStorage.setItem('cached-cart', JSON.stringify(merged));
+        await this.organizeCategoriesAsync();
 
         this.cancelEditFromBundle();
+    }
+
+    replaceIdInObject(obj: any, oldId: string, newId: string) {
+        const escapedOldId = oldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escapedOldId, 'g');
+
+        const updated = JSON.parse(JSON.stringify(obj).replace(regex, newId));
+        Object.assign(obj, updated);
     }
 
     async reconstructRelationships() {
@@ -539,11 +600,11 @@ export class GuidedService {
         });
     }
 
-    getObjectInCart(page, type, cartId) {
+    getObjectInCart(page, type, id) {
         if (!this.editCart[page][type]) return null;
 
         for (let object of this.editCart[page][type]) {
-            if (object.cartId === cartId) {
+            if (object.id === id) {
                 return object;
             }
         }
@@ -1805,5 +1866,12 @@ export class GuidedService {
 
     getCategory(type) {
         return this.categories[type];
+    }
+
+    async organizeCategoriesAsync() {
+        await Promise.resolve();
+        this.organizeCart();
+        this.organizeCategories();
+        this.filteredCategories = { ...this.filteredCategories };
     }
 }

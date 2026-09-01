@@ -703,7 +703,8 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         }
 
         stixObject['cartId'] = this.cartIds[0] ? this.cartIds[0] : null;
-        stixObject['id'] = this.objectIds[0] ? this.objectIds[0] : this.getStixId(stixObject);
+        // stixObject['id'] = this.objectIds[0] ? this.objectIds[0] : this.getStixId(stixObject);
+        stixObject['id'] = this.getStixId(stixObject);
 
         if (this.showObservableAlignment === true) {
             stixObject['alignment'] = this.currentObservableAlignment !== '' ? this.currentObservableAlignment : null;
@@ -736,14 +737,14 @@ export class HowObservableComponent implements OnInit, OnDestroy {
     }
 
     getStixId(object) {
-        let typeName = this.getObjectTypeName(object.type);
-        if (this.guidedService.editCart && this.guidedService.editCart[this.component] && this.guidedService.editCart[this.component][typeName]) {
-            for (let oldObject of this.guidedService.editCart[this.component][typeName]) {
-                if (oldObject.cartId === object.cartId) {
-                    return oldObject.id;
-                }
-            }
-        }
+        // let typeName = this.getObjectTypeName(object.type);
+        // if (this.guidedService.editCart && this.guidedService.editCart[this.component] && this.guidedService.editCart[this.component][typeName]) {
+        //     for (let oldObject of this.guidedService.editCart[this.component][typeName]) {
+        //         if (oldObject.cartId === object.cartId) {
+        //             return oldObject.id;
+        //         }
+        //     }
+        // }
 
         return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
     }
