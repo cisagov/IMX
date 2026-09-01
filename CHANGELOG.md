@@ -1,3 +1,10 @@
+## 4.19.6 (2026-09-01)
+
+### Bug Fixes
+
+* allow identity organization objects to be processed correctly 8b10390
+* bug fixes to object editing in guided 6b31c65
+
 ## 4.19.5 (2026-08-25)
 
 ### Bug Fixes
