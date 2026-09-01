@@ -1,3 +1,10 @@
+## [4.19.6](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.5...v4.19.6) (2026-09-01)
+
+### Bug Fixes
+
+* allow identity organization objects to be processed correctly ([8b10390](https://git.va.th.ten/eos/cde/tie/imx/commit/8b10390e5e63a15bebaaf7548c815a8376901050))
+* bug fixes to object editing in guided ([6b31c65](https://git.va.th.ten/eos/cde/tie/imx/commit/6b31c651e4d5233a3d8248448de4781f90781774))
+
 ## [4.19.5](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.4...v4.19.5) (2026-08-25)
 
 ### Bug Fixes
