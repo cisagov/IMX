@@ -316,7 +316,7 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
                         if (found === false) this.guidedService.updateItemClicked$.next(tempObject);
                         break;
                     case 'identity':
-                        if (tempObject.identity_class === 'organization' || tempObject.type === 'threat-actor') {
+                        if (tempObject.type === 'threat-actor') {
                             this.editObjects = [];
                             let objType = this.guidedService.getObjectTypeName(tempObject.type);
 
