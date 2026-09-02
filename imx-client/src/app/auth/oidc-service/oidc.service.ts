@@ -17,7 +17,7 @@ export interface OidcBootstrapConfig {
 export class OidcService {
     userManager: UserManager;
 
-    private oidcUser = undefined;
+    private oidcUser: User = undefined;
     private initialized: boolean = false;
     private apiRoot: string = '';
     private usernameField: string = '';
@@ -127,8 +127,8 @@ export class OidcService {
 
     async isTokenExpired(): Promise<boolean> {
         try {
-            await this.renewToken();
-            return this.oidcUser?.expired;
+            const user = await this.renewToken();
+            return user.expired;
         } catch (err) {
             console.error(err);
             return true;
