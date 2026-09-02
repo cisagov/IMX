@@ -1,3 +1,10 @@
+## [4.19.7](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.6...v4.19.7) (2026-09-02)
+
+### Bug Fixes
+
+* delete on search page restored for oidc ([a614358](https://git.va.th.ten/eos/cde/tie/imx/commit/a6143589f804968053134825d2326df7edd226dc))
+* patch imx client browserslist ([ca1e685](https://git.va.th.ten/eos/cde/tie/imx/commit/ca1e685b384e2aff1ac0607fbcd89f31c2fd7c45))
+
 ## [4.19.6](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.5...v4.19.6) (2026-09-01)
 
 ### Bug Fixes
