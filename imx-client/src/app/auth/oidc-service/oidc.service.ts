@@ -24,7 +24,7 @@ export class OidcService {
 
     constructor(private readonly router: Router) {}
 
-    async getRoles(): Promise<any> {
+    getRoles(): string[] {
         try {
             let userInfo = JSON.parse(this.parseToken());
 
@@ -50,7 +50,7 @@ export class OidcService {
 
             if (user === null) return null;
 
-            if (user?.profile) user.profile['roles'] = await this.getRoles();
+            if (user?.profile) user.profile['roles'] = this.getRoles();
             this.oidcUser = user;
 
             return user;

@@ -30,7 +30,7 @@ export class AuthOidc {
             await this.oidc.login();
         }
 
-        let roles = await this.oidc.getRoles();
+        let roles = this.oidc.getRoles();
 
         // Get the roles required from the route.
         if (!this.envService.env.taxiiServer) {
