@@ -1,3 +1,10 @@
+## 4.19.8 (2026-09-02)
+
+### Bug Fixes
+
+* oidc refresh token 7f0624f
+* return correct expired value for the user (oidc) 0c48d81
+
 ## 4.19.7 (2026-09-02)
 
 ### Bug Fixes
