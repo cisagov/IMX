@@ -1,3 +1,10 @@
+## [4.19.8](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.7...v4.19.8) (2026-09-02)
+
+### Bug Fixes
+
+* oidc refresh token ([7f0624f](https://git.va.th.ten/eos/cde/tie/imx/commit/7f0624f3ce6ab28c0b62d0c6c95ac6bcec341c15))
+* return correct expired value for the user (oidc) ([0c48d81](https://git.va.th.ten/eos/cde/tie/imx/commit/0c48d816cc08ab2b2b7ac985ad62290b7e401c42))
+
 ## [4.19.7](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.6...v4.19.7) (2026-09-02)
 
 ### Bug Fixes
