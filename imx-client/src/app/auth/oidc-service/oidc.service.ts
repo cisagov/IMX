@@ -125,8 +125,9 @@ export class OidcService {
         });
     }
 
-    isTokenExpired(): boolean {
+    async isTokenExpired(): Promise<boolean> {
         try {
+            await this.renewToken();
             return this.oidcUser?.expired;
         } catch (err) {
             console.error(err);
