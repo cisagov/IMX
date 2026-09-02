@@ -1,3 +1,9 @@
+## 4.19.9 (2026-09-02)
+
+### Bug Fixes
+
+* fix misp to use value instead of searchall 1ffb6c0
+
 ## 4.19.8 (2026-09-02)
 
 ### Bug Fixes
