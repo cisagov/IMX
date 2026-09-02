@@ -1,3 +1,9 @@
+## [4.19.9](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.8...v4.19.9) (2026-09-02)
+
+### Bug Fixes
+
+* fix misp to use value instead of searchall ([1ffb6c0](https://git.va.th.ten/eos/cde/tie/imx/commit/1ffb6c03860099e84c3a078d694e9a27a0140929))
+
 ## [4.19.8](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.7...v4.19.8) (2026-09-02)
 
 ### Bug Fixes
