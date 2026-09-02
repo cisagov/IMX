@@ -1,3 +1,10 @@
+## 4.19.7 (2026-09-02)
+
+### Bug Fixes
+
+* delete on search page restored for oidc a614358
+* patch imx client browserslist ca1e685
+
 ## 4.19.6 (2026-09-01)
 
 ### Bug Fixes
