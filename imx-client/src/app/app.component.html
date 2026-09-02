@@ -52,6 +52,14 @@
                     }
                     @if (isAuthenticated) {
                         <li class="nav-item">
+                            <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/taxii-search">
+                                <fa-icon [icon]="faSearch" class="faCog me-1"></fa-icon>
+                                <span class="" [ngClass]="{ currentPage: currentPage === 'Search' }"> Search </span>
+                            </a>
+                        </li>
+                    }
+                    @if (isAuthenticated) {
+                        <li class="nav-item">
                             <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/my-profile">
                                 <fa-icon [icon]="faUser" class="faCog me-1"></fa-icon>
                                 <span class="" [ngClass]="{ currentPage: currentPage === 'Profile' }"> My Profile </span>
@@ -272,7 +280,11 @@
                 </svg>
                 Help
             </button>
-            <div class="dropdown-menu" style="transform: translate3d(0px, -180px, 0px); width: 500px; height: 500px; overflow-y: scroll;" aria-labelledby="dropdownMenuButton">
+            <div
+                class="dropdown-menu"
+                style="transform: translate3d(0px, -180px, 0px); width: 500px; height: 500px; overflow-y: scroll"
+                aria-labelledby="dropdownMenuButton"
+            >
                 <a class="dropdown-item" routerLink="/config">TAXII Server: {{ this.getServerDisplay() }}</a>
                 @if (environment.isSupportEnabled) {
                     <a (click)="openSupportModal(supportModal, 'Request a New Feature')" class="dropdown-item">Request Feature</a>
@@ -285,17 +297,17 @@
                 <div class="dropdown-divider"></div>
                 <div class="px-3 py-2">
                     <strong>Release Notes</strong>
-                    @for(v of markdownChangelog; track v.version) {
+                    @for (v of markdownChangelog; track v.version) {
                         <div class="mt-2">
-                            <strong>{{v.version}}</strong> - {{v.date}}
+                            <strong>{{ v.version }}</strong> - {{ v.date }}
                         </div>
-                        @for(section of v.sections; track section.title) {
+                        @for (section of v.sections; track section.title) {
                             <div class="fw-semibold mt-1">
-                                {{section.title}}
+                                {{ section.title }}
                             </div>
                             <ul class="ms-3">
-                                @for(item of section.items; track item) {
-                                    <li>{{item}}</li>
+                                @for (item of section.items; track item) {
+                                    <li>{{ item }}</li>
                                 }
                             </ul>
                         }

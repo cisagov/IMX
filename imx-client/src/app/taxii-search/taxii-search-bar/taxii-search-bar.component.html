@@ -1,0 +1,9 @@
+<div class="container-fluid">
+    {{ currentTab }}
+    @if (currentTab == 'submission') {
+        <app-taxii-submissions></app-taxii-submissions>
+    }
+    @if (currentTab == 'query') {
+        <app-taxii-query></app-taxii-query>
+    }
+</div>

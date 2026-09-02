@@ -18,6 +18,7 @@ import { ConfigComponent } from './config/config.component';
 import { UserDataComponent } from './user-data/user-data.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SigninCallbackComponent } from './auth/oidc-service/signin-callback.component';
+import { TaxiiSearchComponent } from './taxii-search/taxii-search.component';
 
 const auth: any = AuthGuard;
 
@@ -31,6 +32,7 @@ const routes: Routes = [
     { path: 'incident-obj', component: IncidentCoreObjectComponent, canActivate: [auth] },
     { path: 'malware-obj', component: MalwareBehaviourObjectComponent, canActivate: [auth] },
     { path: 'query-stix', component: QueryStixComponent, canActivate: [auth] },
+    { path: 'taxii-search', component: TaxiiSearchComponent, canActivate: [auth] },
     { path: 'reporting', component: ReportingComponent, canActivate: [auth] },
     { path: 'login', component: LoginComponent },
     { path: 'sign-up', component: SignUpComponent },
