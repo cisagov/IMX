@@ -1,0 +1,301 @@
+/* Tokens */
+:root {
+    --imx-page-bg: #f9fafb;
+    --imx-surface: #ffffff;
+    --imx-surface-hover: #f9fafb;
+    --imx-surface-active: #f2f4f7;
+    --imx-surface-inert: #f1f3f5;
+
+    --imx-border: #e5e7eb;
+    --imx-card-border: rgba(4, 32, 69, 0.1);
+    --imx-card-shadow: 0 0 4px rgba(31, 41, 55, 0.04);
+
+    --imx-text: #1f2937;
+    --imx-text-muted: #6b7280;
+
+    --imx-primary: #206bc4;
+    --imx-danger: #d63939;
+
+    --imx-radius: 8px;
+    --imx-radius-sm: 6px;
+
+    --imx-rail-top: 84px;
+    --imx-page-top: 52px;
+}
+
+.imx-form-page {
+    margin-top: var(--imx-page-top);
+    padding: 1.5rem 3rem 0;
+    background: var(--imx-page-bg);
+    color: var(--imx-text);
+    line-height: 1.45;
+}
+
+.imx-form-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 991.98px) {
+    .imx-form-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.imx-rail {
+    position: sticky;
+    top: var(--imx-rail-top);
+    align-self: start;
+}
+
+.imx-rail-heading {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--imx-text-muted);
+}
+
+.imx-rail-item {
+    display: block;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--imx-radius-sm);
+    font-size: 0.9375rem;
+    color: var(--imx-text-muted);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 0.12s,
+        color 0.12s;
+}
+
+.imx-rail-item:hover {
+    background-color: var(--imx-surface-hover);
+    color: var(--imx-text);
+}
+
+.imx-rail-item.active {
+    background-color: var(--imx-surface-active);
+    color: var(--imx-text);
+    font-weight: 600;
+}
+
+.imx-rail-item:focus-visible {
+    outline: 2px solid var(--imx-primary);
+    outline-offset: -2px;
+}
+
+/* Section card */
+.imx-card {
+    background: var(--imx-surface);
+    border: 1px solid var(--imx-card-border);
+    border-radius: var(--imx-radius);
+    box-shadow: var(--imx-card-shadow);
+    margin-bottom: 1.5rem;
+    /* Clears the fixed navbar when the rail scrolls to a section. */
+    scroll-margin-top: calc(var(--imx-rail-top) + 8px);
+}
+
+.imx-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--imx-border);
+}
+
+.imx-card-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--imx-text);
+}
+
+.imx-card-body {
+    padding: 1rem 1.25rem;
+}
+
+/* Fields */
+.imx-field-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--imx-text);
+}
+
+.imx-required {
+    color: var(--imx-danger);
+}
+
+.imx-help {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--imx-text-muted);
+}
+
+.imx-field-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.imx-field-head .imx-field-label {
+    margin-bottom: 0;
+}
+
+.select-placeholder {
+    color: #adb5bd;
+}
+
+.imx-form-page .form-control[readonly] {
+    background-color: var(--imx-surface-inert) !important;
+    color: var(--imx-text-muted) !important;
+}
+
+.imx-item-list {
+    --bs-list-group-border-color: var(--imx-border);
+    border: 1px solid var(--imx-border);
+    border-radius: var(--imx-radius-sm);
+    overflow: hidden;
+}
+
+.imx-item-list .list-group-item {
+    padding: 0.5rem 0.75rem;
+}
+
+.imx-item-list .list-group-item:hover {
+    background-color: var(--imx-surface-hover);
+}
+
+.imx-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.imx-item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.imx-item-primary {
+    display: block;
+    font-size: 1rem;
+    color: var(--imx-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.imx-item-secondary {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--imx-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.imx-item-actions {
+    display: flex;
+    gap: 2px;
+    margin-left: auto;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.12s;
+}
+
+.list-group-item:hover .imx-item-actions,
+.imx-item-actions:focus-within {
+    opacity: 1;
+}
+
+.imx-type-badge {
+    flex-shrink: 0;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    background-color: var(--imx-surface-active);
+    color: var(--imx-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.imx-item-json {
+    margin: 0.5rem 0 0;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--imx-radius-sm);
+    background-color: var(--imx-surface-active);
+    color: var(--imx-text);
+    font-size: 0.8125rem;
+    max-height: 240px;
+    overflow: auto;
+}
+
+.imx-empty {
+    padding: 0.75rem 0;
+    border: 1px dashed var(--imx-border);
+    border-radius: var(--imx-radius-sm);
+    color: var(--imx-text-muted);
+    font-size: 0.9375rem;
+    font-style: italic;
+    text-align: center;
+}
+
+.imx-action-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 1.5rem -3rem 0;
+    padding: 0.75rem 3rem;
+    background: var(--imx-surface);
+    border-top: 1px solid var(--imx-border);
+}
+
+.imx-tooltip .tooltip-inner {
+    max-width: 300px;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.imx-tooltip-wide .tooltip-inner {
+    max-width: 380px;
+}
+
+.imx-info {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 1;
+    color: var(--imx-text-muted);
+    cursor: help;
+}
+
+.imx-info:hover {
+    color: var(--imx-primary);
+}
+
+.imx-info:focus-visible {
+    outline: 2px solid var(--imx-primary);
+    outline-offset: 2px;
+    color: var(--imx-primary);
+}
+
+.imx-mono {
+    font-family: var(--bs-font-monospace);
+}
