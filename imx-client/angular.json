@@ -44,7 +44,8 @@
               "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/ngx-ui-switch/ui-switch.component.css",
-              "src/styles/forms.css"
+              "src/styles/forms.css",
+              "src/styles/modals.css"
             ],
             "scripts": [
               "./node_modules/jquery/dist/jquery.min.js",
@@ -303,7 +304,8 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/styles/forms.css"
+              "src/styles/forms.css",
+              "src/styles/modals.css"
             ],
             "scripts": []
           }
