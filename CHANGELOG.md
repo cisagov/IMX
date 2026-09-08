@@ -1,3 +1,10 @@
+## 4.19.10 (2026-09-08)
+
+### Bug Fixes
+
+* fix login-logout loop with oidc ae966dd
+* revert login-logout fix and disable logging out when changing pages a0c8859
+
 ## 4.19.9 (2026-09-02)
 
 ### Bug Fixes
