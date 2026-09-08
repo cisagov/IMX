@@ -101,9 +101,9 @@ export class OidcService {
         localStorage.setItem('oidc_init', 'true');
         let authenticated = await this.isLoggedIn();
 
-        // if (!authenticated && !window.location.href.includes('signin-callback')) {
-        //     this.login();
-        // }
+        if (!authenticated && !window.location.href.includes('signin-callback')) {
+            this.login();
+        }
 
         return authenticated;
     }
