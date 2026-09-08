@@ -9,6 +9,7 @@ dependencies = [
     "gunicorn>=25.3",
     "misp-stix>=2026.4.28",
     "pydantic>=2.6",
+    "pytest-html>=4.2.0",
     "requests>=2.32",
     "stix2>=3.0.2",
     "urllib3>=2.2",
