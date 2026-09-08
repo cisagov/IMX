@@ -1,3 +1,10 @@
+## [4.19.10](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.9...v4.19.10) (2026-09-08)
+
+### Bug Fixes
+
+* fix login-logout loop with oidc ([ae966dd](https://git.va.th.ten/eos/cde/tie/imx/commit/ae966dd77330a3e70a81ededd5c6cae664fc7811))
+* revert login-logout fix and disable logging out when changing pages ([a0c8859](https://git.va.th.ten/eos/cde/tie/imx/commit/a0c8859b999c8de188a32423970ca19bc8f7bf12))
+
 ## [4.19.9](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.8...v4.19.9) (2026-09-02)
 
 ### Bug Fixes
