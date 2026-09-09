@@ -72,6 +72,15 @@ export class ExternalReferencesDialogComponent {
             this.currentExternalReference.external_id = edited.external_id;
             this.editedExternalReference = this.currentExternalReference;
         }
+        if (data && data['value']) {
+            const value = data['value'];
+            this.currentExternalReference.source_name = value.source_name || this.currentExternalReference.source_name;
+            this.currentExternalReference.description = value.description || '';
+            this.currentExternalReference.url = value.url || '';
+            this.currentExternalReference.hashes = value.hashes || {};
+            this.currentExternalReference.external_id = value.external_id || '';
+            this.editedExternalReference = undefined;
+        }
     }
 
     onCancel(): void {
