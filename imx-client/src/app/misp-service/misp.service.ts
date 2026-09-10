@@ -61,7 +61,7 @@ export class MispService {
                             if (foundEvent) {
                                 if (!foundEvent.additionalValues) foundEvent.additionalValues = [];
 
-                                foundEvent.additionalValues.push({ searchall: searchResult.searchall });
+                                foundEvent.additionalValues.push({ value: searchResult.value });
                             }
                         }
                     });

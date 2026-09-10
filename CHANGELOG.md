@@ -1,3 +1,49 @@
+## [4.19.10](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.9...v4.19.10) (2026-09-08)
+
+### Bug Fixes
+
+* fix login-logout loop with oidc ([ae966dd](https://git.va.th.ten/eos/cde/tie/imx/commit/ae966dd77330a3e70a81ededd5c6cae664fc7811))
+* revert login-logout fix and disable logging out when changing pages ([a0c8859](https://git.va.th.ten/eos/cde/tie/imx/commit/a0c8859b999c8de188a32423970ca19bc8f7bf12))
+
+## [4.19.9](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.8...v4.19.9) (2026-09-02)
+
+### Bug Fixes
+
+* fix misp to use value instead of searchall ([1ffb6c0](https://git.va.th.ten/eos/cde/tie/imx/commit/1ffb6c03860099e84c3a078d694e9a27a0140929))
+
+## [4.19.8](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.7...v4.19.8) (2026-09-02)
+
+### Bug Fixes
+
+* oidc refresh token ([7f0624f](https://git.va.th.ten/eos/cde/tie/imx/commit/7f0624f3ce6ab28c0b62d0c6c95ac6bcec341c15))
+* return correct expired value for the user (oidc) ([0c48d81](https://git.va.th.ten/eos/cde/tie/imx/commit/0c48d816cc08ab2b2b7ac985ad62290b7e401c42))
+
+## [4.19.7](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.6...v4.19.7) (2026-09-02)
+
+### Bug Fixes
+
+* delete on search page restored for oidc ([a614358](https://git.va.th.ten/eos/cde/tie/imx/commit/a6143589f804968053134825d2326df7edd226dc))
+* patch imx client browserslist ([ca1e685](https://git.va.th.ten/eos/cde/tie/imx/commit/ca1e685b384e2aff1ac0607fbcd89f31c2fd7c45))
+
+## [4.19.6](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.5...v4.19.6) (2026-09-01)
+
+### Bug Fixes
+
+* allow identity organization objects to be processed correctly ([8b10390](https://git.va.th.ten/eos/cde/tie/imx/commit/8b10390e5e63a15bebaaf7548c815a8376901050))
+* bug fixes to object editing in guided ([6b31c65](https://git.va.th.ten/eos/cde/tie/imx/commit/6b31c651e4d5233a3d8248448de4781f90781774))
+
+## [4.19.5](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.4...v4.19.5) (2026-08-25)
+
+### Bug Fixes
+
+* sso users for oidc keycloak ([1151731](https://git.va.th.ten/eos/cde/tie/imx/commit/11517310cb03e815330c6581c558062bbe51509c))
+
+## [4.19.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.3...v4.19.4) (2026-08-25)
+
+### Bug Fixes
+
+* reorganized build context to mount changelog ([9e901bf](https://git.va.th.ten/eos/cde/tie/imx/commit/9e901bf0edca13a25824656c4ae77e7cc7526ce7))
+
 ## [4.19.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.2...v4.19.3) (2026-08-25)
 
 ### Bug Fixes

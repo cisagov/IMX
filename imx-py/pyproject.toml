@@ -9,14 +9,14 @@ dependencies = [
     "gunicorn>=25.3",
     "misp-stix>=2026.4.28",
     "pydantic>=2.6",
+    "pytest-html>=4.2.0",
     "requests>=2.32",
     "stix2>=3.0.2",
     "urllib3>=2.2",
 ]
 
 [dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-    "pytest-cov>=7.1.0",
-    "ruff>=0.15.20",
-]
+dev = ["pytest>=9.1.1", "pytest-cov>=7.1.0", "ruff>=0.15.20"]
+
+[tool.coverage.run]
+omit = ["tests/*"]

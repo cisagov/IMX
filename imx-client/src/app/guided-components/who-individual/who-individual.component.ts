@@ -393,7 +393,7 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
             this.disableWhoType = true;
             this.isOrganization = true;
 
-            this.sectors = event.arr[0].sectors;
+            this.sectors = event.arr[0].sectors || [];
             this.cartId = event.arr[0].cartId;
             this.targetOrganizationName = event.arr[0].name;
             // let tempString = '';
@@ -435,11 +435,18 @@ export class WhoIndividualComponent implements OnInit, OnDestroy {
         } else if (event.type === 'identity') {
             this.isTarget = true;
             this.targetAttackerType = 'target';
-            this.whoType = 'individual';
+            this.whoType = event.identity_class;
             this.disableAttackerType = true;
             this.disableWhoType = true;
-            this.isOrganization = false;
             this.targetName = event.name;
+            if(this.whoType === 'organization'){
+                this.isOrganization = true;
+                this.targetOrganizationName = event.name;
+                this.sectors = event.sectors || [];
+            } else {
+                this.isOrganization = false;
+                this.targetName = event.name;
+            }
             // if (event.contact_information !== null) {
             //     this.contactInfo = event.contact_information;
             //     this.parseContacts();
