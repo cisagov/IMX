@@ -54,7 +54,7 @@ test-imx-py:
   variables:
     SERVICE: "imx-py"
   script:
-    - pytest --cov=. --cov-report=xml:coverage.xml --html=report.html --self-contained-html
+    - pytest --cov=. --cov-report=xml:imx-py_test_coverage.xml --html=imx-py_test_report.html --self-contained-html
   artifacts:
     when: always
     paths:
@@ -75,8 +75,8 @@ test-imx-server:
     when: always
     paths:
       # Overwrites the global paths array to capture BOTH items
-      - $SERVICE/imx-server_test_coverage.xml
-      - $SERVICE/imx-server_test_report.html
+      - $SERVICE/coverage.xml
+      - $SERVICE/report.html
 
 playwright-tests:
   stage: test
