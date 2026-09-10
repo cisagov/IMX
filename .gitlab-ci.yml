@@ -48,11 +48,50 @@ lint:
   variables:
     SERVICE: imx-py
 
-test:
-  allow_failure: true
+test-imx-py:
   extends: .python-test
+  allow_failure: true
   variables:
-    SERVICE: imx-py
+    SERVICE: "imx-py"
+  script:
+    - pytest --cov=. --cov-report=xml:coverage.xml --html=report.html --self-contained-html
+  artifacts:
+    when: always
+    paths:
+      # Overwrites the global paths array to capture BOTH items
+      - $SERVICE/imx-py_test_coverage.xml
+      - $SERVICE/imx-py_test_report.html
+
+test-imx-server:
+  allow_failure: true
+  variables:
+    SERVICE: "imx-server"
+  before_script:
+    - npm install --save-dev jest-html-reporter
+    - cd $SERVICE
+  script:
+    - npx jest  imx-server/tests --reporters=default --reporters=jest-html-reporter --coverage
+  artifacts:
+    when: always
+    paths:
+      # Overwrites the global paths array to capture BOTH items
+      - $SERVICE/imx-server_test_coverage.xml
+      - $SERVICE/imx-server_test_report.html
+
+playwright-tests:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.45.0-jammy
+  before_script:
+    - npm ci
+    - npx playwright install --with-deps
+  script:
+    - npx playwright test
+  artifacts:
+    when: always
+    paths:
+      - playwright-report/
+    reports:
+      junit: results.xml
 
 build-client:
   extends: .build-image
