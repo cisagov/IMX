@@ -16,14 +16,14 @@ export class AuthOidc {
     public async isAccessAllowed(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         let loggedIn = await this.oidc.isLoggedIn();
 
-        try {
-            if (!loggedIn) {
-                await this.oidc.logout();
-                return false;
-            }
-        } catch (err) {
-            console.error(err);
-        }
+        // try {
+        //     if (!loggedIn) {
+        //         await this.oidc.logout();
+        //         return false;
+        //     }
+        // } catch (err) {
+        //     console.error(err);
+        // }
 
         // Force the user to log in if currently unauthenticated.
         if (!loggedIn) {
