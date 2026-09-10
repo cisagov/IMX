@@ -101,8 +101,6 @@ const searchEvent = async function (indicators) {
         try {
           const ind = JSON.parse(JSON.stringify(indicator));
 
-          if (ind.searchall) ind.searchall = "%" + ind.searchall + "%";
-
           const misp = await axios.post(url, ind, options);
 
           if (misp?.data?.response) {
@@ -116,7 +114,7 @@ const searchEvent = async function (indicators) {
               results.push({
                 misp: mispResp,
                 stix: stix2.data,
-                searchall: indicator.searchall,
+                value: indicator.value,
               });
             }
           }

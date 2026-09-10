@@ -249,7 +249,7 @@ export class AppComponent implements OnInit {
         });
 
         if (this.envService.env.keycloak.enabled === true) this.userRoles = this.keycloak.getUserRoles();
-        if (this.envService.env.oidc.enabled === true) this.userRoles = await this.oidc.getRoles();
+        if (this.envService.env.oidc.enabled === true) this.userRoles = this.oidc.getRoles();
 
         this.showAdmin = await this.isAdmin();
 

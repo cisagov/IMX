@@ -1,3 +1,49 @@
+## 4.19.10 (2026-09-08)
+
+### Bug Fixes
+
+* fix login-logout loop with oidc ae966dd
+* revert login-logout fix and disable logging out when changing pages a0c8859
+
+## 4.19.9 (2026-09-02)
+
+### Bug Fixes
+
+* fix misp to use value instead of searchall 1ffb6c0
+
+## 4.19.8 (2026-09-02)
+
+### Bug Fixes
+
+* oidc refresh token 7f0624f
+* return correct expired value for the user (oidc) 0c48d81
+
+## 4.19.7 (2026-09-02)
+
+### Bug Fixes
+
+* delete on search page restored for oidc a614358
+* patch imx client browserslist ca1e685
+
+## 4.19.6 (2026-09-01)
+
+### Bug Fixes
+
+* allow identity organization objects to be processed correctly 8b10390
+* bug fixes to object editing in guided 6b31c65
+
+## 4.19.5 (2026-08-25)
+
+### Bug Fixes
+
+* sso users for oidc keycloak 1151731
+
+## 4.19.4 (2026-08-25)
+
+### Bug Fixes
+
+* reorganized build context to mount changelog 9e901bf
+
 ## 4.19.3 (2026-08-25)
 
 ### Bug Fixes

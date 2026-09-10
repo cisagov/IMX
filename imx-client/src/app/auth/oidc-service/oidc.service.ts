@@ -17,14 +17,14 @@ export interface OidcBootstrapConfig {
 export class OidcService {
     userManager: UserManager;
 
-    private oidcUser = undefined;
+    private oidcUser: User = undefined;
     private initialized: boolean = false;
     private apiRoot: string = '';
     private usernameField: string = '';
 
     constructor(private readonly router: Router) {}
 
-    async getRoles(): Promise<any> {
+    getRoles(): string[] {
         try {
             let userInfo = JSON.parse(this.parseToken());
 
@@ -50,7 +50,7 @@ export class OidcService {
 
             if (user === null) return null;
 
-            if (user?.profile) user.profile['roles'] = await this.getRoles();
+            if (user?.profile) user.profile['roles'] = this.getRoles();
             this.oidcUser = user;
 
             return user;
@@ -125,9 +125,10 @@ export class OidcService {
         });
     }
 
-    isTokenExpired(): boolean {
+    async isTokenExpired(): Promise<boolean> {
         try {
-            return this.oidcUser?.expired;
+            const user = await this.renewToken();
+            return user.expired;
         } catch (err) {
             console.error(err);
             return true;

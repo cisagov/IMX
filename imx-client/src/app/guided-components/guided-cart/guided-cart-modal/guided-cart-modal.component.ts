@@ -177,7 +177,7 @@ export class GuidedCartModalComponent implements OnInit {
     }
 
     getName(value) {
-        return value.display_name + ` (${this.getType(value.type)})`;
+        return (value.display_name ?? value.name ?? value.value) + ` (${this.getType(value.type)})`;
     }
 
     getType(string) {

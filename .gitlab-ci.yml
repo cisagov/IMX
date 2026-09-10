@@ -58,7 +58,7 @@ build-client:
   extends: .build-image
   variables:
     IMAGE_NAME: "client"
-    CONTEXT_DIR: "imx-client"
+    CONTEXT_DIR: "."
     DOCKERFILE_PATH: "./imx-client/Dockerfile"
 
 build-server:
