@@ -4693,7 +4693,7 @@ export class VtDialogComponent {
             lines.push(`Domain: ${domain}`);
             lines.push(`Host IP: ${aRecords}`);
             lines.push(`Created Date: ${this.formatIsoDate(attrs?.creation_date)}`);
-            lines.push(`Registrant: ${attrs?.registrar || ''}`);
+            lines.push(`Registrant:`);
             lines.push(`JARM Fingerprint: ${attrs?.jarm || 'N/A'}`);
             lines.push(`Activity: ${vendorNote}`);
             lines.push('');
@@ -4723,7 +4723,7 @@ export class VtDialogComponent {
                 const hostAttrs = this.getUrlRelation(url, 'hostDomain')?.data?.data?.attributes;
                 lines.push(`Host IP: ${this.getUrlServingIp(url)}`);
                 lines.push(`Created Date: ${this.formatIsoDate(hostAttrs?.creation_date)}`);
-                lines.push(`Registrant: ${hostAttrs?.registrar || ''}`);
+                lines.push(`Registrant:`);
                 lines.push(`JARM Fingerprint: ${hostAttrs?.jarm || 'N/A'}`);
             }
 
