@@ -32,7 +32,9 @@ variables:
 stages:
   - security
   - lint
-  - test
+  - test-imx-py
+  - test-imx-server
+  - playwright-tests
   - build
   - release
 
@@ -53,9 +55,7 @@ test-imx-py:
   allow_failure: true
   variables:
     SERVICE: "imx-py"
-  image: ghcr.io/astral-sh/uv:latest
   script:
-    - uv sync --all-groups
     - uv run pytest --cov=. --cov-report=xml:coverage.xml --html=report.html --self-contained-html
   artifacts:
     when: always
@@ -71,8 +71,8 @@ test-imx-server:
   before_script:
     - sudo apt update
     - sudo apt install nodejs npm
-    - npm install --save-dev jest-html-reporter
     - cd $SERVICE
+    - npm install --save-dev jest-html-reporter
   script:
     - npx jest  imx-server/tests --reporters=default --reporters=jest-html-reporter --coverage
   artifacts:
