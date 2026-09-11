@@ -1,3 +1,9 @@
+## [4.19.11](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.10...v4.19.11) (2026-09-11)
+
+### Bug Fixes
+
+* fix guided Email Message multipart edit and save, show collection name not id ([9d80477](https://git.va.th.ten/eos/cde/tie/imx/commit/9d80477ce6c3e079c7e448947757af84e90512db))
+
 ## [4.19.10](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.9...v4.19.10) (2026-09-08)
 
 ### Bug Fixes
