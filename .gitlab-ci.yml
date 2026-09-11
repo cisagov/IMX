@@ -54,7 +54,7 @@ test-imx-py:
   variables:
     SERVICE: "imx-py"
   script:
-    - pytest --cov=. --cov-report=xml:coverage.xml --html=report.html --self-contained-html
+    - uv run pytest --cov=. --cov-report=xml:coverage.xml --html=report.html --self-contained-html
   artifacts:
     when: always
     paths:
