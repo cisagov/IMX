@@ -32,9 +32,9 @@ variables:
 stages:
   - security
   - lint
-  - test-imx-py
-  - test-imx-server
-  - playwright-tests
+  - test:test-imx-py
+  - test:test-imx-server
+  - test:playwright-tests
   - build
   - release
 
@@ -52,6 +52,7 @@ lint:
 
 test-imx-py:
   extends: .python-test
+  stage: test:test-imx-py
   allow_failure: true
   variables:
     SERVICE: "imx-py"
@@ -66,6 +67,7 @@ test-imx-py:
 
 test-imx-server:
   allow_failure: true
+  stage: test:test-imx-server
   variables:
     SERVICE: "imx-server"
   before_script:
@@ -83,7 +85,7 @@ test-imx-server:
       - $SERVICE/report.html
 
 playwright-tests:
-  stage: test
+  stage: test:playwright-tests
   image: mcr.microsoft.com/playwright:v1.45.0-jammy
   before_script:
     - npm ci
