@@ -1,3 +1,9 @@
+## 4.19.11 (2026-09-11)
+
+### Bug Fixes
+
+* fix guided Email Message multipart edit and save, show collection name not id 9d80477
+
 ## 4.19.10 (2026-09-08)
 
 ### Bug Fixes
