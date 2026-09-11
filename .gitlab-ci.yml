@@ -69,6 +69,8 @@ test-imx-server:
   variables:
     SERVICE: "imx-server"
   before_script:
+    - sudo apt update
+    - sudo apt install nodejs npm
     - npm install --save-dev jest-html-reporter
     - cd $SERVICE
   script:
