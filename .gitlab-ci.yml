@@ -53,7 +53,9 @@ test-imx-py:
   allow_failure: true
   variables:
     SERVICE: "imx-py"
+  image: ghcr.io/astral-sh/uv:latest
   script:
+    - uv sync --all-groups
     - uv run pytest --cov=. --cov-report=xml:coverage.xml --html=report.html --self-contained-html
   artifacts:
     when: always
