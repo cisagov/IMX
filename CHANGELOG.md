@@ -1,3 +1,17 @@
+## [4.20.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.11...v4.20.0) (2026-09-14)
+
+### Features
+
+* initial commit of malware behavior form rework ([171b99b](https://git.va.th.ten/eos/cde/tie/imx/commit/171b99b451d6c16c8e2259227ed90f4e253ddc51))
+* updated external ref, granular markings, extensions display on forms & cleanup ([f076b8d](https://git.va.th.ten/eos/cde/tie/imx/commit/f076b8d10ba3df5f4ae9f89fd2665e20b1a03a19))
+* updates to snipper/detection rules modals, modals stylesheet added ([594bc49](https://git.va.th.ten/eos/cde/tie/imx/commit/594bc494dd358c0ef4ee7a9167fe67811b8c85ba))
+
+### Bug Fixes
+
+* created date bugfix ([abc643e](https://git.va.th.ten/eos/cde/tie/imx/commit/abc643e07b28d25e51f03d39977c5a569f48f50a))
+* many bugfixes on detection rules modal, malware behavior form ([cc71bfd](https://git.va.th.ten/eos/cde/tie/imx/commit/cc71bfd4c9d13e1e5c074f385d622863379a4866))
+* more bug fixes for snippet modal ([6a0ccd3](https://git.va.th.ten/eos/cde/tie/imx/commit/6a0ccd30a23e82845193e1b347438bc4bb342118))
+
 ## [4.19.11](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.10...v4.19.11) (2026-09-11)
 
 ### Bug Fixes
