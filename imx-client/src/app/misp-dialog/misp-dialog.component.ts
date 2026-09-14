@@ -70,7 +70,7 @@ export class MispDialogComponent implements OnInit {
                 .split(splitRegex)
                 .filter((word) => word.trim() !== '')
                 .forEach((searchValue) => {
-                    indicators.push({ searchall: `${searchValue}` });
+                    indicators.push({ value: `${searchValue}` });
                 });
             // }
 

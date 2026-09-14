@@ -1,3 +1,36 @@
+## 4.19.11 (2026-09-11)
+
+### Bug Fixes
+
+* fix guided Email Message multipart edit and save, show collection name not id 9d80477
+
+## 4.19.10 (2026-09-08)
+
+### Bug Fixes
+
+* fix login-logout loop with oidc ae966dd
+* revert login-logout fix and disable logging out when changing pages a0c8859
+
+## 4.19.9 (2026-09-02)
+
+### Bug Fixes
+
+* fix misp to use value instead of searchall 1ffb6c0
+
+## 4.19.8 (2026-09-02)
+
+### Bug Fixes
+
+* oidc refresh token 7f0624f
+* return correct expired value for the user (oidc) 0c48d81
+
+## 4.19.7 (2026-09-02)
+
+### Bug Fixes
+
+* delete on search page restored for oidc a614358
+* patch imx client browserslist ca1e685
+
 ## 4.19.6 (2026-09-01)
 
 ### Bug Fixes
