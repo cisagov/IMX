@@ -1,14 +1,12 @@
 <div class="dialog">
-    <div class="modal-header justify-content-between align-items-center">
-        <h5 class="modal-title mb-0" id="publish-modal-title">
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
             Object Marking References
             @if (stixService.guidedUI) {
                 <small class="text-muted ms-2 fw-normal">(TLP Color)</small>
             }
-        </h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
-            <span aria-hidden="true"></span>
-        </button>
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()"></button>
     </div>
 
     <div class="modal-body">
@@ -152,7 +150,7 @@
         </div>
     </div>
 
-    <div class="modal-footer d-flex justify-content-end gap-2">
+    <div class="modal-footer">
         <button id="obj_marking_refs_cancel" type="button" class="btn btn-outline-secondary" (click)="onX()">
             <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
             Cancel
