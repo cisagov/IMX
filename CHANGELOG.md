@@ -1,3 +1,17 @@
+## 4.20.0 (2026-09-14)
+
+### Features
+
+* initial commit of malware behavior form rework 171b99b
+* updated external ref, granular markings, extensions display on forms & cleanup f076b8d
+* updates to snipper/detection rules modals, modals stylesheet added 594bc49
+
+### Bug Fixes
+
+* created date bugfix abc643e
+* many bugfixes on detection rules modal, malware behavior form cc71bfd
+* more bug fixes for snippet modal 6a0ccd3
+
 ## 4.19.11 (2026-09-11)
 
 ### Bug Fixes
