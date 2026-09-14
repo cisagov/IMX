@@ -156,6 +156,14 @@
     margin-bottom: 0;
 }
 
+.imx-field-head .btn-sm {
+    width: auto;
+    height: auto;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
 .select-placeholder {
     color: #adb5bd;
 }

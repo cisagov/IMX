@@ -84,39 +84,35 @@
     }
 }
 <!-- Object Marking References -->
-@if (
-    !isAddingElement &&
-    (stixService.objectMarkingReferences.length > 0 || stixService.objectMarkingReferencesTemp.length > 0) &&
-    key == 'object_marking_refs'
-) {
-    <div class="list-group list-group-flush imx-item-list mt-2" id="questions">
-        @for (
-            currentString of isObjectMarkingRefUpdated ? stixService.objectMarkingReferencesTemp : stixService.objectMarkingReferences;
-            track currentString;
-            let i = $index
-        ) {
-            <div class="list-group-item">
-                <div class="imx-item">
-                    <span class="badge" id="object_marking_refs{{ i }}" [class]="getDisplayStyle(getDisplayName(currentString))">{{
-                        acsView(getDisplayName(currentString))
-                    }}</span>
-                    <span class="imx-item-text"></span>
-                    @if (!this.stixService.revoked && !this.stixService.revocation) {
-                        <span class="imx-item-actions">
-                            <button
-                                type="button"
-                                class="btn btn-fa-sm btn-color"
-                                id="object_marking_refs{{ i }}_delete"
-                                (click)="deleteOmr(currentString)"
-                            >
-                                <fa-icon [icon]="faTrash"></fa-icon>
-                            </button>
-                        </span>
-                    }
+@if (!isAddingElement && key == 'object_marking_refs') {
+    @if (displayedObjectMarkingRefs.length > 0) {
+        <div class="list-group list-group-flush imx-item-list mt-2" id="questions">
+            @for (currentString of displayedObjectMarkingRefs; track currentString; let i = $index) {
+                <div class="list-group-item">
+                    <div class="imx-item">
+                        <span class="badge" id="object_marking_refs{{ i }}" [class]="getDisplayStyle(getDisplayName(currentString))">{{
+                            acsView(getDisplayName(currentString))
+                        }}</span>
+                        <span class="imx-item-text"></span>
+                        @if (!this.stixService.revoked && !this.stixService.revocation) {
+                            <span class="imx-item-actions">
+                                <button
+                                    type="button"
+                                    class="btn btn-fa-sm btn-color"
+                                    id="object_marking_refs{{ i }}_delete"
+                                    (click)="deleteOmr(currentString)"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </span>
+                        }
+                    </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    } @else {
+        <div class="imx-empty mt-2">No object marking references added yet</div>
+    }
 }
 @if (isAddingElement && key === 'object_marking_refs') {
     <div class="form-group mt-2">
