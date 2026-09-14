@@ -1,103 +1,88 @@
 <div class="dialog">
-    <div class="modal-header justify-content-between">
-        <h4 class="modal-title" id="publish-modal-title">
-            <span>Extensions</span>
-        </h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="onX()">
-            <span aria-hidden="true"></span>
-        </button>
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">Extensions</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onX()"></button>
     </div>
     <div class="modal-body">
-        <div class="row mb-3">
-            <div class="col">
-                <div class="row">
-                    <div class="col stix-title mb-2 input-header float-end d-flex flex-column">
-                        <div id="extensions_id_title">
-                            <p class="float-start nowrap pb-no-span">Extension ID</p>
-                            <span class="float-start icon-height tooltipright">
-                                <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                                <span class="toolttext fw-normal"
-                                    >Select the ID of the extension or predefined extension (if available).<br />Each ID may only be used ONCE.<br />Definitions
-                                    with no Property Extensions are excluded</span
-                                >
-                            </span>
+        <div class="mb-3">
+            <span class="imx-field-label" id="extensions_id_title">
+                Extension ID
+                <button
+                    type="button"
+                    class="imx-info"
+                    aria-label="About Extension ID"
+                    container="body"
+                    tooltipClass="imx-tooltip imx-tooltip-wide"
+                    ngbTooltip="Select the ID of the extension or predefined extension (if available). Each ID may only be used ONCE. Definitions with no Property Extensions are excluded."
+                >
+                    <fa-icon [icon]="faInfoCircle"></fa-icon>
+                </button>
+            </span>
+            <input
+                class="form-control"
+                matInput
+                placeholder="Extension ID"
+                id="extensions_id"
+                [(ngModel)]="this.currentExtension.extension_id"
+                [matAutocomplete]="extensionsId"
+                (ngModelChange)="getTypes()"
+                type="text"
+                [ngClass]="{ 'is-invalid': errorMessage }"
+            />
+            <mat-autocomplete #extensionsId="matAutocomplete" class="imx-autocomplete">
+                @for (obj of filteredExtensions; track obj) {
+                    <mat-option [value]="obj.id">
+                        <div class="extension-option">
+                            <div class="extension-name">{{ obj.name }}</div>
+                            <div class="extension-id">{{ obj.id }}</div>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <input
-                            class="col-8 form-control"
-                            matInput
-                            placeholder="Extension ID"
-                            id="extensions_id"
-                            [(ngModel)]="this.currentExtension.extension_id"
-                            [matAutocomplete]="extensionsId"
-                            (ngModelChange)="getTypes()"
-                            type="text"
-                            [ngClass]="{ 'is-invalid': errorMessage }"
-                        />
-                        <mat-autocomplete #extensionsId="matAutocomplete" class="autocomplete">
-                            @for (obj of filteredExtensions; track obj) {
-                                <mat-option [value]="obj.id">
-                                    <div class="extension-option">
-                                        <div class="extension-name">{{ obj.name }}</div>
-                                        <div class="extension-id">{{ obj.id }}</div>
-                                    </div>
-                                </mat-option>
-                            }
-                        </mat-autocomplete>
-                        @if (errorMessage) {
-                            <div class="invalid-feedback">{{ this.errorMessage }}</div>
-                        }
-                    </div>
-                </div>
-            </div>
+                    </mat-option>
+                }
+            </mat-autocomplete>
+            @if (errorMessage) {
+                <div class="invalid-feedback">{{ this.errorMessage }}</div>
+            }
         </div>
+
         @if (!predefined && this.errorMessage == '') {
-            <div class="row">
-                <div class="col">
-                    <div class="row">
-                        <div class="col stix-title mb-2 input-header float-end d-flex flex-column">
-                            <div id="extensions_id_title">
-                                <p class="float-start nowrap pb-no-span">Extension Type</p>
-                                <span class="float-start icon-height tooltipright">
-                                    <fa-icon class="ps-1 input-header" [icon]="faInfoCircle"> </fa-icon>
-                                    <span class="toolttext fw-normal">Extension types can currently only be configured one at a time.</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <select
-                                id="extensions_ext_type"
-                                type="text"
-                                class="form-control form-select"
-                                [(ngModel)]="this.currentExtension.extension_type"
-                                name="extension_type"
-                                id="extension_type"
-                            >
-                                @for (opt of type_options; track opt) {
-                                    @if (!opt.startsWith('New')) {
-                                        <option [value]="opt">
-                                            {{ opt }}
-                                        </option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <span class="imx-field-label" id="extensions_type_title">
+                    Extension Type
+                    <button
+                        type="button"
+                        class="imx-info"
+                        aria-label="About Extension Type"
+                        container="body"
+                        tooltipClass="imx-tooltip"
+                        ngbTooltip="Extension types can currently only be configured one at a time."
+                    >
+                        <fa-icon [icon]="faInfoCircle"></fa-icon>
+                    </button>
+                </span>
+                <select
+                    type="text"
+                    class="form-control form-select"
+                    [(ngModel)]="this.currentExtension.extension_type"
+                    name="extension_type"
+                    id="extension_type"
+                >
+                    @for (opt of type_options; track opt) {
+                        @if (!opt.startsWith('New')) {
+                            <option [value]="opt">
+                                {{ opt }}
+                            </option>
+                        }
+                    }
+                </select>
             </div>
         }
     </div>
-    <div class="modal-footer d-flex">
-        <button id="extensions_cancel" type="button" class="btn btn-sm btn-outline-secondary" (click)="onX()">
+    <div class="modal-footer">
+        <button id="extensions_cancel" type="button" class="btn btn-outline-secondary" (click)="onX()">
             <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
             Cancel
         </button>
-        <button id="extensions_configure" type="button" class="btn btn-sm btn-outline-success ms-2" (click)="onConfirm()" [disabled]="!isValid()">
+        <button id="extensions_configure" type="button" class="btn btn-outline-success" (click)="onConfirm()" [disabled]="!isValid()">
             <fa-icon [icon]="faWrench" class="pe-1"></fa-icon>
             Configure
         </button>
