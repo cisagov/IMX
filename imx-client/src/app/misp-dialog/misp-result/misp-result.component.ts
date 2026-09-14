@@ -355,13 +355,13 @@ export class MispResultComponent implements OnInit {
         this.downloadFiles(
             [
                 {
-                    name: `${event.searchall}-misp.json`,
+                    name: `${event.value}-misp.json`,
                     data: JSON.stringify({
                         Event: event.misp,
                     }),
                 },
             ],
-            event.searchall
+            event.value
         );
     }
 
@@ -379,11 +379,11 @@ export class MispResultComponent implements OnInit {
         this.downloadFiles(
             [
                 {
-                    name: `${event.searchall}-stix.json`,
+                    name: `${event.value}-stix.json`,
                     data: JSON.stringify(bundle),
                 },
             ],
-            event.searchall
+            event.value
         );
     }
 

@@ -221,8 +221,8 @@ export class EnvService {
     }
 
     async getOidcUser(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            if (this.oidc.isTokenExpired()) {
+        return new Promise(async (resolve, reject) => {
+            if (await this.oidc.isTokenExpired()) {
                 reject(new Error('TOKEN EXPIRED'));
                 return;
             }

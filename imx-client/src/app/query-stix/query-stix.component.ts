@@ -40,6 +40,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RelationshipDialogComponent } from './relationship-dialog/relationship-dialog/relationship-dialog.component';
 import { MessageService } from './message.service';
 import { KeycloakService } from 'src/app/auth/keycloak-service/keycloak.service';
+import { OidcService } from '../auth/oidc-service/oidc.service';
 import { SubmissionsService } from '../submissions-service/submissions.service';
 import { EnvService } from '../env-service/env.service';
 import { db } from '../db.service';
@@ -210,6 +211,7 @@ export class QueryStixComponent implements OnInit, OnDestroy {
         public relationshipDialog: MatDialog,
         public messageService: MessageService,
         private keycloak: KeycloakService,
+        private oidc: OidcService,
         private submissions: SubmissionsService,
         private envService: EnvService
     ) {
@@ -2715,11 +2717,14 @@ export class QueryStixComponent implements OnInit, OnDestroy {
         }
 
         if (this.userRoles.length === 0) {
-            this.userRoles = this.keycloak.getUserRoles();
-            if (this.userRoles.length === 0) {
-                this.isAdmin = false;
-                return;
-            }
+
+          if (this.envService.env.keycloak.enabled === true) this.userRoles = this.keycloak.getUserRoles();
+          else if (this.envService.env.oidc.enabled === true) this.userRoles = this.oidc.getRoles();
+
+          if (this.userRoles.length === 0) {
+              this.isAdmin = false;
+              return;
+          }
         }
 
         if (this.envService.env.taxiiServer === undefined) {

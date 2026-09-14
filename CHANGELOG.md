@@ -1,3 +1,36 @@
+## [4.19.11](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.10...v4.19.11) (2026-09-11)
+
+### Bug Fixes
+
+* fix guided Email Message multipart edit and save, show collection name not id ([9d80477](https://git.va.th.ten/eos/cde/tie/imx/commit/9d80477ce6c3e079c7e448947757af84e90512db))
+
+## [4.19.10](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.9...v4.19.10) (2026-09-08)
+
+### Bug Fixes
+
+* fix login-logout loop with oidc ([ae966dd](https://git.va.th.ten/eos/cde/tie/imx/commit/ae966dd77330a3e70a81ededd5c6cae664fc7811))
+* revert login-logout fix and disable logging out when changing pages ([a0c8859](https://git.va.th.ten/eos/cde/tie/imx/commit/a0c8859b999c8de188a32423970ca19bc8f7bf12))
+
+## [4.19.9](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.8...v4.19.9) (2026-09-02)
+
+### Bug Fixes
+
+* fix misp to use value instead of searchall ([1ffb6c0](https://git.va.th.ten/eos/cde/tie/imx/commit/1ffb6c03860099e84c3a078d694e9a27a0140929))
+
+## [4.19.8](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.7...v4.19.8) (2026-09-02)
+
+### Bug Fixes
+
+* oidc refresh token ([7f0624f](https://git.va.th.ten/eos/cde/tie/imx/commit/7f0624f3ce6ab28c0b62d0c6c95ac6bcec341c15))
+* return correct expired value for the user (oidc) ([0c48d81](https://git.va.th.ten/eos/cde/tie/imx/commit/0c48d816cc08ab2b2b7ac985ad62290b7e401c42))
+
+## [4.19.7](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.6...v4.19.7) (2026-09-02)
+
+### Bug Fixes
+
+* delete on search page restored for oidc ([a614358](https://git.va.th.ten/eos/cde/tie/imx/commit/a6143589f804968053134825d2326df7edd226dc))
+* patch imx client browserslist ([ca1e685](https://git.va.th.ten/eos/cde/tie/imx/commit/ca1e685b384e2aff1ac0607fbcd89f31c2fd7c45))
+
 ## [4.19.6](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.5...v4.19.6) (2026-09-01)
 
 ### Bug Fixes
