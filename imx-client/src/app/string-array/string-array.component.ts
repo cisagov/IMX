@@ -33,6 +33,10 @@ export class StringArrayComponent implements OnInit {
 
     isObjectMarkingRefUpdated: boolean = false;
 
+    get displayedObjectMarkingRefs(): string[] {
+        return this.isObjectMarkingRefUpdated ? this.stixService.objectMarkingReferencesTemp : this.stixService.objectMarkingReferences;
+    }
+
     constructor(
         public stixService: StixService,
         public stringArrayDialog: MatDialog

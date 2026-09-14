@@ -1,28 +1,3 @@
-.dialog {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    max-height: 85vh;
-}
-
-.dialog .modal-body {
-    padding: 1rem 1rem;
-    overflow-y: auto;
-    flex: 1;
-}
-
-.dialog .modal-header {
-    padding: 1rem 1rem;
-    border-bottom: 1px solid #dee2e6;
-    flex-shrink: 0;
-}
-
-.dialog .modal-footer {
-    padding: 1rem 1rem;
-    border-top: 1px solid #dee2e6;
-    flex-shrink: 0;
-}
-
 #added-hash li:hover .trash-can {
     display: inline-block;
     cursor: pointer;
@@ -59,10 +34,6 @@ p {
 .input-group-line {
     margin-left: 15px;
     width: 100%;
-}
-
-.btn-fa-sm {
-    margin-left: 5px;
 }
 
 .mt--2 {
@@ -113,13 +84,6 @@ p {
     border-color: white;
 }
 
-.input-group-text,
-input.form-control {
-    padding: 4px 8px;
-    font-size: 14px;
-    height: 31px;
-}
-
 .inner-row {
     padding: 8px 0px 34px;
     font-size: 14px;
@@ -163,14 +127,6 @@ input.form-control {
 
 .cancel-button {
     width: 80px;
-}
-
-.input-group-text,
-input.form-control,
-select.form-control {
-    padding: 4px 8px;
-    font-size: 14px;
-    height: 31px;
 }
 
 .string-array-input-header {
@@ -363,12 +319,6 @@ button.close.expression {
 
 .stix-pattern-builder-modal-body .panel .panel-heading.card-header {
     padding: 0.35rem 1.25rem;
-}
-
-.warning-message {
-    font-size: 14px;
-    font-weight: 600;
-    color: #dc3545;
 }
 
 .added-items-font {
