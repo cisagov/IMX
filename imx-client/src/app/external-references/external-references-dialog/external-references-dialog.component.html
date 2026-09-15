@@ -1,217 +1,156 @@
 <div class="dialog">
-    <div class="form-group">
-        <div class="modal-header justify-content-between">
-            <h4 class="modal-title" id="publish-modal-title">
-                @if (!data || !data['obj_def']) {
-                    <span>External References</span>
-                }
-                @if (data && data['obj_def']) {
-                    <span>Object Definition</span>
-                }
-            </h4>
-            <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()">
-                <span aria-hidden="true"></span>
-            </button>
+    <div class="modal-header">
+        <h4 class="modal-title" id="publish-modal-title">
+            @if (!data || !data['obj_def']) {
+                External References
+            } @else {
+                Object Definition
+            }
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+    </div>
+    <div class="modal-body">
+        @if (this.errorMessage) {
+            <div class="warning-message mb-3">{{ this.errorMessage }}</div>
+        }
+
+        <div class="mb-3">
+            <span class="imx-field-label" id="extRefs_source_name_title">Source Name<span class="imx-required">*</span></span>
+            <input
+                id="extRefs_source_name"
+                placeholder="Source Name"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': nameError }"
+                [(ngModel)]="this.currentExternalReference.source_name"
+                type="text"
+                [readonly]="isMalware"
+            />
+            @if (nameError) {
+                <span class="invalid-feedback">{{ nameError }}</span>
+            }
         </div>
-        <div class="modal-body">
-            <div class="row">
-                <div class="mx-auto warning-message mb-3">{{ this.errorMessage }}</div>
+
+        <div class="mb-3">
+            <span class="imx-field-label" id="extRefs_description_title">Description</span>
+            <textarea
+                placeholder="Description"
+                [ngClass]="{ 'is-invalid': descriptionError }"
+                id="extRefs_description"
+                class="form-control"
+                [(ngModel)]="this.currentExternalReference.description"
+                type="text"
+            ></textarea>
+            @if (descriptionError) {
+                <span class="invalid-feedback">{{ descriptionError }}</span>
+            }
+        </div>
+
+        <div class="mb-3">
+            <span class="imx-field-label" id="extRefs_url_title">URL</span>
+            <input
+                id="extRefs_url"
+                [ngClass]="{ 'is-invalid': urlError }"
+                placeholder="URL"
+                class="form-control"
+                [(ngModel)]="this.currentExternalReference.url"
+                type="text"
+            />
+            @if (urlError) {
+                <span class="invalid-feedback">{{ urlError }}</span>
+            }
+        </div>
+
+        <div class="mb-3">
+            <span class="imx-field-label" id="extRefs_hash_title">Hashes</span>
+            <div class="input-group">
+                <select
+                    id="extRefs_hash_type"
+                    type="text"
+                    [ngClass]="{ 'is-invalid': hashError }"
+                    class="form-control form-select"
+                    style="max-width: 140px"
+                    [(ngModel)]="this.hashType"
+                    name="hashes"
+                >
+                    @for (item of hashOptions; track item) {
+                        <option [value]="item.value">{{ item.value }}</option>
+                    }
+                </select>
+                <input
+                    id="extRefs_hash_value"
+                    [ngClass]="{ 'is-invalid': hashError }"
+                    class="form-control"
+                    [(ngModel)]="this.hashValue"
+                    type="text"
+                />
+                <button
+                    id="extRefs_hash_add"
+                    class="btn btn-color"
+                    type="button"
+                    (click)="addHash(this.hashType, this.hashValue)"
+                    [disabled]="this.hashValue == undefined || this.hashValue == ''"
+                >
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                </button>
             </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
-                            <div id="extRefs_source_name_title">
-                                <p class="float-start nowrap pb-no-span">Source Name*</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <input
-                                id="extRefs_source_name"
-                                placeholder="Souce Name"
-                                class="form-control"
-                                [ngClass]="{ 'is-invalid': nameError }"
-                                [(ngModel)]="this.currentExternalReference.source_name"
-                                type="text"
-                                [readonly]="isMalware"
-                            />
-                            @if (nameError) {
-                                <span class="invalid-feedback">{{ nameError }}</span>
-                            }
-                        </div>
-                    </div>
-                </div>
+            @if (hashError) {
+                <div class="warning-message mt-1">{{ hashError }}</div>
+            }
 
-                <div class="col-12">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
-                            <div id="extRefs_description_title">
-                                <p class="float-start nowrap pb-no-span">Description</p>
+            @if ((this.currentExternalReference.hashes | keyvalue).length > 0) {
+                <div class="list-group list-group-flush imx-item-list mt-2">
+                    @for (x of this.currentExternalReference.hashes | keyvalue; track x; let i = $index) {
+                        <div class="list-group-item">
+                            <div class="imx-item" id="extRefs_id_list{{ i }}">
+                                <span class="imx-type-badge">{{ x.key }}</span>
+                                <span class="imx-item-text">
+                                    <span class="imx-item-primary imx-mono">{{ x.value }}</span>
+                                </span>
+                                <span class="imx-item-actions">
+                                    <button
+                                        class="btn btn-fa-sm btn-color"
+                                        type="button"
+                                        (click)="deleteHash(x.key)"
+                                        id="extRefs_id_list{{ i }}_delete"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
+                                </span>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <textarea
-                                placeholder="Description"
-                                [ngClass]="{ 'is-invalid': descriptionError }"
-                                id="extRefs_description"
-                                class="form-control"
-                                [(ngModel)]="this.currentExternalReference.description"
-                                type="text"
-                                style="font-size: 14px"
-                            ></textarea>
-                            @if (descriptionError) {
-                                <span class="invalid-feedback">{{ descriptionError }}</span>
-                            }
-                        </div>
-                    </div>
+                    }
                 </div>
-
-                <div class="col-12">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
-                            <div id="extRefs_url_title">
-                                <p class="float-start nowrap pb-no-span">URL</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <input
-                                id="extRefs_url"
-                                [ngClass]="{ 'is-invalid': urlError }"
-                                placeholder="URL"
-                                class="form-control"
-                                [(ngModel)]="this.currentExternalReference.url"
-                                type="text"
-                            />
-                            @if (urlError) {
-                                <span class="invalid-feedback">{{ urlError }}</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col mb-3">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
-                            <div id="extRefs_hash_title">
-                                <p class="float-start nowrap pb-no-span">Hashes</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-3 pe-0">
-                            <select
-                                id="extRefs_hash_type"
-                                type="text"
-                                [ngClass]="{ 'is-invalid': hashError }"
-                                class="form-control form-select add-left no-border-right"
-                                [(ngModel)]="this.hashType"
-                                name="hashes"
-                                id="hashes"
-                            >
-                                @for (item of hashOptions; track item) {
-                                    <option [value]="item.value">{{ item.value }}</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-9 ps-0 d-flex" [ngClass]="{ 'is-invalid': hashError }">
-                            <input
-                                id="extRefs_hash_value"
-                                [ngClass]="{ 'is-invalid': hashError }"
-                                class="form-control me-0 add-both no-border-right"
-                                [(ngModel)]="this.hashValue"
-                                type="text"
-                            />
-                            <button
-                                id="extRefs_hash_add"
-                                [ngClass]="{ 'invalid-input': hashError }"
-                                class="btn ms-0 btn-fa-sm btn-color add-right"
-                                type="button"
-                                (click)="addHash(this.hashType, this.hashValue)"
-                                [disabled]="this.hashValue == undefined || this.hashValue == ''"
-                            >
-                                <fa-icon [icon]="faPlus"></fa-icon>
-                            </button>
-                        </div>
-                        @if (hashError) {
-                            <span class="invalid-feedback">{{ hashError }}</span>
-                        }
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <accordion>
-                                @for (x of this.currentExternalReference.hashes | keyvalue; track x; let i = $index) {
-                                    <accordion-group [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="true">
-                                        <div
-                                            id="extRefs_id_list{{ i }}"
-                                            class="row justify-content-between d-flex pt-0 pb-0"
-                                            accordion-heading
-                                            type="button"
-                                        >
-                                            <div class="col d-flex justify-content-between align-items-center">
-                                                <div class="btn btn-link">{{ x.key }}: {{ x.value }}</div>
-                                                <button
-                                                    class="btn btn-fa-sm btn-color list-trash"
-                                                    type="button"
-                                                    (click)="deleteHash(x.key)"
-                                                    id="extRefs_id_list{{ i }}_delete"
-                                                >
-                                                    <fa-icon [icon]="faTrash"></fa-icon>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </accordion-group>
-                                }
-                            </accordion>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <div class="row">
-                        <div class="col stix-title ms-0 mb-2 input-header float-end d-flex flex-column">
-                            <div id="extRefs_url_title">
-                                <p class="float-start nowrap pb-no-span">External ID</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <input
-                                id="extRefs_id"
-                                class="form-control"
-                                [ngClass]="{ 'is-invalid': idError }"
-                                [(ngModel)]="this.currentExternalReference.external_id"
-                                type="text"
-                            />
-                            @if (idError) {
-                                <span class="invalid-feedback">{{ idError }}</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
-        <div class="modal-footer d-flex">
-            <button id="extRefs_cancel" type="button" class="btn btn-sm btn-outline-secondary" (click)="onCancel()">
-                <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
-                Cancel
-            </button>
-            <button
-                id="extRefs_add_button"
-                type="button"
-                class="btn btn-sm btn-outline-success ms-2"
-                (click)="onConfirm()"
-                [disabled]="this.currentExternalReference.source_name == ''"
-            >
-                <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
-                Add
-            </button>
+
+        <div>
+            <span class="imx-field-label" id="extRefs_id_title">External ID</span>
+            <input
+                id="extRefs_id"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': idError }"
+                [(ngModel)]="this.currentExternalReference.external_id"
+                type="text"
+            />
+            @if (idError) {
+                <span class="invalid-feedback">{{ idError }}</span>
+            }
         </div>
+    </div>
+    <div class="modal-footer">
+        <button id="extRefs_cancel" type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+            <fa-icon [icon]="faBan" class="pe-1"></fa-icon>
+            Cancel
+        </button>
+        <button
+            id="extRefs_add_button"
+            type="button"
+            class="btn btn-outline-success"
+            (click)="onConfirm()"
+            [disabled]="this.currentExternalReference.source_name == ''"
+        >
+            <fa-icon [icon]="faPlus" class="pe-1"></fa-icon>
+            Add
+        </button>
     </div>
 </div>
