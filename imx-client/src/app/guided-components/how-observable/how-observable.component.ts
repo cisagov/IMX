@@ -1225,6 +1225,9 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                                 if (event.is_multipart === 'true') {
                                     tempObj['arr'] = event.body_multipart;
                                     tempObj['show'] = true;
+
+                                    tempObj['type'] = 'text-modal-add';
+                                    tempObj['currentField'] = 'body_multipart';
                                 } else {
                                     tempObj['arr'] = [];
                                     tempObj['show'] = false;
@@ -1380,7 +1383,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                 result = 'analysis_sco_refs';
                 break;
             default:
-                result = currentField.toLowerCase();
+                result = currentField ? currentField.toLowerCase() : null;
         }
 
         return result;
@@ -1992,21 +1995,21 @@ export class HowObservableComponent implements OnInit, OnDestroy {
     ngDoCheck() {
         let missing: string[] = [];
 
-        if(this.firstObserved === '' || this.firstObservedTimeZone === ''){
+        if (this.firstObserved === '' || this.firstObservedTimeZone === '') {
             missing.push('First Observed');
         }
-        if(this.lastObserved === '' || this.lastObservedTimeZone === ''){
+        if (this.lastObserved === '' || this.lastObservedTimeZone === '') {
             missing.push('Last Observed');
         }
-        if(this.numberObserved === '' || this.numberObserved === null){
+        if (this.numberObserved === '' || this.numberObserved === null) {
             missing.push('Number Observed');
         }
 
         let anyFilled = this.firstObserved !== '' || this.lastObserved !== '' || (this.numberObserved !== '' && this.numberObserved !== null);
 
-        if(anyFilled && missing.length) {
+        if (anyFilled && missing.length) {
             this.observableErrorMessage = `Please complete the following: ${missing.join(', ')}.`;
-        }else {
+        } else {
             this.observableErrorMessage = null;
         }
     }

@@ -61,4 +61,3 @@ concerns, or improvement suggestions we may have about your PR.
 - Do not commit secrets or developer-local environment files.
 - Use conventional commits.
 - Update dependency lockfiles only through the repository's dependency-update tasks.
-

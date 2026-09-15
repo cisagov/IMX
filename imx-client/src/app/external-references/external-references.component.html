@@ -1,67 +1,70 @@
-<div
-    class="d-flex align-items-center justify-content-between"
-    [ngClass]="{ 'col-12 mt-1': stixService.guidedUI, 'col-12 pe-5': !stixService.guidedUI }"
->
-    <div class="col-4">
-        <p class="stix-title input-header" [title]="tooltip">External References</p>
-    </div>
-    <div class="ms-3">
-        <div class="float-end">
-            @if (!isAddingExternalReferences) {
-                <button class="btn btn-fa-sm btn-color mt-1" id="extRefs_add" type="button" (click)="openDialog()">
-                    <fa-icon [icon]="faPlus"></fa-icon>
-                    <!-- Add -->
-                </button>
-            }
+<div class="imx-field-head">
+    <span class="imx-field-label">
+        External References
+        <button type="button" class="imx-info" aria-label="About External References" container="body" tooltipClass="imx-tooltip" [ngbTooltip]="tooltip">
+            <fa-icon [icon]="faInfoCircle"></fa-icon>
+        </button>
+    </span>
+    @if (!isAddingExternalReferences) {
+        <button class="btn btn-sm btn-color" id="extRefs_add" type="button" (click)="openDialog()">
+            <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
+            Add External Reference
+        </button>
+    }
 
-            @if (isAddingExternalReferences) {
-                <button class="btn btn-fa-sm btn-outline-secondary fa-ban-sm" type="button" (click)="addOrCancel()">
-                    <fa-icon [icon]="faBan"></fa-icon>
-                    <!-- Cancel -->
-                </button>
-            }
-        </div>
-    </div>
+    @if (isAddingExternalReferences) {
+        <button class="btn btn-sm btn-outline-secondary" type="button" (click)="addOrCancel()">
+            <fa-icon [icon]="faBan" class="me-1"></fa-icon>
+            Cancel
+        </button>
+    }
 </div>
 
-<div class="row">
-    <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
-</div>
+@if (this.errorMessage) {
+    <div class="warning-message mb-2">{{ this.errorMessage }}</div>
+}
 
-@if (!isAddingExternalReferences && this.stixService.externalReferences.length > 0) {
-    <div class="form-group mt-2 ps-0" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
-        <accordion>
+@if (!isAddingExternalReferences) {
+    @if (this.stixService.externalReferences.length > 0) {
+        <div class="list-group list-group-flush imx-item-list">
             @for (externalReference of this.stixService.externalReferences; track externalReference; let i = $index) {
-                <accordion-group tabindex="0" [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="false">
-                    <div id="extRefs_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
-                        <div class="col d-flex justify-content-between align-items-center">
-                            <div class="btn btn-link btn-deco">
-                                {{ externalReference.source_name }}
-                            </div>
+                <div class="list-group-item">
+                    <div class="imx-item" id="extRefs_list{{ i }}">
+                        <span class="imx-item-text">
+                            <span class="imx-item-primary">{{ externalReference.source_name }}</span>
+                            <span class="imx-item-secondary">{{
+                                externalReference.description || externalReference.url || externalReference.external_id
+                            }}</span>
+                        </span>
+                        <span class="imx-item-actions">
+                            <button class="btn btn-fa-sm btn-color" type="button" (click)="toggleJson('extRefs-' + i)" aria-label="Toggle raw JSON">
+                                {{ '{ }' }}
+                            </button>
                             <button
                                 type="button"
-                                class="btn btn-fa-sm btn-color me-2 list-trash"
+                                class="btn btn-fa-sm btn-color"
                                 (click)="editExternalRef(externalReference)"
                                 id="extRefs_list{{ i }}_edit"
                             >
                                 <fa-icon [icon]="faEdit"></fa-icon>
                             </button>
                             <button
-                                class="btn btn-fa-sm btn-color list-trash"
+                                class="btn btn-fa-sm btn-color"
                                 type="button"
                                 id="extRefs_list{{ i }}_delete"
                                 (click)="deleteExternalRef(externalReference)"
                             >
                                 <fa-icon [icon]="faTrash"></fa-icon>
                             </button>
-                        </div>
+                        </span>
                     </div>
-
-                    <pre class="json-text">{{ externalReference | json }}</pre>
-                </accordion-group>
+                    <pre class="imx-item-json" [hidden]="!isJsonOpen('extRefs-' + i)">{{ externalReference | json }}</pre>
+                </div>
             }
-        </accordion>
-    </div>
+        </div>
+    } @else {
+        <div class="imx-empty">No external references added yet</div>
+    }
 }
 
 @if (isAddingExternalReferences) {

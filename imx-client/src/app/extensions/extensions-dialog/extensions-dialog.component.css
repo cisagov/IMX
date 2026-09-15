@@ -59,10 +59,6 @@ p {
     font-size: 15px !important;
 }
 
-.pb-no-span {
-    padding-bottom: 1.5px !important;
-}
-
 .add-indicator-pattern-button {
     height: 31px;
     padding-top: 2px;
@@ -113,16 +109,8 @@ p {
     display: inline-flex;
 }
 
-.nowrap {
-    white-space: nowrap;
-}
-
 .me--15 {
     margin-right: -15px !important;
-}
-
-.icon-height {
-    height: 18px;
 }
 
 .input-group-text {
@@ -308,55 +296,6 @@ select.form-control {
     z-index: 9000;
 }
 
-.tooltipright {
-    position: relative;
-    cursor: pointer;
-    margin-bottom: -5px !important;
-}
-
-.tooltipright .toolttext {
-    visibility: hidden;
-
-    width: auto;
-    height: auto;
-    background-color: rgb(222, 222, 222);
-    color: black;
-    text-align: left;
-    font-size: 9.5pt;
-    border-radius: 4px;
-    padding: 5px;
-    position: absolute;
-    z-index: 10;
-    top: -50%;
-    margin-left: 12px;
-    left: 100%;
-}
-
-.toolttext {
-    min-width: 200px;
-}
-
-.tooltipright:hover .toolttext {
-    visibility: visible;
-}
-
-.tooltipright:empty .toolttext {
-    visibility: hidden;
-}
-
-.tooltipright:hover .toolttext .tooltip-wrapper {
-    padding: 30px;
-}
-
-.tooltipright:hover .toolttext .tooltip-wrapper .tooltip-content {
-    margin-top: 15px;
-}
-
-.tooltipright:hover .toolttext .tooltip-wrapper table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
 .tooltipright:hover .toolttext .tooltip-wrapper td,
 th {
     border: 1px solid #dddddd;
@@ -506,9 +445,4 @@ input[readonly] {
     background-color: #e9ecef;
     opacity: 1;
     color: #495057;
-}
-
-.input-header {
-    font-weight: bold;
-    color: #6f6f6f;
 }
