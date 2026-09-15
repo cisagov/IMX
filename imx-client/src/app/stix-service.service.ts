@@ -828,6 +828,7 @@ export class StixService implements OnInit {
                                     title: apiRootInfo['title'],
                                     description: apiRootInfo['description'],
                                     versions: apiRootInfo['versions'],
+                                    max_content_length: apiRootInfo['max_content_length'],
                                 };
 
                                 if (
@@ -889,6 +890,7 @@ export class StixService implements OnInit {
                                         'api-root': apiRoot,
                                         title: apiRootInfo['title'],
                                         description: apiRootInfo['description'],
+                                        max_content_length: apiRootInfo['max_content_length'],
                                     };
 
                                     if (

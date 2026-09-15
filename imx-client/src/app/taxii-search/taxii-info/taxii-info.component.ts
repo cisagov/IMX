@@ -1,8 +1,9 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { faSearch, faCaretDown, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { Component, ComponentRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { faSearch, faCaretDown, faUndo, faCircle, faBook } from '@fortawesome/free-solid-svg-icons';
 import { AnnouncementService } from 'src/app/announcement-service/announcement-service.service';
 import { EnvService } from 'src/app/env-service/env.service';
+import { AdditionalFiltersComponent } from 'src/app/query-stix/additional-filters/additional-filters.component';
 import { StixService } from 'src/app/stix-service.service';
 
 @Component({
@@ -12,6 +13,20 @@ import { StixService } from 'src/app/stix-service.service';
     styleUrls: ['./taxii-info.component.css', '../../dashboard/dashboard.component.css'],
 })
 export class TaxiiInfoComponent implements OnInit {
+    @Input() selectedColl;
+    @Input() selectedRoot;
+    @Input() roots: any[];
+    @Input() collections;
+    @Input() globalSearch: boolean;
+    @Input() serverInfo;
+
+    @Output() getAvailableAPIRoots: EventEmitter<any>;
+    @Output() getAvailableCollections: EventEmitter<any>;
+    @Output() selectRoot: EventEmitter<any>;
+    @Output() selectCollection: EventEmitter<any>;
+    @Output() selectGlobalSearch: EventEmitter<any>;
+    @Output() setServerInfo: EventEmitter<any>;
+
     private httpHeaders = new HttpHeaders()
         .set('Accept', 'application/taxii+json;version=2.1')
         .set('Authorization', `Basic ${btoa(this.stixService.taxiiServer.username + ':' + this.stixService.taxiiServer.password)}`);
@@ -19,12 +34,8 @@ export class TaxiiInfoComponent implements OnInit {
     faSearch = faSearch;
     faCaretDown = faCaretDown;
     faUndo = faUndo;
-
-    roots = [];
-    collections = {};
-
-    selectedRoot = '';
-    selectedColl = '';
+    faCircle = faCircle;
+    faBook = faBook;
 
     //Server config
     taxiiServer = {
@@ -44,48 +55,28 @@ export class TaxiiInfoComponent implements OnInit {
 
     currentAlert: any = undefined;
 
-    serverInfo = null;
-
     isLoading = false;
 
     constructor(
         public stixService: StixService,
         private envService: EnvService,
         private announcementService: AnnouncementService
-    ) {}
+    ) {
+        this.getAvailableAPIRoots = new EventEmitter();
+        this.getAvailableCollections = new EventEmitter();
+        this.selectRoot = new EventEmitter();
+        this.selectCollection = new EventEmitter();
+        this.selectGlobalSearch = new EventEmitter();
+        this.setServerInfo = new EventEmitter();
+    }
 
     async ngOnInit() {
         this.isLoading = true;
         this.currentAlert = localStorage['currentAlert'] ? JSON.parse(localStorage['currentAlert']) : undefined;
 
-        // this.getAvailableAPIRoots();
-        // this.getAvailableCollections();
         await this.getServerDiscovery();
         await this.serverSetup();
         this.isLoading = false;
-    }
-
-    getAvailableAPIRoots() {
-        if (this.stixService.taxiiServerType == 'ais') {
-            this.roots = this.stixService.apiRootDetails.filter((a) => a['api-root'] != 'ingest');
-            return;
-        }
-
-        this.roots = [];
-        this.stixService.apiRootDetails?.forEach((root) => {
-            this.roots.push(root);
-        });
-    }
-
-    getAvailableCollections() {
-        this.collections = {};
-        this.stixService.apiRoots2.forEach((root) => {
-            root.collections.forEach((collection) => {
-                if (!this.collections[root['apiPath']]) this.collections[root['apiPath']] = [];
-
-                this.collections[root['apiPath']].push(collection);
-            });
-        });
     }
 
     getApiVersions(root) {
@@ -121,6 +112,7 @@ export class TaxiiInfoComponent implements OnInit {
                 );
         }
     }
+
     getServerDiscovery() {
         this.refreshTaxiiCreds();
         return new Promise((resolve, _) => {
@@ -128,11 +120,12 @@ export class TaxiiInfoComponent implements OnInit {
                 this.stixService.getCert(this.httpHeaders, (header: HttpHeaders) => {
                     this.stixService.taxiiHttpReq('get', this.taxiiServerUrl + 'taxii2/', { headers: header }).subscribe(
                         (data: string) => {
-                            this.serverInfo = data;
+                            this.setServerInfo.emit(data);
                             resolve(true);
                         },
                         (err) => {
                             console.error(err);
+                            this.setServerInfo.emit(null);
                             resolve(true);
                         }
                     );
@@ -149,12 +142,6 @@ export class TaxiiInfoComponent implements OnInit {
             }
         });
     }
-
-    selectRoot(root: string) {
-        this.selectedRoot = root;
-    }
-
-    selectCollection(collection: string) {}
 
     async serverSetup() {
         if (!this.envService.env.aisTaxiiProxy) {
@@ -182,8 +169,8 @@ export class TaxiiInfoComponent implements OnInit {
             await this.stixService.refreshRootCollections(true);
             await this.stixService.getAPIRoots();
 
-            this.getAvailableAPIRoots();
-            this.getAvailableCollections();
+            this.getAvailableAPIRoots.emit();
+            this.getAvailableCollections.emit();
             this.isLoading = false;
         } catch (e) {
             this.isLoading = false;
@@ -347,8 +334,8 @@ export class TaxiiInfoComponent implements OnInit {
             }
             this.stixService.sendData(configEvent);
 
-            this.getAvailableAPIRoots();
-            this.getAvailableCollections();
+            this.getAvailableAPIRoots.emit();
+            this.getAvailableCollections.emit();
 
             this.stixService.isLoading = false;
         } catch (e) {

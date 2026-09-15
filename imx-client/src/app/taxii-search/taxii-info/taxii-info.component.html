@@ -7,42 +7,74 @@
     </div>
 } @else {
     <div class="container-fluid">
-        <div class="row imx-card top-card">
-            <div class="imx-card-header" style="border-bottom: none !important">
-                <div class="d-flex flex-column mb-2">
-                    @if (serverInfo?.title) {
-                        <h4 class="text-center">{{ serverInfo?.title }}</h4>
-                    } @else {
-                        <h4 class="text-center">Failed to load server information for {{ taxiiServerSelection.toUpperCase() }}</h4>
-                    }
+        <div class="row">
+            <div class="col-10 imx-card top-card">
+                <div class="imx-card-header" style="border-bottom: none !important">
+                    <div class="d-flex flex-column mb-2">
+                        @if (serverInfo?.title) {
+                            <div class="d-flex align-items-center mb-2">
+                                <h4 class="text-center mb-0">{{ serverInfo?.title }}</h4>
+                                <fa-icon class="ms-2 color-green" style="font-size: 12px" [icon]="faCircle"></fa-icon>
+                            </div>
+                        } @else {
+                            <div class="d-flex align-items-center mb-2">
+                                <h4 class="text-center mb-0">Failed to load server information for {{ taxiiServerSelection.toUpperCase() }}</h4>
+                                <fa-icon class="ms-2 color-red" style="font-size: 12px" [icon]="faCircle"></fa-icon>
+                            </div>
+                        }
 
-                    @if (serverInfo?.description) {
-                        <span class="imx-item-secondary">{{ serverInfo?.description }}</span>
-                    }
-                    @if (serverInfo?.contact) {
-                        <span class="imx-item-secondary">{{ serverInfo?.contact }}</span>
-                    }
-                    <div class="mt-2">
-                        <select
-                            [(ngModel)]="taxiiServerSelection"
-                            [disabled]="stixService.isLoading"
-                            (ngModelChange)="serverSettingsChanged(taxiiServerSelection, true)"
-                            class="form-select taxii-select w-auto tertiary"
-                        >
-                            <option value="default" selected>Default</option>
-                            <option value="ais">AIS</option>
-                        </select>
+                        @if (serverInfo?.description) {
+                            <span class="imx-item-secondary">{{ serverInfo?.description }}</span>
+                        }
+                        @if (serverInfo?.contact) {
+                            <span class="imx-item-secondary">{{ serverInfo?.contact }}</span>
+                        }
+                        <div class="mt-2">
+                            <select
+                                [(ngModel)]="taxiiServerSelection"
+                                [disabled]="stixService.isLoading"
+                                (ngModelChange)="serverSettingsChanged(taxiiServerSelection, true)"
+                                class="form-select taxii-select w-auto tertiary"
+                            >
+                                <option value="default" selected>Default</option>
+                                <option value="ais">AIS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="d-flex align-items-center ps-3 pe-3 me-2 cursor-pointer undo" (click)="refresh()">
+                            <fa-icon [icon]="faUndo"></fa-icon>
+                        </div>
+                        <div>
+                            <h4 class="text-center">
+                                {{ roots.length }}
+                            </h4>
+                            <span class="imx-item-secondary">API Roots</span>
+                        </div>
                     </div>
                 </div>
-                <div class="d-flex">
-                    <div class="d-flex align-items-center ps-3 pe-3 me-2 cursor-pointer undo" (click)="refresh()">
-                        <fa-icon [icon]="faUndo"></fa-icon>
+            </div>
+            <div class="col-1" style="margin-top: 1.5rem; margin-bottom: 1.5rem">
+                <div class="ms-2 h-100 imx-card cursor-pointer">
+                    <div class="imx-card-header justify-content-center h-100 align-items-center" style="border-bottom: none !important">
+                        <div class="d-flex flex-column align-items-center justify-content-center">
+                            <fa-icon style="font-size: 25px" [icon]="faBook"></fa-icon>
+                            <div class="imx-item-secondary">
+                                <span style="white-space: normal">Status</span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="text-center">
-                            {{ roots.length }}
-                        </h4>
-                        <span class="imx-item-secondary">API Roots</span>
+                </div>
+            </div>
+            <div class="col-1" style="margin-top: 1.5rem; margin-bottom: 1.5rem" (click)="selectGlobalSearch.emit(true)">
+                <div class="ms-2 h-100 imx-card cursor-pointer">
+                    <div class="imx-card-header justify-content-center h-100 align-items-center" style="border-bottom: none !important">
+                        <div class="d-flex flex-column align-items-center justify-content-center">
+                            <fa-icon style="font-size: 25px" [icon]="faSearch"></fa-icon>
+                            <div class="imx-item-secondary">
+                                <span style="white-space: normal">Global</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -57,14 +89,19 @@
                         @if (roots.length > 0) {
                             <div class="list-group list-group-flush imx-item-list">
                                 @for (root of roots; track root; let i = $index) {
-                                    <div class="list-group-item cursor-pointer" (click)="selectRoot(root['api-root'])">
+                                    <div class="list-group-item cursor-pointer" (click)="selectRoot.emit(root['api-root'])">
                                         <div class="imx-item" id="root_list{{ i }}">
                                             <span class="imx-item-text">
                                                 <span class="imx-item-primary">{{ root.title }}</span>
                                                 @if (root.description) {
                                                     <span class="imx-item-secondary tertiary">{{ root.description }}</span>
                                                 } @else {
-                                                    <span class="imx-item-secondary tertiary">No description provided for {{ root.title }}</span>
+                                                    <span class="imx-item-secondary tertiary"
+                                                        >No description provided for API root {{ root.title }}</span
+                                                    >
+                                                }
+                                                @if (root.max_content_length) {
+                                                    <span class="imx-item-secondary tertiary">{{ root.max_content_length }}</span>
                                                 }
                                             </span>
                                             <div>
@@ -102,14 +139,16 @@
                         } @else {
                             <div class="list-group list-group-flush imx-item-list">
                                 @for (coll of collections[selectedRoot]; track coll.id; let i = $index) {
-                                    <div class="list-group-item cursor-pointer">
+                                    <div class="list-group-item cursor-pointer" (click)="selectCollection.emit(coll)">
                                         <div class="imx-item" id="coll_list{{ i }}">
                                             <span class="imx-item-text">
                                                 <span class="imx-item-primary">{{ coll.title }}</span>
                                                 @if (coll.description) {
                                                     <span class="imx-item-secondary tertiary">{{ coll.description }}</span>
                                                 } @else {
-                                                    <span class="imx-item-secondary tertiary">No description provided for {{ coll.title }}</span>
+                                                    <span class="imx-item-secondary tertiary"
+                                                        >No description provided for collection {{ coll.title }}</span
+                                                    >
                                                 }
                                             </span>
                                             @if (coll.can_read) {

@@ -1,123 +1,133 @@
 <div class="row mb-2">
-    <!-- TYPE -->
-    <div class="col-3">
-        <select
-            [(ngModel)]="type"
-            (ngModelChange)="updateOptions($event)"
-            class="form-control input-sm py-0"
-            id="version"
-            name="type"
-            title="Match Type"
-        >
-            @for (type of types; track type) {
-                <option [value]="type">{{ type }}</option>
-            }
-        </select>
-    </div>
-
-    <!-- ATTRIBUTES -->
-    @if (type !== 'relationships' && type !== 'created by') {
-        <div class="col-3">
-            <select
-                class="form-control form-select input-sm py-0 form-select"
-                id="version"
-                name="attribute"
-                [disabled]="!type"
-                title="Match Attribute"
-                [(ngModel)]="attribute"
-                (change)="updateOptions($event)"
-            >
-                <option value=""></option>
-                @for (attribute of attributes; track attribute) {
-                    <option [value]="attribute">{{ attribute }}</option>
-                }
-            </select>
-        </div>
-    }
-
-    <!-- SIGN -->
-    @if (type === 'calculations') {
-        <div class="col-1">
-            @if (attribute !== 'valid_until' && attribute !== 'valid_from') {
+    <div class="col imx-card mb-0 card-body-light2">
+        <div class="imx-card-body d-flex justify-content-center">
+            <div class="col-3 me-2">
                 <select
-                    class="form-control form-select input-sm py-0"
+                    [(ngModel)]="type"
+                    (ngModelChange)="updateOptions($event)"
+                    class="form-control input-sm py-0"
                     id="version"
-                    name="sign"
-                    [disabled]="!type"
-                    title="Match Sign"
-                    [(ngModel)]="sign"
+                    name="type"
+                    title="Match Type"
                 >
-                    @for (sign of signs; track sign) {
-                        <option [value]="sign">{{ sign }}</option>
+                    @for (type of types; track type) {
+                        <option [value]="type">{{ type }}</option>
                     }
                 </select>
-            }
-            @if (attribute === 'valid_until' || attribute === 'valid_from') {
-                <select
-                    class="form-control form-select input-sm py-0"
-                    id="version"
-                    name="sign"
-                    [disabled]="!type"
-                    title="Match Sign"
-                    [(ngModel)]="sign"
-                >
-                    <option [value]="sign">{{ sign }}</option>
-                </select>
-            }
-        </div>
-    }
-    @if (
-        type === 'created by' ||
-        type === 'relationships' ||
-        type === 'top-level property' ||
-        type === 'top-level property of type list' ||
-        type === 'property within nested structures' ||
-        type === ''
-    ) {
-        <div class="col-1">
-            <select class="form-control form-select input-sm py-0" id="version" name="sign" [disabled]="!type" title="Match Sign" [(ngModel)]="sign">
-                <option [value]="sign">{{ sign }}</option>
-            </select>
-        </div>
-    }
+            </div>
 
-    <!-- VALUE -->
-    <div class="col">
-        @if (type === 'calculations' && (attribute === 'modified' || attribute === 'valid_from' || attribute === 'valid_until')) {
-            @if (
-                type === 'calculations' && (attribute === 'modified' || attribute === 'valid_from' || attribute === 'valid_until' || attribute === '')
-            ) {
-                <input
-                    class="form-control input-sm py-0"
-                    [(ngModel)]="value"
-                    [owlDateTimeTrigger]="dtPicker2"
-                    [owlDateTime]="dtPicker2"
-                    [disabled]="!type"
-                />
-            }
-            <owl-date-time #dtPicker2></owl-date-time>
-        } @else {
-            @if (type === 'created by') {
-                <div class="input-group">
-                    <select class="form-control form-select input-sm py-0 col-5" [(ngModel)]="value">
-                        <option value="" selected></option>
-                        @for (id of identityList; track id) {
-                            <option [value]="id.id">
-                                {{ id.name }}
-                                &nbsp;
-                            </option>
+            <!-- ATTRIBUTES -->
+            @if (type !== 'relationships' && type !== 'created by') {
+                <div class="col-3 me-2">
+                    <select
+                        class="form-control form-select input-sm py-0 form-select"
+                        id="version"
+                        name="attribute"
+                        [disabled]="!type"
+                        title="Match Attribute"
+                        [(ngModel)]="attribute"
+                        (change)="updateOptions($event)"
+                    >
+                        <option value=""></option>
+                        @for (attribute of attributes; track attribute) {
+                            <option [value]="attribute">{{ attribute }}</option>
                         }
                     </select>
-                    <input type="text" class="form-control input-sm py-0" style="border-radius: 0" [(ngModel)]="value" />
                 </div>
-            } @else {
-                <input type="text" class="form-control input-sm py-0" [(ngModel)]="value" [disabled]="!type" title="Match Value" />
             }
-        }
+
+            <!-- SIGN -->
+            @if (type === 'calculations') {
+                <div class="col-1 me-2">
+                    @if (attribute !== 'valid_until' && attribute !== 'valid_from') {
+                        <select
+                            class="form-control form-select input-sm py-0"
+                            id="version"
+                            name="sign"
+                            [disabled]="!type"
+                            title="Match Sign"
+                            [(ngModel)]="sign"
+                        >
+                            @for (sign of signs; track sign) {
+                                <option [value]="sign">{{ sign }}</option>
+                            }
+                        </select>
+                    }
+                    @if (attribute === 'valid_until' || attribute === 'valid_from') {
+                        <select
+                            class="form-control form-select input-sm py-0"
+                            id="version"
+                            name="sign"
+                            [disabled]="!type"
+                            title="Match Sign"
+                            [(ngModel)]="sign"
+                        >
+                            <option [value]="sign">{{ sign }}</option>
+                        </select>
+                    }
+                </div>
+            }
+            @if (
+                type === 'created by' ||
+                type === 'relationships' ||
+                type === 'top-level property' ||
+                type === 'top-level property of type list' ||
+                type === 'property within nested structures' ||
+                type === ''
+            ) {
+                <div class="col-1 me-2">
+                    <select
+                        class="form-control form-select input-sm py-0"
+                        id="version"
+                        name="sign"
+                        [disabled]="!type"
+                        title="Match Sign"
+                        [(ngModel)]="sign"
+                    >
+                        <option [value]="sign">{{ sign }}</option>
+                    </select>
+                </div>
+            }
+
+            <!-- VALUE -->
+            <div class="col d-flex">
+                @if (type === 'calculations' && (attribute === 'modified' || attribute === 'valid_from' || attribute === 'valid_until')) {
+                    @if (
+                        type === 'calculations' &&
+                        (attribute === 'modified' || attribute === 'valid_from' || attribute === 'valid_until' || attribute === '')
+                    ) {
+                        <input
+                            class="form-control input-sm py-0"
+                            [(ngModel)]="value"
+                            [owlDateTimeTrigger]="dtPicker2"
+                            [owlDateTime]="dtPicker2"
+                            [disabled]="!type"
+                        />
+                    }
+                    <owl-date-time #dtPicker2></owl-date-time>
+                } @else {
+                    @if (type === 'created by') {
+                        <div class="input-group">
+                            <select class="form-control form-select input-sm py-0 col-5" [(ngModel)]="value">
+                                <option value="" selected></option>
+                                @for (id of identityList; track id) {
+                                    <option [value]="id.id">
+                                        {{ id.name }}
+                                        &nbsp;
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    } @else {
+                        <input type="text" class="form-control input-sm py-0" [(ngModel)]="value" [disabled]="!type" title="Match Value" />
+                    }
+                }
+
+                <button (click)="remove_me()" class="btn btn-fa-sm btn-outline-danger no-border ms-2" title="Click to remove this filter.">
+                    <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="col-1">
-        <button (click)="remove_me()" class="btn btn-fa-sm btn-danger" title="Click to remove this filter.">
-            <fa-icon [icon]="faTrash"></fa-icon>
-        </button>
-    </div>
+    <!-- TYPE -->
 </div>
