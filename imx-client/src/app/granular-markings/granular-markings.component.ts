@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { GranularMarking } from '../models/granular-marking';
 import { StixService } from '../stix-service.service';
 import { LANGUAGES } from '../models/languages';
-import { faTrash, faEdit, faBan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faBan, faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { GranularMarkingsDialogComponent } from './granular-markings-dialog/granular-markings-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -26,6 +26,9 @@ export class GranularMarkingsComponent {
     faTrash = faTrash;
     faBan = faBan;
     faPlus = faPlus;
+    faInfoCircle = faInfoCircle;
+
+    private openJson: Set<string> = new Set();
 
     tlp_options = [];
     lang_options: any[] = LANGUAGES;
@@ -95,6 +98,18 @@ export class GranularMarkingsComponent {
         };
     }
 
+    toggleJson(key: string): void {
+        if (this.openJson.has(key)) {
+            this.openJson.delete(key);
+        } else {
+            this.openJson.add(key);
+        }
+    }
+
+    isJsonOpen(key: string): boolean {
+        return this.openJson.has(key);
+    }
+
     getTlpOptions(event: any) {
         this.tlp_options = this.stixService.getTlpOptions(event.target.value);
         this.currentGranularMarking.marking_ref = '';
@@ -103,10 +118,10 @@ export class GranularMarkingsComponent {
     openDialog() {
         const dialogRef = this.granularMarkingDialog.open(GranularMarkingsDialogComponent, {
             data: this.currentGranularMarking,
-            height: '356px',
-            width: `${window.innerWidth / 2}px`,
+            panelClass: 'imx-modal',
+            width: '720px',
             position: {
-                top: '230px',
+                top: '5rem',
             },
         });
 

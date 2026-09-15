@@ -1,60 +1,66 @@
-<div
-    class="d-flex align-items-center justify-content-between"
-    [ngClass]="{ 'col-12 mt-1': stixService.guidedUI, 'col-12 pe-5': !stixService.guidedUI }"
->
-    <div class="col-4">
-        <p class="stix-title input-header" [title]="tooltip">Granular Markings</p>
-    </div>
-    <div class="ms-3">
-        <div>
-            @if (!isAddingGranularMarkings) {
-                <button id="gmarkings_add" class="btn btn-fa-sm btn-color add-button mt-1" type="button" (click)="openDialog()">
-                    <fa-icon [icon]="faPlus"></fa-icon>
-                    <!-- Add -->
-                </button>
-            }
-        </div>
-    </div>
+<div class="imx-field-head">
+    <span class="imx-field-label">
+        Granular Markings
+        <button type="button" class="imx-info" aria-label="About Granular Markings" container="body" tooltipClass="imx-tooltip" [ngbTooltip]="tooltip">
+            <fa-icon [icon]="faInfoCircle"></fa-icon>
+        </button>
+    </span>
+    @if (!isAddingGranularMarkings) {
+        <button id="gmarkings_add" class="btn btn-sm btn-color" type="button" (click)="openDialog()">
+            <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
+            Add Granular Marking
+        </button>
+    }
 </div>
 
-<div class="row">
-    <div class="mx-auto warning-message">{{ this.errorMessage }}</div>
-</div>
+@if (this.errorMessage) {
+    <div class="warning-message mb-2">{{ this.errorMessage }}</div>
+}
 
-@if (!isAddingGranularMarkings && this.stixService.granularMarkings.length > 0) {
-    <div class="form-group mt-2" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
-        <accordion>
+@if (!isAddingGranularMarkings) {
+    @if (this.stixService.granularMarkings.length > 0) {
+        <div class="list-group list-group-flush imx-item-list">
             @for (granularMarking of this.stixService.granularMarkings; track granularMarking; let i = $index) {
-                <accordion-group tabindex="0" [panelClass]="'accordion-panel-class no-btn-decoration mt-2'" [isDisabled]="false">
-                    <div id="gmarkings_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
-                        <div class="col d-flex justify-content-between align-items-center">
-                            <div class="btn btn-link btn-deco">
-                                {{ granularMarking.selectors[0] }}
-                            </div>
+                <div class="list-group-item">
+                    <div class="imx-item" id="gmarkings_list{{ i }}">
+                        <span class="imx-item-text">
+                            <span class="imx-item-primary">{{ granularMarking.selectors.join(', ') }}</span>
+                            <span class="imx-item-secondary">{{ granularMarking.marking_ref || granularMarking.lang }}</span>
+                        </span>
+                        <span class="imx-item-actions">
+                            <button
+                                class="btn btn-fa-sm btn-color"
+                                type="button"
+                                (click)="toggleJson('gmarkings-' + i)"
+                                aria-label="Toggle raw JSON"
+                            >
+                                {{ '{ }' }}
+                            </button>
                             <button
                                 type="button"
-                                class="btn btn-fa-sm btn-color me-2 list-trash"
+                                class="btn btn-fa-sm btn-color"
                                 id="gmarkings_list{{ i }}_edit"
                                 (click)="editGranularMarkings(granularMarking)"
                             >
                                 <fa-icon [icon]="faEdit"></fa-icon>
                             </button>
                             <button
-                                class="btn btn-fa-sm btn-color list-trash"
+                                class="btn btn-fa-sm btn-color"
                                 type="button"
                                 id="gmarkings_list{{ i }}_delete"
                                 (click)="deleteGranularMarkings(granularMarking)"
                             >
                                 <fa-icon [icon]="faTrash"></fa-icon>
                             </button>
-                        </div>
+                        </span>
                     </div>
-
-                    <pre class="json-text">{{ granularMarking | json }}</pre>
-                </accordion-group>
+                    <pre class="imx-item-json" [hidden]="!isJsonOpen('gmarkings-' + i)">{{ granularMarking | json }}</pre>
+                </div>
             }
-        </accordion>
-    </div>
+        </div>
+    } @else {
+        <div class="imx-empty">No granular markings added yet</div>
+    }
 }
 @if (isAddingGranularMarkings) {
     <div class="form-group mt-2">
