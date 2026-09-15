@@ -31,6 +31,8 @@ import { MessageService } from 'src/app/query-stix/message.service';
 import { RelationshipDialogComponent } from 'src/app/query-stix/relationship-dialog/relationship-dialog/relationship-dialog.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
+import { AnnouncementService } from 'src/app/announcement-service/announcement-service.service';
+import { PreviewComponent } from '../preview/preview.component';
 
 @Component({
     selector: 'app-taxii-query',
@@ -320,7 +322,9 @@ export class TaxiiQueryComponent implements OnInit {
         private keycloak: KeycloakService,
         private oidc: OidcService,
         private messageService: MessageService,
-        private relationshipDialog: MatDialog
+        private relationshipDialog: MatDialog,
+        private announcementService: AnnouncementService,
+        private modalService: NgbModal
     ) {
         this.getAvailableAPIRoots = new EventEmitter();
         this.getAvailableCollections = new EventEmitter();
@@ -1731,5 +1735,164 @@ export class TaxiiQueryComponent implements OnInit {
         dialogRef.afterClosed().subscribe((result) => {
             if (result) this.router.navigateByUrl('/add-component/relationship', { state: result });
         });
+    }
+
+    isReportOrGrouping() {
+        const foundObject = this.objectsQueryResults.find((obj) => obj.id == this.selectedObjects[0]);
+
+        if (!foundObject) return false;
+
+        return foundObject.type == 'report' || foundObject.type == 'grouping';
+    }
+
+    importBundle() {
+        const foundObject = this.objectsQueryResults.find((obj) => obj.id == this.selectedObjects[0]);
+
+        if (foundObject) this.createBundle(foundObject);
+    }
+
+    createBundle(obj) {
+        // Marks all objects as new_version_objects
+        let new_version_objects = JSON.parse(localStorage.getItem('new_version_objects'));
+        if (!new_version_objects) new_version_objects = [];
+        let previous_new_version_objects = [...new_version_objects];
+        if (new_version_objects) {
+            if (!new_version_objects.includes(obj.id)) {
+                new_version_objects.push(obj.id);
+            } else {
+                previous_new_version_objects = previous_new_version_objects.filter((element) => element !== obj.id);
+            }
+            obj.object_refs.forEach((ref) => {
+                if (!new_version_objects.includes(ref)) new_version_objects.push(ref);
+                else previous_new_version_objects = previous_new_version_objects.filter((element) => element !== ref);
+            });
+            localStorage.setItem('new_version_objects', JSON.stringify(new_version_objects));
+            localStorage.setItem('previous_new_version_objects', JSON.stringify(previous_new_version_objects));
+        }
+
+        const index = this.announcementService.show(
+            'Loading Objects from Report',
+            'Please be patient. This process can take several minutes, depending on the number of objects and latency of the server used. You will be automatically redirected once this process is complete.',
+            'warn',
+            false,
+            '',
+            false,
+            '',
+            null,
+            900000
+        );
+
+        localStorage.setItem('creating-bundle-from-report', 'true');
+        localStorage.setItem('creating-bundle-from-report-name', obj.name);
+
+        window.addEventListener(
+            'storage',
+            (event: StorageEvent) => {
+                if (
+                    event.storageArea &&
+                    (event.storageArea['creating-bundle-from-report'] === 'false' || !event.storageArea['creating-bundle-from-report'])
+                ) {
+                    window.removeAllListeners('storage');
+                    this.announcementService.toasts.splice(index, 1);
+                    this.announcementService.show(
+                        'Finished loading objects from Report',
+                        'Successfully imported objets from Report to Bundle',
+                        'success',
+                        false
+                    );
+                }
+            },
+            false
+        );
+
+        let objs = obj.object_refs;
+        objs.push(obj.id);
+        this.getObjectsFromID(objs, true);
+    }
+    getObjectsFromID(ids, sendToBundle?: boolean): any {
+        if (sendToBundle) this.getObjectFromIDHelper([...ids], sendToBundle);
+        else return this.getObjectFromIDHelper([...ids], false);
+    }
+
+    getObjectFromIDHelper(ids, sendToBundle: boolean) {
+        if (ids.length == 0) {
+            return [];
+        }
+        let id = ids.pop();
+
+        try {
+            let getURL = this.taxiiServer + this.selectedRoot + '/collections/' + this.selectedCollection.id + '/objects/?match[id]=' + id;
+            this.httpClient.get<any>(getURL, { headers: this.httpHeaders, observe: 'response' }).subscribe(
+                (resp) => {
+                    let obj = undefined;
+                    if (resp.body['objects']) {
+                        obj = resp.body['objects'][0];
+                    }
+                    if (sendToBundle) {
+                        if (obj) this.stixService.objectsToLoad.push(obj);
+                        if (ids.length == 0) {
+                            if (this.stixService.objectsToLoad.length > 0) {
+                                this.stixService.hasObjectsToLoad = true;
+                                if (this.stixService.getGuided()) {
+                                    this.router.navigate(['/guided'], { queryParams: { build_review: true } });
+                                } else {
+                                    this.stixService.hasObjectsToLoad = true;
+                                    localStorage.setItem('objects-to-load', JSON.stringify(this.stixService.objectsToLoad));
+                                    window.open(this.router.serializeUrl(this.router.createUrlTree(['/bundle'])), '_blank');
+
+                                    this.stixService.hasObjectsToLoad = false;
+                                    this.stixService.objectsToLoad = [];
+                                }
+                            } else console.error('ERROR: No objects were able to be loaded');
+                            return [];
+                        }
+                        this.getObjectFromIDHelper(ids, true);
+                    } else {
+                        if (obj) return this.getObjectFromIDHelper(ids, true)?.concat([obj]);
+                        else return this.getObjectFromIDHelper(ids, true);
+                    }
+                },
+                (err) => {
+                    console.error('Unable to get query results. Error code: %s, URL: %s ', err.status, err.url);
+                    if (sendToBundle) {
+                        if (ids.length == 0) {
+                            if (this.stixService.objectsToLoad.length > 0) {
+                                this.stixService.hasObjectsToLoad = true;
+                                localStorage.setItem('objects-to-load', JSON.stringify(this.stixService.objectsToLoad));
+                                window.open(this.router.serializeUrl(this.router.createUrlTree(['/bundle'])), '_blank');
+                            } else console.error('ERROR: No objects were able to be loaded');
+                            return [];
+                        }
+                        this.getObjectFromIDHelper(ids, true);
+                    } else {
+                        return this.getObjectFromIDHelper(ids, true);
+                    }
+                }
+            );
+        } catch (e) {
+            console.error('Error getting object by ID: ' + e);
+            if (sendToBundle) {
+                if (ids.length == 0) {
+                    if (this.stixService.objectsToLoad.length > 0) {
+                        this.stixService.hasObjectsToLoad = true;
+                        window.open(this.router.serializeUrl(this.router.createUrlTree(['/bundle'])), '_blank');
+                    } else console.error('ERROR: No objects were able to be loaded');
+                    return [];
+                }
+                this.getObjectFromIDHelper(ids, true);
+            } else {
+                return this.getObjectFromIDHelper(ids, true);
+            }
+        }
+    }
+
+    openJson(obj) {
+        console.log('?');
+        event.stopPropagation();
+        let modalRef;
+
+        modalRef = this.modalService.open(PreviewComponent, { size: 'xl' });
+
+        modalRef.componentInstance.component = obj;
     }
 }

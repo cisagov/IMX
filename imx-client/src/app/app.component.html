@@ -42,14 +42,14 @@
                             }
                         </li>
                     }
-                    @if (isAuthenticated) {
+                    <!-- @if (isAuthenticated) {
                         <li class="nav-item">
                             <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/query-stix">
                                 <fa-icon [icon]="faSearch" class="faCog me-1"></fa-icon>
                                 <span class="" [ngClass]="{ currentPage: currentPage === 'Search' }"> Search </span>
                             </a>
                         </li>
-                    }
+                    } -->
                     @if (isAuthenticated) {
                         <li class="nav-item">
                             <a class="d-flex btn my-2 my-sm-0 nav-link navbar-link" routerLink="/taxii-search">

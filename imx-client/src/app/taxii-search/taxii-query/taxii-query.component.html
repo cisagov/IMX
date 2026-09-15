@@ -261,13 +261,13 @@
                                 <th class="cursor-pointer" scope="col">Date ({{ localTimezone }})</th>
                                 <th class="cursor-pointer" scope="col">Version</th>
 
-                                <th class="cursor-pointer" scope="col">Media</th>
+                                <th class="cursor-pointer" scope="col">Media Type</th>
                                 <th class="cursor-pointer" scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @for (obj of objectsQueryResults; track obj.id; let i = $index) {
-                                <tr class="cursor-pointer stix-object">
+                                <tr class="cursor-pointer stix-object" (click)="openJson(obj)">
                                     <td class="table-hover">
                                         <input
                                             type="checkbox"
@@ -368,6 +368,16 @@
                     <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
                     Delete
                 </button>
+                @if (selectedObjects.length == 1 && isReportOrGrouping()) {
+                    <button
+                        type="button"
+                        class="btn btn-outline-success tertiary"
+                        (click)="importBundle()"
+                        title="Click to create a bundle from the object_refs of this Report"
+                    >
+                        Import Report
+                    </button>
+                }
                 @if (selectedObjects.length == 2) {
                     <button class="btn btn-outline-primary tertiary" (click)="createRelationship()" style="width: fit-content">
                         <fa-icon [icon]="faLink" class="pe-1"></fa-icon>
