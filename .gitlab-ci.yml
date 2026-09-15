@@ -19,6 +19,12 @@ include:
     file: /ci-templates/python_test.yml
   - project: eos/cde/elm/ops
     ref: main
+    file: /ci-templates/jest.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/playwright.yml
+  - project: eos/cde/elm/ops
+    ref: main
     file: /ci-templates/build_image.yml
   - project: eos/cde/elm/ops
     ref: main
@@ -64,38 +70,18 @@ test-imx-py:
       - $SERVICE/report.html
 
 test-imx-server:
-  allow_failure: true
+  extends: .jest
   stage: test
+  allow_failure: true
   variables:
     SERVICE: "imx-server"
-  before_script:
-    - sudo apt update
-    - sudo apt install nodejs npm
-    - cd $SERVICE
-    - npm install --save-dev jest-html-reporter
-  script:
-    - npx jest  imx-server/tests --reporters=default --reporters=jest-html-reporter --coverage
-  artifacts:
-    when: always
-    paths:
-      # Overwrites the global paths array to capture BOTH items
-      - $SERVICE/coverage.xml
-      - $SERVICE/report.html
 
-playwright-tests:
+test-imx-client:
+  extends: .playwright
   stage: test
-  image: mcr.microsoft.com/playwright:v1.45.0-jammy
-  before_script:
-    - npm ci
-    - npx playwright install --with-deps
-  script:
-    - npx playwright test
-  artifacts:
-    when: always
-    paths:
-      - playwright-report/
-    reports:
-      junit: results.xml
+  allow_failure: true
+  variables:
+    SERVICE: "imx-server"
 
 build-client:
   extends: .build-image
