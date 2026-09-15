@@ -73,6 +73,8 @@ test-imx-server:
   extends: .jest
   stage: test
   allow_failure: true
+  script:
+    - npm run test -- --ci --coverage --reporters=default
   variables:
     SERVICE: "imx-server"
 
