@@ -1,3 +1,9 @@
+## 4.20.1 (2026-09-15)
+
+### Bug Fixes
+
+* use collection name from TAXII server instead of env file 293aac8
+
 ## 4.20.0 (2026-09-14)
 
 ### Features
