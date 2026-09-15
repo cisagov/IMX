@@ -31,7 +31,7 @@ const routes: Routes = [
     { path: 'incident-core', component: IncidentCoreExtensionComponent, canActivate: [auth] },
     { path: 'incident-obj', component: IncidentCoreObjectComponent, canActivate: [auth] },
     { path: 'malware-obj', component: MalwareBehaviourObjectComponent, canActivate: [auth] },
-    { path: 'query-stix', component: QueryStixComponent, canActivate: [auth] },
+    // { path: 'query-stix', component: QueryStixComponent, canActivate: [auth] },
     { path: 'taxii-search', component: TaxiiSearchComponent, canActivate: [auth] },
     { path: 'reporting', component: ReportingComponent, canActivate: [auth] },
     { path: 'login', component: LoginComponent },

@@ -161,6 +161,7 @@ import { TaxiiQueryComponent } from './taxii-search/taxii-query/taxii-query.comp
 import { TaxiiInfoComponent } from './taxii-search/taxii-info/taxii-info.component';
 import { TaxiiSubmissionsComponent } from './taxii-search/taxii-submissions/taxii-submissions.component';
 import { TaxiiSearchBarComponent } from './taxii-search/taxii-search-bar/taxii-search-bar.component';
+import { PreviewComponent } from './taxii-search/preview/preview.component';
 
 @NgModule({
     declarations: [
@@ -279,6 +280,7 @@ import { TaxiiSearchBarComponent } from './taxii-search/taxii-search-bar/taxii-s
         TaxiiInfoComponent,
         TaxiiSubmissionsComponent,
         TaxiiSearchBarComponent,
+        PreviewComponent,
     ],
     bootstrap: [AppComponent],
     imports: [
