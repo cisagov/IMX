@@ -18,6 +18,8 @@ export class ExternalReferencesComponent {
     faBan = faBan;
     faInfoCircle = faInfoCircle;
 
+    private openJson: Set<string> = new Set();
+
     currentExternalReference = new ExternalReference();
     isAddingExternalReferences: boolean = false;
     newExternalReferences: ExternalReference[] = [];
@@ -67,11 +69,23 @@ export class ExternalReferencesComponent {
         this.hashError = '';
     }
 
+    toggleJson(key: string): void {
+        if (this.openJson.has(key)) {
+            this.openJson.delete(key);
+        } else {
+            this.openJson.add(key);
+        }
+    }
+
+    isJsonOpen(key: string): boolean {
+        return this.openJson.has(key);
+    }
+
     openDialog() {
         const dialogRef = this.externalReferencesDialog.open(ExternalReferencesDialogComponent, {
-            minHeight: '380px',
+            panelClass: 'imx-modal',
             maxHeight: '85vh',
-            width: `${window.innerWidth / 2}px`,
+            width: '720px',
             position: {
                 top: '5rem',
             },
