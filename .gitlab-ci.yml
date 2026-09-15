@@ -74,7 +74,7 @@ test-imx-server:
   stage: test
   allow_failure: true
   script:
-    - npm run test -- --ci --coverage --coverageReporters=cobertura,json,lcov,text --reporters=default --reporters=jest-junit --outputFile=junit.xml
+    - npm run test -- --ci --coverage --coverageReporters=cobertura --reporters=default --reporters=jest-junit --outputFile=junit.xml
   artifacts:
     reports:
       junit: "${SERVICE}/junit.xml"
