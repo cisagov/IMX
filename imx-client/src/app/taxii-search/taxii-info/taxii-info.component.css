@@ -3,3 +3,15 @@
     font-size: 14px;
     color: #6a7181;
 }
+
+.top-card {
+    margin-top: 1.5rem;
+}
+
+.tertiary {
+    font-size: 0.775rem;
+}
+
+.undo {
+    color: var(--imx-text-muted);
+}
