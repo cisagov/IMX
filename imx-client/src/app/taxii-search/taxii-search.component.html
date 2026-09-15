@@ -7,6 +7,38 @@
             </div>
         </div>
     } @else {
-        <app-taxii-info></app-taxii-info>
+        <div class="ms-4 me-4">
+            @if (!selectedCollection && !globalSearch) {
+                <app-taxii-info
+                    [selectedColl]="selectedCollection"
+                    [selectedRoot]="selectedRoot"
+                    [roots]="roots"
+                    [collections]="collections"
+                    [globalSearch]="globalSearch"
+                    [serverInfo]="serverInfo"
+                    (setServerInfo)="setServerInfo($event)"
+                    (getAvailableAPIRoots)="getAvailableAPIRoots()"
+                    (getAvailableCollections)="getAvailableCollections()"
+                    (selectRoot)="selectRoot($event)"
+                    (selectCollection)="selectCollection($event)"
+                    (selectGlobalSearch)="selectGlobalSearch($event)"
+                ></app-taxii-info>
+            } @else {
+                <app-taxii-query
+                    [selectedColl]="selectedCollection"
+                    [selectedRoot]="selectedRoot"
+                    [roots]="roots"
+                    [collections]="collections"
+                    [globalSearch]="globalSearch"
+                    [serverInfo]="serverInfo"
+                    (setServerInfo)="setServerInfo($event)"
+                    (getAvailableAPIRoots)="getAvailableAPIRoots()"
+                    (getAvailableCollections)="getAvailableCollections()"
+                    (selectRoot)="selectRoot($event)"
+                    (selectCollection)="selectCollection($event)"
+                    (selectGlobalSearch)="selectGlobalSearch($event)"
+                ></app-taxii-query>
+            }
+        </div>
     }
 </div>

@@ -18,11 +18,57 @@ export class TaxiiSearchComponent implements OnInit {
 
     faRight = faAngleDoubleRight;
 
-    constructor(
-        public stixService: StixService,
-        private envService: EnvService,
-        private announcementService: AnnouncementService
-    ) {}
+    selectedRoot = '';
+    selectedCollection = null;
+
+    roots = [];
+    collections = {};
+
+    serverInfo = null;
+
+    globalSearch = false;
+
+    constructor(public stixService: StixService) {}
 
     ngOnInit() {}
+
+    getAvailableAPIRoots() {
+        if (this.stixService.taxiiServerType == 'ais') {
+            this.roots = this.stixService.apiRootDetails.filter((a) => a['api-root'] != 'ingest');
+            return;
+        }
+
+        this.roots = [];
+        this.stixService.apiRootDetails?.forEach((root) => {
+            this.roots.push(root);
+        });
+    }
+
+    getAvailableCollections() {
+        this.collections = {};
+        this.stixService.apiRoots2.forEach((root) => {
+            root.collections.forEach((collection) => {
+                if (!this.collections[root['apiPath']]) this.collections[root['apiPath']] = [];
+
+                this.collections[root['apiPath']].push(collection);
+            });
+        });
+    }
+
+    setServerInfo(data) {
+        this.serverInfo = data;
+    }
+
+    selectRoot(root) {
+        this.selectedRoot = root;
+    }
+
+    selectCollection(collection) {
+        console.log(collection);
+        this.selectedCollection = collection;
+    }
+
+    selectGlobalSearch(bool) {
+        this.globalSearch = bool;
+    }
 }
