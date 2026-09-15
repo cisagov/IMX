@@ -1,49 +1,12 @@
 <div class="body">
-    <div class="sidebar-bg" [ngClass]="{ 'expanded-side': expandSidebar }">
-        <fa-icon [icon]="faRight" class="sidebar-icon expand-right-arrow"></fa-icon>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="sidebar cursor-pointer" [ngClass]="{ 'expanded-side': expandSidebar }" (mouseenter)="enableSidebar()" (mouseleave)="disableSidebar()">
-        <div class="d-flex flex-column sidebar-content justify-content-start align-items-center mt-5">
-            <div
-                title="Server Info"
-                id="server-info-btn"
-                (click)="setTab('info')"
-                [ngClass]="{ 'justify-content-center': !expandSidebar, 'expand-icon': expandSidebar }"
-                class="d-flex sidebar-item align-items-center"
-            >
-                <fa-icon [icon]="faServer" class="sidebar-icon"></fa-icon>
-                <span *ngIf="expandSidebar" class="sidebar-label">Server Info</span>
-            </div>
-
-            <div
-                title="Submissions"
-                id="submissions-btn"
-                (click)="setTab('submission')"
-                [ngClass]="{ 'justify-content-center': !expandSidebar, 'expand-icon': expandSidebar }"
-                class="d-flex sidebar-item align-items-center"
-            >
-                <fa-icon [icon]="faUserFriends" class="sidebar-icon"></fa-icon>
-                <span *ngIf="expandSidebar" class="sidebar-label">Submissions</span>
-            </div>
-
-            <div
-                title="Search"
-                id="search-btn"
-                (click)="setTab('query')"
-                [ngClass]="{ 'justify-content-center': !expandSidebar, 'expand-icon': expandSidebar }"
-                class="d-flex sidebar-item align-items-center"
-            >
-                <fa-icon [icon]="faList" class="sidebar-icon"></fa-icon>
-                <span *ngIf="expandSidebar" class="sidebar-label">Search</span>
+    @if (stixService.isLoading) {
+        <div class="container-fluid h-100 p-3">
+            <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem"></div>
+                <span>Loading...</span>
             </div>
         </div>
-    </div>
-
-    @if (currentTab() == 'info') {
-        <app-taxii-info></app-taxii-info>
     } @else {
-        <app-taxii-search-bar [currentTab]="currentTab()"></app-taxii-search-bar>
+        <app-taxii-info></app-taxii-info>
     }
 </div>

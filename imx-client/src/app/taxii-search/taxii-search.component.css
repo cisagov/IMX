@@ -1,3 +1,6 @@
 .body {
-    padding: 50px 50px 50px 130px;
+    padding: 50px 50px 50px 50px;
+    background-color: var(--imx-page-bg);
+    color: var(--imx-text);
+    height: 100%;
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faCaretDown, faUndo } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-taxii-info',
@@ -9,11 +9,23 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 })
 export class TaxiiInfoComponent {
     faSearch = faSearch;
+    faCaretDown = faCaretDown;
+    faUndo = faUndo;
 
     roots = [
-        { title: 'test1', versions: ['application/taxii+json;version=2.0', 'application/taxii+json;version=2.1'], description: 'api root test 1' },
-        { title: 'test2', versions: ['application/taxii+json;version=2.0', 'application/taxii+json;version=2.1'], description: 'api root test 2' },
-        { title: 'test3', versions: ['application/taxii+json;version=2.0', 'application/taxii+json;version=2.1'], description: 'api root test 3' },
+        { title: 'test1', max_content_length: 4194304, versions: ['application/taxii+json;version=2.0', 'application/taxii+json;version=2.1'] },
+        {
+            title: 'test2',
+            max_content_length: 4194304,
+            versions: ['application/taxii+json;version=2.0', 'application/taxii+json;version=2.1'],
+            description: 'api root test 2',
+        },
+        {
+            title: 'test3',
+            max_content_length: 4194304,
+            versions: ['application/taxii+json;version=2.0', 'application/taxii+json;version=2.1'],
+            description: 'api root test 3',
+        },
     ];
     collections = {
         test1: [
@@ -85,4 +97,6 @@ export class TaxiiInfoComponent {
     selectRoot(root: string) {
         this.selectedRoot = root;
     }
+
+    selectCollection(collection: string) {}
 }
