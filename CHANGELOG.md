@@ -1,3 +1,9 @@
+## [4.20.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.0...v4.20.1) (2026-09-15)
+
+### Bug Fixes
+
+* use collection name from TAXII server instead of env file ([293aac8](https://git.va.th.ten/eos/cde/tie/imx/commit/293aac8a9aef8b473be3694bebf664633aff7a5a))
+
 ## [4.20.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.11...v4.20.0) (2026-09-14)
 
 ### Features
