@@ -77,7 +77,7 @@ test-imx-server:
     SERVICE: "imx-server"
 
 test-imx-client:
-  extends: .playwright
+  extends: .playwright-test
   stage: test
   allow_failure: true
   variables:
