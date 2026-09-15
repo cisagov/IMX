@@ -4,7 +4,7 @@
   "description": "Backend for IMX Client",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "prod": "NODE_ENV=prod node index.js",
     "dev": "NODE_ENV=local nodemon index.js",
     "remote": "NODE_ENV=remote-ten nodemon index.js",
@@ -30,5 +30,8 @@
     "nodemailer": "^9.0.3",
     "uuid": "^14.0.0",
     "xml": "^1.0.1"
+  },
+  "devDependencies": {
+    "jest": "^30.5.1"
   }
 }
