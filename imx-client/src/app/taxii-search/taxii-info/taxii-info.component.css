@@ -15,3 +15,13 @@
 .undo {
     color: var(--imx-text-muted);
 }
+
+.taxii-selecrt {
+    font-size: 14px;
+    color: #3c3d40;
+}
+
+.card-height {
+    max-height: 510px;
+    overflow: scroll;
+}

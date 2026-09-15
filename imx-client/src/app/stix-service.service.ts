@@ -827,6 +827,7 @@ export class StixService implements OnInit {
                                     'api-root': apiRoot,
                                     title: apiRootInfo['title'],
                                     description: apiRootInfo['description'],
+                                    versions: apiRootInfo['versions'],
                                 };
 
                                 if (
@@ -898,9 +899,10 @@ export class StixService implements OnInit {
                                             'api-root': apiRoot,
                                             title: apiRootInfo['title'],
                                             description: apiRootInfo['description'],
+                                            versions: apiRootInfo['versions'],
                                         });
                                         const tempRoot = this.apiRootDetails[this.apiRootDetails.length - 1];
-                                        await this.getCollectionsIds(getDiscoveryURL, tempRoot);
+                                        const ids = await this.getCollectionsIds(getDiscoveryURL, tempRoot);
                                     }
                                 }
                             } catch (e) {
@@ -934,6 +936,8 @@ export class StixService implements OnInit {
                 if (!status) {
                     status = e.http_status;
                 }
+
+                this.apiRootDetails = [];
 
                 if (status) {
                     let errMessage = `Error code [${e.status}]: ${this.generateHTTPError(e.status)}`;
@@ -1059,7 +1063,6 @@ export class StixService implements OnInit {
                         };
                         this.sendData(configEvent);
                     }
-
                     return resolve(true);
                 } catch (error) {
                     this.apiRoots2.push({ apiPath: tempRoot, childRoot: url + tempRoot + '/', collections: [] });
@@ -1823,7 +1826,6 @@ export class StixService implements OnInit {
                             if (this.taxiiServerType === 'default') {
                                 // await this.publishCui(bundle);
                             }
-
                             this.isLoading = false;
                             resolve(result);
                         })

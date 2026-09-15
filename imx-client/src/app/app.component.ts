@@ -37,7 +37,7 @@ export interface MarkdownChangelog {
     version: string;
     date: string;
     sections: { title: string; items: string[] }[];
-};
+}
 
 @Component({
     selector: 'app-root',
@@ -260,8 +260,10 @@ export class AppComponent implements OnInit {
                     break;
             }
         });
-        this.httpClient.get('assets/CHANGELOG.md', { responseType: 'text'}).subscribe(data => {this.markdownChangelog = this.parseMarkdown(data);} )
-        await this.stixService.getAPIRoots();
+        this.httpClient.get('assets/CHANGELOG.md', { responseType: 'text' }).subscribe((data) => {
+            this.markdownChangelog = this.parseMarkdown(data);
+        });
+        // await this.stixService.getAPIRoots();
         this.stixService.updateLatency(this.announcementService);
     }
 
@@ -557,12 +559,15 @@ export class AppComponent implements OnInit {
         let result: MarkdownChangelog[] = [];
         let versionBlocks = data.split(/^## /gm).slice(1);
 
-        for(let block of versionBlocks) {
-            let lines = block.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        for (let block of versionBlocks) {
+            let lines = block
+                .split('\n')
+                .map((line) => line.trim())
+                .filter((line) => line.length > 0);
 
             let header = lines[0];
             let headerMatch = header.match(/\[(.*?)\].*\((.*?)\)/);
-            if(!headerMatch) continue;
+            if (!headerMatch) continue;
 
             let version = headerMatch[1];
             let date = headerMatch[2];
@@ -571,29 +576,29 @@ export class AppComponent implements OnInit {
 
             for (const line of lines.slice(1)) {
                 let sectionMatch = line.match(/^### (.*)/);
-                if(sectionMatch) {
-                    if(currentSection) sections.push(currentSection);
+                if (sectionMatch) {
+                    if (currentSection) sections.push(currentSection);
                     currentSection = {
                         title: sectionMatch[1],
-                        items: []
-                    }
+                        items: [],
+                    };
                     continue;
                 }
 
                 let bulletMatch = line.match(/^\* (.*)/);
-                if(bulletMatch && currentSection) {
+                if (bulletMatch && currentSection) {
                     let text = bulletMatch[1];
                     text = text.replace(/\s*\(.*$/, '').trim();
                     currentSection.items.push(text);
                 }
             }
-            if(currentSection){
+            if (currentSection) {
                 sections.push(currentSection);
             }
             result.push({
                 version,
                 date,
-                sections
+                sections,
             });
         }
         return result;
