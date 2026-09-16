@@ -164,154 +164,6 @@ export class TaxiiQueryComponent implements OnInit {
 
     selectedObjects = [];
 
-    sampleObjects = [
-        {
-            aliases: ['Oldsmar Treatment Plant Intrusion'],
-            created: '2022-09-20T20:53:14.373Z',
-            created_by_ref: 'identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5',
-            description:
-                '[Oldsmar Treatment Plant Intrusion](https://attack.mitre.org/campaigns/C0009) was a cyber incident involving a water treatment facility in Florida. During this incident, unidentified threat actors leveraged features of the system to access and modify setpoints for a specific chemical required in the treatment process. The incident was detected immediately and prevented before it could cause any harm to the public.(Citation: Pinellas County Sheriffs Office February 2021)(Citation: CISA AA21-042A Water Treatment Intrusion Feb 2021)(Citation: Dragos Oldsmar Feb 2021)',
-            external_references: [
-                {
-                    external_id: 'C0009',
-                    source_name: 'mitre-attack',
-                    url: 'https://attack.mitre.org/campaigns/C0009',
-                },
-                {
-                    description: 'CISA. (2021, February 11). Compromise of U.S. Water Treatment Facility . Retrieved October 18, 2022.',
-                    source_name: 'CISA AA21-042A Water Treatment Intrusion Feb 2021',
-                    url: 'https://www.cisa.gov/uscert/ncas/alerts/aa21-042a',
-                },
-                {
-                    description: 'Pinellas County Sheriffs Office 2021, February 8 Treatment Plant Intrusion Press Conference Retrieved. 2021/10/08',
-                    source_name: 'Pinellas County Sheriffs Office February 2021',
-                    url: 'https://www.youtube.com/watch?v=MkXDSOgLQ6M',
-                },
-                {
-                    description:
-                        'Serino, G., et al . (2021, February 8). Recommendations Following the Oldsmar Water Treatment Facility Cyber Attack. Retrieved October 21, 2022.',
-                    source_name: 'Dragos Oldsmar Feb 2021',
-                    url: 'https://www.dragos.com/blog/industry-news/recommendations-following-the-oldsmar-water-treatment-facility-cyber-attack/',
-                },
-            ],
-            first_seen: '2021-02-01T05:00:00.000Z',
-            id: 'campaign--65281d3e-b03c-46b8-8cd8-716363ac3cb2',
-            last_seen: '2021-02-01T05:00:00.000Z',
-            modified: '2026-07-31T20:48:15.905Z',
-            name: 'Oldsmar Treatment Plant Intrusion',
-            object_marking_refs: ['marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168'],
-            revoked: false,
-            spec_version: '2.1',
-            type: 'campaign',
-            x_mitre_attack_spec_version: '3.2.0',
-            x_mitre_deprecated: true,
-            x_mitre_domains: ['ics-attack'],
-            x_mitre_first_seen_citation: '(Citation: Pinellas County Sheriffs Office February 2021)',
-            x_mitre_last_seen_citation: '(Citation: Pinellas County Sheriffs Office February 2021)',
-            x_mitre_modified_by_ref: 'identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5',
-            x_mitre_version: '1.0',
-        },
-        {
-            created: '2019-06-11T17:06:56.230Z',
-            created_by_ref: 'identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5',
-            description: 'Restrict the execution of code to a virtual environment on or in-transit to an endpoint system.',
-            external_references: [
-                {
-                    external_id: 'M0948',
-                    source_name: 'mitre-attack',
-                    url: 'https://attack.mitre.org/mitigations/M0948',
-                },
-            ],
-            id: 'course-of-action--059ba11e-e3dc-49aa-84ca-88197f40d4ea',
-            labels: ['IEC 62443-3-3:2013 - SR 5.4', 'IEC 62443-4-2:2019 - CR 5.4', 'NIST SP 800-53 Rev. 5 - SI-3'],
-            modified: '2025-04-16T21:26:25.920Z',
-            name: 'Application Isolation and Sandboxing',
-            object_marking_refs: ['marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168'],
-            revoked: false,
-            spec_version: '2.1',
-            type: 'course-of-action',
-            x_mitre_attack_spec_version: '3.2.0',
-            x_mitre_deprecated: false,
-            x_mitre_domains: ['ics-attack'],
-            x_mitre_modified_by_ref: 'identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5',
-            x_mitre_version: '1.0',
-        },
-        {
-            created: '2017-05-31T21:33:21.973Z',
-            created_by_ref: 'identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5',
-            description:
-                '[Industroyer](https://collaborate.mitre.org/attackics/index.php/Software/S0001) is a sophisticated piece of malware designed to cause an [Impact](https://collaborate.mitre.org/attackics/index.php/Impact) to the working processes of Industrial Control Systems (ICS), specifically ICSs used in electrical substations.(Citation: ESET Win32/Industroyer) Industroyer was alleged to be used in the attacks on the Ukrainian power grid in December 2016.(Citation: Dragos Crashoverride)(Citation: CISA Alert (TA17-163A))(Citation: Dragos Crashoverride 2018)(Citation: Dragos Crashoverride 2019)',
-            external_references: [
-                {
-                    external_id: 'S1004',
-                    source_name: 'mitre-ics-attack',
-                    url: 'https://collaborate.mitre.org/attackics/index.php/Software/S0001',
-                },
-                {
-                    description:
-                        'Anton Cherepanov, ESET. (2017, June 12). Win32/Industroyer: A new threat for industrial control systems. Retrieved September 15, 2017.',
-                    source_name: 'ESET Win32/Industroyer',
-                    url: 'https://www.welivesecurity.com/wp-content/uploads/2017/06/Win32_Industroyer.pdf',
-                },
-                {
-                    description:
-                        'Dragos Inc.. (2017, June 13). Industroyer - Dragos - 201706: Analysis of the Threat to Electic Grid Operations. Retrieved September 18, 2017.',
-                    source_name: 'Dragos Crashoverride',
-                    url: 'https://www.dragos.com/wp-content/uploads/CrashOverride-01.pdf',
-                },
-                {
-                    description: 'CISA. (2017, June 12). Alert (TA17-163A). Retrieved October 22, 2019.',
-                    source_name: 'CISA Alert TA17-163A CrashOverride June 2017',
-                    url: 'https://us-cert.cisa.gov/ncas/alerts/TA17-163A',
-                },
-                {
-                    description:
-                        'Dragos. (2018, October 12). Anatomy of an Attack: Detecting and Defeating CRASHOVERRIDE. Retrieved October 14, 2019.',
-                    source_name: 'Dragos Crashoverride 2018',
-                    url: 'https://www.dragos.com/wp-content/uploads/CRASHOVERRIDE2018.pdf',
-                },
-                {
-                    description:
-                        'Joe Slowik. (2019, August 15). CRASHOVERRIDE: Reassessing the 2016 Ukraine Electric Power Event as a Protection-Focused Attack. Retrieved October 22, 2019.',
-                    source_name: 'Dragos Crashoverride 2019',
-                    url: 'https://dragos.com/wp-content/uploads/CRASHOVERRIDE.pdf',
-                },
-            ],
-            id: 'malware--1d8dccb3-e779-4702-aeb1-6627a22cc585',
-            is_family: true,
-            modified: '2025-04-18T18:00:54.754Z',
-            name: 'Industroyer',
-            object_marking_refs: ['marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168'],
-            spec_version: '2.1',
-            type: 'malware',
-            x_mitre_aliases: ['Industroyer', 'CRASHOVERRIDE'],
-            x_mitre_attack_spec_version: '3.2.0',
-            x_mitre_deprecated: true,
-            x_mitre_domains: ['ics-attack'],
-            x_mitre_modified_by_ref: 'identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5',
-            x_mitre_platforms: ['Windows'],
-            x_mitre_version: '1.0',
-        },
-    ];
-
-    sampleManifests = {
-        'campaign--65281d3e-b03c-46b8-8cd8-716363ac3cb2': {
-            date_added: 'Thu Aug 27 2026 17:23:16',
-            version: '2026-08-05T21:34:28.409Z',
-            media_type: 'application/stix+json;version=2.1',
-        },
-        'course-of-action--059ba11e-e3dc-49aa-84ca-88197f40d4ea': {
-            date_added: 'Thu Aug 27 2026 17:23:16',
-            media_type: 'application/stix+json;version=2.1',
-            version: '2026-07-31T20:48:17.564Z',
-        },
-        'malware--1d8dccb3-e779-4702-aeb1-6627a22cc585': {
-            date_added: 'Thu Aug 27 2026 17:23:16',
-            version: '2025-04-25T14:39:13.297Z',
-            media_type: 'application/stix+json;version=2.1',
-        },
-    };
-
     constructor(
         private envService: EnvService,
         public stixService: StixService,
@@ -1147,7 +999,6 @@ export class TaxiiQueryComponent implements OnInit {
 
     showFilters = async () => {
         this.addFilters = !this.addFilters;
-        console.log(this.componentsReferences.length);
         if (this.addFilters && this.componentsReferences.length == 0) this.createFilterComponent();
     };
 
@@ -1887,7 +1738,6 @@ export class TaxiiQueryComponent implements OnInit {
     }
 
     openJson(obj) {
-        console.log('?');
         event.stopPropagation();
         let modalRef;
 
