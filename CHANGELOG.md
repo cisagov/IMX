@@ -1,3 +1,10 @@
+## [4.20.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.1...v4.20.2) (2026-09-16)
+
+### Bug Fixes
+
+* mutli stage build for imx py ([228ceba](https://git.va.th.ten/eos/cde/tie/imx/commit/228ceba3894a4811ad9babc6b03a4106c5cd367c))
+* npm audit fix imx server ([b2f681a](https://git.va.th.ten/eos/cde/tie/imx/commit/b2f681a3af5c3db9ff26809334ad25422ace2c27))
+
 ## [4.20.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.0...v4.20.1) (2026-09-15)
 
 ### Bug Fixes
