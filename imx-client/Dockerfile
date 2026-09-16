@@ -1,6 +1,6 @@
-ARG REGISTRY=docker.io/library
+ARG REGISTRY=docker.io
 
-FROM $REGISTRY/node:lts-alpine AS builder
+FROM $REGISTRY/library/node:lts-alpine AS builder
 
 ARG BUILD_ENV=prod
 
@@ -10,7 +10,7 @@ RUN npm ci
 COPY ./imx-client/. .
 RUN npm run build-$BUILD_ENV
 
-FROM $REGISTRY/nginx:alpine3.23-slim
+FROM $REGISTRY/library/nginx:alpine3.23-slim
 
 RUN apk --no-cache add curl
 
