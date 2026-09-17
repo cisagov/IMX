@@ -1,3 +1,36 @@
+## 4.20.2 (2026-09-16)
+
+### Bug Fixes
+
+* mutli stage build for imx py 228ceba
+* npm audit fix imx server b2f681a
+
+## 4.20.1 (2026-09-15)
+
+### Bug Fixes
+
+* use collection name from TAXII server instead of env file 293aac8
+
+## 4.20.0 (2026-09-14)
+
+### Features
+
+* initial commit of malware behavior form rework 171b99b
+* updated external ref, granular markings, extensions display on forms & cleanup f076b8d
+* updates to snipper/detection rules modals, modals stylesheet added 594bc49
+
+### Bug Fixes
+
+* created date bugfix abc643e
+* many bugfixes on detection rules modal, malware behavior form cc71bfd
+* more bug fixes for snippet modal 6a0ccd3
+
+## 4.19.11 (2026-09-11)
+
+### Bug Fixes
+
+* fix guided Email Message multipart edit and save, show collection name not id 9d80477
+
 ## 4.19.10 (2026-09-08)
 
 ### Bug Fixes

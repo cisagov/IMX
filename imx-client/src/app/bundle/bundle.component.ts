@@ -3588,8 +3588,23 @@ export class BundleComponent implements OnInit {
 
         this.taxiiServer.collection = {
             id: this.envService.env.customConfiguration.sandbox.collectionId,
-            title: sandboxCollection ? sandboxCollection.title : this.envService.env.customConfiguration.sandbox.collectionId,
+            title: sandboxCollection ? sandboxCollection.title : this.getCollectionName(this.envService.env.customConfiguration.sandbox.collectionId),
         };
+    }
+
+    getCollectionName(collectionId) {
+        for (const item of this.stixService.apiRoots) {
+            if (!item || typeof item !== 'object' || !Array.isArray(item.collections)) {
+                continue;
+            }
+
+            for (const collection of item.collections) {
+                if (collection.id === collectionId) {
+                    return collection.title;
+                }
+            }
+        }
+        return null;
     }
 
     serverSettingsChangedCisa() {

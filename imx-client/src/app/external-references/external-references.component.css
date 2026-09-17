@@ -36,10 +36,6 @@ input.form-control {
     height: calc(1.5em + 0.5rem + 2px);
 }
 
-.accordion-panel-class {
-    padding: 0;
-}
-
 #hashes option {
     width: 0px;
 }
@@ -141,38 +137,6 @@ input.form-control {
     border-radius: 0.25rem 0.25rem 0 0;
 }
 
-.btn-link {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-align: left;
-    text-overflow: ellipsis;
-}
-.btn-link {
-    text-decoration: none !important;
-
-    color: #6f6f6f;
-    font-size: 14px !important;
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        Roboto,
-        Oxygen,
-        Ubuntu,
-        Cantarell,
-        'Open Sans',
-        'Helvetica Neue',
-        sans-serif;
-}
-
-.btn-link:active {
-    text-decoration: none !important;
-
-    color: #6f6f6f;
-}
-
 .btn-color {
     background-color: white !important;
     border-color: #ced4da !important;
@@ -193,34 +157,4 @@ input.form-control {
     background-color: #6c757d !important;
     color: white !important;
     border-color: #ced4da !important;
-}
-
-.list-trash:hover {
-    background-color: #6c757d !important;
-    color: white !important;
-    border-color: #ced4da !important;
-}
-
-.btn-deco {
-    text-decoration: none !important;
-
-    color: #6f6f6f;
-    font-size: 14px !important;
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        Roboto,
-        Oxygen,
-        Ubuntu,
-        Cantarell,
-        'Open Sans',
-        'Helvetica Neue',
-        sans-serif;
-}
-
-.json-text {
-    font-size: 14px !important;
-    font-family: inherit;
 }
