@@ -19,6 +19,12 @@ include:
     file: /ci-templates/python_test.yml
   - project: eos/cde/elm/ops
     ref: main
+    file: /ci-templates/jest.yml
+  - project: eos/cde/elm/ops
+    ref: main
+    file: /ci-templates/playwright.yml
+  - project: eos/cde/elm/ops
+    ref: main
     file: /ci-templates/build_image.yml
   - project: eos/cde/elm/ops
     ref: main
@@ -48,11 +54,34 @@ lint:
   variables:
     SERVICE: imx-py
 
-test:
-  allow_failure: true
+test-imx-py:
   extends: .python-test
+  stage: test
+  allow_failure: true
   variables:
-    SERVICE: imx-py
+    SERVICE: "imx-py"
+  script:
+    - uv run pytest --cov=. --cov-report=xml:coverage.xml --html=report.html --self-contained-html
+  artifacts:
+    when: always
+    paths:
+      # Overwrites the global paths array to capture BOTH items
+      - $SERVICE/coverage.xml
+      - $SERVICE/report.html
+
+test-imx-server:
+  extends: .jest
+  stage: test
+  allow_failure: true
+  variables:
+    SERVICE: "imx-server"
+
+# test-imx-client:
+#   extends: .playwright-test
+#   stage: test
+#   allow_failure: true
+#   variables:
+#     SERVICE: "imx-server"
 
 build-client:
   extends: .build-image
