@@ -1,3 +1,9 @@
+## 4.20.4 (2026-09-17)
+
+### Bug Fixes
+
+* for importing stix vt from integrations b79ae97
+
 ## 4.20.3 (2026-09-17)
 
 ### Bug Fixes
