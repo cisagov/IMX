@@ -1,3 +1,22 @@
+## 4.20.3 (2026-09-17)
+
+### Bug Fixes
+
+* rename test_connection to pass jest test suite db6ae94
+
+## 4.20.2 (2026-09-16)
+
+### Bug Fixes
+
+* mutli stage build for imx py 228ceba
+* npm audit fix imx server b2f681a
+
+## 4.20.1 (2026-09-15)
+
+### Bug Fixes
+
+* use collection name from TAXII server instead of env file 293aac8
+
 ## 4.20.0 (2026-09-14)
 
 ### Features
