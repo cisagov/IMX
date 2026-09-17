@@ -4072,14 +4072,16 @@ export class BundleComponent implements OnInit {
     importVtObjects(objects: any[]) {
         if (!objects || objects.length === 0) return;
         this.addingStixToBundle = true;
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
                 const existingIds = new Set(this.stixService.bundle.objects.map((o) => o.id));
                 for (const obj of objects) {
                     if (!existingIds.has(obj.id)) {
-                        this.stixService.addComponent(obj);
+                        await this.stixService.addComponent(obj);
                     }
                 }
+                this.updateGroupByTLP();
+                this.clearSearchResults();
             } finally {
                 this.addingStixToBundle = false;
             }
