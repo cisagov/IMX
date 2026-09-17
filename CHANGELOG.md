@@ -1,3 +1,9 @@
+## 4.20.3 (2026-09-17)
+
+### Bug Fixes
+
+* rename test_connection to pass jest test suite db6ae94
+
 ## 4.20.2 (2026-09-16)
 
 ### Bug Fixes

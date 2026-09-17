@@ -42,6 +42,14 @@ run = """
 npx playwright test tests/
 """
 
+[tasks.jest]
+description = "Runs jest tests"
+depends = ["install"]
+run = """
+cd imx-server
+npm run test -- --ci --coverage --coverageReporters=cobertura --reporters=default --reporters=jest-junit --outputFile=junit.xml
+"""
+
 [tasks.trivy-client]
 description = "Scan client image"
 run = """
