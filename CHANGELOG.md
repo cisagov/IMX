@@ -1,3 +1,9 @@
+## [4.20.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.3...v4.20.4) (2026-09-17)
+
+### Bug Fixes
+
+* for importing stix vt from integrations ([b79ae97](https://git.va.th.ten/eos/cde/tie/imx/commit/b79ae976ab8eaba31a340672ce799c22e7b9d2eb))
+
 ## [4.20.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.2...v4.20.3) (2026-09-17)
 
 ### Bug Fixes
