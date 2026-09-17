@@ -1,3 +1,7 @@
+.btn-custom-width {
+    width: 150px;
+}
+
 .query-action-bar {
     position: fixed;
     bottom: 0;
