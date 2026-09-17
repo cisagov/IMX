@@ -1,3 +1,9 @@
+## [4.20.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.2...v4.20.3) (2026-09-17)
+
+### Bug Fixes
+
+* rename test_connection to pass jest test suite ([db6ae94](https://git.va.th.ten/eos/cde/tie/imx/commit/db6ae94a9edc5704ebca1e7886353328336fcfcd))
+
 ## [4.20.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.1...v4.20.2) (2026-09-16)
 
 ### Bug Fixes
