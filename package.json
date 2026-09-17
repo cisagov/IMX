@@ -11,7 +11,8 @@
   "devDependencies": {
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.1",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "jest-html-reporter": "^4.4.2"
   },
   "dependencies": {
     "node.js": "^0.0.1-security",
