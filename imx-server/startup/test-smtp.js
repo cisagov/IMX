@@ -1,4 +1,4 @@
-const smtpTest = require('../mailer/test')
+const smtpTest = require('../mailer/test-connection')
 const logger = require(`../logging/${process.env.LOGGER}`)
 
 const main = async function(){

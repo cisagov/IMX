@@ -1,3 +1,22 @@
+## [4.20.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.2...v4.20.3) (2026-09-17)
+
+### Bug Fixes
+
+* rename test_connection to pass jest test suite ([db6ae94](https://git.va.th.ten/eos/cde/tie/imx/commit/db6ae94a9edc5704ebca1e7886353328336fcfcd))
+
+## [4.20.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.1...v4.20.2) (2026-09-16)
+
+### Bug Fixes
+
+* mutli stage build for imx py ([228ceba](https://git.va.th.ten/eos/cde/tie/imx/commit/228ceba3894a4811ad9babc6b03a4106c5cd367c))
+* npm audit fix imx server ([b2f681a](https://git.va.th.ten/eos/cde/tie/imx/commit/b2f681a3af5c3db9ff26809334ad25422ace2c27))
+
+## [4.20.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.0...v4.20.1) (2026-09-15)
+
+### Bug Fixes
+
+* use collection name from TAXII server instead of env file ([293aac8](https://git.va.th.ten/eos/cde/tie/imx/commit/293aac8a9aef8b473be3694bebf664633aff7a5a))
+
 ## [4.20.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.19.11...v4.20.0) (2026-09-14)
 
 ### Features
