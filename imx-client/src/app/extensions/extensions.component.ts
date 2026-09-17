@@ -9,7 +9,7 @@ import { NTFSExtension } from './predefined/ntfs-ext';
 import { WindowsPEBinaryExtension } from './predefined/windows-pebinary-ext';
 import { HTTPRequestExtension } from './predefined/http-request-ext';
 import { ICMPExtension } from './predefined/icmp-ext';
-import { faTrash, faEdit, faPlus, faBan, faPlusCircle, faSave, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faPlus, faBan, faPlusCircle, faSave, faArrowLeft, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { SocketExtension } from './predefined/socket-ext';
 import { TCPExtension } from './predefined/tcp-ext';
 import { WindowsProcessExtension } from './predefined/windows-process-ext';
@@ -31,6 +31,9 @@ export class ExtensionsComponent {
     faTrash = faTrash;
     faEdit = faEdit;
     faPlus = faPlus;
+    faInfoCircle = faInfoCircle;
+
+    private openJson: Set<string> = new Set();
     faBan = faBan;
     faPlusCircle = faPlusCircle;
     faSave = faSave;
@@ -95,14 +98,27 @@ export class ExtensionsComponent {
         this.tooltip = 'Extend existing STIX objects or to create entirely new STIX objects in a standardized way.';
     }
 
+    toggleJson(key: string): void {
+        if (this.openJson.has(key)) {
+            this.openJson.delete(key);
+        } else {
+            this.openJson.add(key);
+        }
+    }
+
+    isJsonOpen(key: string): boolean {
+        return this.openJson.has(key);
+    }
+
     openDialog(modal) {
         this.resetExtension();
         const dialogRef = this.extensionsDialog.open(ExtensionsDialogComponent, {
             data: this.currentExtension,
-            minHeight: '200px',
-            width: `${window.innerWidth / 1.5}px`,
+            panelClass: 'imx-modal',
+            maxHeight: '85vh',
+            width: '860px',
             position: {
-                top: '230px',
+                top: '5rem',
             },
         });
 

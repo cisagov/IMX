@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faTrash, faPlus, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus, faBan, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { STRING_ARRAY_VALIDATORS } from '../dynamic-form-component/string-array-validators';
 import { StixService } from 'src/app/stix-service.service';
 import { StringArrayDialogComponent } from './string-array-dialog/string-array-dialog.component';
@@ -20,6 +20,7 @@ export class StringArrayComponent implements OnInit {
     faTrash = faTrash;
     faPlus = faPlus;
     faBan = faBan;
+    faInfoCircle = faInfoCircle;
 
     currentStringValidator?: any;
     currentString: string = '';
@@ -31,6 +32,10 @@ export class StringArrayComponent implements OnInit {
     newString: string = '';
 
     isObjectMarkingRefUpdated: boolean = false;
+
+    get displayedObjectMarkingRefs(): string[] {
+        return this.isObjectMarkingRefUpdated ? this.stixService.objectMarkingReferencesTemp : this.stixService.objectMarkingReferences;
+    }
 
     constructor(
         public stixService: StixService,
@@ -69,7 +74,7 @@ export class StringArrayComponent implements OnInit {
     openDialog() {
         const dialogRef = this.stringArrayDialog.open(StringArrayDialogComponent, {
             data: { validator: this.currentStringValidator, refs: [...this.stixService.objectMarkingReferences] },
-            minHeight: '500px',
+            panelClass: 'imx-modal',
             maxHeight: '90vh',
             width: '800px',
             maxWidth: '95vw',

@@ -1,6 +1,6 @@
-ARG REGISTRY=docker.io/library
+ARG REGISTRY=docker.io
 
-FROM $REGISTRY/alpine:3.23.4
+FROM $REGISTRY/library/alpine:3.23.4
 
 RUN apk update
 RUN apk upgrade

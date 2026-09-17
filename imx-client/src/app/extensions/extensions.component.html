@@ -1,100 +1,108 @@
-<div
-    class="d-flex align-items-center justify-content-between"
-    [ngClass]="{ 'col-12 mt-1': stixService.guidedUI, 'col-12 pe-5': !stixService.guidedUI }"
->
-    <div class="col-4">
-        <p class="stix-title input-header" [title]="tooltip">Extensions</p>
-    </div>
-    <div class="ms-3" [ngClass]="{ 'pe-0': !stixService.guidedUI }">
-        <div class="float-end">
-            @if (!isAddingExtensions) {
-                <button id="extensions_add" class="btn btn-fa-sm btn-color mt-1" type="button" (click)="openDialog(extensionBuilder)">
-                    <fa-icon [icon]="faPlus"></fa-icon>
-                </button>
-            }
-        </div>
-    </div>
+<div class="imx-field-head">
+    <span class="imx-field-label">
+        Extensions
+        <button type="button" class="imx-info" aria-label="About Extensions" container="body" tooltipClass="imx-tooltip" [ngbTooltip]="tooltip">
+            <fa-icon [icon]="faInfoCircle"></fa-icon>
+        </button>
+    </span>
+    @if (!isAddingExtensions) {
+        <button id="extensions_add" class="btn btn-sm btn-color" type="button" (click)="openDialog(extensionBuilder)">
+            <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
+            Add Extension
+        </button>
+    }
 </div>
 
-@if (!isAddingExtensions && this.stixService.extensions.length > 0) {
-    <div class="form-group mt-2" [ngClass]="{ 'pe-5': !stixService.guidedUI }">
-        <accordion>
+@if (!isAddingExtensions) {
+    @if (this.stixService.extensions.length > 0) {
+        <div class="list-group list-group-flush imx-item-list">
             @for (extension of this.stixService.extensions; track extension; let i = $index) {
-                <accordion-group
-                    [ngStyle]="{ 'display': shouldHideExtension(extension) ? 'none' : 'block' }"
-                    tabindex="0"
-                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
-                    [isDisabled]="propType(extension) == 'toplevel'"
-                >
-                    <div id="extensions_list{{ i }}" class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
-                        <div class="col d-flex justify-content-between align-items-center">
-                            <div class="btn btn-link btn-deco">
-                                {{ getHeading(extension) }}
-                            </div>
-                            @if (propType(extension) != 'toplevel') {
-                                @if (notObj(extension)) {
+                @if (!shouldHideExtension(extension)) {
+                    <div class="list-group-item">
+                        <div class="imx-item" id="extensions_list{{ i }}">
+                            <span class="imx-item-text">
+                                <span class="imx-item-primary">{{ getHeading(extension) }}</span>
+                            </span>
+                            <span class="imx-item-actions">
+                                @if (propType(extension) == 'prop' || propType(extension) == 'pre') {
                                     <button
+                                        class="btn btn-fa-sm btn-color"
                                         type="button"
-                                        class="btn btn-fa-sm btn-color me-2 list-trash"
-                                        (click)="setEditIndex(i); editExtensions(extension, extensionBuilder)"
-                                        id="extensions_list{{ i }}_edit"
+                                        (click)="toggleJson('ext-' + i)"
+                                        aria-label="Toggle extension details"
                                     >
-                                        <fa-icon [icon]="faEdit"></fa-icon>
+                                        {{ '{ }' }}
                                     </button>
                                 }
-                            }
-                            <button
-                                class="btn btn-fa-sm btn-color list-trash"
-                                type="button"
-                                id="extensions_list{{ i }}_delete"
-                                (click)="deleteExtensions(extension)"
-                            >
-                                <fa-icon [icon]="faTrash"></fa-icon>
-                            </button>
+                                @if (propType(extension) != 'toplevel') {
+                                    @if (notObj(extension)) {
+                                        <button
+                                            type="button"
+                                            class="btn btn-fa-sm btn-color"
+                                            (click)="setEditIndex(i); editExtensions(extension, extensionBuilder)"
+                                            id="extensions_list{{ i }}_edit"
+                                        >
+                                            <fa-icon [icon]="faEdit"></fa-icon>
+                                        </button>
+                                    }
+                                }
+                                <button
+                                    class="btn btn-fa-sm btn-color"
+                                    type="button"
+                                    id="extensions_list{{ i }}_delete"
+                                    (click)="deleteExtensions(extension)"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </span>
                         </div>
-                    </div>
 
-                    @if (propType(extension) == 'prop') {
-                        <div class="extension-properties-container">
-                            @for (prop of getProps(extension); track prop) {
-                                <div class="row mb-1">
-                                    <div class="col-12">
-                                        <div class="d-flex">
-                                            @if (!isObject(prop[1])) {
-                                                @if (('' + prop[1]).length < 200) {
-                                                    <div class="extension-property" id="{{ prop[0] }}">
-                                                        <span class="extension-property-label">{{ prop[0] }}:</span>
-                                                        <span class="extension-property-value">{{ prop[1] }}</span>
-                                                    </div>
+                        @if (propType(extension) == 'prop') {
+                            <div class="extension-properties-container" [hidden]="!isJsonOpen('ext-' + i)">
+                                @for (prop of getProps(extension); track prop) {
+                                    <div class="row mb-1">
+                                        <div class="col-12">
+                                            <div class="d-flex">
+                                                @if (!isObject(prop[1])) {
+                                                    @if (('' + prop[1]).length < 200) {
+                                                        <div class="extension-property" id="{{ prop[0] }}">
+                                                            <span class="extension-property-label">{{ prop[0] }}:</span>
+                                                            <span class="extension-property-value">{{ prop[1] }}</span>
+                                                        </div>
+                                                    } @else {
+                                                        <div class="extension-property">
+                                                            <div class="extension-property-label">{{ prop[0] }}:</div>
+                                                            <div class="extension-property-value mt-1">{{ prop[1] }}</div>
+                                                        </div>
+                                                    }
                                                 } @else {
-                                                    <div class="extension-property">
+                                                    <div class="extension-object-property">
                                                         <div class="extension-property-label">{{ prop[0] }}:</div>
-                                                        <div class="extension-property-value mt-1">{{ prop[1] }}</div>
+                                                        <div class="extension-object-content">{{ prop[1] | json }}</div>
                                                     </div>
                                                 }
-                                            } @else {
-                                                <div class="extension-object-property">
-                                                    <div class="extension-property-label">{{ prop[0] }}:</div>
-                                                    <div class="extension-object-content">{{ prop[1] | json }}</div>
-                                                </div>
-                                            }
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    @if (propType(extension) == 'pre') {
-                        <div *ngFor="let item of extension | keyvalue">
-                            <div class="inner" *ngFor="let inner of item.value | keyvalue">
-                                <p>{{ formatExtensionKey(inner.key) }}: {{ inner.value }}</p>
+                                }
                             </div>
-                        </div>
-                    }
-                </accordion-group>
+                        }
+                        @if (propType(extension) == 'pre') {
+                            <div [hidden]="!isJsonOpen('ext-' + i)">
+                                <div *ngFor="let item of extension | keyvalue">
+                                    <div class="inner" *ngFor="let inner of item.value | keyvalue">
+                                        <p>{{ formatExtensionKey(inner.key) }}: {{ inner.value }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
             }
-        </accordion>
-    </div>
+        </div>
+    } @else {
+        <div class="imx-empty">No extensions added yet</div>
+    }
 }
 
 @if (isAddingExtensions) {
