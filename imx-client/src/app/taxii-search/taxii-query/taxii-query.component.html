@@ -147,8 +147,7 @@
                     <div>
                         <div class="d-flex align-items-center mb-1">
                             <button
-                                 class="btn btn-custom-width btn-outline-primary tertiary"
-
+                                class="btn btn-custom-width btn-outline-primary tertiary"
                                 (click)="getObjects(); !(isLoadingStix = isLoadingStix); exportObjects = []"
                                 [disabled]="isQueryDisabled()"
                             >
@@ -269,11 +268,12 @@
                         <tbody>
                             @for (obj of objectsQueryResults; track obj.id; let i = $index) {
                                 <tr class="cursor-pointer stix-object" (click)="openJson(obj)">
-                                    <td class="table-hover">
+                                    <td class="table-hover" (click)="$event.stopPropagation()">
                                         <input
                                             type="checkbox"
                                             class="select-item checkbox"
                                             [(ngModel)]="objectsQueryResults[i].checked"
+                                            (click)="$event.stopPropagation()"
                                             (change)="updateSelectedObjects(obj.id, obj.modified, obj.checked)"
                                         />
                                     </td>
