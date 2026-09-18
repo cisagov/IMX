@@ -1,3 +1,9 @@
+## [4.20.5](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.4...v4.20.5) (2026-09-17)
+
+### Bug Fixes
+
+* remove distribution from misp conversion until MISP fixes the conversion library ([20fef0a](https://git.va.th.ten/eos/cde/tie/imx/commit/20fef0a103b792b74e0a36514068cb59c4e7adf9))
+
 ## [4.20.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.3...v4.20.4) (2026-09-17)
 
 ### Bug Fixes
