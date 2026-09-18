@@ -1,3 +1,9 @@
+## 4.20.5 (2026-09-17)
+
+### Bug Fixes
+
+* remove distribution from misp conversion until MISP fixes the conversion library 20fef0a
+
 ## 4.20.4 (2026-09-17)
 
 ### Bug Fixes
