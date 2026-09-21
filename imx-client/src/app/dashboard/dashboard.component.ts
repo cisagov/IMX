@@ -269,12 +269,12 @@ export class DashboardComponent {
         if (this.envService.env.keycloak.enabled) {
             this.keycloak.getUserRoles().forEach((role) => {
                 if (ignoreRole.includes(role)) return;
-                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(role);
+                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(`${role} (group)`);
             });
         } else if (this.envService.env.oidc.enabled) {
             this.oidc.getRoles().forEach((role) => {
                 if (ignoreRole.includes(role)) return;
-                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(role);
+                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(`${role} (group)`);
             });
         }
     }
