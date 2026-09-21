@@ -24,6 +24,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
 import { MispSubmissionComponent } from '../misp-submission/misp-submission.component';
+import { KeycloakService } from '../auth/keycloak-service/keycloak.service';
+import { OidcService } from '../auth/oidc-service/oidc.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -167,7 +169,9 @@ export class DashboardComponent {
         private loggingService: LoggingService,
         private announcementService: AnnouncementService,
         public modalService: NgbModal,
-        private router: Router
+        private router: Router,
+        private keycloak: KeycloakService,
+        private oidc: OidcService
     ) {}
 
     async ngOnInit() {
@@ -259,6 +263,16 @@ export class DashboardComponent {
 
         for (let group in this.envService.groupInfo) {
             this.selectionOptions.push(`${group} (group)`);
+        }
+
+        if (this.envService.env.keycloak.enabled) {
+            this.keycloak.getUserRoles().forEach((role) => {
+                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(role);
+            });
+        } else if (this.envService.env.oidc.enabled) {
+            this.oidc.getRoles().forEach((role) => {
+                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(role);
+            });
         }
     }
 
