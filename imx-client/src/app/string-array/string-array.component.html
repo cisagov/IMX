@@ -93,9 +93,21 @@
                         <span class="badge" id="object_marking_refs{{ i }}" [class]="getDisplayStyle(getDisplayName(currentString))">{{
                             acsView(getDisplayName(currentString))
                         }}</span>
-                        <span class="imx-item-text"></span>
-                        @if (!this.stixService.revoked && !this.stixService.revocation) {
-                            <span class="imx-item-actions">
+                        <span class="imx-item-text">
+                            <span class="imx-item-secondary">{{ currentString }}</span>
+                        </span>
+                        <span class="imx-item-actions">
+                            <button
+                                type="button"
+                                class="btn btn-fa-sm btn-color"
+                                id="object_marking_refs{{ i }}_view"
+                                aria-label="Toggle marking details"
+                                [disabled]="isDetailLoading(currentString)"
+                                (click)="toggleDetail(currentString)"
+                            >
+                                <fa-icon [icon]="faEye"></fa-icon>
+                            </button>
+                            @if (!this.stixService.revoked && !this.stixService.revocation) {
                                 <button
                                     type="button"
                                     class="btn btn-fa-sm btn-color"
@@ -104,9 +116,30 @@
                                 >
                                     <fa-icon [icon]="faTrash"></fa-icon>
                                 </button>
-                            </span>
-                        }
+                            }
+                        </span>
                     </div>
+                    @if (isDetailOpen(currentString)) {
+                        @if (isDetailLoading(currentString)) {
+                            <div class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
+                                <div class="imx-item-detail-note">
+                                    <span class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></span>
+                                    Looking up marking definition&hellip;
+                                </div>
+                            </div>
+                        } @else if (getDetail(currentString); as detail) {
+                            <dl class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
+                                @for (row of detail; track row.label) {
+                                    <dt class="imx-item-detail-label">{{ row.label }}</dt>
+                                    <dd class="imx-item-detail-value">{{ row.value }}</dd>
+                                }
+                            </dl>
+                        } @else {
+                            <div class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
+                                <div class="imx-item-detail-note">Marking definition not found on the TAXII server.</div>
+                            </div>
+                        }
+                    }
                 </div>
             }
         </div>
