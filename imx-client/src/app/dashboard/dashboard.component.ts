@@ -265,12 +265,15 @@ export class DashboardComponent {
             this.selectionOptions.push(`${group} (group)`);
         }
 
+        const ignoreRole = ['offline_access', 'imx-user', 'imx-admin', 'uma_authorization', 'default-roles-tie'];
         if (this.envService.env.keycloak.enabled) {
             this.keycloak.getUserRoles().forEach((role) => {
+                if (ignoreRole.includes(role)) return;
                 if (!this.selectionOptions.includes(role)) this.selectionOptions.push(role);
             });
         } else if (this.envService.env.oidc.enabled) {
             this.oidc.getRoles().forEach((role) => {
+                if (ignoreRole.includes(role)) return;
                 if (!this.selectionOptions.includes(role)) this.selectionOptions.push(role);
             });
         }
