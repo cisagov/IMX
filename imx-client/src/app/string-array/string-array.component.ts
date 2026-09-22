@@ -1,5 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faTrash, faPlus, faBan, faInfoCircle, faEye } from '@fortawesome/free-solid-svg-icons';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+import { faTrash, faPlus, faBan, faInfoCircle, faEye, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { STRING_ARRAY_VALIDATORS } from '../dynamic-form-component/string-array-validators';
 import { StixService } from 'src/app/stix-service.service';
 import { StringArrayDialogComponent } from './string-array-dialog/string-array-dialog.component';
@@ -22,7 +24,7 @@ interface MarkingDetail {
     styleUrls: ['./string-array.component.css'],
     standalone: false,
 })
-export class StringArrayComponent implements OnInit {
+export class StringArrayComponent implements OnInit, OnDestroy {
     @Input() key!: string;
     @Output() stringArrayOutput = new EventEmitter<string[]>();
 
@@ -31,6 +33,7 @@ export class StringArrayComponent implements OnInit {
     faBan = faBan;
     faInfoCircle = faInfoCircle;
     faEye = faEye;
+    faSearch = faSearch;
 
     currentStringValidator?: any;
     currentString: string = '';
@@ -51,6 +54,37 @@ export class StringArrayComponent implements OnInit {
         return this.isObjectMarkingRefUpdated ? this.stixService.objectMarkingReferencesTemp : this.stixService.objectMarkingReferences;
     }
 
+    listSearch: string = '';
+    listFilter: string = '';
+    private listSearch$ = new Subject<string>();
+    private ngUnsubscribe = new Subject<void>();
+    readonly listSearchThreshold = 15;
+
+    get labelList(): string[] {
+        return this.stixService.stringArrays.get(this.key) ?? [];
+    }
+
+    get filteredLabels(): string[] {
+        return this.matchesSearch(this.labelList, (s) => s);
+    }
+
+    get filteredMarkingRefs(): string[] {
+        return this.matchesSearch(this.displayedObjectMarkingRefs, (s) => `${s} ${this.getDisplayName(s)}`);
+    }
+
+    onListSearchChange(term: string): void {
+        this.listSearch$.next(term);
+    }
+
+    showListSearch(count: number): boolean {
+        return count > this.listSearchThreshold || !!this.listSearch || !!this.listFilter;
+    }
+
+    private matchesSearch(items: string[], text: (s: string) => string): string[] {
+        const term = this.listFilter.trim().toLowerCase();
+        return term ? items.filter((s) => text(s).toLowerCase().includes(term)) : items;
+    }
+
     constructor(
         public stixService: StixService,
         public stringArrayDialog: MatDialog
@@ -59,6 +93,8 @@ export class StringArrayComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.listSearch$.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe((term) => (this.listFilter = term));
+
         let found = false;
         for (let i = 0; i < STRING_ARRAY_VALIDATORS.length; i++) {
             if (this.key === STRING_ARRAY_VALIDATORS[i].key) {
@@ -83,6 +119,11 @@ export class StringArrayComponent implements OnInit {
                 break;
             }
         }
+    }
+
+    ngOnDestroy(): void {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
     }
 
     openDialog() {

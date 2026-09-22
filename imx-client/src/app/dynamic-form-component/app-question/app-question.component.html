@@ -1838,39 +1838,7 @@
                             <div class="invalid-feedback" *ngIf="isValid && !arrayIsValid()">{{ trimLabel(question.label) }} is required</div>
                         </div>
                     </div>
-                    <div *ngIf="stixService.stringArrays.get(question.key) && stixService.stringArrays.get(question.key)!.length > 0" class="row">
-                        <div class="col">
-                            <accordion>
-                                <accordion-group
-                                    *ngFor="let currentString of stixService.stringArrays.get(question.key); let i = index"
-                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
-                                    [isDisabled]="true"
-                                >
-                                    <div
-                                        id="{{ question.key }}_list{{ i }}"
-                                        class="row justify-content-between d-flex pt-0 pb-0"
-                                        accordion-heading
-                                        type="button"
-                                    >
-                                        <div class="col d-flex justify-content-between align-items-center">
-                                            <div class="btn btn-link">
-                                                {{ getObjDisplayName(getObjectById(currentString)) }}
-                                            </div>
-                                            <button
-                                                class="btn btn-fa-sm btn-color list-trash"
-                                                type="button"
-                                                [disabled]="question.readonly"
-                                                (click)="deleteString(currentString, question.key)"
-                                                id="{{ question.key }}_list{{ i }}_delete"
-                                            >
-                                                <fa-icon [icon]="faTrash"></fa-icon>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </accordion-group>
-                            </accordion>
-                        </div>
-                    </div>
+                    <ng-container *ngTemplateOutlet="refList"></ng-container>
                 </div>
             </div>
         </div>
@@ -3199,33 +3167,7 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="stixService.stringArrays.get(question.key) && stixService.stringArrays.get(question.key)!.length > 0" class="row">
-                        <div class="col">
-                            <accordion>
-                                <accordion-group
-                                    *ngFor="let currentString of stixService.stringArrays.get(question.key)"
-                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
-                                    [isDisabled]="true"
-                                >
-                                    <div class="row justify-content-between d-flex pt-0 pb-0" accordion-heading type="button">
-                                        <div class="col d-flex justify-content-between align-items-center">
-                                            <div class="btn btn-link">
-                                                {{ getObjDisplayName(getObjectById(currentString)) }}
-                                            </div>
-                                            <button
-                                                class="btn btn-fa-sm btn-color list-trash"
-                                                type="button"
-                                                [disabled]="question.readonly"
-                                                (click)="deleteString(currentString, question.key)"
-                                            >
-                                                <fa-icon [icon]="faTrash"></fa-icon>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </accordion-group>
-                            </accordion>
-                        </div>
-                    </div>
+                    <ng-container *ngTemplateOutlet="refList"></ng-container>
                 </div>
             </div>
         </div>
@@ -4398,39 +4340,7 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="stixService.stringArrays.get(question.key) && stixService.stringArrays.get(question.key)!.length > 0" class="row">
-                        <div class="col">
-                            <accordion>
-                                <accordion-group
-                                    *ngFor="let currentString of stixService.stringArrays.get(question.key); let i = index"
-                                    [panelClass]="'accordion-panel-class no-btn-decoration mt-2'"
-                                    [isDisabled]="true"
-                                >
-                                    <div
-                                        id="{{ question.key }}_list{{ i }}"
-                                        class="row justify-content-between d-flex pt-0 pb-0"
-                                        accordion-heading
-                                        type="button"
-                                    >
-                                        <div class="col d-flex justify-content-between align-items-center">
-                                            <div class="btn btn-link">
-                                                {{ getObjDisplayName(getObjectById(currentString)) }}
-                                            </div>
-                                            <button
-                                                id="{{ question.key }}_list{{ i }}_delete"
-                                                class="btn btn-fa-sm btn-color list-trash"
-                                                type="button"
-                                                [disabled]="question.readonly"
-                                                (click)="deleteString(currentString, question.key)"
-                                            >
-                                                <fa-icon [icon]="faTrash"></fa-icon>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </accordion-group>
-                            </accordion>
-                        </div>
-                    </div>
+                    <ng-container *ngTemplateOutlet="refList"></ng-container>
                 </div>
             </div>
         </div>
@@ -5312,6 +5222,59 @@
         <hr *ngSwitchCase="'separator'" class="mt-2 mb-2" />
     </div>
 </div>
+
+<!-- Shared scrollable/searchable list for the reference array control types -->
+<ng-template #refList>
+    @if (refCount(question.key) > 0) {
+        <div class="row">
+            <div class="col">
+                @if (filteredRefs(question.key); as rows) {
+                    @if (showListSearch(refCount(question.key))) {
+                        <div class="imx-list-search input-group input-group-sm mt-2">
+                            <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
+                            <input
+                                class="form-control"
+                                id="{{ question.key }}_search"
+                                placeholder="Search {{ trimLabel(question.label) }}"
+                                [(ngModel)]="listSearch"
+                                (ngModelChange)="onListSearchChange($event)"
+                                [ngModelOptions]="{ standalone: true }"
+                                type="text"
+                            />
+                            <span class="input-group-text imx-list-count">{{ rows.length }} of {{ refCount(question.key) }}</span>
+                        </div>
+                    }
+                    @if (rows.length > 0) {
+                        <div class="list-group list-group-flush imx-item-list imx-item-list--scroll mt-2">
+                            @for (currentString of rows; track currentString; let i = $index) {
+                                <div class="list-group-item">
+                                    <div class="imx-item" id="{{ question.key }}_list{{ i }}">
+                                        <span class="imx-item-text">
+                                            <span class="imx-item-primary">{{ refLabel(currentString) }}</span>
+                                        </span>
+                                        <span class="imx-item-actions">
+                                            <button
+                                                class="btn btn-fa-sm btn-color"
+                                                type="button"
+                                                id="{{ question.key }}_list{{ i }}_delete"
+                                                [disabled]="question.readonly"
+                                                (click)="deleteString(currentString, question.key)"
+                                            >
+                                                <fa-icon [icon]="faTrash"></fa-icon>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    } @else {
+                        <div class="imx-empty mt-2">No references match "{{ listFilter }}"</div>
+                    }
+                }
+            </div>
+        </div>
+    }
+</ng-template>
 
 <ng-template #confidenceTooltip let-modal>
     <div class="tooltip-wrapper">

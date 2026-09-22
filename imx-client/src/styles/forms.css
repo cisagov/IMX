@@ -282,6 +282,21 @@
     letter-spacing: 0.03em;
 }
 
+.imx-item-list--scroll {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.imx-list-search {
+    margin-bottom: 0.5rem;
+}
+
+.imx-list-count {
+    color: var(--imx-text-muted);
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
 .imx-item-json {
     margin: 0.5rem 0 0;
     padding: 0.5rem 0.75rem;

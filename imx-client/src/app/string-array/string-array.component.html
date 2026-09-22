@@ -57,28 +57,46 @@
 }
 <!--Labels-->
 @if (key === 'labels') {
-    @if (stixService.stringArrays.get(key) && stixService.stringArrays.get(key)!.length > 0) {
-        <div class="list-group list-group-flush imx-item-list mt-2">
-            @for (currentString of stixService.stringArrays.get(key); track currentString; let i = $index) {
-                <div class="list-group-item">
-                    <div class="imx-item" id="label_list{{ i }}">
-                        <span class="imx-item-text">
-                            <span class="imx-item-primary">{{ currentString }}</span>
-                        </span>
-                        <span class="imx-item-actions">
-                            <button
-                                type="button"
-                                class="btn btn-fa-sm btn-color"
-                                id="label{{ i }}_delete"
-                                (click)="deleteString(currentString, key)"
-                            >
-                                <fa-icon [icon]="faTrash"></fa-icon>
-                            </button>
-                        </span>
+    @if (labelList.length > 0) {
+        @if (showListSearch(labelList.length)) {
+            <div class="imx-list-search input-group input-group-sm mt-2">
+                <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
+                <input
+                    class="form-control"
+                    id="label_search"
+                    placeholder="Search labels"
+                    [(ngModel)]="listSearch"
+                    (ngModelChange)="onListSearchChange($event)"
+                    type="text"
+                />
+                <span class="input-group-text imx-list-count">{{ filteredLabels.length }} of {{ labelList.length }}</span>
+            </div>
+        }
+        @if (filteredLabels.length > 0) {
+            <div class="list-group list-group-flush imx-item-list imx-item-list--scroll mt-2">
+                @for (currentString of filteredLabels; track currentString; let i = $index) {
+                    <div class="list-group-item">
+                        <div class="imx-item" id="label_list{{ i }}">
+                            <span class="imx-item-text">
+                                <span class="imx-item-primary">{{ currentString }}</span>
+                            </span>
+                            <span class="imx-item-actions">
+                                <button
+                                    type="button"
+                                    class="btn btn-fa-sm btn-color"
+                                    id="label{{ i }}_delete"
+                                    (click)="deleteString(currentString, key)"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </button>
+                            </span>
+                        </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        } @else {
+            <div class="imx-empty mt-2">No labels match "{{ listFilter }}"</div>
+        }
     } @else {
         <div class="imx-empty mt-2">No labels added yet</div>
     }
@@ -86,63 +104,81 @@
 <!-- Object Marking References -->
 @if (!isAddingElement && key == 'object_marking_refs') {
     @if (displayedObjectMarkingRefs.length > 0) {
-        <div class="list-group list-group-flush imx-item-list mt-2" id="questions">
-            @for (currentString of displayedObjectMarkingRefs; track currentString; let i = $index) {
-                <div class="list-group-item">
-                    <div class="imx-item">
-                        <span class="badge" id="object_marking_refs{{ i }}" [class]="getDisplayStyle(getDisplayName(currentString))">{{
-                            acsView(getDisplayName(currentString))
-                        }}</span>
-                        <span class="imx-item-text">
-                            <span class="imx-item-secondary">{{ currentString }}</span>
-                        </span>
-                        <span class="imx-item-actions">
-                            <button
-                                type="button"
-                                class="btn btn-fa-sm btn-color"
-                                id="object_marking_refs{{ i }}_view"
-                                aria-label="Toggle marking details"
-                                [disabled]="isDetailLoading(currentString)"
-                                (click)="toggleDetail(currentString)"
-                            >
-                                <fa-icon [icon]="faEye"></fa-icon>
-                            </button>
-                            @if (!this.stixService.revoked && !this.stixService.revocation) {
+        @if (showListSearch(displayedObjectMarkingRefs.length)) {
+            <div class="imx-list-search input-group input-group-sm mt-2">
+                <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
+                <input
+                    class="form-control"
+                    id="object_marking_refs_search"
+                    placeholder="Search marking references"
+                    [(ngModel)]="listSearch"
+                    (ngModelChange)="onListSearchChange($event)"
+                    type="text"
+                />
+                <span class="input-group-text imx-list-count">{{ filteredMarkingRefs.length }} of {{ displayedObjectMarkingRefs.length }}</span>
+            </div>
+        }
+        @if (filteredMarkingRefs.length > 0) {
+            <div class="list-group list-group-flush imx-item-list imx-item-list--scroll mt-2" id="questions">
+                @for (currentString of filteredMarkingRefs; track currentString; let i = $index) {
+                    <div class="list-group-item">
+                        <div class="imx-item">
+                            <span class="badge" id="object_marking_refs{{ i }}" [class]="getDisplayStyle(getDisplayName(currentString))">{{
+                                acsView(getDisplayName(currentString))
+                            }}</span>
+                            <span class="imx-item-text">
+                                <span class="imx-item-secondary">{{ currentString }}</span>
+                            </span>
+                            <span class="imx-item-actions">
                                 <button
                                     type="button"
                                     class="btn btn-fa-sm btn-color"
-                                    id="object_marking_refs{{ i }}_delete"
-                                    (click)="deleteOmr(currentString)"
+                                    id="object_marking_refs{{ i }}_view"
+                                    aria-label="Toggle marking details"
+                                    [disabled]="isDetailLoading(currentString)"
+                                    (click)="toggleDetail(currentString)"
                                 >
-                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                    <fa-icon [icon]="faEye"></fa-icon>
                                 </button>
-                            }
-                        </span>
-                    </div>
-                    @if (isDetailOpen(currentString)) {
-                        @if (isDetailLoading(currentString)) {
-                            <div class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
-                                <div class="imx-item-detail-note">
-                                    <span class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></span>
-                                    Looking up marking definition&hellip;
-                                </div>
-                            </div>
-                        } @else if (getDetail(currentString); as detail) {
-                            <dl class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
-                                @for (row of detail; track row.label) {
-                                    <dt class="imx-item-detail-label">{{ row.label }}</dt>
-                                    <dd class="imx-item-detail-value">{{ row.value }}</dd>
+                                @if (!this.stixService.revoked && !this.stixService.revocation) {
+                                    <button
+                                        type="button"
+                                        class="btn btn-fa-sm btn-color"
+                                        id="object_marking_refs{{ i }}_delete"
+                                        (click)="deleteOmr(currentString)"
+                                    >
+                                        <fa-icon [icon]="faTrash"></fa-icon>
+                                    </button>
                                 }
-                            </dl>
-                        } @else {
-                            <div class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
-                                <div class="imx-item-detail-note">Marking definition not found on the TAXII server.</div>
-                            </div>
+                            </span>
+                        </div>
+                        @if (isDetailOpen(currentString)) {
+                            @if (isDetailLoading(currentString)) {
+                                <div class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
+                                    <div class="imx-item-detail-note">
+                                        <span class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></span>
+                                        Looking up marking definition&hellip;
+                                    </div>
+                                </div>
+                            } @else if (getDetail(currentString); as detail) {
+                                <dl class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
+                                    @for (row of detail; track row.label) {
+                                        <dt class="imx-item-detail-label">{{ row.label }}</dt>
+                                        <dd class="imx-item-detail-value">{{ row.value }}</dd>
+                                    }
+                                </dl>
+                            } @else {
+                                <div class="imx-item-detail" id="object_marking_refs{{ i }}_detail">
+                                    <div class="imx-item-detail-note">Marking definition not found on the TAXII server.</div>
+                                </div>
+                            }
                         }
-                    }
-                </div>
-            }
-        </div>
+                    </div>
+                }
+            </div>
+        } @else {
+            <div class="imx-empty mt-2">No marking references match "{{ listFilter }}"</div>
+        }
     } @else {
         <div class="imx-empty mt-2">No object marking references added yet</div>
     }
