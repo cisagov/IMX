@@ -1,3 +1,9 @@
+## [4.20.6](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.5...v4.20.6) (2026-09-22)
+
+### Bug Fixes
+
+* allow guided to reference objects from the bundle ([5a451be](https://git.va.th.ten/eos/cde/tie/imx/commit/5a451be2a952312d35bfa0c5ce32726c35f0390f))
+
 ## [4.20.5](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.4...v4.20.5) (2026-09-17)
 
 ### Bug Fixes
