@@ -333,7 +333,21 @@ export class HowTtpComponent implements OnInit, OnDestroy {
     }
 
     getDisplay(obj) {
-        return obj.display_name ? obj.display_name : obj.value;
+        if(obj.type === 'network-traffic') {
+            const src = obj.src_ref ? this.getNetworkRefLabel(obj.src_ref) : null;
+            const dst = obj.dst_ref ? this.getNetworkRefLabel(obj.dst_ref) : null;
+                if(src && dst) {
+                    return `${src} to ${dst}`;
+                } else if(src) {
+                    return src;
+                } else if (dst) {
+                    return dst;
+                } else {
+                    return obj.id;
+                }
+        }
+
+        return obj.display_name || obj.name || obj.value || obj.id;
     }
 
     getScos() {
@@ -400,12 +414,55 @@ export class HowTtpComponent implements OnInit, OnDestroy {
 
     getScoDisplayName(id: string): string {
         const match = this.getScos().find((s) => s.id === id);
-        return match ? match.type + ': ' + match.display_name : id;
+
+        if(match){
+            if(match.type === 'network-traffic') {
+                const src = match.src_ref ? this.getNetworkRefLabel(match.src_ref) : null;
+                const dst = match.dst_ref ? this.getNetworkRefLabel(match.dst_ref) : null;
+                    if(src && dst) {
+                        return `${match.type}: ${src} to ${dst}`;
+                    } else if(src) {
+                        return `${match.type}: ${src}`;
+                    } else if (dst) {
+                        return `${match.type}: ${dst}`;
+                    } else {
+                        return `${match.type}: ${match.id}`;
+                    }
+            }
+            return `${match.type}: ${match.display_name || match.name || match.value || match.id}`;
+        }
+        return id;
     }
 
     getIndicatorDisplayName(id: string): string {
         const indicators = this.getIndicators() || [];
         const match = indicators.find((i) => i.id === id);
         return match ? match.pattern : id;
+    }
+
+    getNetworkRefLabel(id: string): string {
+
+        const cart = this.guidedService.cart?.['how-observable'];
+        const bundle = this.stixService.bundle.objects;
+
+        if (!cart && !bundle) {
+            return id;
+        }
+
+        for (const type in cart) {
+            const match = cart[type].find((o) => o.id === id);
+            if (match) {
+                return match.display_name || match.name || match.value;
+            }
+        }
+
+        for (const object of bundle) {
+            if (object.id === id) {
+                return object.name || object.value || object.id;
+            }
+        }
+
+        // fallback
+        return id;
     }
 }
