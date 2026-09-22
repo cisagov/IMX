@@ -26,7 +26,7 @@
 
 @if (!isAddingExternalReferences) {
     @if (this.stixService.externalReferences.length > 0) {
-        <div class="list-group list-group-flush imx-item-list">
+        <div class="list-group list-group-flush imx-item-list imx-item-list--scroll">
             @for (externalReference of this.stixService.externalReferences; track externalReference; let i = $index) {
                 <div class="list-group-item">
                     <div class="imx-item" id="extRefs_list{{ i }}">
