@@ -1,46 +1,45 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { BehaviorSubject } from 'rxjs';
 import { CustomizeColumnsComponent } from './customize-columns.component';
-import { StixService } from 'src/app/stix-service.service';
-import { MockKeycloakService, MockStixService } from 'src/app/mockServices';
-import { KeycloakService } from 'src/app/auth/keycloak-service/keycloak.service';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { FormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+
+class MockStixService {
+    private subject = new BehaviorSubject<any>({ data: null });
+    getData() { return this.subject.asObservable(); }
+    sendData(data: any) { this.sent = data; }
+    sent: any;
+    trigger(data: any) { this.subject.next(data); }
+}
+
+class MockNgbActiveModal {}
 
 describe('CustomizeColumnsComponent', () => {
     let component: CustomizeColumnsComponent;
-    let fixture: ComponentFixture<CustomizeColumnsComponent>;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [CustomizeColumnsComponent],
-            imports: [FormsModule, FontAwesomeModule],
-            providers: [
-                {
-                    provide: StixService,
-                    useClass: MockStixService,
-                },
-                {
-                    provide: KeycloakService,
-                    useClass: MockKeycloakService,
-                },
-                NgbActiveModal,
-                provideHttpClient(withInterceptorsFromDi()),
-                provideHttpClientTesting(),
-            ],
-        }).compileComponents();
-    });
+    let stixService: MockStixService;
+    let activeModal: MockNgbActiveModal;
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(CustomizeColumnsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+        stixService = new MockStixService();
+        activeModal = new MockNgbActiveModal();
+        component = new CustomizeColumnsComponent(stixService as any, activeModal as any);
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('subscribes to stixService and sets columns on init', () => {
+        component.ngOnInit();
+        stixService.trigger({ data: ['col1', 'col2'] });
+        expect(component.columns).toEqual(['col1', 'col2']);
+    });
+
+    it('sends data via stixService on closeModal', () => {
+        component.columns = ['colA'];
+        component.closeModal();
+        expect(stixService.sent).toEqual({ data: ['colA'] });
+    });
+
+    it('unsubscribes on destroy', () => {
+        component.ngOnInit();
+        const sub = component.customizeColumnsSubscription;
+        const unsubscribeSpy = vi.spyOn(sub, 'unsubscribe');
+        component.ngOnDestroy();
+        expect(unsubscribeSpy).toHaveBeenCalled();
     });
 });
