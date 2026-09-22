@@ -1454,6 +1454,11 @@ export class HowObservableComponent implements OnInit, OnDestroy {
 
     getMalwareRefLabel(id: string): string {
         const cart = this.guidedService.cart?.['how-observable'] || {};
+        const bundle = this.stixService.bundle.objects;
+
+        if (!cart && !bundle) {
+            return id;
+        }
 
         for (const type in cart) {
             const match = cart[type].find((o) => o.id === id);
@@ -1461,17 +1466,35 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                 return match.display_name;
             }
         }
+
+        for (const object of bundle) {
+            if (object.id === id) {
+                return object.name || object.value || object.id;
+            }
+        }
+
         return id; // fallback
     }
 
     getNetworkRefLabel(id: string): string {
+
         const cart = this.guidedService.cart?.['how-observable'];
-        if (!cart) return id;
+        const bundle = this.stixService.bundle.objects;
+
+        if (!cart && !bundle) {
+            return id;
+        }
 
         for (const type in cart) {
             const match = cart[type].find((o) => o.id === id);
             if (match) {
-                return match.display_name;
+                return match.display_name || match.name || match.value;
+            }
+        }
+
+        for (const object of bundle) {
+            if (object.id === id) {
+                return object.name || object.value || object.id;
             }
         }
 
@@ -1484,7 +1507,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
     }
 
     getNetworkTafficAllowedRefs() {
-        let allowedRefs: string[] = ['IPv4 Address', 'IPv6 Address', 'Mac Address', 'Domain Name'];
+        let allowedRefs: string[] = ['ipv4-addr', 'ipv6-addr', 'mac-addr', 'domain-name'];
         let result = [];
 
         this.stixService.bundle.objects.filter((obj) => allowedRefs.includes(obj.type)).forEach((obj) => result.push(obj.id));
@@ -1847,9 +1870,9 @@ export class HowObservableComponent implements OnInit, OnDestroy {
 
     updateCurrentPlaceholder(event, index) {
         let currentObservable = this.currentObservableInput[index];
+        const selectedOptionObject = currentObservable.value;
         if (this.currentObservableType === 'Network Traffic' && (index === 1 || index === 2)) {
-            const select = event.target as HTMLSelectElement;
-            currentObservable.value = select.value;
+            currentObservable.value = selectedOptionObject;
             currentObservable.field_options = this.getNetworkTafficAllowedRefs();
             if (currentObservable.field_options.length !== 0) {
             } else {
@@ -1886,10 +1909,10 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         }
 
         if (currentObservable.type_options) {
-            currentObservable.type = currentObservable.type_options[event.target.value];
+            currentObservable.type = currentObservable.type_options[currentObservable.currentField];
         }
 
-        currentObservable.currentPlaceholder = currentObservable.placeholders[event.target.value];
+        currentObservable.currentPlaceholder = currentObservable.placeholders[currentObservable.currentField];
 
         this.disableAddToCart(false);
     }
