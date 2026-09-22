@@ -621,6 +621,13 @@ export class GuidedService {
                         return object;
                     }
                 }
+
+                // Fallback: Check the bundle
+                for (let object of this.stixService.bundle.objects) {
+                    if (object.id === oldObject.id) {
+                        return object;
+                    }
+                }
                 break;
             default:
                 for (let object of this.stixService.bundle.objects) {
@@ -967,6 +974,11 @@ export class GuidedService {
 
         return new Promise(async (resolve, reject) => {
             if (incidentObject === false) resolve('false');
+
+            if(incidentObject.type !== 'incident') {
+                console.warn('updateIncident called with non-incident object, ignoring');
+                return;
+            }
 
             let eventObjects: any = this.getEventObjects();
             let impactObjects: any = this.getImpactObjects();
