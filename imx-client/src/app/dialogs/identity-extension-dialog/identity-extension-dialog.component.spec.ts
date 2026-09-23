@@ -62,6 +62,6 @@ describe('IdentityExtensionDialogComponent', () => {
         comp.contact_info = 'invalid';
         comp.validateContactInfo('Phone Number');
         expect(comp.contactError).toBe(true);
-        expect(comp.contactErrorMessage).toContain('Phone Number must be valid');
+        expect(comp.contactErrorMessage).toContain('Phone Number must be valid.');
     });
 });
