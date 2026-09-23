@@ -370,13 +370,16 @@ export class WhatImpactComponent implements OnInit, OnDestroy {
 
     rebuildAvailableImpactRefs() {
         const cart = this.guidedService.cart;
-        if (!cart) {
+        const bundle = this.stixService.bundle.objects;
+
+        if (!cart && !bundle) {
             this.availableImpactRefs = [];
             return;
         }
 
         const allItems = [];
 
+        // Retrieve items from the cart
         for (const category of Object.values(cart)) {
             for (const typeGroup of Object.values(category)) {
                 for (const item of typeGroup as any[]) {
@@ -389,15 +392,24 @@ export class WhatImpactComponent implements OnInit, OnDestroy {
             }
         }
 
+        // Retrieve items from the bundle
+        for(const object of Object.values(bundle)) {
+            allItems.push({
+                display_name: object.name || object.value || object.id,
+                type: object.type,
+                id: object.id,
+            })
+        }
+
         // Exclude ones you've already selected
-        this.availableImpactRefs = allItems.filter((item) => !this.currentImpactedRefs.some((sel) => sel.id === item.id));
+        this.availableImpactRefs = allItems.filter((item) => !this.currentImpactedRefs.some((sel) => sel === item.id));
     }
 
     addImpactedRef(ref: any) {
         if (!ref) return;
 
         // Prevent duplicates based on id
-        const exists = this.currentImpactedRefs.some((r) => r.id === ref.id);
+        const exists = this.currentImpactedRefs.some((r) => r === ref);
         if (!exists) {
             this.currentImpactedRefs.push(ref);
         }
@@ -408,7 +420,7 @@ export class WhatImpactComponent implements OnInit, OnDestroy {
     }
 
     deleteImpactedRef(ref: string) {
-        this.currentImpactedRefs = this.currentImpactedRefs.filter((r) => r.id !== ref['id']);
+        this.currentImpactedRefs = this.currentImpactedRefs.filter((r) => r !== ref);
         this.rebuildAvailableImpactRefs();
     }
 
@@ -491,7 +503,7 @@ export class WhatImpactComponent implements OnInit, OnDestroy {
 
         // Add Impacted Refs if available
         if (this.currentImpactedRefs && this.currentImpactedRefs.length > 0) {
-            temp['impacted_refs'] = this.currentImpactedRefs.map((ref) => ref.id);
+            temp['impacted_refs'] = this.currentImpactedRefs;
         }
 
         // Add extensions into the object
@@ -613,15 +625,20 @@ export class WhatImpactComponent implements OnInit, OnDestroy {
                     .flatMap((section) => Object.values(section))
                     .flatMap((items) => items);
 
+                // Retrieve items from the bundle
+                for(const object of Object.values(this.stixService.bundle.objects)) {
+                    allItems.push({
+                        display_name: object.name || object.value || object.id,
+                        type: object.type,
+                        id: object.id,
+                    })
+                }
+
                 // Find the matching item
                 const match = allItems.find((item) => item.id === ref_id);
 
                 if (match) {
-                    this.currentImpactedRefs.push({
-                        display_name: match.display_name,
-                        type: match.type,
-                        id: match.id,
-                    });
+                    this.currentImpactedRefs.push(match.id);
                 }
             }
         }
@@ -635,7 +652,7 @@ export class WhatImpactComponent implements OnInit, OnDestroy {
                 .join(' ');
         }
 
-        this.cartIds.push(null);
+        this.cartIds = event.cartId ? [event.cartId] : [];
         this.checkCart();
     }
 
@@ -742,5 +759,72 @@ export class WhatImpactComponent implements OnInit, OnDestroy {
         this.cartSubscriptions.forEach((sub) => sub.unsubscribe());
         this.stixService.currentType = '';
         this.stixService.extensions = [];
+    }
+
+    getNetworkRefLabel(id: string): string {
+
+        const cart = this.guidedService.cart?.['how-observable'];
+        const bundle = this.stixService.bundle.objects;
+
+        if (!cart && !bundle) {
+            return id;
+        }
+
+        for (const type in cart) {
+            const match = cart[type].find((o) => o.id === id);
+            if (match) {
+                return match.display_name || match.name || match.value;
+            }
+        }
+
+        for (const object of bundle) {
+            if (object.id === id) {
+                return object.name || object.value || object.id;
+            }
+        }
+
+        // fallback
+        return id;
+    }
+
+    getImpactedRefLabels(id: string) {
+        const cart = this.guidedService.cart?.['how-observable'];
+        const bundle = this.stixService.bundle.objects;
+
+        if (!cart && !bundle) {
+            return id;
+        }
+
+        for (const type in cart) {
+            const match = cart[type].find((o) => o.id === id);
+            if (match) {
+                return `${match.type}: ${this.getDisplay(match)}`;
+            }
+        }
+
+        for (const object of bundle) {
+            if (object.id === id) {
+                return `${object.type}: ${this.getDisplay(object)}`;
+            }
+        }
+        return id;
+    }
+
+    getDisplay(obj) {
+        if(obj.type === 'network-traffic') {
+            const src = obj.src_ref ? this.getNetworkRefLabel(obj.src_ref) : null;
+            const dst = obj.dst_ref ? this.getNetworkRefLabel(obj.dst_ref) : null;
+                if(src && dst) {
+                    return `${src} to ${dst}`;
+                } else if(src) {
+                    return src;
+                } else if (dst) {
+                    return dst;
+                } else {
+                    return obj.id;
+                }
+        }
+
+        return obj.display_name || obj.name || obj.value || obj.id;
     }
 }

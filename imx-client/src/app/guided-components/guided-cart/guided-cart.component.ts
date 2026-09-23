@@ -439,7 +439,20 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
                 else if (opt.issuer) displayString = opt.issuer;
                 else displayString = '';
                 break;
+            case 'network-traffic':
+                const src = opt.src_ref ? this.getNetworkRefLabel(opt.src_ref) : null;
+                const dst = opt.dst_ref ? this.getNetworkRefLabel(opt.dst_ref) : null;
 
+                if(src && dst) {
+                    displayString = `${src} to ${dst}`;
+                } else if(src) {
+                    displayString = src;
+                } else if (dst) {
+                    displayString = dst;
+                } else {
+                    displayString = opt.id;
+                }
+                break;
             case 'attack-pattern':
             case 'campaign':
             case 'course-of-action':
@@ -554,5 +567,31 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
                 this.cartLength += this.cart[type].length;
             }
         }
+    }
+
+    getNetworkRefLabel(id: string): string {
+
+        const cart = this.guidedService.cart?.['how-observable'];
+        const bundle = this.stixService.bundle.objects;
+
+        if (!cart && !bundle) {
+            return id;
+        }
+
+        for (const type in cart) {
+            const match = cart[type].find((o) => o.id === id);
+            if (match) {
+                return match.display_name || match.name || match.value;
+            }
+        }
+
+        for (const object of bundle) {
+            if (object.id === id) {
+                return object.name || object.value || object.id;
+            }
+        }
+
+        // fallback
+        return id;
     }
 }
