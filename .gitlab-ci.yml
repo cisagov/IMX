@@ -22,6 +22,9 @@ include:
     file: /ci-templates/jest.yml
   - project: eos/cde/elm/ops
     ref: main
+    file: /ci-templates/vitest.yml
+  - project: eos/cde/elm/ops
+    ref: main
     file: /ci-templates/playwright.yml
   - project: eos/cde/elm/ops
     ref: main
@@ -76,12 +79,12 @@ test-imx-server:
   variables:
     SERVICE: "imx-server"
 
-# test-imx-client:
-#   extends: .playwright-test
-#   stage: test
-#   allow_failure: true
-#   variables:
-#     SERVICE: "imx-server"
+test-imx-client:
+  extends: .vitest
+  stage: test
+  allow_failure: true
+  variables:
+    SERVICE: "imx-client"
 
 build-client:
   extends: .build-image
