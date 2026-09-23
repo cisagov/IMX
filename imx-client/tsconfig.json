@@ -1,10 +1,10 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "baseUrl": "./",
         "paths": {
             "chart.js/dist/types/utils": ["node_modules/chart.js/dist/types/utils.d.ts"]
         },
+        "types": ["node"],
         "outDir": "./dist/out-tsc",
         "forceConsistentCasingInFileNames": true,
         "strict": false,
@@ -12,7 +12,6 @@
         "noFallthroughCasesInSwitch": true,
         "sourceMap": true,
         "declaration": false,
-        "downlevelIteration": true,
         "experimentalDecorators": true,
         "moduleResolution": "bundler",
         "importHelpers": true,
