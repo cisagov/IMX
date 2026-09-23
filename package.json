@@ -20,6 +20,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0 || >=24.0.0",
     "@vitest/coverage-v8": "^5.0.1",
+    "@vitest/ui": "^5.0.1",
     "babel-jest": "^30.5.2",
     "dotenv": "^17.4.2",
     "jest-html-reporter": "^4.4.2"
