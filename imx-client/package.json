@@ -98,7 +98,7 @@
     "@types/chai": "^4.3.5",
     "@types/jasmine": "~3.8.0",
     "@types/jest": "^29.5.4",
-    "@types/node": "^12.11.1",
+    "@types/node": "^22.0.0 || >=24.0.0",
     "@types/selenium-webdriver": "^4.1.13",
     "@types/ws": "^8.5.4",
     "chai": "^4.3.7",
