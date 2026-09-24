@@ -1,3 +1,18 @@
+## 4.22.0 (2026-09-24)
+
+### Features
+
+* add identity select dialog to bundle 39d7d8e
+* combine keycloak roles with taxii server roles in dashboard and submission page ca51278
+* move identity setting away from identity page and into bundle editor e9f7f0f
+
+### Bug Fixes
+
+* add (group) to roles from keycloak d555979
+* dashboard to show user roles assigned on keycloak 6647273
+* exclude default keycloak roles from dashboard user option da7b303
+* fix url if oidc is enabled for keycloak backend api 4184b1f
+
 ## 4.21.0 (2026-09-24)
 
 ### Features
