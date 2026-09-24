@@ -254,7 +254,7 @@ export class DashboardComponent {
         }
 
         for (let group in this.envService.groupInfo) {
-            for (let user of this.envService.groupInfo[group]) {
+            for (let user of this.envService.groupInfo?.[group]) {
                 if (this.selectionOptions.includes(user.user)) continue;
 
                 this.selectionOptions.push(user.user);
@@ -265,16 +265,20 @@ export class DashboardComponent {
             this.selectionOptions.push(`${group} (group)`);
         }
 
-        const ignoreRole = ['offline_access', 'imx-user', 'imx-admin', 'uma_authorization', 'default-roles-tie'];
+        const ignoreRole = ['offline_access', 'imx-user', 'imx-relay', 'imx-admin', 'uma_authorization', 'default-roles-tie'];
         if (this.envService.env.keycloak.enabled) {
             this.keycloak.getUserRoles().forEach((role) => {
                 if (ignoreRole.includes(role)) return;
-                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(`${role} (group)`);
+
+                const newRole = `${role} (group)`;
+                if (!this.selectionOptions.includes(newRole)) this.selectionOptions.push(newRole);
             });
         } else if (this.envService.env.oidc.enabled) {
             this.oidc.getRoles().forEach((role) => {
                 if (ignoreRole.includes(role)) return;
-                if (!this.selectionOptions.includes(role)) this.selectionOptions.push(`${role} (group)`);
+
+                const newRole = `${role} (group)`;
+                if (!this.selectionOptions.includes(newRole)) this.selectionOptions.push(newRole);
             });
         }
     }

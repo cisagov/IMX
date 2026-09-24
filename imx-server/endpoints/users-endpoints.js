@@ -1,6 +1,7 @@
-const { getKeycloakUsers } = require("../apis/users");
+const { getKeycloakUsers, getKeycloakPeerUsers } = require("../apis/users");
 const getUserData = require("../functions/get-user-data");
 const { extractToken } = require("../functions/extract-token");
+const { decode } = require("node:punycode");
 
 const usersEndpoints = function (app, logger) {
   app.get("/sso-users", async (req, res) => {
@@ -32,6 +33,63 @@ const usersEndpoints = function (app, logger) {
           default:
             console.info("OIDC ISSUER IS CURRENTLY NOT SUPPORTED");
         }
+      }
+
+      return res.send({ status: 200, data: users });
+    } catch (err) {
+      console.error(err);
+      logger.logEndpoint(500, req, userData);
+      res.status(500).send({ status: 500, message: JSON.stringify(err) });
+    }
+  });
+
+  /**
+   * /users/{role}
+   * Retrieve users associated with given role
+   *
+   * @param req.params.role the realm role to search users within
+   * @returns { status: number, data: any }
+   */
+  app.get("/role/users", async (req, res) => {
+    let userData;
+    try {
+      userData = await getUserData(req);
+
+      const authHeader = req.headers.authorization;
+      const decodedToken = extractToken(authHeader);
+
+      console.log(decodedToken);
+      let users = [];
+
+      if (!decodedToken || !decodedToken.groups) {
+        return res.status(500).send({
+          status: 500,
+          message: "No groups associated with user",
+        });
+      }
+
+      if (process.env.AUTH === "keycloak" || process.env.AUTH === "hybrid") {
+        users = await getKeycloakPeerUsers(
+          decodedToken.groups,
+          decodedToken.preferred_username,
+        );
+      } else if (process.env.AUTH.includes("oidc")) {
+        switch (determineIssuer(decodedToken)) {
+          case "keycloak":
+            users = await getKeycloakPeerUsers(
+              decodedToken.groups,
+              decodedToken.preferred_username,
+            );
+            break;
+          default:
+            console.info("OIDC ISSUER IS CURRENTLY NOT SUPPORTED");
+        }
+      } else {
+        console.info("Keycloak or OIDC not enabled");
+        return res.status(500).send({
+          status: 500,
+          message: "Endpoint is not valid, keycloak/OIDC is disabled",
+        });
       }
 
       return res.send({ status: 200, data: users });
