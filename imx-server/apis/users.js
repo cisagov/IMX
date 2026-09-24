@@ -129,7 +129,16 @@ const getKeycloakPeerUsers = function (roles, username) {
       for (let role of roles) {
         if (ignoreRoles.includes(role)) continue;
 
-        const url = `${process.env.KC_URL}admin/realms/${process.env.KC_REALM}/roles/${role}/users`;
+        let url = `${process.env.KC_URL}admin/realms/${process.env.KC_REALM}/roles/${role}/users`;
+
+        if (process.env.AUTH.includes("oidc")) {
+          let kc_url = process.env.OIDC_URL.replace(
+            "/protocol/openid-connect",
+            "",
+          );
+          url = `${kc_url.replace("/realms", "/admin/realms")}/roles/${role}/users`;
+        }
+
         const options = {
           headers: {
             "Content-Type": "application/json",
