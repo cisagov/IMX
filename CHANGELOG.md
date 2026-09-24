@@ -1,3 +1,21 @@
+## [4.20.6](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.5...v4.20.6) (2026-09-22)
+
+### Bug Fixes
+
+* allow guided to reference objects from the bundle ([5a451be](https://git.va.th.ten/eos/cde/tie/imx/commit/5a451be2a952312d35bfa0c5ce32726c35f0390f))
+
+## [4.20.5](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.4...v4.20.5) (2026-09-17)
+
+### Bug Fixes
+
+* remove distribution from misp conversion until MISP fixes the conversion library ([20fef0a](https://git.va.th.ten/eos/cde/tie/imx/commit/20fef0a103b792b74e0a36514068cb59c4e7adf9))
+
+## [4.20.4](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.3...v4.20.4) (2026-09-17)
+
+### Bug Fixes
+
+* for importing stix vt from integrations ([b79ae97](https://git.va.th.ten/eos/cde/tie/imx/commit/b79ae976ab8eaba31a340672ce799c22e7b9d2eb))
+
 ## [4.20.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.2...v4.20.3) (2026-09-17)
 
 ### Bug Fixes

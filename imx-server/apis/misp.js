@@ -109,6 +109,32 @@ const searchEvent = async function (indicators) {
                 data: null,
               };
 
+              //Temporary fix 09/17/2026 - MISP recently made changes on their python conversion library that broke it. Need to remove distribution until they fix it.
+              function removePropertyMutable(obj, targetKey) {
+                // If the item isn't an object or is null, stop processing
+                if (typeof obj !== "object" || obj === null) return;
+
+                // Handle arrays by processing each element
+                if (Array.isArray(obj)) {
+                  for (const item of obj) {
+                    removePropertyMutable(item, targetKey);
+                  }
+                  return;
+                }
+
+                // Iterate over the keys of the object
+                for (const key in obj) {
+                  if (key === targetKey) {
+                    delete obj[key]; // Delete the property
+                  } else {
+                    // If the property value is an object, recurse deeper
+                    removePropertyMutable(obj[key], targetKey);
+                  }
+                }
+              }
+
+              removePropertyMutable(mispResp, "distribution");
+
               stix2 = await py.mispToStix(mispResp);
 
               results.push({
