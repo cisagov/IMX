@@ -162,6 +162,7 @@ import { TaxiiInfoComponent } from './taxii-search/taxii-info/taxii-info.compone
 import { TaxiiSubmissionsComponent } from './taxii-search/taxii-submissions/taxii-submissions.component';
 import { TaxiiSearchBarComponent } from './taxii-search/taxii-search-bar/taxii-search-bar.component';
 import { PreviewComponent } from './taxii-search/preview/preview.component';
+import { IdentityDialogComponent } from './dialogs/identity-dialog/identity-dialog.component';
 
 @NgModule({
     declarations: [
@@ -281,6 +282,7 @@ import { PreviewComponent } from './taxii-search/preview/preview.component';
         TaxiiSubmissionsComponent,
         TaxiiSearchBarComponent,
         PreviewComponent,
+        IdentityDialogComponent,
     ],
     bootstrap: [AppComponent],
     imports: [
