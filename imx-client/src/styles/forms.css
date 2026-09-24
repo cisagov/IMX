@@ -240,8 +240,10 @@
 
 .imx-item-primary {
     display: block;
-    font-size: 1rem;
+    font-size: 0.9375rem;
     color: var(--imx-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -288,7 +290,25 @@
 }
 
 .imx-list-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
+}
+
+.imx-list-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--imx-text-muted);
+    pointer-events: none;
+}
+
+.imx-list-search .form-control {
+    padding-left: 2.25rem;
+    border-radius: var(--imx-radius);
 }
 
 .imx-list-count {

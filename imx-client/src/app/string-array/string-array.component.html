@@ -59,8 +59,8 @@
 @if (key === 'labels') {
     @if (labelList.length > 0) {
         @if (showListSearch(labelList.length)) {
-            <div class="imx-list-search input-group input-group-sm mt-2">
-                <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
+            <div class="imx-list-search mt-2">
+                <fa-icon class="imx-list-search-icon" [icon]="faSearch"></fa-icon>
                 <input
                     class="form-control"
                     id="label_search"
@@ -69,7 +69,7 @@
                     (ngModelChange)="onListSearchChange($event)"
                     type="text"
                 />
-                <span class="input-group-text imx-list-count">{{ filteredLabels.length }} of {{ labelList.length }}</span>
+                <span class="imx-list-count">{{ filteredLabels.length }} of {{ labelList.length }}</span>
             </div>
         }
         @if (filteredLabels.length > 0) {
@@ -105,8 +105,8 @@
 @if (!isAddingElement && key == 'object_marking_refs') {
     @if (displayedObjectMarkingRefs.length > 0) {
         @if (showListSearch(displayedObjectMarkingRefs.length)) {
-            <div class="imx-list-search input-group input-group-sm mt-2">
-                <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
+            <div class="imx-list-search mt-2">
+                <fa-icon class="imx-list-search-icon" [icon]="faSearch"></fa-icon>
                 <input
                     class="form-control"
                     id="object_marking_refs_search"
@@ -115,7 +115,7 @@
                     (ngModelChange)="onListSearchChange($event)"
                     type="text"
                 />
-                <span class="input-group-text imx-list-count">{{ filteredMarkingRefs.length }} of {{ displayedObjectMarkingRefs.length }}</span>
+                <span class="imx-list-count">{{ filteredMarkingRefs.length }} of {{ displayedObjectMarkingRefs.length }}</span>
             </div>
         }
         @if (filteredMarkingRefs.length > 0) {
