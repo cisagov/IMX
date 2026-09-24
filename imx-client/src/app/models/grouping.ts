@@ -292,8 +292,8 @@ export class Grouping extends FormModel {
                     };
                 },
                 value: new Array(),
-                columnWidth: 'col-6',
-                nonGuidedCol: 'col-6 pe-5',
+                columnWidth: 'col-12',
+                nonGuidedCol: 'col-12 pe-5',
                 revokedCol: 'col-12 pe-5',
                 order: 15,
                 required: true,

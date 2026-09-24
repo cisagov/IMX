@@ -1,3 +1,14 @@
+## [4.21.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.6...v4.21.0) (2026-09-24)
+
+### Features
+
+* updated long list styling and searching ([7f079be](https://git.va.th.ten/eos/cde/tie/imx/commit/7f079befd90e985fb5beb30a2dafdb61e7f1f08b))
+* updated marking def to display definition details ([9d952ab](https://git.va.th.ten/eos/cde/tie/imx/commit/9d952aba5ec6b77444c103646813ec57aa678c74))
+
+### Bug Fixes
+
+* many fixes and changes based on feedback for malware form/lists ([ea0e6e7](https://git.va.th.ten/eos/cde/tie/imx/commit/ea0e6e77180593479e048f40d67fc616e43bc32f))
+
 ## [4.20.6](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.5...v4.20.6) (2026-09-22)
 
 ### Bug Fixes
