@@ -1,6 +1,6 @@
 {
   "name": "imx",
-  "version": "4.20.3",
+  "version": "4.20.6",
   "description": "IMX is a tool used to create reports that cater to the STIX specification and it compliant with storing these reports within TAXII Servers.",
   "main": "index.js",
   "scripts": {},
@@ -9,8 +9,15 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@babel/core": "^8.0.6",
+    "@babel/preset-env": "^8.0.6",
+    "@babel/preset-typescript": "^8.0.1",
     "@playwright/test": "^1.61.1",
-    "@types/node": "^26.1.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.0.0 || >=24.0.0",
+    "@vitest/coverage-v8": "^5.0.1",
+    "@vitest/ui": "^5.0.1",
+    "babel-jest": "^30.5.2",
     "dotenv": "^17.4.2",
     "jest-html-reporter": "^4.4.2"
   },

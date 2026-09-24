@@ -1,3 +1,21 @@
+## 4.20.6 (2026-09-22)
+
+### Bug Fixes
+
+* allow guided to reference objects from the bundle 5a451be
+
+## 4.20.5 (2026-09-17)
+
+### Bug Fixes
+
+* remove distribution from misp conversion until MISP fixes the conversion library 20fef0a
+
+## 4.20.4 (2026-09-17)
+
+### Bug Fixes
+
+* for importing stix vt from integrations b79ae97
+
 ## 4.20.3 (2026-09-17)
 
 ### Bug Fixes

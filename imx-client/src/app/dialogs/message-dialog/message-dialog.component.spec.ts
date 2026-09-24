@@ -1,30 +1,34 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { describe, it, expect, beforeEach } from 'vitest';
 import { MessageDialogComponent } from './message-dialog.component';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+class MockActiveModal {
+    closedWith: string;
+    close(val: string) { this.closedWith = val; }
+}
+
+function createComponent(messageObj?: any) {
+    const modal = new MockActiveModal();
+    const comp = new MessageDialogComponent(modal as any);
+    comp.messageObj = messageObj;
+    return { comp, modal };
+}
 
 describe('MessageDialogComponent', () => {
-    let component: MessageDialogComponent;
-    let fixture: ComponentFixture<MessageDialogComponent>;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [MessageDialogComponent],
-            imports: [FormsModule, FontAwesomeModule, ReactiveFormsModule],
-            providers: [NgbActiveModal],
-        }).compileComponents();
+    it('calls close on close()', () => {
+        const { comp, modal } = createComponent();
+        comp.close();
+        expect(modal.closedWith).toBe('cancel');
     });
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(MessageDialogComponent);
-        component = fixture.componentInstance;
-        component.messageObj = { autoConfirm: true };
-        fixture.detectChanges();
+    it('calls confirm on confirm()', () => {
+        const { comp, modal } = createComponent();
+        comp.confirm();
+        expect(modal.closedWith).toBe('confirm');
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('autoConfirms when messageObj.autoConfirm is true', () => {
+        const { comp, modal } = createComponent({ autoConfirm: true });
+        comp.ngOnInit();
+        expect(modal.closedWith).toBe('confirm');
     });
 });
