@@ -102,8 +102,8 @@
                             <option [ngValue]="null" disabled>Select Impacted Refs</option>
 
                             @for (option of availableImpactRefs; track option) {
-                                <option [ngValue]="option">
-                                    {{ option.display_name }}
+                                <option [ngValue]="option.id">
+                                    {{ getImpactedRefLabels(option.id) }}
                                 </option>
                             }
                         </select>
@@ -121,7 +121,7 @@
                                     id="other_list{{ i }}"
                                     class="form-control-guided other-ref-item d-flex justify-content-between align-items-center guided-multiselect-list"
                                 >
-                                    <span class="ref-name">{{ ref.display_name }}</span>
+                                     <span class="ref-name">{{ getImpactedRefLabels(ref) }}</span>
                                     <button
                                         class="btn btn-fa-sm btn-color list-trash list-trash-guided"
                                         style="display: flex"
