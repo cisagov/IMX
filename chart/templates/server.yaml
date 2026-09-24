@@ -74,6 +74,15 @@ spec:
             - name: OIDC_CERT
               value: {{ .Values.server.keycloakCert | quote }}
 
+            - name: OIDC_CLIENT_ID
+              value: {{ .Values.server.oidcClientId | quote }}
+
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: imx-secrets
+                  key: OIDC_CLIENT_SECRET
+
             - name: DB
               value: {{ .Values.server.database | quote }}
 
