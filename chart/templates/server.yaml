@@ -73,7 +73,7 @@ spec:
 
             - name: OIDC_CERT
               value: {{ .Values.server.keycloakCert | quote }}
-            
+
             - name: OIDC_CLIENT_ID
               value: {{ .Values.server.oidcClientId | quote }}
 
