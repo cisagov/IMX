@@ -156,6 +156,7 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { AdminUsersPageComponent } from './admin-users-page/admin-users-page.component';
 import { MispResultComponent } from './misp-dialog/misp-result/misp-result.component';
 import { LoadingModalComponent } from './loading-modal/loading-modal.component';
+import { IdentityDialogComponent } from './dialogs/identity-dialog/identity-dialog.component';
 
 @NgModule({
     declarations: [
@@ -269,6 +270,7 @@ import { LoadingModalComponent } from './loading-modal/loading-modal.component';
         MispDialogComponent,
         MispResultComponent,
         RemoveObjectComponent,
+        IdentityDialogComponent,
     ],
     bootstrap: [AppComponent],
     imports: [
@@ -291,7 +293,7 @@ import { LoadingModalComponent } from './loading-modal/loading-modal.component';
         MonacoEditorModule.forRoot(),
         TextFieldModule,
         VtDialogComponent,
-        LoadingModalComponent
+        LoadingModalComponent,
     ],
     providers: [
         provideAppInitializer(() => {
