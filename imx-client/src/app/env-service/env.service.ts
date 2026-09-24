@@ -391,6 +391,50 @@ export class EnvService {
         });
     }
 
+    /**
+     * Get all keycloak users that share the same role as the current user
+     */
+    getKeycloakGroups() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let httpHeaders = new HttpHeaders().set('Authorization', `Basic ${btoa(this.env.imxServer.user + ':' + this.env.imxServer.pass)}`);
+
+                this.httpClient.get(`${this.env.imxServer.url}/role/users`, { headers: httpHeaders, observe: 'response' }).subscribe(
+                    (data: any) => {
+                        for (const role in data.body.data) {
+                            switch (role) {
+                                case 'imx-user':
+                                case 'imx-relay':
+                                case 'imx-admin':
+                                    break;
+                                default:
+                                    if (!this.groupInfo[role]) {
+                                        this.groupInfo[role] = [];
+                                    }
+
+                                    const users = data.body.data[role];
+
+                                    users.forEach((user) => {
+                                        if (this.groupInfo[role].includes(user.user)) return;
+
+                                        this.groupInfo[role].push(user);
+                                    });
+                                    break;
+                            }
+                        }
+
+                        resolve(true);
+                    },
+                    (err) => {
+                        reject(err);
+                    }
+                );
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
     getAllGroups(taxiiUsers) {
         let result = [];
 
