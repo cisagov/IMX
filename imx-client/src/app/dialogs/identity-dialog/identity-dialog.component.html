@@ -3,5 +3,112 @@
         <h4 class="modal-title" id="publish-modal-title">Select Identity</h4>
         <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
     </div>
-    <div class="modal-body"></div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row mb-2 justify-content-end">
+                <div class="col-5">
+                    <input
+                        class="form-control"
+                        style="height: 33px"
+                        [(ngModel)]="searchText"
+                        (ngModelChange)="filterIdentities()"
+                        placeholder="Search Identity"
+                    />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col identity-table">
+                    <div class="list-group list-group-flush imx-item-list">
+                        @for (identity of filteredStoredIdentities; track identity; let i = $index) {
+                            <div class="list-group-item cursor-pointer">
+                                <div class="imx-item">
+                                    @if (compareIdentity(identity.id)) {
+                                        <span class="imx-type-badge"> Active </span>
+                                    }
+                                    <span class="imx-item-text">
+                                        <span class="imx-item-primary">
+                                            {{ identity.name }}
+                                        </span>
+                                        <span class="imx-item-secondary imx-mono">
+                                            {{ identity.id }}
+                                        </span>
+                                    </span>
+                                    <span class="imx-item-actions" style="opacity: 100">
+                                        @if (identity.id !== cisaId) {
+                                            <button
+                                                type="button"
+                                                class="btn btn-color me-2 list-trash"
+                                                id="identities_list{{ i }}_edit"
+                                                (click)="$event.stopPropagation(); editObject(identity)"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-color me-2 list-trash"
+                                                id="identities_list{{ i }}_revoke"
+                                                (click)="$event.stopPropagation(); revokeObject(identity)"
+                                            >
+                                                Revoke
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-color me-2 list-trash"
+                                                id="identities_list{{ i }}_remove"
+                                                (click)="$event.stopPropagation(); removeObject(identity.id)"
+                                            >
+                                                Remove
+                                            </button>
+                                            @if (!compareIdentity(identity.id)) {
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-color me-2 list-trash"
+                                                    id="identities_list{{ i }}_set"
+                                                    (click)="$event.stopPropagation(); setMainIdentity(identity.id)"
+                                                >
+                                                    Set Identity
+                                                </button>
+                                            }
+                                            @if (compareIdentity(identity.id)) {
+                                                <button type="button" class="btn btn-color me-2 list-trash" id="identities_list{{ i }}_set" disabled>
+                                                    Identity Set
+                                                </button>
+                                            }
+                                        } @else {
+                                            <button
+                                                type="button"
+                                                class="btn btn-color me-2 list-trash"
+                                                id="identities_list{{ i }}_add"
+                                                (click)="$event.stopPropagation(); addCISAIdentity(identity)"
+                                            >
+                                                Add
+                                            </button>
+                                            @if (!compareIdentity(identity.id)) {
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-color me-2 list-trash"
+                                                    id="identities_list{{ i }}_set"
+                                                    (click)="$event.stopPropagation(); setMainIdentity(identity.id)"
+                                                >
+                                                    Set Identity
+                                                </button>
+                                            }
+                                            @if (compareIdentity(identity.id)) {
+                                                <button type="button" class="btn btn-color me-2 list-trash" id="identities_list{{ i }}_set" disabled>
+                                                    Set Identity
+                                                </button>
+                                            }
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                        @if (filteredStoredIdentities.length == 0) {
+                            <div class="imx-empty">No Identity</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

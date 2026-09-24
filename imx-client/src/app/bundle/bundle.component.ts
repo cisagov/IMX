@@ -749,7 +749,7 @@ export class BundleComponent implements OnInit {
     openIdentity() {
         const modalRef = this.modalService.open(IdentityDialogComponent, {
             ariaLabelledBy: 'identity-modal-title',
-            size: 'lg',
+            size: 'xl',
             windowClass: 'publish-modal',
             centered: true,
         });
