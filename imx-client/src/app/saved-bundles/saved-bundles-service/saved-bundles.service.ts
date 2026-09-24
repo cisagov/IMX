@@ -43,7 +43,7 @@ export class SavedBundlesService {
             users = '';
             let splitStr = selection.split(' (');
             let group = splitStr[0];
-            for (let user of this.envService.groupInfo[group]) {
+            for (let user of this.envService.groupInfo?.[group]) {
                 users += `${user.user}+`;
             }
         }
@@ -109,7 +109,7 @@ export class SavedBundlesService {
             users = '';
             let splitStr = selection.split(' (');
             let group = splitStr[0];
-            for (let user of this.envService.groupInfo[group]) {
+            for (let user of this.envService.groupInfo?.[group]) {
                 users += `${user.user}+`;
             }
         }

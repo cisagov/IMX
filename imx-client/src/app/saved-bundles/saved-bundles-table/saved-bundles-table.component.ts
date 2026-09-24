@@ -170,7 +170,7 @@ export class SavedBundlesTableComponent implements OnInit {
 
     pushSelectionOptions(): void {
         for (let group in this.envService.groupInfo) {
-            for (let user of this.envService.groupInfo[group]) {
+            for (let user of this.envService.groupInfo?.[group]) {
                 if (this.selectionOptions.includes(user.user)) continue;
 
                 this.selectionOptions.push(user.user);

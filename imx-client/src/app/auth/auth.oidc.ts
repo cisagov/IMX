@@ -38,8 +38,13 @@ export class AuthOidc {
         }
 
         try {
-            if (this.envService.taxiiUsers === undefined) await this.envService.getTaxiiUsers();
-            else this.envService.getTaxiiUsers();
+            if (this.envService.taxiiUsers === undefined) {
+                await this.envService.getTaxiiUsers();
+                await this.envService.getKeycloakGroups();
+            } else {
+                await this.envService.getTaxiiUsers();
+                this.envService.getKeycloakGroups();
+            }
         } catch (err) {
             console.error(err);
         }
