@@ -1,3 +1,20 @@
+## 4.21.0 (2026-09-24)
+
+### Features
+
+* updated long list styling and searching 7f079be
+* updated marking def to display definition details 9d952ab
+
+### Bug Fixes
+
+* many fixes and changes based on feedback for malware form/lists ea0e6e7
+
+## 4.20.6 (2026-09-22)
+
+### Bug Fixes
+
+* allow guided to reference objects from the bundle 5a451be
+
 ## 4.20.5 (2026-09-17)
 
 ### Bug Fixes
