@@ -92,6 +92,7 @@ import { RemoveObjectComponent } from '../remove-object/remove-object.component'
 
 import { validateStix } from '../shared/utils/validation.utils';
 import { LoadingModalComponent } from '../loading-modal/loading-modal.component';
+import { IdentityDialogComponent } from '../dialogs/identity-dialog/identity-dialog.component';
 
 declare const require: any;
 const Validator = require('jsonschema').Validator;
@@ -744,6 +745,15 @@ export class BundleComponent implements OnInit {
         const modalRef = this.modalService.open(ReportModalComponent);
         modalRef.result.then((data) => {
             this.reportName = this.stixService.reportName;
+        });
+    }
+
+    openIdentity() {
+        const modalRef = this.modalService.open(IdentityDialogComponent, {
+            ariaLabelledBy: 'identity-modal-title',
+            size: 'xl',
+            windowClass: 'publish-modal',
+            centered: true,
         });
     }
 
