@@ -6,6 +6,10 @@ const getKeycloakSessionToken = function () {
     try {
       let url = `${process.env.KC_URL}realms/${process.env.KC_REALM}/protocol/openid-connect/token`;
 
+      if (process.env.AUTH.includes("oidc")) {
+        url = `${process.env.OIDC_URL}/token`;
+      }
+
       const body = {
         grant_type: "client_credentials",
         client_id: process.env.KC_CLIENT_ID,
