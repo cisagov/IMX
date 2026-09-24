@@ -130,7 +130,7 @@ export class UserDataComponent implements OnInit {
         }
 
         for (let group in this.envService.groupInfo) {
-            for (let user of this.envService.groupInfo[group]) {
+            for (let user of this.envService.groupInfo?.[group]) {
                 if (this.selectionOptions.includes(user.user)) continue;
 
                 this.selectionOptions.push(user.user);

@@ -37,7 +37,7 @@ export class SubmissionsService {
             users = '';
             let splitStr = currentSelection.split(' (');
             let group = splitStr[0];
-            for (let user of this.envService.groupInfo[group]) {
+            for (let user of this.envService.groupInfo?.[group]) {
                 users += `${user.user}+`;
             }
         }
@@ -154,7 +154,7 @@ export class SubmissionsService {
             users = '';
             let splitStr = currentSelection.split(' (');
             let group = splitStr[0];
-            for (let user of this.envService.groupInfo[group]) {
+            for (let user of this.envService.groupInfo?.[group]) {
                 users += `${user.user}+`;
             }
         }

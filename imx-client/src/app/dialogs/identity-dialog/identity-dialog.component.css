@@ -1,0 +1,30 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.btn-color {
+    background-color: white !important;
+    border-color: #ced4da !important;
+    color: #495057 !important;
+}
+
+.btn-color:hover {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color:focus {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-color:active {
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #ced4da !important;
+}
+
+.identity-table {
+    max-height: 650px;
+    overflow: scroll;
+}

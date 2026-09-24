@@ -331,6 +331,15 @@
                                     </span>
                                     @if (!guidedUI) {
                                         <span
+                                            id="select-identity"
+                                            (click)="openIdentity()"
+                                            class="cursor-pointer badge rounded-pill me-2 visualizer-btn"
+                                        >
+                                            Select Identity
+                                        </span>
+                                    }
+                                    @if (!guidedUI) {
+                                        <span
                                             id="edit-report-name"
                                             (click)="openReport()"
                                             class="cursor-pointer badge rounded-pill me-2 visualizer-btn"
