@@ -59,6 +59,28 @@ select.form-control {
     height: calc(1.5em + 0.5rem + 2px);
 }
 
+:host-context(.imx-form-page) .input-group-text,
+:host-context(.imx-form-page) input.form-control,
+:host-context(.imx-form-page) select.form-control {
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    height: auto;
+}
+
+:host-context(.imx-form-page) .input-group-sm > .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+}
+
+.imx-list-search input.form-control,
+:host-context(.imx-form-page) .imx-list-search input.form-control {
+    padding-left: 2.25rem;
+}
+
+:host-context(.imx-form-page) .imx-field-head {
+    min-height: calc(1.5rem + 0.75rem + 2px);
+}
+
 .tooltipright {
     position: relative;
     display: inline-block;

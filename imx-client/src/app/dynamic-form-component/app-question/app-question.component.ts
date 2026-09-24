@@ -14,7 +14,7 @@ import {
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { faInfoCircle, faTrash, faEdit, faArrowDown, faPlus, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faTrash, faEdit, faArrowDown, faPlus, faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { STIX_OBJECTS } from 'src/app/models/stix-objects';
 import { StixService } from 'src/app/stix-service.service';
 import { GuidedService } from 'src/app/guided.service';
@@ -40,7 +40,7 @@ import { MIME } from 'src/app/models/mime';
 import { v4 as uuid } from 'uuid';
 import { ContentsDialogComponent } from 'src/app/dialogs/contents-dialog/contents-dialog.component';
 import { ObjectQuestion } from '../../dynamic-form-component/question-types/question-object';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import tooltipHelper from './tooltipHelper/tooltipHelper';
 import { TooltipStringArrayQuestion } from '../question-types/question-tooltip-string-array';
@@ -103,6 +103,7 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
     faTrash = faTrash;
     faPlus = faPlus;
     faUpload = faUpload;
+    faSearch = faSearch;
     faEdit = faEdit;
     faSave = faSave;
     faBan = faBan;
@@ -119,6 +120,12 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
     newString: string = '';
     newString2: string = '';
     newString3: string = '';
+    listSearch: string = '';
+    listFilter: string = '';
+    private listSearch$ = new Subject<string>();
+    readonly listSearchThreshold = 15;
+    private refLabelCache = new Map<string, string>();
+    private refLabelCacheSize = -1;
     relString: string = '';
     objectPaths = STIX_OBJECTS[1]['objects'];
     observationExpressionBuilder: ObservationExpression = null;
@@ -242,6 +249,8 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.listSearch$.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe((term) => (this.listFilter = term));
+
         this.object_type = this.form.value.type;
 
         const missingAttributes = localStorage.getItem('missing-attributes');
@@ -1016,6 +1025,39 @@ export class DynamicFormQuestionComponent implements OnInit, OnDestroy {
         document.cookie = `imx_attack_patterns=; expires=Thu, 01 Jan 9070 00:00:00 GMT; path=/; domain=${domain}; SameSite=None; Secure`;
 
         this.addKillChain(result);
+    }
+
+    refLabel(id: string): string {
+        if (this.refLabelCacheSize !== this.stixService.bundle.objects.length) {
+            this.refLabelCache.clear();
+            this.refLabelCacheSize = this.stixService.bundle.objects.length;
+        }
+        let label = this.refLabelCache.get(id);
+        if (label === undefined) {
+            const obj = this.getObjectById(id);
+            label = obj ? this.getObjDisplayName(obj) : id;
+            this.refLabelCache.set(id, label);
+        }
+        return label;
+    }
+
+    refCount(key: string): number {
+        return this.stixService.stringArrays.get(key)?.length ?? 0;
+    }
+
+    onListSearchChange(term: string): void {
+        this.listSearch$.next(term);
+    }
+
+    showListSearch(count: number): boolean {
+        return count > this.listSearchThreshold || !!this.listSearch || !!this.listFilter;
+    }
+
+    filteredRefs(key: string): string[] {
+        const items = this.stixService.stringArrays.get(key) ?? [];
+        const term = this.listFilter.trim().toLowerCase();
+        if (!term) return items;
+        return items.filter((id) => this.refLabel(id).toLowerCase().includes(term) || id.toLowerCase().includes(term));
     }
 
     deleteString(myobj: any, mykey: any) {
