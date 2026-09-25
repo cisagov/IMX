@@ -1,3 +1,24 @@
+## [4.22.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.0...v4.22.1) (2026-09-25)
+
+### Bug Fixes
+
+* update kc to oidc_client_id ([9e8fb06](https://git.va.th.ten/eos/cde/tie/imx/commit/9e8fb065a83fc18add8d6670f629ac93407b634a))
+
+## [4.22.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.21.0...v4.22.0) (2026-09-24)
+
+### Features
+
+* add identity select dialog to bundle ([39d7d8e](https://git.va.th.ten/eos/cde/tie/imx/commit/39d7d8e9d52698dee893b66d94d34c0671164b3a))
+* combine keycloak roles with taxii server roles in dashboard and submission page ([ca51278](https://git.va.th.ten/eos/cde/tie/imx/commit/ca512780061bc292bb3ebe3740d22f7e68a07f84))
+* move identity setting away from identity page and into bundle editor ([e9f7f0f](https://git.va.th.ten/eos/cde/tie/imx/commit/e9f7f0fc0685b0e8abddb4c45c1cf93e082d714c))
+
+### Bug Fixes
+
+* add (group) to roles from keycloak ([d555979](https://git.va.th.ten/eos/cde/tie/imx/commit/d555979abe23cd9196cfc0b36930a3fd655cfeda))
+* dashboard to show user roles assigned on keycloak ([6647273](https://git.va.th.ten/eos/cde/tie/imx/commit/66472738f1929abbed81d444cd6df33544759042))
+* exclude default keycloak roles from dashboard user option ([da7b303](https://git.va.th.ten/eos/cde/tie/imx/commit/da7b303353ab3adc11b211bf5bc1e27e80c724e7))
+* fix url if oidc is enabled for keycloak backend api ([4184b1f](https://git.va.th.ten/eos/cde/tie/imx/commit/4184b1fb8222ad3ce849c5d7f6ff2ea5aa66fe6d))
+
 ## [4.21.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.20.6...v4.21.0) (2026-09-24)
 
 ### Features
