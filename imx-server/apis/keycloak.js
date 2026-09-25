@@ -12,8 +12,8 @@ const getKeycloakSessionToken = function () {
 
       const body = {
         grant_type: "client_credentials",
-        client_id: process.env.KC_CLIENT_ID,
-        client_secret: process.env.KC_CLIENT_SECRET,
+        client_id: process.env.OIDC_CLIENT_ID,
+        client_secret: process.env.OIDC_CLIENT_SECRET,
       };
 
       let options = {
