@@ -1,3 +1,9 @@
+## 4.22.1 (2026-09-25)
+
+### Bug Fixes
+
+* update kc to oidc_client_id 9e8fb06
+
 ## 4.22.0 (2026-09-24)
 
 ### Features
