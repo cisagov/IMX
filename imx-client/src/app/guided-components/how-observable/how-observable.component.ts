@@ -649,6 +649,10 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                 continue;
             }
 
+            if (!field.currentField && !!field.header) {
+                field.currentField = typeof field.header === 'string' ? field.header.toLowerCase() : field.currentField;
+            }
+
             field.currentField = this.getCurrentFieldName(field.currentField);
             switch (field.currentField) {
                 case 'hashes':
