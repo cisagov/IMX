@@ -7,6 +7,7 @@ secrets:
   taxiiPassword: ""
   taxiiProxyPassword: ""
   virusTotalKey: ""
+  oidcClientSecret: ""
 
 client:
   app: imx-client
@@ -118,6 +119,7 @@ server:
   name: imx-server
   nodeEnv: "local"
   oidcUrl: ""
+  oidcClientId: ""
   oidcUserField: preferred_username
   podSecurityContext: {}
   port: 3000

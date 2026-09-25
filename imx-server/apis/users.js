@@ -158,7 +158,7 @@ const getKeycloakPeerUsers = function (roles, username) {
 
         const returnArr = [];
         users.data.forEach((user) => {
-          if (user.username !== `service-account-${process.env.KC_CLIENT_ID}`)
+          if (user.username !== `service-account-${process.env.OIDC_CLIENT_ID}`)
             returnArr.push({ user: user.username });
         });
 
