@@ -415,7 +415,7 @@ export class EnvService {
                                     const users = data.body.data[role];
 
                                     users.forEach((user) => {
-                                        if (this.groupInfo[role].includes(user.user)) return;
+                                        if (this.groupInfo[role].some((u) => u.user == user.user)) return;
 
                                         this.groupInfo[role].push(user);
                                     });
