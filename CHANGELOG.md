@@ -1,3 +1,9 @@
+## [4.22.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.0...v4.22.1) (2026-09-25)
+
+### Bug Fixes
+
+* update kc to oidc_client_id ([9e8fb06](https://git.va.th.ten/eos/cde/tie/imx/commit/9e8fb065a83fc18add8d6670f629ac93407b634a))
+
 ## [4.22.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.21.0...v4.22.0) (2026-09-24)
 
 ### Features
