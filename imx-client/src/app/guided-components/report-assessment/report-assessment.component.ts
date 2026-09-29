@@ -67,6 +67,9 @@ export class ReportAssessmentComponent implements OnInit, OnDestroy {
     }
 
     async addComponents() {
+
+        this.updateReportFields();
+
         let currentDate = new Date();
         const publishedTimeInTzUtc =
             this.published && this.guidedService.currentCartIndex === null
@@ -75,25 +78,48 @@ export class ReportAssessmentComponent implements OnInit, OnDestroy {
         this.published = this.published ? this.published : currentDate.toUTCString();
 
         if (this.published) {
-            let tempReport = {
-                type: 'report',
-                created_by_ref: this.envService.env.defaultIdentity.id,
-                name: this.reportName ? this.reportName : `report-generated-${new Date().toISOString()}`,
-                published: publishedTimeInTzUtc,
-                description: this.reportDetails ? this.reportDetails : null,
-                object_refs: [this.envService.env.defaultIdentity.id],
-            };
-            if (this.stixService.externalReferences.length > 0) {
-                tempReport['external_references'] = this.stixService.externalReferences;
-            }
-            tempReport['id'] = this.reportId !== '' ? this.reportId : this.getStixId(tempReport, 'report');
 
-            if (this.guidedService.currentCartIndex === null) {
-                for (let field in tempReport) {
-                    this.guidedService.currentReport[field] = tempReport[field];
+            if(this.stixService.isEditing){
+                let tempReport = {
+                    type: 'report',
+                    created_by_ref: this.envService.env.defaultIdentity.id,
+                    name: this.reportName ? this.reportName : `report-generated-${new Date().toISOString()}`,
+                    published: publishedTimeInTzUtc,
+                    description: this.reportDetails ? this.reportDetails : null,
+                    object_refs: [this.envService.env.defaultIdentity.id],
+                };
+                if (this.stixService.externalReferences.length > 0) {
+                    tempReport['external_references'] = this.stixService.externalReferences;
+                }
+                tempReport['id'] = this.reportId !== '' ? this.reportId : this.getStixId(tempReport, 'report');
+
+                if (this.guidedService.currentCartIndex === null) {
+                    for (let field in tempReport) {
+                        this.guidedService.currentReport[field] = tempReport[field];
+                    }
+                } else {
+                    this.guidedService.currentReport['description'] = this.reportDetails;
                 }
             } else {
-                this.guidedService.currentReport['description'] = this.reportDetails;
+                let tempReport = {
+                    type: 'report',
+                    created_by_ref: this.envService.env.defaultIdentity.id,
+                    name: this.reportName ? this.reportName : `report-generated-${new Date().toISOString()}`,
+                    published: publishedTimeInTzUtc,
+                    description: this.reportDetails ? this.reportDetails : null,
+                    object_refs: [this.envService.env.defaultIdentity.id],
+                };
+                if (this.stixService.externalReferences.length > 0) {
+                    tempReport['external_references'] = this.stixService.externalReferences;
+                }
+                tempReport['id'] = this.reportId !== '' ? this.reportId : this.getStixId(tempReport, 'report');
+                if (this.guidedService.currentCartIndex === null) {
+                    for (let field in tempReport) {
+                        this.guidedService.currentReport[field] = tempReport[field];
+                    }
+                } else {
+                    this.guidedService.currentReport['description'] = this.reportDetails;
+                }
             }
         }
 
@@ -131,6 +157,15 @@ export class ReportAssessmentComponent implements OnInit, OnDestroy {
     syncCart(event) {
         if (event === this.component) {
             this.syncCartEmitter.emit();
+        }
+    }
+
+    updateReportFields() {
+        this.guidedService.reportFields = {
+            name: this.reportName,
+            description: this.reportDetails,
+            published: this.published,
+            external_references: this.stixService.externalReferences
         }
     }
 }
