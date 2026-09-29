@@ -1,1 +1,153 @@
-<p>taxii-submissions works!</p>
+@if (isLoading) {
+    <div class="container-fluid h-100 p-3">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem"></div>
+            <span>Loading...</span>
+        </div>
+    </div>
+} @else {
+    <div class="container-fluid h-100">
+        <div class="row pb-4 filter-border">
+            <div class="col">
+                <div class="row mt-3">
+                    <div class="col">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center" (click)="back()">
+                                <span class="imx-item-secondary cursor-pointer tertiary hover-text">
+                                    <fa-icon class="me-1" style="font-size: 0.7rem" [icon]="faArrowLeft"></fa-icon>
+                                    Back
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row mt-1">
+                    <div class="col">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="imx-item-secondary">Showing submissions for</span>
+                                <select
+                                    [(ngModel)]="currentSelection"
+                                    class="form-select form-select-sm taxii-select w-auto tertiary ms-2"
+                                    style="height: 27px"
+                                >
+                                    @for (option of selectionOptions; track option; let i = $index) {
+                                        <option [value]="option">
+                                            {{ option }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="row mt-3">
+                    <div class="col-5">
+                        <div class="d-flex align-items-center">
+                            <div class="imx-item-secondary tertiary no-overflow">Submission ID</div>
+                            <input type="text" class="form-control input-sm tertiary ms-2" [(ngModel)]="statusId" />
+                        </div>
+                    </div>
+                    <div class="col d-flex justify-content-end">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-custom-width btn-outline-primary tertiary" [disabled]="isSearching" (click)="getStatus()">
+                                <fa-icon [icon]="faSearch" class="pe-2"></fa-icon>
+                                @if (!isSearching) {
+                                    Search
+                                } @else {
+                                    Searching...
+                                }
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col imx-card mt-3">
+                <div class="imx-card-header">
+                    <div class="d-flex w-100 justify-content-between">
+                        <span class="imx-card-title">Results</span>
+                        <div class="d-flex">
+                            @if (currentStatusPage > 1) {
+                                <button type="button" class="btn btn-outline-secondary tertiary me-2" (click)="nextPage('left')">Prev</button>
+                                <!-- <div class="p-2 cursor-pointer hover-text" (click)="nextPage('left')">Prev</div> -->
+                            }
+                            @if (currentStatusPage < totalStatusPages) {
+                                <button type="button" class="btn btn-outline-secondary tertiary" (click)="nextPage('right')">Next</button>
+                                <!-- <div class="p-2 cursor-pointer hover-text" (click)="nextPage('right')">Next</div> -->
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="imx-card-body ps-0 pe-0" [ngClass]="{ 'pt-0': statusTable && statusTable.length > 0 }">
+                    @if (!statusTable || statusTable.length == 0) {
+                        <div class="imx-empty">No submissions</div>
+                    } @else {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="cursor-pointer" scope="col" (click)="sort('status', 'status')">
+                                        Status
+                                        <fa-icon *ngIf="sortKey === 'status-des'" [icon]="faAngleDown"> </fa-icon>
+                                        <fa-icon *ngIf="sortKey === 'status-asc'" [icon]="faAngleUp"> </fa-icon>
+                                    </th>
+                                    <th class="cursor-pointer" scope="col" style="width: 45%" (click)="sort('docName', 'status')">
+                                        Submission Name
+                                        <fa-icon *ngIf="sortKey === 'docName-des'" [icon]="faAngleDown"> </fa-icon>
+                                        <fa-icon *ngIf="sortKey === 'docName-asc'" [icon]="faAngleUp"> </fa-icon>
+                                    </th>
+                                    <th class="cursor-pointer" scope="col" (click)="sort('root_collection', 'status')">
+                                        Root/Collection
+                                        <fa-icon *ngIf="sortKey === 'root_collection-des'" [icon]="faAngleDown"> </fa-icon>
+                                        <fa-icon *ngIf="sortKey === 'root_collection-asc'" [icon]="faAngleUp"> </fa-icon>
+                                    </th>
+                                    <th class="cursor-pointer" scope="col" (click)="sort('user', 'status')">
+                                        User
+                                        <fa-icon *ngIf="sortKey === 'user-des'" [icon]="faAngleDown"> </fa-icon>
+                                        <fa-icon *ngIf="sortKey === 'user-asc'" [icon]="faAngleUp"> </fa-icon>
+                                    </th>
+                                    <th class="cursor-pointer" scope="col" (click)="sort('request_timestamp', 'status')">
+                                        Timestamp
+                                        <fa-icon *ngIf="sortKey === 'request_timestamp-des'" [icon]="faAngleDown"> </fa-icon>
+                                        <fa-icon *ngIf="sortKey === 'request_timestamp-asc'" [icon]="faAngleUp"> </fa-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (obj of statusTable; track obj; let i = $index) {
+                                    <tr class="cursor-pointer stix-object">
+                                        <td class="table-hover" (click)="openSubmission(obj)">
+                                            <span class="imx-type-badge">
+                                                <fa-icon *ngIf="obj.res.status == 'complete'" [icon]="faCheck" class="color-green"></fa-icon>
+                                                <fa-icon
+                                                    *ngIf="obj.res.status != 'complete' && obj.res.status != 'pending'"
+                                                    [icon]="faStop"
+                                                    class="color-red"
+                                                ></fa-icon>
+                                                <fa-icon *ngIf="obj.res.status == 'pending'" [icon]="faClock" class="color-yellow"></fa-icon>
+                                                {{ obj.res.status }}
+                                            </span>
+                                        </td>
+                                        <td class="table-hover" (click)="openSubmission(obj)">
+                                            {{ obj.docName ? obj.docName : obj.res.id }}
+                                        </td>
+                                        <td class="table-hover" (click)="openSubmission(obj)">
+                                            {{ obj.root_collection }}
+                                        </td>
+                                        <td class="table-hover" (click)="openSubmission(obj)">
+                                            {{ obj.user }}
+                                        </td>
+                                        <td class="table-hover" (click)="openSubmission(obj)">
+                                            {{ obj.res.request_timestamp }}
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

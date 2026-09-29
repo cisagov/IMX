@@ -163,6 +163,7 @@ import { TaxiiSubmissionsComponent } from './taxii-search/taxii-submissions/taxi
 import { TaxiiSearchBarComponent } from './taxii-search/taxii-search-bar/taxii-search-bar.component';
 import { PreviewComponent } from './taxii-search/preview/preview.component';
 import { IdentityDialogComponent } from './dialogs/identity-dialog/identity-dialog.component';
+import { SubmissionInfoComponent } from './taxii-search/taxii-submissions/submission-info/submission-info.component';
 
 @NgModule({
     declarations: [
@@ -281,6 +282,7 @@ import { IdentityDialogComponent } from './dialogs/identity-dialog/identity-dial
         TaxiiInfoComponent,
         TaxiiSubmissionsComponent,
         TaxiiSearchBarComponent,
+        SubmissionInfoComponent,
         PreviewComponent,
         IdentityDialogComponent,
     ],

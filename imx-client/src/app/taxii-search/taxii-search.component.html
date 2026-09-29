@@ -8,7 +8,7 @@
         </div>
     } @else {
         <div class="ms-4 me-4">
-            @if (!selectedCollection && !globalSearch) {
+            @if (!selectedCollection && !globalSearch && !statusPage) {
                 <app-taxii-info
                     [selectedColl]="selectedCollection"
                     [selectedRoot]="selectedRoot"
@@ -22,8 +22,19 @@
                     (selectRoot)="selectRoot($event)"
                     (selectCollection)="selectCollection($event)"
                     (selectGlobalSearch)="selectGlobalSearch($event)"
+                    (selectStatus)="selectStatus($event)"
                 ></app-taxii-info>
-            } @else {
+            } @else if (statusPage) {
+                <app-taxii-submissions
+                    [selectedColl]="selectedCollection"
+                    [selectedRoot]="selectedRoot"
+                    [roots]="roots"
+                    [collections]="collections"
+                    [statusPage]="statusPage"
+                    (selectCollection)="selectCollection($event)"
+                    (selectStatus)="selectStatus($event)"
+                ></app-taxii-submissions>
+            } @else if (selectedCollection || globalSearch) {
                 <app-taxii-query
                     [selectedColl]="selectedCollection"
                     [selectedRoot]="selectedRoot"
