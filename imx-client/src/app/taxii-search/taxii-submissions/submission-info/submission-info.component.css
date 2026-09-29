@@ -1,0 +1,8 @@
+.modal-body {
+    height: 75vh;
+    overflow: scroll;
+}
+
+.imx-item-secondary {
+    white-space: break-spaces;
+}

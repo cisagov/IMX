@@ -27,6 +27,7 @@ export class TaxiiSearchComponent implements OnInit {
     serverInfo = null;
 
     globalSearch = false;
+    statusPage = false;
 
     constructor(public stixService: StixService) {}
 
@@ -64,11 +65,14 @@ export class TaxiiSearchComponent implements OnInit {
     }
 
     selectCollection(collection) {
-        console.log(collection);
         this.selectedCollection = collection;
     }
 
     selectGlobalSearch(bool) {
         this.globalSearch = bool;
+    }
+
+    selectStatus(bool) {
+        this.statusPage = bool;
     }
 }

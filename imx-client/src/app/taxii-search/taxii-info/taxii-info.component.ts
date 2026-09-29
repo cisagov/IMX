@@ -10,7 +10,7 @@ import { StixService } from 'src/app/stix-service.service';
     selector: 'app-taxii-info',
     standalone: false,
     templateUrl: './taxii-info.component.html',
-    styleUrls: ['./taxii-info.component.css', '../../dashboard/dashboard.component.css'],
+    styleUrls: ['./taxii-info.component.css', '../taxii-search.component.css', '../../dashboard/dashboard.component.css'],
 })
 export class TaxiiInfoComponent implements OnInit {
     @Input() selectedColl;
@@ -26,6 +26,7 @@ export class TaxiiInfoComponent implements OnInit {
     @Output() selectCollection: EventEmitter<any>;
     @Output() selectGlobalSearch: EventEmitter<any>;
     @Output() setServerInfo: EventEmitter<any>;
+    @Output() selectStatus: EventEmitter<any>;
 
     private httpHeaders = new HttpHeaders()
         .set('Accept', 'application/taxii+json;version=2.1')
@@ -68,6 +69,7 @@ export class TaxiiInfoComponent implements OnInit {
         this.selectCollection = new EventEmitter();
         this.selectGlobalSearch = new EventEmitter();
         this.setServerInfo = new EventEmitter();
+        this.selectStatus = new EventEmitter();
     }
 
     async ngOnInit() {

@@ -256,10 +256,37 @@
                                         (change)="checkAllCheckBox($event)"
                                     />
                                 </th>
-                                <th class="cursor-pointer" scope="col">Type</th>
-                                <th class="cursor-pointer" style="width: 30%" scope="col">Name</th>
-                                <th class="cursor-pointer" scope="col">Date ({{ localTimezone }})</th>
-                                <th class="cursor-pointer" scope="col">Version</th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('id', 'objects')">
+                                    <span>
+                                        Type
+
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'id-des'" [icon]="faAngleDown"></fa-icon>
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'id-asc'" [icon]="faAngleUp"></fa-icon>
+                                    </span>
+                                </th>
+                                <th class="cursor-pointer" style="width: 30%" scope="col" (click)="sort('name', 'objects')">
+                                    <span>
+                                        Name
+
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'name-des'" [icon]="faAngleDown"></fa-icon>
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'name-asc'" [icon]="faAngleUp"></fa-icon>
+                                    </span>
+                                </th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('published', 'objects')">
+                                    Published ({{ localTimezone }})
+                                    <fa-icon *ngIf="sortKey === 'published-des'" [icon]="faAngleDown"></fa-icon>
+                                    <fa-icon *ngIf="sortKey === 'published-asc'" [icon]="faAngleUp"></fa-icon>
+                                </th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('created', 'objects')">
+                                    Created ({{ localTimezone }})
+                                    <fa-icon *ngIf="sortKey === 'created-des'" [icon]="faAngleDown"> </fa-icon>
+                                    <fa-icon *ngIf="sortKey === 'created-asc'" [icon]="faAngleUp"> </fa-icon>
+                                </th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('modified', 'objects')">
+                                    Modified ({{ localTimezone }})
+                                    <fa-icon *ngIf="sortKey === 'modified-des'" [icon]="faAngleDown"></fa-icon>
+                                    <fa-icon *ngIf="sortKey === 'modified-asc'" [icon]="faAngleUp"> </fa-icon>
+                                </th>
 
                                 <th class="cursor-pointer" scope="col">Media Type</th>
                                 <th class="cursor-pointer" scope="col">Actions</th>
@@ -287,15 +314,18 @@
                                     </td>
                                     <td class="table-hover">
                                         <div class="d-flex flex-column">
-                                            <span class="imx-item-secondary tertiary"> Published: {{ getPublished(obj).localDate }} </span>
-                                            <span class="imx-item-secondary tertiary"> Created: {{ obj.created }} </span>
-                                            <span class="imx-item-secondary tertiary"> Modified: {{ obj.modified }} </span>
+                                            <span class="imx-item-secondary tertiary"> {{ getPublished(obj)?.localDate }} </span>
                                         </div>
                                     </td>
                                     <td class="table-hover">
-                                        <span class="imx-item-secondary">
-                                            {{ manifestsQueryResults[i].version }}
-                                        </span>
+                                        <div class="d-flex flex-column">
+                                            <span class="imx-item-secondary tertiary"> {{ obj.created }} </span>
+                                        </div>
+                                    </td>
+                                    <td class="table-hover">
+                                        <div class="d-flex flex-column">
+                                            <span class="imx-item-secondary tertiary"> {{ obj.modified }} </span>
+                                        </div>
                                     </td>
                                     <td class="table-hover">
                                         <span class="imx-type-badge">
@@ -376,7 +406,7 @@
                         (click)="importBundle()"
                         title="Click to create a bundle from the object_refs of this Report"
                     >
-                        Import Report
+                        Import
                     </button>
                 }
                 @if (selectedObjects.length == 2) {
