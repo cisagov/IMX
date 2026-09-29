@@ -160,7 +160,6 @@ import { TaxiiSearchComponent } from './taxii-search/taxii-search.component';
 import { TaxiiQueryComponent } from './taxii-search/taxii-query/taxii-query.component';
 import { TaxiiInfoComponent } from './taxii-search/taxii-info/taxii-info.component';
 import { TaxiiSubmissionsComponent } from './taxii-search/taxii-submissions/taxii-submissions.component';
-import { TaxiiSearchBarComponent } from './taxii-search/taxii-search-bar/taxii-search-bar.component';
 import { PreviewComponent } from './taxii-search/preview/preview.component';
 import { IdentityDialogComponent } from './dialogs/identity-dialog/identity-dialog.component';
 import { SubmissionInfoComponent } from './taxii-search/taxii-submissions/submission-info/submission-info.component';
@@ -281,7 +280,6 @@ import { SubmissionInfoComponent } from './taxii-search/taxii-submissions/submis
         TaxiiQueryComponent,
         TaxiiInfoComponent,
         TaxiiSubmissionsComponent,
-        TaxiiSearchBarComponent,
         SubmissionInfoComponent,
         PreviewComponent,
         IdentityDialogComponent,
