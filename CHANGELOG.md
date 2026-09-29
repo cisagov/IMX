@@ -1,3 +1,9 @@
+## [4.22.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.1...v4.22.2) (2026-09-25)
+
+### Bug Fixes
+
+* fix email message subject ([9e5104b](https://git.va.th.ten/eos/cde/tie/imx/commit/9e5104ba4a99377c351826efe71fff48507f157d))
+
 ## [4.22.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.0...v4.22.1) (2026-09-25)
 
 ### Bug Fixes
