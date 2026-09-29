@@ -1,3 +1,9 @@
+## 4.22.2 (2026-09-25)
+
+### Bug Fixes
+
+* fix email message subject 9e5104b
+
 ## 4.22.1 (2026-09-25)
 
 ### Bug Fixes
