@@ -685,6 +685,14 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                         stixObject['dst_ref'] = field.value.replace(/^\d+:\s*/, ''); // Quick fix for field.value forming at '1:ipv4-addr--'
                     }
                     break;
+                case 'is_family':
+                    if(field.value === "true") stixObject[`${field.currentField}`] = true;
+                    else stixObject[`${field.currentField}`] = false;
+                    break;
+                case 'is_multipart':
+                    if(field.value === "true") stixObject[`${field.currentField}`] = true;
+                    else stixObject[`${field.currentField}`] = false;
+                    break;
                 default:
                     stixObject[`${field.currentField}`] = field.value;
             }
@@ -1333,7 +1341,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
 
                             tempObj['currentField'] = target;
                             tempObj['currentPlaceholder'] = input.currentPlaceholder;
-                            tempObj['field_options'] = this.getNetworkTafficAllowedRefs();
+                            tempObj['field_options'] = this.getNetworkTrafficAllowedRefs();
                             tempObj['show'] = true;
 
                             continue;
@@ -1506,12 +1514,13 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         if (obj.body_raw_ref) return obj.body_raw_ref;
     }
 
-    getNetworkTafficAllowedRefs() {
-        let allowedRefs: string[] = ['ipv4-addr', 'ipv6-addr', 'mac-addr', 'domain-name'];
+    getNetworkTrafficAllowedRefs() {
+        let allowedBundleRefs: string[] = ['ipv4-addr', 'ipv6-addr', 'mac-addr', 'domain-name'];
+        let allowedCartRefs: string[] = ['IPv4 Address', 'IPv6 Address', 'Mac Address', 'Domain Name'];
         let result = [];
 
-        this.stixService.bundle.objects.filter((obj) => allowedRefs.includes(obj.type)).forEach((obj) => result.push(obj.id));
-        for (let title of allowedRefs) {
+        this.stixService.bundle.objects.filter((obj) => allowedBundleRefs.includes(obj.type)).forEach((obj) => result.push(obj.id));
+        for (let title of allowedCartRefs) {
             if (this.guidedService.cart?.[this.component]?.[title] === undefined) continue;
 
             for (let obj of this.guidedService.cart[this.component][title]) {
@@ -1873,7 +1882,7 @@ export class HowObservableComponent implements OnInit, OnDestroy {
         const selectedOptionObject = currentObservable.value;
         if (this.currentObservableType === 'Network Traffic' && (index === 1 || index === 2)) {
             currentObservable.value = selectedOptionObject;
-            currentObservable.field_options = this.getNetworkTafficAllowedRefs();
+            currentObservable.field_options = this.getNetworkTrafficAllowedRefs();
             if (currentObservable.field_options.length !== 0) {
             } else {
                 currentObservable.hybrid_placeholder = 'No Refs Available';
