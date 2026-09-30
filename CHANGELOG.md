@@ -1,3 +1,12 @@
+## 4.22.3 (2026-09-30)
+
+### Bug Fixes
+
+* allow edits to cwe object to save 5cfc127
+* allow guided report objects to be updated ac33f44
+* maintain type for boolean variables in malware and email message objects a6b05bc
+* remove redundant report construction logic ed19b36
+
 ## 4.22.2 (2026-09-25)
 
 ### Bug Fixes
