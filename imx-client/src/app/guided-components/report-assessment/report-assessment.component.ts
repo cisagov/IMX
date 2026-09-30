@@ -67,6 +67,9 @@ export class ReportAssessmentComponent implements OnInit, OnDestroy {
     }
 
     async addComponents() {
+
+        this.updateReportFields();
+
         let currentDate = new Date();
         const publishedTimeInTzUtc =
             this.published && this.guidedService.currentCartIndex === null
@@ -87,7 +90,6 @@ export class ReportAssessmentComponent implements OnInit, OnDestroy {
                 tempReport['external_references'] = this.stixService.externalReferences;
             }
             tempReport['id'] = this.reportId !== '' ? this.reportId : this.getStixId(tempReport, 'report');
-
             if (this.guidedService.currentCartIndex === null) {
                 for (let field in tempReport) {
                     this.guidedService.currentReport[field] = tempReport[field];
@@ -131,6 +133,15 @@ export class ReportAssessmentComponent implements OnInit, OnDestroy {
     syncCart(event) {
         if (event === this.component) {
             this.syncCartEmitter.emit();
+        }
+    }
+
+    updateReportFields() {
+        this.guidedService.reportFields = {
+            name: this.reportName,
+            description: this.reportDetails,
+            published: this.published,
+            external_references: this.stixService.externalReferences
         }
     }
 }
