@@ -300,7 +300,7 @@ export class HowCweComponent implements OnInit, OnDestroy {
             this.currentCveId = event.external_references[0].external_id;
             this.angleDownVul = true;
         }
-
+        this.isCveValid();
         this.checkCart();
     }
 
