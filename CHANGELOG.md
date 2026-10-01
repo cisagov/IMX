@@ -1,3 +1,12 @@
+## [4.22.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.2...v4.22.3) (2026-09-30)
+
+### Bug Fixes
+
+* allow edits to cwe object to save ([5cfc127](https://git.va.th.ten/eos/cde/tie/imx/commit/5cfc127f2d219f0061adfa70ea75ff8cb2c47b42))
+* allow guided report objects to be updated ([ac33f44](https://git.va.th.ten/eos/cde/tie/imx/commit/ac33f4481e9746ec7da9f83d4acb25c2f99bc3b2))
+* maintain type for boolean variables in malware and email message objects ([a6b05bc](https://git.va.th.ten/eos/cde/tie/imx/commit/a6b05bc3929ff231bce5fa489d20a53d89b0872c))
+* remove redundant report construction logic ([ed19b36](https://git.va.th.ten/eos/cde/tie/imx/commit/ed19b3645f528e7517832f831c1eea4975a56409))
+
 ## [4.22.2](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.1...v4.22.2) (2026-09-25)
 
 ### Bug Fixes
