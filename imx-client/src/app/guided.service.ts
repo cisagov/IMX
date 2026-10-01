@@ -203,6 +203,8 @@ export class GuidedService {
 
     autoGenRelationships = false;
 
+    public reportFields: any = {};
+
     constructor(
         public stixService: StixService,
         private envService: EnvService,
@@ -353,8 +355,20 @@ export class GuidedService {
         let regTypes = [];
         let regData = [];
 
-        // Determine the current report
-        this.currentReport = this.cart['report-assessment']['report'][0];
+        // Determine if the current report received any changes
+        let oldReport = this.cart['report-assessment']['report'][0];
+        let reportNameChanged = oldReport.display_name !== this.reportFields.name;
+        let reportDescriptionChanged = oldReport.description !== this.reportFields.description;
+
+        if(reportNameChanged) {
+            oldReport.name = this.reportFields.name
+        }
+
+        if(reportDescriptionChanged) {
+            oldReport.description = this.reportFields.description;
+        }
+
+        this.currentReport = oldReport;
 
         for (let page in this.editCart) {
             if (page === 'report-assessment') continue;
