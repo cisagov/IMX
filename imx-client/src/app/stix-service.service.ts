@@ -803,6 +803,7 @@ export class StixService implements OnInit {
                 const data: any = await lastValueFrom(this.taxiiHttpReq('get', getDiscoveryURL, { headers: this.httpHeaders }));
 
                 try {
+                    this.apiRootDetails = [];
                     if (data.api_roots) {
                         for (let i = 0; i < data.api_roots.length; i++) {
                             let apiRoot = this.retrieveAPIRoot(data.api_roots[i]);
@@ -874,6 +875,8 @@ export class StixService implements OnInit {
                 try {
                     if (data && data.api_roots) {
                         let len = data.api_roots.length;
+                        this.apiRootDetails = [];
+
                         for (let i = 0; i < len; i++) {
                             let apiRoot = this.retrieveAPIRoot(data.api_roots[i]);
                             this.apiRoots.push(apiRoot);
