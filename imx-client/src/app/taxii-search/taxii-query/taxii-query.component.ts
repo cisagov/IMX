@@ -122,7 +122,6 @@ export class TaxiiQueryComponent implements OnInit {
     private objectReturnedCount: number = 0;
 
     protected isAllCheckboxSelected: boolean;
-    public rownumber: number;
 
     private globalSearchTerm = '';
     private globalSearchPage = 1;
@@ -280,7 +279,6 @@ export class TaxiiQueryComponent implements OnInit {
         this.sortKey = undefined;
         this.objectsCount = 0;
         this.isAllCheckboxSelected = false;
-        this.rownumber = null;
         this.cleaned = false;
         try {
             this.queryParams.type = [...this.selectedOptions];
@@ -1145,7 +1143,8 @@ export class TaxiiQueryComponent implements OnInit {
     }
 
     getMediaType(obj) {
-        return `v${obj.media_type.split('version=')[1]}`;
+        if (obj.media_type) return `v${obj.media_type.split('version=')[1]}`;
+        else return `NA`;
     }
 
     public async editObject(stixObject): Promise<void> {
@@ -1720,14 +1719,14 @@ export class TaxiiQueryComponent implements OnInit {
     sort(col: string, table: string) {
         if (this.objectsQueryResults.length === 0 && table === 'objects') return;
 
-        if (this.rownumber !== null) this.rownumber = null;
-
         if (!this.sortKey) {
             this.sortKey = '';
             this.unsortedQueryResults = [];
 
-            for (let obj of this.objectsQueryResults) {
-                this.unsortedQueryResults.push(obj);
+            if (table === 'objects') {
+                for (let obj of this.objectsQueryResults) {
+                    this.unsortedQueryResults.push(obj);
+                }
             }
         }
 
@@ -1743,7 +1742,6 @@ export class TaxiiQueryComponent implements OnInit {
                 this.sortKey = `${col}-asc`;
             } else if (col === keyArr[0] && keyArr[1] === 'asc') {
                 if (table === 'objects') this.objectsQueryResults = this.unsortedQueryResults;
-
                 this.sortKey = '';
             } else {
                 if (table === 'objects') this.objectsQueryResults = this.sortResultsDes(col, this.objectsQueryResults);

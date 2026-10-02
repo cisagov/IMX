@@ -167,6 +167,48 @@ export class TaxiiSubmissionsComponent implements OnInit {
         await this.setStatusTable();
     }
 
+    openSubmission(submission, search = false) {
+        let modalRef = this.modalService.open(SubmissionInfoComponent, { size: 'xl' });
+        modalRef.componentInstance.submission = submission;
+        modalRef.componentInstance.search = search;
+    }
+
+    async getStatus() {
+        await this.envService.checkAuth('/query-stix');
+
+        if (!this.statusId) {
+            return null;
+        }
+        this.isSearching = true;
+
+        try {
+            this.stixService
+                .taxiiHttpReq('get', this.taxiiServer + this.envService.env.customConfiguration.sandbox.apiRoot + '/status/' + this.statusId + '/', {
+                    headers: this.httpHeaders,
+                })
+                .subscribe(
+                    (data: any) => {
+                        this.openSubmission(data, true);
+                        this.isSearching = false;
+                    },
+                    (err) => {
+                        this.announcementService.show(
+                            'Failed to retrieve status',
+                            `Failed to retrieve status for ${this.statusId}. Error: ${err}`,
+                            'error',
+                            false
+                        );
+                        this.isSearching = false;
+                        return null;
+                    }
+                );
+        } catch (e) {
+            this.announcementService.show('Failed to retrieve status', `Failed to retrieve status for ${this.statusId}. Error: ${e}`, 'error', false);
+            this.isSearching = false;
+            return null;
+        }
+    }
+
     async getUsers() {
         this.currentSelection = this.envService.getUsername();
         this.selectionOptions = [this.currentSelection];
@@ -203,6 +245,11 @@ export class TaxiiSubmissionsComponent implements OnInit {
                 if (!this.selectionOptions.includes(newRole)) this.selectionOptions.push(newRole);
             });
         }
+    }
+
+    clear(): void {
+        this.unsortedQueryResults = [];
+        this.statusId = '';
     }
 
     sort(col: string, table: string) {
@@ -429,52 +476,5 @@ export class TaxiiSubmissionsComponent implements OnInit {
 
             return componentDisplay;
         } else return component.name ? component.name : '<NO NAME>';
-    }
-
-    clear(): void {
-        this.unsortedQueryResults = [];
-        this.statusId = '';
-    }
-
-    async getStatus() {
-        await this.envService.checkAuth('/query-stix');
-
-        if (!this.statusId) {
-            return null;
-        }
-        this.isSearching = true;
-
-        try {
-            this.stixService
-                .taxiiHttpReq('get', this.taxiiServer + this.envService.env.customConfiguration.sandbox.apiRoot + '/status/' + this.statusId + '/', {
-                    headers: this.httpHeaders,
-                })
-                .subscribe(
-                    (data: any) => {
-                        this.openSubmission(data, true);
-                        this.isSearching = false;
-                    },
-                    (err) => {
-                        this.announcementService.show(
-                            'Failed to retrieve status',
-                            `Failed to retrieve status for ${this.statusId}. Error: ${err}`,
-                            'error',
-                            false
-                        );
-                        this.isSearching = false;
-                        return null;
-                    }
-                );
-        } catch (e) {
-            this.announcementService.show('Failed to retrieve status', `Failed to retrieve status for ${this.statusId}. Error: ${e}`, 'error', false);
-            this.isSearching = false;
-            return null;
-        }
-    }
-
-    openSubmission(submission, search = false) {
-        let modalRef = this.modalService.open(SubmissionInfoComponent, { size: 'xl' });
-        modalRef.componentInstance.submission = submission;
-        modalRef.componentInstance.search = search;
     }
 }
