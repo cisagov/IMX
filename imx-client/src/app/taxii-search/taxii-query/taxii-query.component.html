@@ -293,7 +293,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for (obj of objectsQueryResults; track obj.id; let i = $index) {
+                            @for (obj of objectsQueryResults; track obj; let i = $index) {
                                 <tr class="cursor-pointer stix-object" (click)="openJson(obj)">
                                     <td class="table-hover" (click)="$event.stopPropagation()">
                                         <input
