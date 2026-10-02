@@ -1143,7 +1143,7 @@ export class TaxiiQueryComponent implements OnInit {
     }
 
     getMediaType(obj) {
-        if (obj.media_type) return `v${obj.media_type.split('version=')[1]}`;
+        if (obj?.media_type) return `v${obj.media_type.split('version=')[1]}`;
         else return `NA`;
     }
 
