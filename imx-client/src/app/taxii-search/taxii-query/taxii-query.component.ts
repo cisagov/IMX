@@ -60,40 +60,40 @@ export class TaxiiQueryComponent implements OnInit {
     @ViewChild('viewContainerRef', { read: ViewContainerRef })
     VCR: ViewContainerRef;
 
-    openNewWindow: boolean = true;
+    private openNewWindow: boolean = true;
 
-    activeMenuItem: any = 'objects';
+    private activeMenuItem: any = 'objects';
 
-    isAdmin = false;
+    protected isAdmin = false;
 
-    faLink = faLink;
-    faArrowRight = faArrowRight;
-    faArrowLeft = faArrowLeft;
-    faSearch = faSearch;
-    faFilter = faFilter;
-    faEdit = faEdit;
-    faFileArchive = faFileArchive;
-    faAddToBundle = faFileImport;
-    faFileExport = faFileExport;
-    faCaretUp = faCaretUp;
-    faTrash = faTrash;
-    faAngleDown = faAngleDown;
-    faAngleUp = faAngleUp;
+    protected faLink = faLink;
+    protected faArrowRight = faArrowRight;
+    protected faArrowLeft = faArrowLeft;
+    protected faSearch = faSearch;
+    protected faFilter = faFilter;
+    protected faEdit = faEdit;
+    protected faFileArchive = faFileArchive;
+    protected faAddToBundle = faFileImport;
+    protected faFileExport = faFileExport;
+    protected faCaretUp = faCaretUp;
+    protected faTrash = faTrash;
+    protected faAngleDown = faAngleDown;
+    protected faAngleUp = faAngleUp;
 
-    typeOptions = STIXObjectTypes;
-    scoList = SCO_LIST;
+    protected readonly typeOptions = STIXObjectTypes;
+    protected readonly scoList = SCO_LIST;
 
-    existingCISAIdentity;
+    protected existingCISAIdentity;
 
-    versions = ['last', 'first', 'all', '<value>'];
-    isSpecificVersion: boolean = false;
+    protected readonly versions = ['last', 'first', 'all', '<value>'];
+    protected isSpecificVersion: boolean = false;
 
-    isOmitRevoked: boolean;
+    protected isOmitRevoked: boolean;
 
-    selectedOptions: Set<string>;
-    selectedCollection;
+    private selectedOptions: Set<string>;
+    protected selectedCollection;
 
-    queryParams = {
+    protected queryParams = {
         addedAfter: '',
         limit: this.envService.env.queryResultLimit + '',
         next: '',
@@ -106,72 +106,62 @@ export class TaxiiQueryComponent implements OnInit {
         date_added_last: '',
     };
 
-    objectsQueryResults: any[] = [];
+    protected objectsQueryResults: any[] = [];
 
-    nextAddedAfter: string = '';
-    exportObjects: any[] = [];
-    loadingExport: boolean = false;
-    disableExport: boolean = true;
+    private nextAddedAfter: string = '';
+    protected exportObjects: any[] = [];
+    protected loadingExport: boolean = false;
+    protected disableExport: boolean = true;
 
-    isLoadingStix = false;
-    objectsCount: number = 0;
-    unsortedQueryResults: any[];
-    objectsQueryError = '';
-    objectsQueryErrorURL = '';
-    sortKey: string;
-    objectReturnedCount: number = 0;
+    protected isLoadingStix = false;
+    private objectsCount: number = 0;
+    private unsortedQueryResults: any[];
+    private objectsQueryError = '';
+    private objectsQueryErrorURL = '';
+    protected sortKey: string;
+    private objectReturnedCount: number = 0;
 
-    isAllCheckboxSelected: boolean;
+    protected isAllCheckboxSelected: boolean;
     public rownumber: number;
 
-    statusTable: any[];
-    statusIDs: any[];
-    currentStatusPage: number;
-    totalStatusPages: number;
-    isLoadingStatus: boolean;
-    statusRowNumber: number;
-    showStatusTable: boolean;
+    private globalSearchTerm = '';
+    private globalSearchPage = 1;
+    private globalQueryBody = '';
 
-    globalSearchTerm = '';
-    globalSearchPage = 1;
-    globalQueryBody = '';
+    private cleaned: boolean = false;
 
-    cleaned: boolean = false;
+    private queryString = '';
 
-    queryString = '';
+    private child_unique_key: number = 0;
+    protected componentsReferences = Array<ComponentRef<AdditionalFiltersComponent>>();
 
-    child_unique_key: number = 0;
-    componentsReferences = Array<ComponentRef<AdditionalFiltersComponent>>();
+    protected manifestsQueryResults: any[];
 
-    manifestsQueryResults: any[];
+    private taxiiServer: string = '';
+    private taxiiServerType = this.stixService.taxiiServerType;
+    private publishedDict: {};
 
-    taxiiServer: string = '';
-    taxiiServerType = this.stixService.taxiiServerType;
-    publishedDict: {};
+    protected isLoadingStixNext = false;
 
-    isLoadingStixNext = false;
-    noResults = true;
-
-    manifestsQueryError = '';
-    userRoles = [];
+    private manifestsQueryError = '';
+    private userRoles = [];
 
     private httpHeaders = new HttpHeaders()
         .set('Accept', 'application/taxii+json;version=2.1')
         .set('Authorization', `Basic ${btoa(this.stixService.taxiiServer.username + ':' + this.stixService.taxiiServer.password)}`);
 
-    addFilters: boolean = false;
+    protected addFilters: boolean = false;
 
-    customTaxiiServerAuthType = this.stixService.taxiiServerAuthType;
-    customTaxiiServerCreds: any = {};
+    private readonly customTaxiiServerAuthType = this.stixService.taxiiServerAuthType;
 
-    localTimezone: string = '';
+    protected localTimezone: string = '';
 
-    selectedObjects = [];
+    protected selectedObjects = [];
 
     constructor(
         private envService: EnvService,
         public stixService: StixService,
-        dateTimeAdapter: DateTimeAdapter<any>,
+        private dateTimeAdapter: DateTimeAdapter<any>,
         private router: Router,
         private httpClient: HttpClient,
         private scroller: ViewportScroller,
@@ -232,13 +222,6 @@ export class TaxiiQueryComponent implements OnInit {
             return 0; //default return value (no sorting)
         });
 
-        this.statusIDs = [];
-        this.statusTable = [];
-        this.currentStatusPage = 1;
-        this.isLoadingStatus = true;
-        this.statusRowNumber = null;
-        this.showStatusTable = false;
-
         if (this.taxiiServer === this.envService.env.aisTaxiiProxy.url) {
             this.queryParams.limit = '';
         }
@@ -298,7 +281,6 @@ export class TaxiiQueryComponent implements OnInit {
         this.objectsCount = 0;
         this.isAllCheckboxSelected = false;
         this.rownumber = null;
-        this.statusRowNumber = null;
         this.cleaned = false;
         try {
             this.queryParams.type = [...this.selectedOptions];
@@ -609,7 +591,7 @@ export class TaxiiQueryComponent implements OnInit {
                                 this.objectsQueryError = `**Error Name: ${e.name}, Error Message: ${e.message}**`;
                                 return;
                             }
-                            this.noResults = false;
+
                             this.isLoadingStix = false;
                         },
                         (err) => {
@@ -626,7 +608,6 @@ export class TaxiiQueryComponent implements OnInit {
                             err.status == '0' ? (errCode = 'CORS/Firewall') : (errCode = err.staus);
                             console.error('Unable to get query results. Error code: %s, URL: %s ', errCode, err.url);
                             this.objectsQueryError = errMessage;
-                            this.noResults = false;
                         }
                     );
                 });
@@ -713,7 +694,7 @@ export class TaxiiQueryComponent implements OnInit {
                                                                                     this.manifestsQueryError = `**Error Name: ${e.name} Error Message: ${e.message}**`;
                                                                                     return;
                                                                                 }
-                                                                                this.noResults = false;
+
                                                                                 this.isLoadingStix = false;
                                                                             },
                                                                             (err) => {
@@ -724,7 +705,6 @@ export class TaxiiQueryComponent implements OnInit {
                                                                                 );
                                                                                 this.manifestsQueryError = `**Error Code: ${err.status}, URL: ${err.url}**`;
                                                                                 this.isLoadingStix = false;
-                                                                                this.noResults = false;
                                                                             }
                                                                         );
                                                                 }
@@ -775,7 +755,7 @@ export class TaxiiQueryComponent implements OnInit {
                                                                                 this.manifestsQueryError = `**Error Name: ${e.name} Error Message ${e.message}**`;
                                                                                 return;
                                                                             }
-                                                                            this.noResults = false;
+
                                                                             this.isLoadingStix = false;
                                                                         },
                                                                         (err) => {
@@ -786,7 +766,6 @@ export class TaxiiQueryComponent implements OnInit {
                                                                             );
                                                                             this.manifestsQueryError = `**Error Code: ${err.status}, URL: ${err.url}**`;
                                                                             this.isLoadingStix = false;
-                                                                            this.noResults = false;
                                                                         }
                                                                     );
                                                             }
@@ -843,7 +822,6 @@ export class TaxiiQueryComponent implements OnInit {
                                                                                 this.manifestsQueryError = `**Error Name: ${e.name} Error Messages: ${e.message}**`;
                                                                                 return;
                                                                             }
-                                                                            this.noResults = false;
 
                                                                             if (this.objectReturnedCount === this.objectsCount) {
                                                                                 this.isLoadingStix = false;
@@ -864,7 +842,6 @@ export class TaxiiQueryComponent implements OnInit {
                                                                             );
                                                                             this.manifestsQueryError = `**Error code: ${err.status}, URL: ${err.url}**`;
                                                                             this.isLoadingStix = false;
-                                                                            this.noResults = false;
                                                                         }
                                                                     );
                                                             });
@@ -889,7 +866,7 @@ export class TaxiiQueryComponent implements OnInit {
                                     this.objectsQueryError = `**Error Name: ${e.name}, Error Message: ${e.message}**`;
                                     return;
                                 }
-                                this.noResults = false;
+
                                 this.isLoadingStix = false;
                             },
                             (err) => {
@@ -906,7 +883,6 @@ export class TaxiiQueryComponent implements OnInit {
                                 err.status == '0' ? (errCode = 'CORS/Firewall') : (errCode = err.staus);
                                 console.error('Unable to get query results. Error code: %s, URL: %s ', errCode, err.url);
                                 this.objectsQueryError = errMessage;
-                                this.noResults = false;
                             }
                         );
                 });
@@ -966,14 +942,13 @@ export class TaxiiQueryComponent implements OnInit {
                             resolve('error');
                         }
 
-                        this.noResults = false;
                         this.isLoadingStix = false;
                     },
                     (err) => {
                         console.error('Unable to get query results. Error code: %s, URL: %s ', err.status, err.url);
                         this.manifestsQueryError = `**Error Code: ${err.status}, URL: ${err.url}**`;
                         this.isLoadingStix = false;
-                        this.noResults = false;
+
                         resolve('error');
                     }
                 );
@@ -987,14 +962,6 @@ export class TaxiiQueryComponent implements OnInit {
 
     isQueryDisabled(): boolean {
         if (this.isLoadingStix) {
-            return true;
-        }
-
-        if (
-            this.taxiiServerType === 'custom' &&
-            this.customTaxiiServerAuthType !== 'keycloak' &&
-            (!this.customTaxiiServerCreds.username || !this.customTaxiiServerCreds.password)
-        ) {
             return true;
         }
 
@@ -1752,56 +1719,34 @@ export class TaxiiQueryComponent implements OnInit {
 
     sort(col: string, table: string) {
         if (this.objectsQueryResults.length === 0 && table === 'objects') return;
-        if (this.manifestsQueryResults.length === 0 && table === 'manifests') return;
-        if (this.statusTable.length === 0 && table === 'status') return;
 
         if (this.rownumber !== null) this.rownumber = null;
-        if (this.statusRowNumber !== null) this.statusRowNumber = null;
 
         if (!this.sortKey) {
             this.sortKey = '';
             this.unsortedQueryResults = [];
 
-            if (table === 'objects') {
-                for (let obj of this.objectsQueryResults) {
-                    this.unsortedQueryResults.push(obj);
-                }
-            } else if (table === 'manifests') {
-                for (let manifest of this.manifestsQueryResults) {
-                    this.unsortedQueryResults.push(manifest);
-                }
-            } else if (table === 'status') {
-                for (let status of this.statusTable) {
-                    this.unsortedQueryResults.push(status);
-                }
+            for (let obj of this.objectsQueryResults) {
+                this.unsortedQueryResults.push(obj);
             }
         }
 
         if (this.sortKey === '') {
             if (table === 'objects') this.objectsQueryResults = this.sortResultsDes(col, this.objectsQueryResults);
-            else if (table === 'manifests') this.manifestsQueryResults = this.sortResultsDes(col, this.manifestsQueryResults);
-            else if (table === 'status') this.statusTable = this.sortResultsDes(col, this.statusTable);
 
             this.sortKey = `${col}-des`;
         } else {
             let keyArr = this.sortKey.split('-');
             if (col === keyArr[0] && keyArr[1] === 'des') {
                 if (table === 'objects') this.objectsQueryResults = this.sortResultsAsc(col, this.objectsQueryResults);
-                else if (table === 'manifests') this.manifestsQueryResults = this.sortResultsAsc(col, this.manifestsQueryResults);
-                else if (table === 'status') this.statusTable = this.sortResultsAsc(col, this.statusTable);
 
                 this.sortKey = `${col}-asc`;
             } else if (col === keyArr[0] && keyArr[1] === 'asc') {
                 if (table === 'objects') this.objectsQueryResults = this.unsortedQueryResults;
-                else if (table === 'manifests') this.manifestsQueryResults = this.unsortedQueryResults;
-                else if (table === 'status') this.statusTable = this.unsortedQueryResults;
 
                 this.sortKey = '';
             } else {
                 if (table === 'objects') this.objectsQueryResults = this.sortResultsDes(col, this.objectsQueryResults);
-                else if (table === 'manifests') this.manifestsQueryResults = this.sortResultsDes(col, this.manifestsQueryResults);
-                else if (table === 'status') this.statusTable = this.sortResultsDes(col, this.statusTable);
-
                 this.sortKey = `${col}-des`;
             }
         }

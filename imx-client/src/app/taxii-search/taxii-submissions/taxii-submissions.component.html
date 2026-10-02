@@ -50,7 +50,11 @@
                     </div>
                     <div class="col d-flex justify-content-end">
                         <div class="d-flex align-items-center">
-                            <button class="btn btn-custom-width btn-outline-primary tertiary" [disabled]="isSearching" (click)="getStatus()">
+                            <button
+                                class="btn btn-custom-width btn-outline-primary tertiary"
+                                [disabled]="isSearching || !statusId"
+                                (click)="getStatus()"
+                            >
                                 <fa-icon [icon]="faSearch" class="pe-2"></fa-icon>
                                 @if (!isSearching) {
                                     Search

@@ -25,36 +25,32 @@ export class TaxiiSubmissionsComponent implements OnInit {
     @Output() selectCollection: EventEmitter<any>;
     @Output() selectStatus: EventEmitter<boolean>;
 
-    isLoading = false;
-    isSearching = false;
+    protected isLoading = false;
+    protected isSearching = false;
 
-    currentSelection = '';
-    selectionOptions: string[] = [];
+    protected currentSelection = '';
+    protected selectionOptions: string[] = [];
 
-    statusTable: any[];
-    currentStatusPage: number;
-    totalStatusPages: number;
-    statusRowNumber: number;
-    statusQueryResults = '';
-    statusQueryError = '';
+    protected statusTable: any[];
+    protected currentStatusPage: number;
+    protected totalStatusPages: number;
 
-    statusId = '';
+    protected statusId = '';
 
-    public rownumber: number;
-    sortKey: string = '';
-    unsortedQueryResults: any[];
+    protected sortKey: string = '';
+    private unsortedQueryResults: any[];
 
-    httpHeaders: HttpHeaders;
-    taxiiServer: string = '';
+    private httpHeaders: HttpHeaders;
+    private taxiiServer: string = '';
 
-    faArrowLeft = faArrowLeft;
-    faCheck = faCheck;
-    faStop = faStop;
-    faClock = faClock;
-    faAngleDown = faAngleDown;
-    faAngleUp = faAngleUp;
-    faSearch = faSearch;
-    faUndo = faUndo;
+    protected faArrowLeft = faArrowLeft;
+    protected faCheck = faCheck;
+    protected faStop = faStop;
+    protected faClock = faClock;
+    protected faAngleDown = faAngleDown;
+    protected faAngleUp = faAngleUp;
+    protected faSearch = faSearch;
+    protected faUndo = faUndo;
 
     constructor(
         private stixService: StixService,
@@ -73,7 +69,6 @@ export class TaxiiSubmissionsComponent implements OnInit {
         this.statusTable = [];
         this.currentStatusPage = 1;
         this.isLoading = false;
-        this.statusRowNumber = null;
 
         await this.getUsers();
         this.setStatusTable();
@@ -160,8 +155,6 @@ export class TaxiiSubmissionsComponent implements OnInit {
     }
 
     async nextPage(direction) {
-        this.statusRowNumber = -1;
-
         switch (direction) {
             case 'right':
                 this.currentStatusPage++;
@@ -212,21 +205,8 @@ export class TaxiiSubmissionsComponent implements OnInit {
         }
     }
 
-    changeStatusShow(i) {
-        if (this.statusRowNumber === i) {
-            this.statusRowNumber = -1;
-            this.statusQueryResults = '';
-        } else {
-            this.statusRowNumber = i;
-            this.statusQueryResults = this.statusTable[i].res;
-        }
-    }
-
     sort(col: string, table: string) {
         if (this.statusTable.length === 0 && table === 'status') return;
-
-        if (this.rownumber !== null) this.rownumber = null;
-        if (this.statusRowNumber !== null) this.statusRowNumber = null;
 
         if (!this.sortKey) {
             this.sortKey = '';
@@ -454,16 +434,12 @@ export class TaxiiSubmissionsComponent implements OnInit {
     clear(): void {
         this.unsortedQueryResults = [];
         this.statusId = '';
-        this.statusRowNumber = null;
     }
 
     async getStatus() {
         await this.envService.checkAuth('/query-stix');
 
-        this.statusQueryResults = '';
-
         if (!this.statusId) {
-            this.statusQueryError = '**You must provide a Status ID for this request**';
             return null;
         }
         this.isSearching = true;
@@ -479,7 +455,6 @@ export class TaxiiSubmissionsComponent implements OnInit {
                         this.isSearching = false;
                     },
                     (err) => {
-                        this.statusQueryError = `**Error code: ${err.status}, URL: ${err.url}**`;
                         this.announcementService.show(
                             'Failed to retrieve status',
                             `Failed to retrieve status for ${this.statusId}. Error: ${err}`,
@@ -491,7 +466,6 @@ export class TaxiiSubmissionsComponent implements OnInit {
                     }
                 );
         } catch (e) {
-            this.statusQueryError = `**Error Name: ${e.name} Error Message ${e.message}**`;
             this.announcementService.show('Failed to retrieve status', `Failed to retrieve status for ${this.statusId}. Error: ${e}`, 'error', false);
             this.isSearching = false;
             return null;
