@@ -803,6 +803,7 @@ export class StixService implements OnInit {
                 const data: any = await lastValueFrom(this.taxiiHttpReq('get', getDiscoveryURL, { headers: this.httpHeaders }));
 
                 try {
+                    this.apiRootDetails = [];
                     if (data.api_roots) {
                         for (let i = 0; i < data.api_roots.length; i++) {
                             let apiRoot = this.retrieveAPIRoot(data.api_roots[i]);
@@ -827,6 +828,8 @@ export class StixService implements OnInit {
                                     'api-root': apiRoot,
                                     title: apiRootInfo['title'],
                                     description: apiRootInfo['description'],
+                                    versions: apiRootInfo['versions'],
+                                    max_content_length: apiRootInfo['max_content_length'],
                                 };
 
                                 if (
@@ -872,6 +875,8 @@ export class StixService implements OnInit {
                 try {
                     if (data && data.api_roots) {
                         let len = data.api_roots.length;
+                        this.apiRootDetails = [];
+
                         for (let i = 0; i < len; i++) {
                             let apiRoot = this.retrieveAPIRoot(data.api_roots[i]);
                             this.apiRoots.push(apiRoot);
@@ -888,6 +893,7 @@ export class StixService implements OnInit {
                                         'api-root': apiRoot,
                                         title: apiRootInfo['title'],
                                         description: apiRootInfo['description'],
+                                        max_content_length: apiRootInfo['max_content_length'],
                                     };
 
                                     if (
@@ -898,9 +904,10 @@ export class StixService implements OnInit {
                                             'api-root': apiRoot,
                                             title: apiRootInfo['title'],
                                             description: apiRootInfo['description'],
+                                            versions: apiRootInfo['versions'],
                                         });
                                         const tempRoot = this.apiRootDetails[this.apiRootDetails.length - 1];
-                                        await this.getCollectionsIds(getDiscoveryURL, tempRoot);
+                                        const ids = await this.getCollectionsIds(getDiscoveryURL, tempRoot);
                                     }
                                 }
                             } catch (e) {
@@ -934,6 +941,8 @@ export class StixService implements OnInit {
                 if (!status) {
                     status = e.http_status;
                 }
+
+                this.apiRootDetails = [];
 
                 if (status) {
                     let errMessage = `Error code [${e.status}]: ${this.generateHTTPError(e.status)}`;
@@ -1059,7 +1068,6 @@ export class StixService implements OnInit {
                         };
                         this.sendData(configEvent);
                     }
-
                     return resolve(true);
                 } catch (error) {
                     this.apiRoots2.push({ apiPath: tempRoot, childRoot: url + tempRoot + '/', collections: [] });
@@ -1795,7 +1803,6 @@ export class StixService implements OnInit {
                             if (this.taxiiServerType === 'default') {
                                 // await this.publishCui(bundle);
                             }
-
                             this.isLoading = false;
                             resolve(result);
                         })

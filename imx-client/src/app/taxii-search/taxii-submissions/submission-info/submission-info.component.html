@@ -1,0 +1,154 @@
+<div>
+    <div class="modal-header d-flex justify-content-start align-items-center" style="align-items: start">
+        <div>
+            <span id="object-type" class="card-title"> {{ search ? 'Submisison Status' : `Submission Status: ${submission.docName}` }} </span>
+            <span class="imx-item-secondary tertiary">{{ search ? submission.id : submission.res.id }}</span>
+            <span class="imx-item-secondary tertiary">{{ search ? submission.request_timestamp : submission.res.request_timestamp }}</span>
+        </div>
+    </div>
+
+    <div class="modal-body d-flex justify-content-center">
+        <div class="container-fluid">
+            <div class="row imx-card submission-card">
+                <div class="col-4 align-self-center">
+                    <div class="row">
+                        <div class="col-4 d-flex justify-content-center align-items-center">
+                            <fa-icon [icon]="faClock" class="color-yellow"></fa-icon>
+                        </div>
+                        <div class="col-8">
+                            <div class="d-flex flex-column justify-content-center align-items-center">
+                                <div class="card-label mb-1">Pending Objects</div>
+                                <div class="card-title">
+                                    {{ !search ? submission.res.pending_count : submission.pending_count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 middle-col align-self-center">
+                    <div class="row">
+                        <div class="col-4 d-flex justify-content-center align-items-center">
+                            <fa-icon [icon]="faCheck" class="color-green"></fa-icon>
+                        </div>
+                        <div class="col-8">
+                            <div class="d-flex flex-column justify-content-center align-items-center">
+                                <div class="card-label mb-1">Published Objects</div>
+                                <div class="card-title">
+                                    {{ !search ? submission.res.success_count : submission.success_count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 align-self-center">
+                    <div class="row">
+                        <div class="col-4 d-flex justify-content-center align-items-center">
+                            <fa-icon [icon]="faStop" class="color-red"></fa-icon>
+                        </div>
+                        <div class="col-8">
+                            <div class="d-flex flex-column justify-content-center align-items-center">
+                                <div class="card-label mb-1">Failed Objects</div>
+                                <div class="card-title">
+                                    {{ !search ? submission.res.failure_count : submission.failure_count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (success?.length > 0) {
+                <div class="row imx-card mt-3">
+                    <div class="imx-card-header cursor-pointer" (click)="toggleShow('success')">
+                        <div class="d-flex justify-content-between w-100">
+                            <span class="imx-card-title">Published Objects</span>
+                            <span class="imx-item-secondary">{{ success.length }}</span>
+                        </div>
+                    </div>
+
+                    @if (show.success) {
+                        <div class="imx-card-body card-height">
+                            <div class="list-group list-group-flush imx-item-list">
+                                @for (obj of success; track obj.id; let i = $index) {
+                                    <div class="list-group-item cursor-pointer">
+                                        <div class="imx-item" id="obj_list{{ i }}">
+                                            <span class="imx-item-text">
+                                                <span class="imx-item-primary">{{ obj.id }}</span>
+                                                @if (obj.message) {
+                                                    <span class="imx-item-secondary tertiary">{{ obj.message }}</span>
+                                                } @else {
+                                                    <span class="imx-item-secondary tertiary">Successfully published</span>
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            @if (failure?.length > 0) {
+                <div class="row imx-card mt-3">
+                    <div class="imx-card-header cursor-pointer" (click)="toggleShow('failure')">
+                        <div class="d-flex justify-content-between w-100">
+                            <span class="imx-card-title">Failed Objects</span>
+                            <span class="imx-item-secondary">{{ failure.length }}</span>
+                        </div>
+                    </div>
+                    @if (show.failure) {
+                        <div class="imx-card-body card-height">
+                            <div class="list-group list-group-flush imx-item-list">
+                                @for (obj of failure; track obj.id; let i = $index) {
+                                    <div class="list-group-item cursor-pointer">
+                                        <div class="imx-item" id="obj_list{{ i }}">
+                                            <span class="imx-item-text">
+                                                <span class="imx-item-primary">{{ obj.id }}</span>
+                                                @if (obj.message) {
+                                                    <span class="imx-item-secondary tertiary">{{ obj.message }}</span>
+                                                } @else {
+                                                    <span class="imx-item-secondary tertiary">No Error message provided</span>
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            @if (pending?.length > 0) {
+                <div class="row imx-card mt-3">
+                    <div class="imx-card-header cursor-pointer" (click)="toggleShow('pending')">
+                        <div class="d-flex justify-content-between w-100">
+                            <span class="imx-card-title">Pending Objects</span>
+                            <span class="imx-item-secondary">{{ pending.length }}</span>
+                        </div>
+                    </div>
+                    @if (show.pending) {
+                        <div class="imx-card-body card-height">
+                            <div class="list-group list-group-flush imx-item-list">
+                                @for (obj of pending; track obj.id; let i = $index) {
+                                    <div class="list-group-item cursor-pointer">
+                                        <div class="imx-item" id="obj_list{{ i }}">
+                                            <span class="imx-item-text">
+                                                <span class="imx-item-primary">{{ obj.id }}</span>
+                                                @if (obj.message) {
+                                                    <span class="imx-item-secondary tertiary">{{ obj.message }}</span>
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="downloadFile()">Download</button>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="body">
+    @if (stixService.isLoading) {
+        <div class="container-fluid h-100 p-3">
+            <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem"></div>
+                <span>Loading...</span>
+            </div>
+        </div>
+    } @else {
+        <div class="ms-4 me-4">
+            @if (!selectedCollection && !globalSearch && !statusPage) {
+                <app-taxii-info
+                    [selectedColl]="selectedCollection"
+                    [selectedRoot]="selectedRoot"
+                    [roots]="roots"
+                    [collections]="collections"
+                    [globalSearch]="globalSearch"
+                    [serverInfo]="serverInfo"
+                    (setServerInfo)="setServerInfo($event)"
+                    (getAvailableAPIRoots)="getAvailableAPIRoots()"
+                    (getAvailableCollections)="getAvailableCollections()"
+                    (selectRoot)="selectRoot($event)"
+                    (selectCollection)="selectCollection($event)"
+                    (selectGlobalSearch)="selectGlobalSearch($event)"
+                    (selectStatus)="selectStatus($event)"
+                ></app-taxii-info>
+            } @else if (statusPage) {
+                <app-taxii-submissions
+                    [selectedColl]="selectedCollection"
+                    [selectedRoot]="selectedRoot"
+                    [roots]="roots"
+                    [collections]="collections"
+                    [statusPage]="statusPage"
+                    (selectCollection)="selectCollection($event)"
+                    (selectStatus)="selectStatus($event)"
+                ></app-taxii-submissions>
+            } @else if (selectedCollection || globalSearch) {
+                <app-taxii-query
+                    [selectedColl]="selectedCollection"
+                    [selectedRoot]="selectedRoot"
+                    [roots]="roots"
+                    [collections]="collections"
+                    [globalSearch]="globalSearch"
+                    [serverInfo]="serverInfo"
+                    (setServerInfo)="setServerInfo($event)"
+                    (getAvailableAPIRoots)="getAvailableAPIRoots()"
+                    (getAvailableCollections)="getAvailableCollections()"
+                    (selectRoot)="selectRoot($event)"
+                    (selectCollection)="selectCollection($event)"
+                    (selectGlobalSearch)="selectGlobalSearch($event)"
+                ></app-taxii-query>
+            }
+        </div>
+    }
+</div>
