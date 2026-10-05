@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="imx-card-body ps-0 pe-0" [ngClass]="{ 'pt-0': statusTable && statusTable.length > 0 }">
+                <div class="imx-card-body ps-0 pe-0 overflow-auto" [ngClass]="{ 'pt-0': statusTable && statusTable.length > 0 }">
                     @if (!statusTable || statusTable.length == 0) {
                         <div class="imx-empty">No submissions</div>
                     } @else {
@@ -122,7 +122,7 @@
                                 @for (obj of statusTable; track obj; let i = $index) {
                                     <tr class="cursor-pointer stix-object">
                                         <td class="table-hover" (click)="openSubmission(obj)">
-                                            <span class="imx-type-badge">
+                                            <span class="imx-type-badge text-nowrap">
                                                 <fa-icon *ngIf="obj.res.status == 'complete'" [icon]="faCheck" class="color-green"></fa-icon>
                                                 <fa-icon
                                                     *ngIf="obj.res.status != 'complete' && obj.res.status != 'pending'"

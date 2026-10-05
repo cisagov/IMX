@@ -9,6 +9,7 @@ import { StixService } from 'src/app/stix-service.service';
 import { SubmissionsService } from 'src/app/submissions-service/submissions.service';
 import { SubmissionInfoComponent } from './submission-info/submission-info.component';
 import { AnnouncementService } from 'src/app/announcement-service/announcement-service.service';
+import { sort } from '../utils';
 
 @Component({
     selector: 'app-taxii-submissions',
@@ -252,229 +253,28 @@ export class TaxiiSubmissionsComponent implements OnInit {
         this.statusId = '';
     }
 
-    sort(col: string, table: string) {
+    sort(col: string, table: 'objects' | 'status') {
         if (this.statusTable.length === 0 && table === 'status') return;
 
         if (!this.sortKey) {
             this.sortKey = '';
             this.unsortedQueryResults = [];
-            if (table === 'status') {
-                for (let status of this.statusTable) {
-                    this.unsortedQueryResults.push(status);
-                }
+            for (let status of this.statusTable) {
+                this.unsortedQueryResults.push(status);
             }
         }
 
-        if (this.sortKey === '') {
-            if (table === 'status') this.statusTable = this.sortResultsDes(col, this.statusTable);
+        const results = sort(
+            col,
+            table,
+            {
+                sortKey: this.sortKey,
+                statusTable: this.statusTable,
+                unsortedQueryResults: this.unsortedQueryResults,
+            },
+            this.stixService
+        );
 
-            this.sortKey = `${col}-des`;
-        } else {
-            let keyArr = this.sortKey.split('-');
-            if (col === keyArr[0] && keyArr[1] === 'des') {
-                if (table === 'status') this.statusTable = this.sortResultsAsc(col, this.statusTable);
-
-                this.sortKey = `${col}-asc`;
-            } else if (col === keyArr[0] && keyArr[1] === 'asc') {
-                if (table === 'status') this.statusTable = this.unsortedQueryResults;
-
-                this.sortKey = '';
-            } else {
-                if (table === 'status') this.statusTable = this.sortResultsDes(col, this.statusTable);
-
-                this.sortKey = `${col}-des`;
-            }
-        }
-    }
-
-    sortResultsDes(col: string, tableArray: any[]) {
-        switch (col) {
-            case 'name':
-                return tableArray.sort((a, b) =>
-                    this.getComponentDisplayLowercase(a) > this.getComponentDisplayLowercase(b)
-                        ? 1
-                        : this.getComponentDisplayLowercase(a) < this.getComponentDisplayLowercase(b)
-                          ? -1
-                          : 0
-                );
-            case 'status':
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a.res[col]) > this.sortToLowercase(b.res[col])
-                        ? 1
-                        : this.sortToLowercase(a.res[col]) < this.sortToLowercase(b.res[col])
-                          ? -1
-                          : 0
-                );
-            case 'request_timestamp':
-                return tableArray.sort((a, b) => this.sortDate(a.res[col], b.res[col], 'des'));
-            default:
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a[col]) > this.sortToLowercase(b[col])
-                        ? 1
-                        : this.sortToLowercase(a[col]) < this.sortToLowercase(b[col])
-                          ? -1
-                          : 0
-                );
-        }
-    }
-
-    sortResultsAsc(col: string, tableArray: any[]) {
-        switch (col) {
-            case 'name':
-                return tableArray.sort((a, b) =>
-                    this.getComponentDisplayLowercase(a) < this.getComponentDisplayLowercase(b)
-                        ? 1
-                        : this.getComponentDisplayLowercase(a) > this.getComponentDisplayLowercase(b)
-                          ? -1
-                          : 0
-                );
-            case 'status':
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a.res[col]) < this.sortToLowercase(b.res[col])
-                        ? 1
-                        : this.sortToLowercase(a.res[col]) > this.sortToLowercase(b.res[col])
-                          ? -1
-                          : 0
-                );
-            case 'request_timestamp':
-                return tableArray.sort((a, b) => this.sortDate(a.res[col], b.res[col], 'asc'));
-            default:
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a[col]) < this.sortToLowercase(b[col])
-                        ? 1
-                        : this.sortToLowercase(a[col]) > this.sortToLowercase(b[col])
-                          ? -1
-                          : 0
-                );
-        }
-    }
-
-    sortDate(a: any, b: any, type: string) {
-        a = new Date(a);
-        b = new Date(b);
-        if (type === 'asc') {
-            if (!this.isValidDate(a) && !this.isValidDate(b)) return 0;
-            else if (!this.isValidDate(a)) return 1;
-            else if (!this.isValidDate(b)) return -1;
-            else return a < b ? 1 : a > b ? -1 : 0;
-        }
-        if (type === 'des') {
-            if (!this.isValidDate(a) && !this.isValidDate(b)) return 0;
-            else if (!this.isValidDate(a)) return 1;
-            else if (!this.isValidDate(b)) return -1;
-            else return a > b ? 1 : a < b ? -1 : 0;
-        }
-
-        return 0;
-    }
-
-    sortToLowercase(item) {
-        if (typeof item === 'string') return item.toLowerCase();
-
-        return item;
-    }
-
-    isValidDate(date) {
-        return date instanceof Date && !isNaN(date.getTime());
-    }
-
-    getComponentDisplayLowercase(component: any) {
-        let result = this.getComponentDisplay(component);
-
-        if (typeof result === 'string') return result.toLowerCase();
-
-        return result;
-    }
-
-    getComponentDisplay(component: any): string {
-        if (component.type) {
-            let componentDisplay = '';
-
-            switch (component.type) {
-                case 'artifact': {
-                    if (component.payload_bin) {
-                        if (component.hashes) {
-                            const keys = Object.keys(component.hashes);
-                            componentDisplay = component.hashes[keys[0]];
-                        } else componentDisplay = component.id;
-                    } else componentDisplay = component.url;
-                    break;
-                }
-                case 'autonomous-system': {
-                    componentDisplay = `${component.number} ${component.name ? '(' + component.name + ')' : ''}`;
-                    break;
-                }
-                case 'directory': {
-                    componentDisplay = component.path;
-                    break;
-                }
-                case 'email-message': {
-                    componentDisplay = `${component.subject ? component.subject : `No Subject Included: (${component.id})`}`;
-                    break;
-                }
-                case 'file': {
-                    if (component.name) componentDisplay = component.name;
-                    else if (component.hashes)
-                        componentDisplay = `${Object.keys(component.hashes)[0]}: ${component.hashes[Object.keys(component.hashes)[0]]}`;
-                    else componentDisplay = `<NO NAME> (${component.id})`;
-                    break;
-                }
-                case 'domain-name':
-                case 'email-addr':
-                case 'url':
-                case 'ipv4-addr':
-                case 'ipv6-addr':
-                case 'mac-addr': {
-                    componentDisplay = component.value;
-                    break;
-                }
-                case 'mutex':
-                case 'software': {
-                    componentDisplay = component.name;
-                    break;
-                }
-                case 'process': {
-                    if (component.pid) componentDisplay = component.pid;
-                    else if (component.cwd) componentDisplay = component.cwd;
-                    else componentDisplay = `<NO NAME> (${component.id})`;
-                    break;
-                }
-                case 'relationship': {
-                    if (component.source_ref && component.target_ref) {
-                        let sourceRefObject = this.stixService.bundle.objects.filter((obj) => obj.id === component.source_ref),
-                            targetRefObject = this.stixService.bundle.objects.filter((obj) => obj.id === component.target_ref);
-                        if (sourceRefObject.length > 0 && targetRefObject.length > 0)
-                            componentDisplay = `${this.getComponentDisplay(sourceRefObject[0])} -> ${this.getComponentDisplay(targetRefObject[0])}`;
-                        else componentDisplay = `<NO NAME> (${component.id})`;
-                    } else componentDisplay = `<NO NAME> (${component.id})`;
-                    break;
-                }
-                case 'user-account': {
-                    if (component.user_id) componentDisplay = component.user_id;
-                    else if (component.account_login) componentDisplay = component.account_login;
-                    else if (component.display_name) componentDisplay = component.display_name;
-
-                    break;
-                }
-                case 'windows-registry-key': {
-                    if (component.key) componentDisplay = component.key;
-                    else componentDisplay = `<NO NAME> (${component.id})`;
-                    break;
-                }
-                case 'x509-certificate': {
-                    if (component.subject) componentDisplay = component.subject;
-                    else if (component.serial_number) componentDisplay = component.serial_number;
-                    else if (component.hashes)
-                        componentDisplay = `${Object.keys(component.hashes)[0]}: ${component.hashes[Object.keys(component.hashes)[0]]}`;
-                    else if (component.issuer) componentDisplay = component.issuer;
-                    else componentDisplay = `<NO NAME> (${component.id})`;
-                    break;
-                }
-                default:
-                    return component.name ? component.name : `<NO NAME> (${component.id})`;
-            }
-
-            return componentDisplay;
-        } else return component.name ? component.name : '<NO NAME>';
+        this.sortKey = results.sortKey;
     }
 }
