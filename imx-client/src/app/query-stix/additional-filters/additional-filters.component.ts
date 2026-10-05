@@ -12,7 +12,7 @@ import { EnvService } from 'src/app/env-service/env.service';
 })
 export class AdditionalFiltersComponent implements OnInit {
     public unique_key: number;
-    public parentRef: QueryStixComponent;
+    public parentRef;
     faTrash = faTrash;
     type = '';
     attributes = [];

@@ -1,0 +1,441 @@
+<div class="container-fluid h-100">
+    <div class="row pb-4 filter-border">
+        <div class="col">
+            <div class="row mt-3">
+                <div class="col">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center" (click)="back()">
+                            <span class="imx-item-secondary cursor-pointer tertiary hover-text">
+                                <fa-icon class="me-1" style="font-size: 0.7rem" [icon]="faArrowLeft"></fa-icon>Back</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center">
+                            @if (!globalSearch) {
+                                <span class="imx-item-secondary">Search within</span>
+
+                                <div class="d-flex align-items-center ms-3">
+                                    <span class="imx-item-secondary">API Root: </span>
+                                    <select
+                                        [ngModel]="selectedRoot"
+                                        disabled
+                                        class="form-select form-select-sm taxii-select w-auto tertiary ms-2"
+                                        style="height: 27px"
+                                    >
+                                        <option [value]="selectedRoot">{{ selectedRoot }}</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center ms-3">
+                                    <span class="imx-item-secondary">Collection: </span>
+                                    <select
+                                        [(ngModel)]="selectedCollection"
+                                        class="form-select form-select-sm taxii-select w-auto tertiary ms-2"
+                                        style="height: 27px"
+                                    >
+                                        <option disabled>Select Collection</option>
+                                        @for (collection of collections[selectedRoot]; track collection.id) {
+                                            <option [ngValue]="collection">{{ collection.title }}</option>
+                                        }
+                                    </select>
+                                </div>
+                            } @else {
+                                <span class="imx-item-secondary">Search globally</span>
+                            }
+                        </div>
+                        <div class="d-flex imx-item-secondary">
+                            <div class="p-2 cursor-pointer hover-text" (click)="selectAll()">All</div>
+                            <div class="p-2 cursor-pointer hover-text" (click)="selectNone()">None</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    @for (typeOption of typeOptions; track typeOption) {
+                        <button
+                            type="button"
+                            class="btn object-pill m-1"
+                            (click)="selectObjectType(typeOption)"
+                            [ngClass]="{ 'active-pill': hasObjectType(typeOption), 'inactive-pill': !hasObjectType(typeOption) }"
+                        >
+                            {{ typeOption }}
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-2">
+                    <div class="d-flex align-items-center">
+                        <div class="imx-item-secondary tertiary no-overflow">From</div>
+                        <input
+                            type="text"
+                            class="form-control input-sm tertiary ms-2"
+                            matInput
+                            name="addedafter"
+                            id="addedafter"
+                            [owlDateTimeTrigger]="dt5"
+                            [owlDateTime]="dt5"
+                            [(ngModel)]="queryParams.addedAfter"
+                        />
+                        <owl-date-time #dt5></owl-date-time>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="d-flex align-items-center">
+                        <div class="imx-item-secondary tertiary no-overflow">Object ID</div>
+                        <input type="text" class="form-control input-sm tertiary ms-2" matInput name="id" id="id" [(ngModel)]="queryParams.id" />
+                        <owl-date-time #dt5></owl-date-time>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="d-flex align-items-center">
+                        <div class="imx-item-secondary tertiary no-overflow">Version</div>
+                        <select
+                            class="form-control form-select input-sm tertiary ms-2"
+                            id="version"
+                            name="version"
+                            [(ngModel)]="queryParams.version"
+                            (ngModelChange)="onVersionChanged($event)"
+                        >
+                            <option value=""></option>
+                            <option *ngFor="let specific_version of versions" [value]="specific_version">
+                                {{ specific_version }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="d-flex align-items-center">
+                        <div class="imx-item-secondary tertiary no-overflow">Spec. Version</div>
+                        <input
+                            type="text"
+                            class="form-control input-sm tertiary ms-2"
+                            id="specific_version"
+                            value=""
+                            [(ngModel)]="queryParams.specific_version"
+                        />
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="d-flex align-items-center">
+                        <div class="imx-item-secondary tertiary no-overflow">Limit</div>
+                        <input
+                            type="text"
+                            class="form-control input-sm tertiary ms-2"
+                            matInput
+                            name="limit"
+                            id="limit"
+                            value=""
+                            [(ngModel)]="queryParams.limit"
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col d-flex justify-content-end">
+                    <div class="me-2">
+                        <button class="btn btn-custom-width btn-outline-secondary tertiary" (click)="showFilters()" [disabled]="isLoadingStix">
+                            <fa-icon [icon]="faFilter" class="pe-1"></fa-icon>
+                            Advanced Filters
+                        </button>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center mb-1">
+                            <button
+                                class="btn btn-custom-width btn-outline-primary tertiary"
+                                (click)="getObjects(); !(isLoadingStix = isLoadingStix); exportObjects = []"
+                                [disabled]="isQueryDisabled()"
+                            >
+                                <fa-icon [icon]="faSearch" class="pe-2"></fa-icon>
+                                <span *ngIf="!isLoadingStix">Search</span>
+                                <span *ngIf="isLoadingStix">
+                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    <span class="sr-only">Loading...</span>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="imx-item-secondary tertiary no-overflow">Omit Revoked Objects</div>
+                            <input
+                                type="checkbox"
+                                class="omitrevoked tertiary ms-2"
+                                style="border: 1px solid #dee2e6 !important"
+                                name="omitrevoked"
+                                [checked]="isOmitRevoked"
+                                [(ngModel)]="isOmitRevoked"
+                                (change)="onOmitRevokedChanged($event)"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (addFilters) {
+                <div class="row mt-3">
+                    <div class="col imx-card card-body-dark pt-2 pb-2 ps-1 pe-1 mt-3">
+                        <div class="imx-card-body">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col d-flex justify-content-between">
+                                        <span class="imx-item-secondary tertiary">Advanced Filters</span>
+                                        <div class="d-flex">
+                                            <button class="btn btn-outline-secondary tertiary me-2" (click)="createFilterComponent()">Add</button>
+
+                                            <button class="btn btn-outline-secondary tertiary" (click)="clearFilterComponent()">Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col imx-card card-body-light">
+                                        <div class="imx-card-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="d-flex flex-column">
+                                                            @if (componentsReferences.length == 0) {
+                                                                <div class="imx-empty">
+                                                                    <span>Click "Add" to add addvanced filter options</span>
+                                                                </div>
+                                                            }
+                                                            <ng-template #viewContainerRef></ng-template>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col imx-card mt-3">
+            <div class="imx-card-header">
+                <div class="d-flex w-100 justify-content-between">
+                    <span class="imx-card-title">Results</span>
+                    @if (queryParams.more) {
+                        <button
+                            *ngIf="!isLoadingStixNext"
+                            type="button"
+                            class="btn btn-outline-secondary tertiary"
+                            (click)="getNextObjects()"
+                            title="More objects are available for this query. Click Next to see them."
+                        >
+                            <fa-icon [icon]="faArrowRight" class="pe-1"></fa-icon>
+                            Next Page
+                        </button>
+                        <button *ngIf="isLoadingStixNext" type="button" disabled class="btn btn-outline-secondary tertiary">
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            <span class="sr-only">Loading...</span>
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="imx-card-body ps-0 pe-0 overflow-auto" [ngClass]="{ 'pt-0': objectsQueryResults && objectsQueryResults.length > 0 }">
+                @if (!objectsQueryResults || objectsQueryResults.length == 0) {
+                    <div class="imx-empty">No objects were returned by the TAXII server. Check your parameters and try again</div>
+                } @else {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="cursor-pointer" scope="col">
+                                    <input
+                                        type="checkbox"
+                                        class="select-all checkbox"
+                                        name="select-all"
+                                        [checked]="isAllCheckboxSelected"
+                                        [(ngModel)]="isAllCheckboxSelected"
+                                        (change)="checkAllCheckBox($event)"
+                                    />
+                                </th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('id', 'objects')">
+                                    <span>
+                                        Type
+
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'id-des'" [icon]="faAngleDown"></fa-icon>
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'id-asc'" [icon]="faAngleUp"></fa-icon>
+                                    </span>
+                                </th>
+                                <th class="cursor-pointer" style="width: 30%" scope="col" (click)="sort('name', 'objects')">
+                                    <span>
+                                        Name
+
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'name-des'" [icon]="faAngleDown"></fa-icon>
+                                        <fa-icon class="tertiary" *ngIf="sortKey === 'name-asc'" [icon]="faAngleUp"></fa-icon>
+                                    </span>
+                                </th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('published', 'objects')">
+                                    Published ({{ localTimezone }})
+                                    <fa-icon *ngIf="sortKey === 'published-des'" [icon]="faAngleDown"></fa-icon>
+                                    <fa-icon *ngIf="sortKey === 'published-asc'" [icon]="faAngleUp"></fa-icon>
+                                </th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('created', 'objects')">
+                                    Created ({{ localTimezone }})
+                                    <fa-icon *ngIf="sortKey === 'created-des'" [icon]="faAngleDown"> </fa-icon>
+                                    <fa-icon *ngIf="sortKey === 'created-asc'" [icon]="faAngleUp"> </fa-icon>
+                                </th>
+                                <th class="cursor-pointer" scope="col" (click)="sort('modified', 'objects')">
+                                    Modified ({{ localTimezone }})
+                                    <fa-icon *ngIf="sortKey === 'modified-des'" [icon]="faAngleDown"></fa-icon>
+                                    <fa-icon *ngIf="sortKey === 'modified-asc'" [icon]="faAngleUp"> </fa-icon>
+                                </th>
+
+                                <th class="cursor-pointer" scope="col">Media Type</th>
+                                <th class="cursor-pointer" scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (obj of objectsQueryResults; track obj; let i = $index) {
+                                <tr class="cursor-pointer stix-object" (click)="openJson(obj)">
+                                    <td class="table-hover" (click)="$event.stopPropagation()">
+                                        <input
+                                            type="checkbox"
+                                            class="select-item checkbox"
+                                            [(ngModel)]="objectsQueryResults[i].checked"
+                                            (click)="$event.stopPropagation()"
+                                            (change)="updateSelectedObjects(obj.id, obj.modified, obj.checked)"
+                                        />
+                                    </td>
+                                    <td class="table-hover">
+                                        <button type="button" class="btn object-pill regular-pill">
+                                            {{ obj.type }}
+                                        </button>
+                                    </td>
+                                    <td class="table-hover" style="width: 30%">
+                                        {{ getComponentDisplay(obj) }}
+                                    </td>
+                                    <td class="table-hover">
+                                        <div class="d-flex flex-column">
+                                            <span class="imx-item-secondary tertiary"> {{ getPublished(obj)?.localDate }} </span>
+                                        </div>
+                                    </td>
+                                    <td class="table-hover">
+                                        <div class="d-flex flex-column">
+                                            <span class="imx-item-secondary tertiary"> {{ obj.created }} </span>
+                                        </div>
+                                    </td>
+                                    <td class="table-hover">
+                                        <div class="d-flex flex-column">
+                                            <span class="imx-item-secondary tertiary"> {{ obj.modified }} </span>
+                                        </div>
+                                    </td>
+                                    <td class="table-hover">
+                                        <span class="imx-type-badge">
+                                            {{ getMediaType(manifestsQueryResults[i]) }}
+                                        </span>
+                                    </td>
+                                    <td class="table-hover">
+                                        <div class="d-flex">
+                                            <ng-container
+                                                *ngIf="
+                                                    (!obj.revoked || obj.revoked == false) &&
+                                                    scoList.indexOf(obj.type) == -1 &&
+                                                    existingCISAIdentity == obj.created_by_ref &&
+                                                    obj.type !== 'marking-definition'
+                                                "
+                                            >
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa btn-outline-secondary me-2"
+                                                    (click)="editObject(obj)"
+                                                    title="Click to create a new version of this STIX object."
+                                                >
+                                                    <fa-icon [icon]="faEdit"></fa-icon>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-fa btn-outline-warning me-2"
+                                                    (click)="revokeObject(obj)"
+                                                    title="Click to revoke this STIX object."
+                                                >
+                                                    <fa-icon [icon]="faFileArchive"></fa-icon>
+                                                </button>
+                                            </ng-container>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-success"
+                                                (click)="addObject(obj)"
+                                                title="Click to add this STIX object to bundle."
+                                            >
+                                                <fa-icon [icon]="faAddToBundle"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col query-action-bar d-flex justify-content-end">
+            @if (objectsQueryResults && objectsQueryResults.length > 0) {
+                <button
+                    class="btn btn-outline-secondary tertiary"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    [disabled]="loadingExport || isLoadingStix"
+                >
+                    <fa-icon [icon]="faFileExport" class="pe-1"></fa-icon>
+                    Export
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item d-flex" (click)="export(objectsQueryResults, 'JSON')"> JSON </a>
+                    <a class="dropdown-item" (click)="export(objectsQueryResults, 'CSV')"> CSV </a>
+                </div>
+
+                <button *ngIf="isAdmin" class="btn btn-outline-secondary tertiary" (click)="deleteSelectedObjects()" [disabled]="isLoadingStix">
+                    <fa-icon [icon]="faTrash" class="pe-1"></fa-icon>
+                    Delete
+                </button>
+                @if (selectedObjects.length == 1 && isReportOrGrouping()) {
+                    <button
+                        type="button"
+                        class="btn btn-outline-success tertiary"
+                        (click)="importBundle()"
+                        title="Click to create a bundle from the object_refs of this Report"
+                    >
+                        Import
+                    </button>
+                }
+                @if (selectedObjects.length == 2) {
+                    <button class="btn btn-outline-primary tertiary" (click)="createRelationship()" style="width: fit-content">
+                        <fa-icon [icon]="faLink" class="pe-1"></fa-icon>
+                        Create Relationship
+                    </button>
+                }
+                @if (queryParams.more) {
+                    <button
+                        *ngIf="!isLoadingStixNext"
+                        type="button"
+                        class="btn btn-outline-secondary tertiary"
+                        (click)="getNextObjects()"
+                        title="More objects are available for this query. Click Next to see them."
+                    >
+                        <fa-icon [icon]="faArrowRight" class="pe-2"></fa-icon>
+                        Next Page
+                    </button>
+                    <button *ngIf="isLoadingStixNext" type="button" disabled class="btn btn-outline-secondary tertiary">
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">Loading...</span>
+                    </button>
+                }
+            }
+
+            <button type="button" class="btn btn-outline-secondary no-border tertiary" (click)="scrollUp()">
+                <fa-icon [icon]="faCaretUp"></fa-icon>
+            </button>
+        </div>
+    </div>
+</div>
