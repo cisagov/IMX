@@ -167,8 +167,8 @@ export class HowTtpComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.selectedSco = event['sco_ttp'];
-        this.selectedIndicator = event['ind_ttp'];
+        this.selectedSco = event['sco_ttp'] ?? [];
+        this.selectedIndicator = event['ind_ttp'] ?? [];
 
         this.disableContinue();
     }
@@ -367,13 +367,15 @@ export class HowTtpComponent implements OnInit, OnDestroy {
     }
 
     getIndicators() {
-        let indicators = [];
-        if (Object.keys(this.guidedService.cart).length !== 0 && this.guidedService.cart['how-pattern-builder']) {
-            indicators = this.guidedService.cart['how-pattern-builder']['Indicator'];
-        }
-        this.stixService.bundle.objects.forEach((obj) => {
-            if (obj.type == 'indicator') indicators.push(obj);
-        });
+
+        const indicatorsFromCart = this.guidedService.cart?.['how-pattern-builder']?.['Indicator'] ?? [];
+        const indicatorsFromBundle = this.guidedService.bundle?.objects?.filter(obj => obj.type === 'indicator') ?? [];
+
+        const indicators = [
+            ...indicatorsFromCart,
+            ...indicatorsFromBundle
+        ];
+
         this.indicatorSize = indicators.length > 8 ? 8 : indicators.length === 0 ? 1 : indicators.length;
         return indicators;
     }

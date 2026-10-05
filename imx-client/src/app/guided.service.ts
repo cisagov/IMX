@@ -355,23 +355,24 @@ export class GuidedService {
         let regTypes = [];
         let regData = [];
 
-        // Determine if the current report received any changes
-        let oldReport = this.cart['report-assessment']['report'][0];
-        let reportNameChanged = oldReport.display_name !== this.reportFields.name;
-        let reportDescriptionChanged = oldReport.description !== this.reportFields.description;
-
-        if(reportNameChanged) {
-            oldReport.name = this.reportFields.name
-        }
-
-        if(reportDescriptionChanged) {
-            oldReport.description = this.reportFields.description;
-        }
-
-        this.currentReport = oldReport;
-
         for (let page in this.editCart) {
-            if (page === 'report-assessment') continue;
+            if (page === 'report-assessment') {
+                // Determine if the current report received any changes
+                let oldReport = this.cart['report-assessment']['report'][0];
+                let reportNameChanged = oldReport.display_name !== this.reportFields.name;
+                let reportDescriptionChanged = oldReport.description !== this.reportFields.description;
+
+                if(reportNameChanged) {
+                    oldReport.name = this.reportFields.name
+                }
+
+                if(reportDescriptionChanged) {
+                    oldReport.description = this.reportFields.description;
+                }
+
+                this.currentReport = oldReport;
+                continue;
+            }
 
             for (let type in this.cart[page]) {
                 for (let newObject of this.cart[page][type]) {
@@ -425,6 +426,19 @@ export class GuidedService {
                             await this.stixService.addComponent(refObj);
                         }
                         await this.stixService.removeComponent(oldObject.id);
+
+                        // Update report object_refs inside the cart
+                        const cartReport = this.cart['report-assessment']?.['report']?.[0];
+                        if(cartReport) {
+                            const updatedBundleReport = this.stixService.bundle.objects.find(
+                                obj => obj.type === 'report' &&
+                                    obj.id === cartReport?.id
+                            );
+                            if(updatedBundleReport) {
+                                const cartReport = this.cart['report-assessment']?.['report']?.[0];
+                                if(cartReport) cartReport.object_refs = [...updatedBundleReport.object_refs];
+                            }
+                        }
                     }
 
                     // Update bundle object ID
@@ -476,6 +490,11 @@ export class GuidedService {
         // Remove observables queued for deletion
         for (const observable of this.observablesToRemove) {
             await this.stixService.removeComponent(observable);
+        }
+
+        if(Object.keys(this.currentReport).length === 0) {
+            const reportEntry = this.cart['report-assessment']?.['report']?.[0];
+            if(reportEntry) this.currentReport = reportEntry;
         }
 
         const cached = JSON.parse(localStorage.getItem('cached-cart') || '[]');
@@ -891,7 +910,7 @@ export class GuidedService {
         for (let ttp in ttpObsMap) {
             let target = this.stixService.bundle.objects.find((obj) => obj.type === 'attack-pattern' && obj.id === ttp);
             let targetId = target['id'];
-            let obs = ttpObsMap[ttp];
+            let obs = ttpObsMap[ttp] ?? [];
             for (let sourceId of obs) {
                 relationship_types.push('related-to');
                 source_refs.push(sourceId);
@@ -903,7 +922,7 @@ export class GuidedService {
         for (let ttp in ttpIndMap) {
             let target = this.stixService.bundle.objects.find((obj) => obj.type === 'attack-pattern' && obj.id === ttp);
             let targetId = target['id'];
-            let inds = ttpIndMap[ttp];
+            let inds = ttpIndMap[ttp] ?? [];
             for (let sourceId of inds) {
                 relationship_types.push('indicates');
                 source_refs.push(sourceId);

@@ -694,8 +694,12 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                     else stixObject[`${field.currentField}`] = false;
                     break;
                 case 'is_multipart':
-                    if(field.value === "true") stixObject[`${field.currentField}`] = true;
-                    else stixObject[`${field.currentField}`] = false;
+                    if(field.value === "true"){
+                        stixObject[`${field.currentField}`] = true;
+                    } else {
+                        stixObject[`${field.currentField}`] = false;
+                        if('body_multipart' in stixObject) delete stixObject['body_multipart'];
+                    }
                     break;
                 default:
                     stixObject[`${field.currentField}`] = field.value;
@@ -1225,40 +1229,34 @@ export class HowObservableComponent implements OnInit, OnDestroy {
                         tempObj[field] = input[field];
                         break;
                     case 'Email Message':
-                        doNotTouch = ['show'];
-                        if (this.currentObservableInput.length === 0) {
-                            if (field === 'value') {
-                                tempObj['value'] = event[input.currentField];
-                                tempObj['show'] = true;
-                                continue;
-                            }
-                        } else {
-                            if (field === 'arr') {
-                                if (event.is_multipart === 'true') {
-                                    tempObj['arr'] = event.body_multipart;
-                                    tempObj['show'] = true;
+                        const def = input;
 
-                                    tempObj['type'] = 'text-modal-add';
-                                    tempObj['currentField'] = 'body_multipart';
-                                } else {
-                                    tempObj['arr'] = [];
-                                    tempObj['show'] = false;
-                                }
-                                continue;
-                            }
-                        }
-
-                        if (field === 'header') {
-                            tempObj['value'] = event[input.currentField];
-                            tempObj['header'] = 'Subject';
-                            tempObj['show'] = true;
-                            break;
-                        }
-
-                        if (doNotTouch.includes(field)) continue;
-
-                        if (!tempObj['value']) {
-                            tempObj[field] = input[field];
+                        switch(def.currentField) {
+                            case 'is_multipart':
+                                tempObj = {
+                                    ...def,
+                                    value: String(event.is_multipart),
+                                    show: true
+                                };
+                                break;
+                            case 'body_multipart':
+                                tempObj = {
+                                    ...def,
+                                    show: event.is_multipart === true,
+                                    arr: event.is_multipart ? (event.body_multipart || []): [],
+                                    value: '' // Not used
+                                };
+                                break;
+                            case 'subject':
+                                tempObj = {
+                                    ...def,
+                                    value: event.subject || '',
+                                    show: true
+                                };
+                                break;
+                            default:
+                                tempObj = { ...def };
+                                break;
                         }
 
                         break;
