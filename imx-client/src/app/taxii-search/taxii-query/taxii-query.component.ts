@@ -35,6 +35,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
 import { AnnouncementService } from 'src/app/announcement-service/announcement-service.service';
 import { PreviewComponent } from '../preview/preview.component';
+import { sort } from '../utils';
 
 @Component({
     selector: 'app-taxii-query',
@@ -226,11 +227,11 @@ export class TaxiiQueryComponent implements OnInit {
         }
     }
 
-    selectAll() {
+    protected selectAll() {
         this.selectedOptions = new Set(this.typeOptions);
     }
 
-    getTimeZone() {
+    private getTimeZone() {
         let date = new Date();
         let parts = new Intl.DateTimeFormat('en-US', {
             timeZoneName: 'short',
@@ -239,20 +240,20 @@ export class TaxiiQueryComponent implements OnInit {
         this.localTimezone = parts.find((p) => p.type === 'timeZoneName')?.value;
     }
 
-    selectNone() {
+    protected selectNone() {
         this.selectedOptions = new Set();
     }
 
-    selectObjectType(type: string) {
+    protected selectObjectType(type: string) {
         if (this.selectedOptions.has(type)) this.selectedOptions.delete(type);
         else this.selectedOptions.add(type);
     }
 
-    hasObjectType(type) {
+    protected hasObjectType(type) {
         return this.selectedOptions.has(type);
     }
 
-    onVersionChanged(value) {
+    protected onVersionChanged(value) {
         if (value == '<value>') {
             this.isSpecificVersion = true;
         } else {
@@ -1630,6 +1631,7 @@ export class TaxiiQueryComponent implements OnInit {
         objs.push(obj.id);
         this.getObjectsFromID(objs, true);
     }
+
     getObjectsFromID(ids, sendToBundle?: boolean): any {
         if (sendToBundle) this.getObjectFromIDHelper([...ids], sendToBundle);
         else return this.getObjectFromIDHelper([...ids], false);
@@ -1716,162 +1718,30 @@ export class TaxiiQueryComponent implements OnInit {
         modalRef.componentInstance.component = obj;
     }
 
-    sort(col: string, table: string) {
+    sort(col: string, table: 'objects' | 'status') {
         if (this.objectsQueryResults.length === 0 && table === 'objects') return;
 
         if (!this.sortKey) {
             this.sortKey = '';
             this.unsortedQueryResults = [];
 
-            if (table === 'objects') {
-                for (let obj of this.objectsQueryResults) {
-                    this.unsortedQueryResults.push(obj);
-                }
+            for (let obj of this.objectsQueryResults) {
+                this.unsortedQueryResults.push(obj);
             }
         }
 
-        if (this.sortKey === '') {
-            if (table === 'objects') this.objectsQueryResults = this.sortResultsDes(col, this.objectsQueryResults);
+        const results = sort(
+            col,
+            table,
+            {
+                sortKey: this.sortKey,
+                unsortedQueryResults: this.unsortedQueryResults,
+                manifestsQueryResults: this.manifestsQueryResults,
+                objectsQueryResults: this.objectsQueryResults,
+            },
+            this.stixService
+        );
 
-            this.sortKey = `${col}-des`;
-        } else {
-            let keyArr = this.sortKey.split('-');
-            if (col === keyArr[0] && keyArr[1] === 'des') {
-                if (table === 'objects') this.objectsQueryResults = this.sortResultsAsc(col, this.objectsQueryResults);
-
-                this.sortKey = `${col}-asc`;
-            } else if (col === keyArr[0] && keyArr[1] === 'asc') {
-                if (table === 'objects') this.objectsQueryResults = this.unsortedQueryResults;
-                this.sortKey = '';
-            } else {
-                if (table === 'objects') this.objectsQueryResults = this.sortResultsDes(col, this.objectsQueryResults);
-                this.sortKey = `${col}-des`;
-            }
-        }
-    }
-
-    sortResultsDes(col: string, tableArray: any[]) {
-        switch (col) {
-            case 'name':
-                return tableArray.sort((a, b) =>
-                    this.getComponentDisplayLowercase(a) > this.getComponentDisplayLowercase(b)
-                        ? 1
-                        : this.getComponentDisplayLowercase(a) < this.getComponentDisplayLowercase(b)
-                          ? -1
-                          : 0
-                );
-            case 'status':
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a.res[col]) > this.sortToLowercase(b.res[col])
-                        ? 1
-                        : this.sortToLowercase(a.res[col]) < this.sortToLowercase(b.res[col])
-                          ? -1
-                          : 0
-                );
-            case 'request_timestamp':
-                return tableArray.sort((a, b) => this.sortDate(a.res[col], b.res[col], 'des'));
-            case 'created':
-            case 'modified':
-            case 'date_added':
-            case 'version':
-                return tableArray.sort((a, b) => this.sortDate(a[col], b[col], 'des'));
-            case 'published':
-                return tableArray.sort((a, b) =>
-                    this.sortDate(
-                        this.manifestsQueryResults.find((elem) => elem.id == a.id)?.date_added,
-                        this.manifestsQueryResults.find((elem) => elem.id == b.id)?.date_added,
-                        'des'
-                    )
-                );
-            default:
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a[col]) > this.sortToLowercase(b[col])
-                        ? 1
-                        : this.sortToLowercase(a[col]) < this.sortToLowercase(b[col])
-                          ? -1
-                          : 0
-                );
-        }
-    }
-
-    sortResultsAsc(col: string, tableArray: any[]) {
-        switch (col) {
-            case 'name':
-                return tableArray.sort((a, b) =>
-                    this.getComponentDisplayLowercase(a) < this.getComponentDisplayLowercase(b)
-                        ? 1
-                        : this.getComponentDisplayLowercase(a) > this.getComponentDisplayLowercase(b)
-                          ? -1
-                          : 0
-                );
-            case 'status':
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a.res[col]) < this.sortToLowercase(b.res[col])
-                        ? 1
-                        : this.sortToLowercase(a.res[col]) > this.sortToLowercase(b.res[col])
-                          ? -1
-                          : 0
-                );
-            case 'request_timestamp':
-                return tableArray.sort((a, b) => this.sortDate(a.res[col], b.res[col], 'asc'));
-            case 'created':
-            case 'modified':
-            case 'date_added':
-            case 'version':
-                return tableArray.sort((a, b) => this.sortDate(a[col], b[col], 'asc'));
-            case 'published':
-                return tableArray.sort((a, b) =>
-                    this.sortDate(
-                        this.manifestsQueryResults.find((elem) => elem.id == a.id)?.date_added,
-                        this.manifestsQueryResults.find((elem) => elem.id == b.id)?.date_added,
-                        'asc'
-                    )
-                );
-            default:
-                return tableArray.sort((a, b) =>
-                    this.sortToLowercase(a[col]) < this.sortToLowercase(b[col])
-                        ? 1
-                        : this.sortToLowercase(a[col]) > this.sortToLowercase(b[col])
-                          ? -1
-                          : 0
-                );
-        }
-    }
-
-    sortDate(a: any, b: any, type: string) {
-        a = new Date(a);
-        b = new Date(b);
-        if (type === 'asc') {
-            if (!this.isValidDate(a) && !this.isValidDate(b)) return 0;
-            else if (!this.isValidDate(a)) return 1;
-            else if (!this.isValidDate(b)) return -1;
-            else return a < b ? 1 : a > b ? -1 : 0;
-        }
-        if (type === 'des') {
-            if (!this.isValidDate(a) && !this.isValidDate(b)) return 0;
-            else if (!this.isValidDate(a)) return 1;
-            else if (!this.isValidDate(b)) return -1;
-            else return a > b ? 1 : a < b ? -1 : 0;
-        }
-
-        return 0;
-    }
-
-    sortToLowercase(item) {
-        if (typeof item === 'string') return item.toLowerCase();
-
-        return item;
-    }
-
-    isValidDate(date) {
-        return date instanceof Date && !isNaN(date.getTime());
-    }
-
-    getComponentDisplayLowercase(component: any) {
-        let result = this.getComponentDisplay(component);
-
-        if (typeof result === 'string') return result.toLowerCase();
-
-        return result;
+        this.sortKey = results.sortKey;
     }
 }

@@ -239,7 +239,7 @@
                     }
                 </div>
             </div>
-            <div class="imx-card-body ps-0 pe-0" [ngClass]="{ 'pt-0': objectsQueryResults && objectsQueryResults.length > 0 }">
+            <div class="imx-card-body ps-0 pe-0 overflow-auto" [ngClass]="{ 'pt-0': objectsQueryResults && objectsQueryResults.length > 0 }">
                 @if (!objectsQueryResults || objectsQueryResults.length == 0) {
                     <div class="imx-empty">No objects were returned by the TAXII server. Check your parameters and try again</div>
                 } @else {
