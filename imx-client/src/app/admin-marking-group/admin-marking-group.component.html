@@ -105,7 +105,7 @@
                 <div class="col d-flex flex-column ps-4 pe-4">
                     <div class="pt-3 pb-3 card-title title-border">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div>Groups</div>
+                            <div>Roles</div>
                             <div class="d-flex align-items-center gap-2">
                                 <fa-icon [icon]="faPlus" (click)="nextPage()" class="bundle-icon cursor-pointer"></fa-icon>
                             </div>
@@ -114,7 +114,7 @@
 
                     @if (groups.length == 0) {
                         <div class="d-flex align-items-center mt-3 mb-3 justify-content-center">
-                            <span class="main-text"> No Groups found </span>
+                            <span class="main-text"> No Roless Found </span>
                         </div>
                     } @else {
                         <table class="table justify-self-center table-striped table-hover">
@@ -139,9 +139,9 @@
                 <div class="pt-3 pb-3 card-title title-border">
                     <div class="d-flex justify-content-between align-items-center">
                         @if (editing) {
-                            <div>Edit Group {{ editingGroup.name }}</div>
+                            <div>Edit Role {{ editingGroup.name }}</div>
                         } @else {
-                            <div>Create New Group</div>
+                            <div>Create New Role</div>
                         }
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                     <div class="col">
                         <div class="row">
                             <div class="col mb-2">
-                                <span class="input-header">Group Name</span>
+                                <span class="input-header">Role Name</span>
                             </div>
                         </div>
                         <div class="row">

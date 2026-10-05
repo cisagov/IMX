@@ -1,0 +1,31 @@
+<div>
+    <div class="modal-header d-flex justify-content-start align-items-center" style="align-items: start">
+        <span id="object-type" class="card-title">
+            {{ getObjectType() }}
+        </span>
+        <button type="button" class="btn-close" (click)="close()">
+            <span aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div id="json-view" class="modal-body d-flex justify-content-center">
+        @if (isLoading) {
+            <div class="loading">
+                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 500px">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="text-muted">Loading JSON...</p>
+                </div>
+            </div>
+        }
+        @if (!isLoading) {
+            <ngx-monaco-editor
+                style="width: 100%; display: block; height: 500px !important"
+                readonly
+                [options]="editorOptions"
+                [(ngModel)]="json"
+            ></ngx-monaco-editor>
+        }
+    </div>
+</div>
