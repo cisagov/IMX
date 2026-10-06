@@ -4,6 +4,7 @@ import { GuidedService } from 'src/app/guided.service';
 import { StixService } from 'src/app/stix-service.service';
 import { db } from 'src/app/db.service';
 import { Subscription } from 'rxjs';
+import { SCO_LIST } from '../../models/sco_list';
 
 @Component({
     selector: 'app-guided-cart',
@@ -171,13 +172,23 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getStixId(object, typeName) {
-        // if (this.guidedService.editCart && this.guidedService.editCart[this.currentMode] && this.guidedService.editCart[this.currentMode][typeName]) {
-        //     for (let oldObject of this.guidedService.editCart[this.currentMode][typeName]) {
-        //         if (oldObject.cartId === object.cartId) {
-        //             return oldObject.id;
-        //         }
-        //     }
-        // }
+
+        // If its an SCO, generate a new id
+        let scos = SCO_LIST.slice();
+        if(scos.includes(object.type)){
+            return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
+        }
+
+        // If its not an SCO, try to preserve id during edits
+        if(this.guidedService.cart && this.guidedService.cart[this.currentMode] && this.guidedService.cart[this.currentMode][typeName]){
+            for (let oldObject of this.guidedService.cart[this.currentMode][typeName]) {
+                if (oldObject.cartId === object.cartId) {
+                    return oldObject.id;
+                }
+            }
+        }
+
+        // Fallback: new object or edit not found
         return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
     }
 
