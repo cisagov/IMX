@@ -1,3 +1,23 @@
+## 4.23.0 (2026-10-06)
+
+### Features
+
+* add preview modal for the new search page 17b1420
+* new api root/collection page in search 00733e3
+* new taxii search page d333a71
+* new taxii search page design 2679f0b
+* new taxii status page design bbac42b
+
+### Bug Fixes
+
+* check if user has already been marked in groupinfo to prevent duplicate query string 058b75e
+* disable click event when clicking the checkbox in taxii search page ce54e1f
+* fix AIS taxii search undefined error d9cfd6a
+* guided ui report, is multipart, and duplicate object bug fixes 36b0cc7
+* removed inaccurate comment 7bcc2d0
+* set api root to empty when switching server 25c0b53
+* undefined check for ais connection 166d607
+
 ## 4.22.3 (2026-09-30)
 
 ### Bug Fixes
