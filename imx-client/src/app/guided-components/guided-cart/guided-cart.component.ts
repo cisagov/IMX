@@ -174,7 +174,7 @@ export class GuidedCartComponent implements OnInit, OnChanges, OnDestroy {
     getStixId(object, typeName) {
 
         // If its an SCO, generate a new id
-        let scos = SCO_LIST.slice(); //Can only be an SDO or custom (not any other object type)
+        let scos = SCO_LIST.slice();
         if(scos.includes(object.type)){
             return `${object.type}--${this.stixService.getUUIDFrIdContributingProperties(object)}`;
         }
