@@ -2,10 +2,21 @@ import { test, expect } from '../playwright/fixtures';
 
 // verify home authenticatedPage loads as expected.
 test('home authenticatedPage', async ({ authenticatedPage }) => {
-  await expect(authenticatedPage.getByText('Editor')).toBeVisible();
-  await expect(authenticatedPage.getByText('Search')).toBeVisible();
-  await expect(authenticatedPage.getByText('My Profile')).toBeVisible();
-  await expect(authenticatedPage.getByText('Admin')).toBeVisible();
+  await expect(
+    authenticatedPage.getByRole('link', { name: 'Editor' }),
+  ).toBeVisible();
+  await expect(
+    authenticatedPage.getByRole('link', { name: 'Search' }),
+  ).toBeVisible();
+  await expect(
+    authenticatedPage.getByRole('link', { name: 'My Profile' }),
+  ).toBeVisible();
+  await expect(
+    authenticatedPage.getByRole('link', { name: 'Admin' }),
+  ).toBeVisible();
+  await expect(
+    authenticatedPage.getByRole('link', { name: 'Server' }),
+  ).toBeVisible();
   await expect(
     authenticatedPage.getByRole('button', { name: 'Add Object' }),
   ).toBeHidden();

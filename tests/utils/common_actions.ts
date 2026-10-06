@@ -55,33 +55,27 @@ export async function publish_bundle(page: Page) {
 }
 
 export async function objects_not_present(page: Page) {
-  const elem = page.getByText('Unable to get query results');
+  const elem = page.locator('input[name="select-all"]');
   try {
-    await elem.waitFor({ state: 'attached', timeout: 3000 });
+    await elem.waitFor({ state: 'visible', timeout: 3000 });
     return true;
   } catch (error) {
     return false;
   }
 }
 export async function delete_published_objects(page: Page) {
-  await page.getByText('Search').click();
-  const api_root_dropdown = page.locator('#APIRoots');
-  await api_root_dropdown.selectOption('test-root');
+  await page.getByRole('link', { name: 'Search' }).click();
+  await page.getByText('test-root', { exact: true }).click();
+  await page.getByText('test', { exact: true }).click();
 
-  const collection_dropdown = page.locator('#collections');
-  await collection_dropdown.selectOption('test');
+  await page.getByRole('button', { name: 'Search' }).click();
 
-  await page.getByRole('button', { name: 'Objects' }).click();
-  await page.locator('button:has-text("Run")').click();
-
-  var present = await objects_not_present(page);
+  var present = false;
 
   while (!present) {
-    await page.locator('input[name="select-all"] ').click();
-    await page
-      .getByRole('button', { name: 'Delete', includeHidden: true })
-      .click();
-    await page.locator('button:has-text("Run")').click();
+    await page.locator('input[name="select-all"]').click();
+    await page.getByRole('button').filter({ hasText: 'Delete' }).click();
+    await page.getByRole('button', { name: 'Search' }).click();
     present = await objects_not_present(page);
   }
 }
