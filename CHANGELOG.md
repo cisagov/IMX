@@ -1,3 +1,23 @@
+## [4.23.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.3...v4.23.0) (2026-10-06)
+
+### Features
+
+* add preview modal for the new search page ([17b1420](https://git.va.th.ten/eos/cde/tie/imx/commit/17b142005c857c167f73c4cf2fc4a9f4f8473047))
+* new api root/collection page in search ([00733e3](https://git.va.th.ten/eos/cde/tie/imx/commit/00733e3f78141abb78957c91cb9fcf326ea4c7a3))
+* new taxii search page ([d333a71](https://git.va.th.ten/eos/cde/tie/imx/commit/d333a71c9c17cae6d700192a62aaef4d3c525a2e))
+* new taxii search page design ([2679f0b](https://git.va.th.ten/eos/cde/tie/imx/commit/2679f0b73b5141a3fd90faae76de68eb144c1960))
+* new taxii status page design ([bbac42b](https://git.va.th.ten/eos/cde/tie/imx/commit/bbac42b0a78c76b50ea04a057070e58158943eec))
+
+### Bug Fixes
+
+* check if user has already been marked in groupinfo to prevent duplicate query string ([058b75e](https://git.va.th.ten/eos/cde/tie/imx/commit/058b75e75f1b8f828b0fad640c656f19105e4cc7))
+* disable click event when clicking the checkbox in taxii search page ([ce54e1f](https://git.va.th.ten/eos/cde/tie/imx/commit/ce54e1f1f8e336b8b9ca478ec5dd4df318a8c944))
+* fix AIS taxii search undefined error ([d9cfd6a](https://git.va.th.ten/eos/cde/tie/imx/commit/d9cfd6a901e8e0351ac378eee04f96f809893275))
+* guided ui report, is multipart, and duplicate object bug fixes ([36b0cc7](https://git.va.th.ten/eos/cde/tie/imx/commit/36b0cc78c09257d2db453972935f166aa745df88))
+* removed inaccurate comment ([7bcc2d0](https://git.va.th.ten/eos/cde/tie/imx/commit/7bcc2d093b48dfff93db3649e9087498a817e348))
+* set api root to empty when switching server ([25c0b53](https://git.va.th.ten/eos/cde/tie/imx/commit/25c0b536fe4af59f9efcb0b10695e4710fde5b71))
+* undefined check for ais connection ([166d607](https://git.va.th.ten/eos/cde/tie/imx/commit/166d60788531d1132539277b8d3b60610245c3bb))
+
 ## [4.22.3](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.2...v4.22.3) (2026-09-30)
 
 ### Bug Fixes
