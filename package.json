@@ -22,7 +22,6 @@
     "jest-html-reporter": "^4.4.2"
   },
   "dependencies": {
-    "node.js": "^0.0.1-security",
     "path": "^0.12.7"
   }
 }

@@ -57,7 +57,6 @@
         "chart.js": "^4.5.1",
         "constants": "^0.0.2",
         "dexie": "^3.2.4",
-        "fs": "^0.0.1-security",
         "jquery": "^3.6.0",
         "jsonschema": "^1.4.1",
         "JSV": "^4.0.2",
