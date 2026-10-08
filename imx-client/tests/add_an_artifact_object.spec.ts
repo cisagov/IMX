@@ -7,7 +7,7 @@ import {
 // add an artifact object
 test('artifact page', async ({ authenticatedPage }) => {
   try {
-    await authenticatedPage.getByText('Editor').click();
+    await authenticatedPage.getByRole('link', { name: 'Editor' }).click();
 
     await authenticatedPage.getByTitle('Add Object').click();
 

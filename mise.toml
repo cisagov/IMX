@@ -17,7 +17,7 @@ prek install
 uv sync --project imx-py
 cd imx-client && npm install
 cd ../imx-server && npm install
-cd ../ && npm i && npx playwright install
+npx install playwright
 """
 
 [tasks.init]
@@ -35,10 +35,19 @@ run = """
 docker compose up -d --build
 """
 
+[tasks.vitest]
+description = "Runs playwright tests"
+run = """
+cd imx-client
+npm i
+npm run test
+"""
+
 [tasks.playwright]
 description = "Runs playwright tests"
 depends = ["init"]
 run = """
+cd imx-client
 npx playwright test tests/
 """
 
