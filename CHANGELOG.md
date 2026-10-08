@@ -1,3 +1,9 @@
+## 4.23.2 (2026-10-08)
+
+### Bug Fixes
+
+* npm audit fix imx-client after playwright got moved 3b9eb52
+
 ## 4.23.1 (2026-10-08)
 
 ### Bug Fixes
