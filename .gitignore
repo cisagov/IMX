@@ -428,3 +428,4 @@ tmbootpicker.efi
 # Playwright
 test-results
 playwright-report
+**/*results.xml
