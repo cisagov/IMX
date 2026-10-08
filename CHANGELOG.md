@@ -1,3 +1,14 @@
+## [4.23.1](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.23.0...v4.23.1) (2026-10-08)
+
+### Bug Fixes
+
+* ng update angular core 20.3.33 ([10af2fd](https://git.va.th.ten/eos/cde/tie/imx/commit/10af2fdd4806a6536b6d4c5a08494e32a2e26848))
+* npm audit fix for imx-client ([c1769a5](https://git.va.th.ten/eos/cde/tie/imx/commit/c1769a5600e76e72d119fd2aee66aac69f3007b6))
+* npm audit fix imx-server ([c1e1fdd](https://git.va.th.ten/eos/cde/tie/imx/commit/c1e1fdd5fa63734ee5f5193b79aa1721a2683fba))
+* remove fs dev dependency imx-client ([cd2b210](https://git.va.th.ten/eos/cde/tie/imx/commit/cd2b2100ba220c7af6c8a2b5cd372409b9a0976d))
+* upgrade nodemailer to v10 imx-server ([42a6e97](https://git.va.th.ten/eos/cde/tie/imx/commit/42a6e977db97e204a10fecd8819499585c98f986))
+* uv sync --upgrade imx-py ([c8b9cfc](https://git.va.th.ten/eos/cde/tie/imx/commit/c8b9cfc523ab6ad3e689bf3608cefa3881bfd36d))
+
 ## [4.23.0](https://git.va.th.ten/eos/cde/tie/imx/compare/v4.22.3...v4.23.0) (2026-10-06)
 
 ### Features
