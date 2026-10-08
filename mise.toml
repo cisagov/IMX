@@ -24,7 +24,6 @@ npx install playwright
 description = "Initial steps for build locally"
 run = """
 cp .env.example .env
-cp .env.example ./imx-client/.env
 cp env.json.example env.json
 cp env.json.example ./imx-client/src/assets/env.json
 docker compose up -d --build
@@ -34,6 +33,14 @@ docker compose up -d --build
 description = "Rebuild IMX"
 run = """
 docker compose up -d --build
+"""
+
+[tasks.vitest]
+description = "Runs playwright tests"
+run = """
+cd imx-client
+npm i
+npm run test
 """
 
 [tasks.playwright]

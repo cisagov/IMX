@@ -20,7 +20,7 @@
         "build-guided": "ng build --configuration guided",
         "build-prod": "ng build --configuration production",
         "watch": "ng build --watch --configuration development",
-        "test": "ng test --watch=false",
+        "test": "vitest --exclude tests",
         "test-watch": "ng test",
         "test-env": "ng serve --configuration test & (ts-node tests/test.ts)",
         "e2e": "jest tests/*.spec.ts --config=tests/jest.config.js --verbose=true --runInBand",
@@ -100,10 +100,12 @@
         "@playwright/test": "^1.61.1",
         "@types/chai": "^4.3.5",
         "@types/jasmine": "~3.8.0",
-        "@types/jest": "^29.5.4",
+        "@types/jest": "^29.5.14",
         "@types/node": "^22.0.0 || >=24.0.0",
         "@types/selenium-webdriver": "^4.1.13",
         "@types/ws": "^8.5.4",
+        "@vitest/coverage-v8": "^5.0.1",
+        "@vitest/ui": "^5.0.1",
         "babel-jest": "^30.5.2",
         "chai": "^4.3.7",
         "dotenv": "^17.4.2",
@@ -121,9 +123,7 @@
         "selenium-webdriver": "^4.12.0",
         "ts-jest": "^29.1.1",
         "ts-node": "^10.9.1",
-        "typescript": "5.9.3",
-        "@vitest/coverage-v8": "^5.0.1",
-        "@vitest/ui": "^5.0.1"
+        "typescript": "5.9.3"
     },
     "overrides": {
         "minimatch": "^10.2.2",
