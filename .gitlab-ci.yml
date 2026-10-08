@@ -45,9 +45,6 @@ stages:
   - build
   - release
 
-trivy-fs:
-  allow_failure: true
-
 sonarqube:
   allow_failure: true
 
