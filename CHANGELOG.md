@@ -1,3 +1,14 @@
+## 4.23.1 (2026-10-08)
+
+### Bug Fixes
+
+* ng update angular core 20.3.33 10af2fd
+* npm audit fix for imx-client c1769a5
+* npm audit fix imx-server c1e1fdd
+* remove fs dev dependency imx-client cd2b210
+* upgrade nodemailer to v10 imx-server 42a6e97
+* uv sync --upgrade imx-py c8b9cfc
+
 ## 4.23.0 (2026-10-06)
 
 ### Features
