@@ -1,26 +1,29 @@
 title = "Gitleaks Configuration"
 
-# This section controls what should be allowed/skipped.
-[allowlist]
-# Add directory or file patterns here. Examples:
-# paths = ["node_modules/.*", "dist/.*"]
-paths = [
-    # CLIENT
-    "imx-client/src/app/models/*",
-    "imx-client/\\.angular/.*",
-    "imx-client/node_modules/.*",
-    "imx-client/src/app/stix-viewer/stix2viz/visjs/vis-network.ts",
-    # SERVER
-    "imx-server/node_modules/.*",
-    # README
-    "README.md"
-]
-
-###############################################
-# Default ruleset                             #
-# (This uses the built‑in rules that ship     #
-# with Gitleaks. You don't need to define     #
-# anything custom unless you want to.)        #
-###############################################
 [extend]
 useDefault = true
+
+[allowlist]
+paths = [
+    '''^imx-client/\.angular/''',
+    '''(?:^|/)node_modules/''',
+]
+
+# Public vocabulary and vendored method names are not API keys.
+# Other rules, including endpoint rules, still scan these files.
+[[rules]]
+id = "generic-api-key"
+
+[[rules.allowlists]]
+condition = "AND"
+paths = [
+    '''^imx-client/src/app/models/(?:mime|name_enc|path|protocols|artifact|malware)\.ts$''',
+]
+regexTarget = "line"
+regexes = ['''^\s*\{\s*key:\s*['"][^'"]+['"],\s*value:\s*['"][^'"]+['"]\s*\},?\s*$''']
+
+[[rules.allowlists]]
+condition = "AND"
+paths = ['''^imx-client/src/app/stix-viewer/stix2viz/visjs/vis-network\.ts$''']
+regexTarget = "secret"
+regexes = ['''^_getDistanceToBezierEdge2$''']
