@@ -2,5 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>eos/cde/elm/renovate"
+  ],
+  "baseBranchPatterns": ["beta-clean", "main"],
+  "useBaseBranchConfig": "merge",
+  "packageRules": [
+    {
+      "description": "Review legacy main updates individually while it remains supported",
+      "matchBaseBranches": ["main"],
+      "dependencyDashboardApproval": true
+    }
   ]
 }
