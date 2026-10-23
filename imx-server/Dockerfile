@@ -4,6 +4,7 @@ FROM $REGISTRY/library/node:24.22.1-alpine
 
 RUN apk update
 RUN apk upgrade
+RUN npm install -g npm@latest
 
 WORKDIR /imx-server
 COPY ./package.json ./package-lock.json ./
