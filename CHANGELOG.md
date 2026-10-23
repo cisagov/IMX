@@ -1,3 +1,15 @@
+## 4.23.3 (2026-10-23)
+
+### Bug Fixes
+
+* ng update @angular/core@20.3.34 66b02f8
+* npm audit fix imx client f2b84c5
+* npm audit fix imx server ae5e11d
+* patch npm in node base image bd57378
+* remove internal URLs and unused assets 0367dc4
+* swap to node 24.22.1 image for node2shell vuln aef8f6b
+* uv lock --upgrade imx py 6447688
+
 ## 4.23.2 (2026-10-08)
 
 ### Bug Fixes
