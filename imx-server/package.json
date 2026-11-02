@@ -27,7 +27,7 @@
     "jwt-decode": "^4.0.0",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
-    "nodemailer": "^10.0.16",
+    "nodemailer": "^10.1.4",
     "uuid": "^14.0.0",
     "xml": "^1.0.1"
   },
