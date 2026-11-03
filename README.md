@@ -12,7 +12,7 @@ IMX itself is intended to be used along side a compatible [TAXII Server](https:/
 | Backend          | Node.js                   |
 | STIX Processing  | Python 3 / Flask          |
 | Search & Storage | Opensearch                |
-| Observability    | Kibana                    |
+| Observability    | Opensearch Dashboard      |
 | Document Parsing | Apache Tika               |
 | Authentication   | Keycloak, OIDC (optional) |
 | Standards        | STIX 2.x, TAXII 2.x       |
