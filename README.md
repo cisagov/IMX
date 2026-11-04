@@ -15,7 +15,7 @@ IMX itself is intended to be used along side a compatible [TAXII Server](https:/
 | Observability    | Opensearch Dashboard      |
 | Document Parsing | Apache Tika               |
 | Authentication   | Keycloak, OIDC (optional) |
-| Standards        | STIX 2.x, TAXII 2.x       |
+| Standards        | STIX 2.1, TAXII 2.1       |
 
 ## Prerequisites
 
