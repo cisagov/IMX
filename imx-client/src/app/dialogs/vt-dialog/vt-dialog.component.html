@@ -66,12 +66,15 @@
                                 @if (isExtracting) {
                                     <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                                     Extracting...
+                                    @if (extractProgress !== null && extractProgress < 100) {
+                                        {{ extractProgress }}%
+                                    }
                                 } @else {
                                     Extract IOCs
                                 }
                             </button>
                         </div>
-                        <div class="file-extract-hint mt-1">Supported: {{ acceptFileString }}</div>
+                        <div class="file-extract-hint mt-1">Supported: {{ acceptFileString }} · Max 250 MB (50 MB for PDF/Office/RTF)</div>
                         @if (extractionMessage) {
                             <div class="file-extract-success mt-1">
                                 <fa-icon [icon]="faCheckCircle" class="me-1"></fa-icon>

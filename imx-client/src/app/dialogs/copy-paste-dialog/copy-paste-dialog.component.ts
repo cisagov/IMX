@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { faBan, faCheck, faPlay, faArrowLeft, faFileImport, faFileUpload, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { faBan, faCheck, faPlay, faArrowLeft, faFileImport, faFileUpload, faAngleUp, faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { IdentifyStixService } from './identify-stix/identify-stix.service';
 import { MispStixService } from 'src/app/misp-stix-service/misp-stix.service';
 import { StixService } from 'src/app/stix-service.service';
@@ -15,7 +15,7 @@ import { EnvService } from 'src/app/env-service/env.service';
     styleUrls: ['./copy-paste-dialog.component.css'],
     standalone: false,
 })
-export class CopyPasteDialogComponent {
+export class CopyPasteDialogComponent implements OnDestroy {
     faBan = faBan;
     faCheck = faCheck;
     faPlay = faPlay;
@@ -23,6 +23,8 @@ export class CopyPasteDialogComponent {
     faFileImport = faFileImport;
     faFileUpload = faFileUpload;
     faAngleUp = faAngleUp;
+    faCheckCircle = faCheckCircle;
+    faExclamationTriangle = faExclamationTriangle;
 
     textBody: String = '';
     mispBody: string = '';
@@ -32,7 +34,7 @@ export class CopyPasteDialogComponent {
     selectAll: boolean = false;
     parsedObjects: any = {};
     allObjects: any[] = [];
-    selectedObjects: any = {};
+    selectedObjects = new Set<string>();
     showId: String = '';
     activeTab = 'jsonViewer';
     isLoading: boolean = false;
@@ -45,8 +47,15 @@ export class CopyPasteDialogComponent {
 
     selectedFile = undefined;
     selectedFiles = [];
-    acceptFileTypes = ['.json', '.txt', '.xml', '.html', '.csv', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.rtf'];
+    acceptFileTypes = ['.json', '.txt', '.log', '.xml', '.html', '.csv', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.rtf'];
     acceptFileString = this.acceptFileTypes.join(',');
+    uploadMessage = '';
+    uploadError = '';
+    // Set when an upload finds more than MAX_OBJECTS IOCs; results are downloaded as JSON instead of listed
+    largeResult: { fileName: string; total: number; counts: [string, number][]; blob: Blob } | null = null;
+    maxObjects = IdentifyStixService.MAX_OBJECTS;
+    parseProgress: number | null = null;
+    private parseAbort: AbortController | null = null;
 
     tempBundle = new Bundle([]);
     disableParse = true;
@@ -79,6 +88,11 @@ export class CopyPasteDialogComponent {
         private envService: EnvService,
         private mispStix: MispStixService
     ) {}
+
+    ngOnDestroy(): void {
+        // Stop sending remaining chunks if the modal is closed mid-parse
+        this.parseAbort?.abort();
+    }
 
     onNoClick(): void {
         this.activeModal.dismiss();
@@ -153,6 +167,22 @@ export class CopyPasteDialogComponent {
     }
 
     onFileChanged(event) {
+        this.uploadMessage = '';
+        this.uploadError = '';
+        this.largeResult = null;
+
+        const sizeError = event.target.files[0] ? this.identifyStix.validateUploadSize(event.target.files[0]) : null;
+        if (sizeError) {
+            this.uploadError = sizeError;
+            event.target.value = '';
+            this.selectedFile = undefined;
+            this.selectedFiles = [];
+            this.targetFile = undefined;
+            this.formData = undefined;
+            this.disableParse = true;
+            return;
+        }
+
         this.selectedFiles = event.target.files;
         this.targetFile = event.target.files[0];
 
@@ -166,14 +196,6 @@ export class CopyPasteDialogComponent {
         }
     }
 
-    async readFileAsText(currentFile): Promise<string> {
-        return new Promise((resolve) => {
-            const fileReader = new FileReader();
-            fileReader.readAsText(currentFile, 'UTF-8');
-            fileReader.onload = () => resolve(JSON.stringify(fileReader.result));
-        });
-    }
-
     async getFilesAsString() {
         return new Promise(async (resolve) => {});
     }
@@ -182,6 +204,7 @@ export class CopyPasteDialogComponent {
         this.selectAll = false;
         this.parsedObjects = {};
         this.allObjects = [];
+        this.largeResult = null;
         this.isLoading = true;
 
         let result: any = undefined;
@@ -192,20 +215,35 @@ export class CopyPasteDialogComponent {
                 let nameSplit = current.name.split('.');
                 let postfix = nameSplit[nameSplit.length - 1];
 
+                this.uploadMessage = '';
+                this.uploadError = this.identifyStix.validateUploadSize(current) || '';
+                if (this.uploadError) {
+                    this.isLoading = false;
+                    return;
+                }
+
                 switch (postfix) {
                     case 'json':
                     case 'txt':
+                    case 'log':
                     case 'csv':
                     case 'html':
                     case 'xml':
-                        let string = await this.readFileAsText(current);
-                        string = string.replace(/\\n/g, ' ');
-                        string = string.replace(/\\t/g, ' ');
-                        string = string.replace(/\\r/g, ' ');
-                        string = string.replace(/\\\\\\\\/g, ' ');
-                        string = string.replace(/\\\\/g, '\\');
-
-                        result = await this.identifyStix.postIdentifyStix(string);
+                        this.parseProgress = 0;
+                        this.parseAbort = new AbortController();
+                        result = await this.identifyStix.postIdentifyStixChunked(
+                            current,
+                            (p) => (this.parseProgress = p),
+                            undefined,
+                            this.parseAbort.signal,
+                            true
+                        );
+                        this.parseProgress = null;
+                        if (result?.aborted) return;
+                        if (result?.overLimit) {
+                            this.showLargeResult(result.iocsByType, current.name);
+                            return;
+                        }
                         break;
                     case 'pdf':
                     case 'docx':
@@ -214,9 +252,15 @@ export class CopyPasteDialogComponent {
                     case 'xlsx':
                     case 'rtf':
                         result = await this.identifyStix.postIdentifyStixFile(this.formData, this.targetFile.name);
+                        if (result?.objects?.length > IdentifyStixService.MAX_OBJECTS) {
+                            this.showLargeResult(this.identifyStix.groupIocsByType(result.objects), current.name);
+                            return;
+                        }
                         break;
                     default:
-                        console.error('not a valid file extension');
+                        this.uploadError = `Unsupported file type: .${postfix}`;
+                        this.isLoading = false;
+                        return;
                 }
 
                 break;
@@ -253,6 +297,10 @@ export class CopyPasteDialogComponent {
                 }
             }
 
+            if (this.tab === 'upload-file') {
+                this.uploadMessage = `Parsed ${result.objects.length} indicator${result.objects.length !== 1 ? 's' : ''} from ${this.targetFile.name}`;
+            }
+
             if (this.parsedObjects) this.isParsed = true;
             this.updateSelectAll();
 
@@ -260,17 +308,33 @@ export class CopyPasteDialogComponent {
         }
     }
 
-    onConfirm() {
-        let temp = [];
+    showLargeResult(iocsByType: Map<string, Map<string, any>>, sourceName: string) {
+        const counts: [string, number][] = [...iocsByType].map(([type, entries]) => [type, entries.size]);
+        this.largeResult = {
+            fileName: `${sourceName.replace(/\.[^.]+$/, '')}-iocs.json`,
+            total: counts.reduce((sum, [, count]) => sum + count, 0),
+            counts,
+            blob: this.identifyStix.buildIocJson(iocsByType, sourceName),
+        };
+        this.isLoading = false;
+        this.downloadLargeResult();
+    }
 
-        for (let id of this.selectedObjects) {
-            for (let obj of this.allObjects) {
-                if (id === obj.id) {
-                    temp.push(obj);
-                    break;
-                }
-            }
-        }
+    downloadLargeResult() {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(this.largeResult.blob);
+        a.download = this.largeResult.fileName;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    getTypeLabel(type: string): string {
+        const match = this.objects2DArray.find((map) => map[0] === type);
+        return match ? match[1] : type;
+    }
+
+    onConfirm() {
+        let temp = this.allObjects.filter((obj) => this.selectedObjects.has(obj.id));
 
         this.tempBundle = new Bundle(temp);
 
@@ -286,11 +350,11 @@ export class CopyPasteDialogComponent {
     }
 
     updateSelectAll() {
-        this.selectedObjects = [];
+        this.selectedObjects = new Set<string>();
 
         if (this.selectAll === false) {
             for (let obj of this.allObjects) {
-                this.selectedObjects.push(obj.id);
+                this.selectedObjects.add(obj.id);
             }
         }
 
@@ -299,17 +363,10 @@ export class CopyPasteDialogComponent {
     }
 
     updateSelectedObjects(id) {
-        let found = false;
+        if (this.selectedObjects.has(id)) this.selectedObjects.delete(id);
+        else this.selectedObjects.add(id);
 
-        for (let i in this.selectedObjects) {
-            if (this.selectedObjects[i] === id) {
-                found = true;
-                this.selectedObjects.splice(i, 1);
-            }
-        }
-
-        if (!found) this.selectedObjects.push(id);
-        if (this.allObjects.length === this.selectedObjects.length) {
+        if (this.allObjects.length === this.selectedObjects.size) {
             this.selectAll = true;
         } else {
             this.selectAll = false;
@@ -317,7 +374,7 @@ export class CopyPasteDialogComponent {
     }
 
     getSelected(id) {
-        return this.selectedObjects?.includes?.(id) ?? false;
+        return this.selectedObjects.has(id);
     }
 
     toggleCategory(key: string) {
