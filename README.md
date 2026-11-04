@@ -2,7 +2,7 @@
 
 IMX is a tool used to create reports that cater to the STIX specification and it compliant with storing these reports within TAXII Servers.
 
-IMX itself is intended to be used along side a compatible TAXII Server.
+IMX itself is intended to be used along side a compatible [TAXII Server](https://github.com/cisagov/IMX-TAXII-Server) (Must follow [OASIS TAXII Committee Specifications](https://www.oasis-open.org/standard/taxii-version-2-1/)).
 
 ## Tech Stack
 
@@ -11,11 +11,11 @@ IMX itself is intended to be used along side a compatible TAXII Server.
 | Frontend         | Angular 20                |
 | Backend          | Node.js                   |
 | STIX Processing  | Python 3 / Flask          |
-| Search & Storage | Elasticsearch             |
-| Observability    | Kibana                    |
+| Search & Storage | Opensearch                |
+| Observability    | Opensearch Dashboard      |
 | Document Parsing | Apache Tika               |
 | Authentication   | Keycloak, OIDC (optional) |
-| Standards        | STIX 2.x, TAXII 2.x       |
+| Standards        | STIX 2.1, TAXII 2.1       |
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ To run the full stack locally:
 docker compose up -d
 ```
 
-This starts services in dependency order: Elasticsearch first, then Kibana, then IMX Server, then IMX Client. IMX Python and Apache Tika start independently. Once all containers are healthy, visit IMX at http://localhost:4200. Port mappings for each service are defined in `docker-compose.yml`.
+This starts services in dependency order: Opensearch first, then Opensearch Dashboard, then IMX Server, then IMX Client. IMX Python and Apache Tika start independently. Once all containers are healthy, visit IMX at http://localhost:4200. Port mappings for each service are defined in `docker-compose.yml`.
 
 ### Local Development
 
