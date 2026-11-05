@@ -6,13 +6,10 @@ import { EnvService } from 'src/app/env-service/env.service';
     providedIn: 'root',
 })
 export class IdentifyStixService {
-    // Text files are sent in chunks so neither the browser nor the server holds the whole file at once
     static readonly CHUNK_BYTES = 10 * 1024 * 1024;
     static readonly MAX_TEXT_BYTES = 250 * 1024 * 1024;
-    // Binary files are sent whole to Tika, so they are bound by nginx's client_max_body_size
     static readonly MAX_BINARY_BYTES = 50 * 1024 * 1024;
     static readonly BINARY_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'rtf'];
-    // More objects than this per import make the IOC list and bundle editor too slow to use
     static readonly MAX_OBJECTS = 5000;
 
     imxServerUrl = this.envService.env.imxServer.url;

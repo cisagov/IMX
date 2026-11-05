@@ -61,7 +61,6 @@ export class CopyPasteDialogComponent implements OnDestroy {
     acceptFileString = this.acceptFileTypes.join(',');
     uploadMessage = '';
     uploadError = '';
-    // Set when an upload finds more than MAX_OBJECTS IOCs; results are downloaded as JSON instead of listed
     largeResult: { fileName: string; total: number; counts: [string, number][]; blob: Blob } | null = null;
     maxObjects = IdentifyStixService.MAX_OBJECTS;
     parseProgress: number | null = null;
@@ -100,7 +99,6 @@ export class CopyPasteDialogComponent implements OnDestroy {
     ) {}
 
     ngOnDestroy(): void {
-        // Stop sending remaining chunks if the modal is closed mid-parse
         this.parseAbort?.abort();
     }
 
