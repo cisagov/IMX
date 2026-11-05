@@ -102,6 +102,7 @@ export class VtDialogComponent {
     isExtracting: boolean = false;
     extractionMessage: string = '';
     extractionError: string = '';
+    extractProgress: number | null = null;
     collapsedCategories: Set<string> = new Set();
 
     groupedView: IndicatorGroup[] = [];
@@ -119,7 +120,7 @@ export class VtDialogComponent {
 
     selectedFile = undefined;
     selectedFiles = [];
-    acceptFileTypes = ['.json', '.txt', '.xml', '.html', '.csv', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.rtf'];
+    acceptFileTypes = ['.json', '.txt', '.log', '.xml', '.html', '.csv', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.rtf'];
     acceptFileString = this.acceptFileTypes.join(',');
 
     tempBundle = new Bundle([]);
@@ -451,14 +452,16 @@ export class VtDialogComponent {
 
         this.extractionMessage = '';
         this.extractionError = '';
-    }
 
-    async readFileAsText(currentFile): Promise<string> {
-        return new Promise((resolve) => {
-            const fileReader = new FileReader();
-            fileReader.readAsText(currentFile, 'UTF-8');
-            fileReader.onload = () => resolve(JSON.stringify(fileReader.result));
-        });
+        const sizeError = this.identifyStix.validateUploadSize(this.targetFile);
+        if (sizeError) {
+            this.extractionError = sizeError;
+            event.target.value = '';
+            this.selectedFile = undefined;
+            this.selectedFiles = [];
+            this.targetFile = undefined;
+            this.formData = undefined;
+        }
     }
 
     async getFilesAsString() {
@@ -480,24 +483,29 @@ export class VtDialogComponent {
             const nameSplit = current.name.split('.');
             const postfix = nameSplit[nameSplit.length - 1].toLowerCase();
 
+            const sizeError = this.identifyStix.validateUploadSize(current);
+            if (sizeError) {
+                this.extractionError = sizeError;
+                this.isExtracting = false;
+                return;
+            }
+
             let result: any = undefined;
-            let rawTextForUrls: string | null = null;
+            const chunkUrls = new Set<string>();
 
             switch (postfix) {
                 case 'json':
                 case 'txt':
+                case 'log':
                 case 'csv':
                 case 'html':
                 case 'xml':
-                    let text = await this.readFileAsText(current);
-                    text = text
-                        .replace(/\\n/g, ' ')
-                        .replace(/\\t/g, ' ')
-                        .replace(/\\r/g, ' ')
-                        .replace(/\\\\\\\\/g, ' ')
-                        .replace(/\\\\/g, '\\');
-                    rawTextForUrls = text;
-                    result = await this.identifyStix.postIdentifyStix(text);
+                    this.extractProgress = 0;
+                    result = await this.identifyStix.postIdentifyStixChunked(
+                        current,
+                        (p) => (this.extractProgress = p),
+                        (t) => this.extractUrlsFromRawText(t).forEach((u) => chunkUrls.add(u))
+                    );
                     break;
                 case 'pdf':
                 case 'docx':
@@ -519,7 +527,7 @@ export class VtDialogComponent {
                 return;
             }
 
-            const clientUrls = rawTextForUrls ? this.extractUrlsFromRawText(rawTextForUrls) : [];
+            const clientUrls = [...chunkUrls];
             const unique = this.mergeExtractedIndicators(result.objects, clientUrls);
 
             if (unique.length === 0) {
@@ -528,7 +536,9 @@ export class VtDialogComponent {
                 return;
             }
 
-            const extracted = unique.join('\n');
+            // VT search only accepts linesMax indicators, so don't fill the input with more than that
+            const kept = unique.slice(0, this.linesMax);
+            const extracted = kept.join('\n');
             if (this.textBody && this.textBody.toString().trim().length > 0) {
                 this.textBody = this.textBody.toString().trimEnd() + '\n' + extracted;
             } else {
@@ -536,7 +546,12 @@ export class VtDialogComponent {
             }
 
             this.disableParse = false;
-            this.extractionMessage = `Extracted ${unique.length} indicator${unique.length !== 1 ? 's' : ''} from ${current.name}`;
+            this.extractionMessage = `Extracted ${kept.length} indicator${kept.length !== 1 ? 's' : ''} from ${current.name}`;
+            if (unique.length > this.linesMax) {
+                this.extractionMessage += ` (first ${this.linesMax} of ${unique.length.toLocaleString()}${result.truncated ? '+' : ''} found; VT search accepts up to ${this.linesMax})`;
+            } else if (result.truncated) {
+                this.extractionMessage += ` (stopped at ${IdentifyStixService.MAX_OBJECTS.toLocaleString()} after reading ${result.percentRead}% of the file)`;
+            }
             this.selectedFile = undefined;
             this.selectedFiles = [];
         } catch (e) {
@@ -544,6 +559,7 @@ export class VtDialogComponent {
             this.extractionError = 'An error occurred while extracting indicators from the file.';
         } finally {
             this.isExtracting = false;
+            this.extractProgress = null;
         }
     }
 

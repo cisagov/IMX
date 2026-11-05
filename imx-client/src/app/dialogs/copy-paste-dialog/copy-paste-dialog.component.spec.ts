@@ -1,17 +1,4 @@
 import '@angular/compiler';
-// Polyfill FileReader for Node environment
-class FileReader {
-    loadend: null | ((e: any) => void) = null;
-    result: any = null;
-    readAsText(file: any, _enc: string) {
-        file.text().then((txt: any) => {
-            this.result = txt;
-            if (this.onload) this.onload({ target: { result: this.result } });
-        });
-    }
-    onload: ((e: any) => void) | null = null;
-}
-(global as any).FileReader = FileReader;
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CopyPasteDialogComponent } from './copy-paste-dialog.component';
 
@@ -23,6 +10,8 @@ class NgbActiveModalMock {
 class IdentifyStixServiceMock {
   postIdentifyStix = vi.fn();
   postIdentifyStixFile = vi.fn();
+  validateUploadSize = vi.fn().mockReturnValue(null);
+  dedupeObjects = vi.fn((objects) => objects);
 }
 class MispStixServiceMock {
   async mispToStix(_: any) { return { status: 200, data: { objects: [{ id: 't1', type: 'file', name: 'test.txt' }] } }; }
@@ -79,12 +68,6 @@ describe('CopyPasteDialogComponent', () => {
     expect(component.disableParse).toBe(false);
   });
 
-  it('readFileAsText returns file content as JSON string', async () => {
-    const file = new File(['{"a":1}'], 'data.json', { type: 'application/json' });
-    const text = await component.readFileAsText(file);
-    expect(text).toBe("\"{\\\"a\\\":1}\"");
-  });
-
   it('onParse copy-paste processes objects and sets flags', async () => {
     const mockService = component['identifyStix'] as IdentifyStixServiceMock;
     mockService.postIdentifyStix.mockResolvedValue({ objects: [{ id: 'obj1', type: 'file', name: 'a.txt' }] });
@@ -99,7 +82,7 @@ describe('CopyPasteDialogComponent', () => {
   it('updateSelectAll toggles selection', () => {
     component.allObjects = [{ id: '1' }, { id: '2' }];
     component.updateSelectAll();
-    expect(component.selectedObjects).toEqual(['1', '2']);
+    expect([...component.selectedObjects]).toEqual(['1', '2']);
     expect(component.selectAll).toBe(true); // toggled to true after selecting
   });
 

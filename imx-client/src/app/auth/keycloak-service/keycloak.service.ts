@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import Keycloak, { KeycloakConfig, KeycloakInitOptions, KeycloakProfile } from 'keycloak-js';
+import Keycloak from 'keycloak-js';
+import type { KeycloakConfig, KeycloakInitOptions, KeycloakProfile } from 'keycloak-js';
 
 export interface KeycloakBootstrapConfig extends KeycloakInitOptions {
     url: string;

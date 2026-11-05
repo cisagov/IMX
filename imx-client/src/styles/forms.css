@@ -414,3 +414,57 @@
 .imx-mono {
     font-family: var(--bs-font-monospace);
 }
+
+/* --- File Upload IOC Extraction Section --- */
+
+.file-extract-section {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-family: system-ui, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+}
+
+.file-extract-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.file-extract-input {
+    flex: 1;
+    font-size: 14px;
+    max-width: 400px;
+}
+
+.file-extract-btn {
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 4px 12px;
+    min-width: 120px;
+}
+
+.file-extract-hint {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.file-extract-success {
+    font-size: 14px;
+    color: #28a745;
+    font-weight: 500;
+}
+
+.file-extract-error {
+    font-size: 14px;
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.file-extract-count-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+}
