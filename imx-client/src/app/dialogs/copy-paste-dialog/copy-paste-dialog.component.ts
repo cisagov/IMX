@@ -1,6 +1,16 @@
 import { Component, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { faBan, faCheck, faPlay, faArrowLeft, faFileImport, faFileUpload, faAngleUp, faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import {
+    faBan,
+    faCheck,
+    faPlay,
+    faArrowLeft,
+    faFileImport,
+    faFileUpload,
+    faAngleUp,
+    faCheckCircle,
+    faExclamationTriangle,
+} from '@fortawesome/free-solid-svg-icons';
 import { IdentifyStixService } from './identify-stix/identify-stix.service';
 import { MispStixService } from 'src/app/misp-stix-service/misp-stix.service';
 import { StixService } from 'src/app/stix-service.service';
@@ -287,6 +297,8 @@ export class CopyPasteDialogComponent implements OnDestroy {
             this.announcementService.show('Error in Connecting to IMX Server', this.imxServerConnectionError, 'error', false);
             result = false;
         } else {
+            if (this.tab !== 'misp-stix') result.objects = this.identifyStix.dedupeObjects(result.objects);
+
             for (let obj of result.objects) {
                 this.allObjects.push(obj);
 
@@ -375,6 +387,20 @@ export class CopyPasteDialogComponent implements OnDestroy {
 
     getSelected(id) {
         return this.selectedObjects.has(id);
+    }
+
+    isCategorySelected(type: string): boolean {
+        return this.parsedObjects[type].every((obj) => this.selectedObjects.has(obj.id));
+    }
+
+    toggleCategorySelection(type: string) {
+        const select = !this.isCategorySelected(type);
+        for (let obj of this.parsedObjects[type]) {
+            if (select) this.selectedObjects.add(obj.id);
+            else this.selectedObjects.delete(obj.id);
+        }
+
+        this.selectAll = this.allObjects.length === this.selectedObjects.size;
     }
 
     toggleCategory(key: string) {

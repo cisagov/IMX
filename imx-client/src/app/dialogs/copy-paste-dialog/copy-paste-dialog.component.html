@@ -122,6 +122,13 @@
                     @if (parsedObjects[map[0]]) {
                         <div class="stix-category-card">
                             <div class="stix-category-header" (click)="toggleCategory(map[0])">
+                                <input
+                                    type="checkbox"
+                                    class="stix-checkbox"
+                                    [checked]="isCategorySelected(map[0])"
+                                    (click)="$event.stopPropagation()"
+                                    (change)="toggleCategorySelection(map[0])"
+                                />
                                 <span class="stix-category-name">{{ map[1] }}</span>
                                 <span class="stix-count-badge">{{ parsedObjects[map[0]].length }}</span>
                                 <span class="stix-chevron" [class.collapsed]="isCategoryCollapsed(map[0])">

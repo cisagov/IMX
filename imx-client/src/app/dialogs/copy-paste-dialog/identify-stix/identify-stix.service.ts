@@ -153,7 +153,7 @@ export class IdentifyStixService {
                 entry = obj.name ? { name: obj.name, hashes: obj.hashes } : { hashes: obj.hashes };
                 key = JSON.stringify(entry);
             } else {
-                entry = String(obj.value ?? obj.path ?? obj.key ?? obj.number ?? obj.name ?? obj.id);
+                entry = this.iocValue(obj);
                 key = entry;
             }
 
@@ -161,6 +161,49 @@ export class IdentifyStixService {
             into.get(obj.type).set(key, entry);
         }
         return into;
+    }
+
+    /**
+     * Removes duplicate matches, keeping order and the first occurrence. Non-file objects are deduped by
+     * type and case-insensitive value, since object ids aren't always deterministic (e.g. processes) and
+     * chunked uploads merge results by id. A file with only a name or only hashes is dropped when a named
+     * file with those hashes exists; files with the same name but different hashes are kept.
+     */
+    dedupeObjects(objects: any[]): any[] {
+        const hasHashes = (obj) => obj.hashes && Object.keys(obj.hashes).length > 0;
+        const namesWithHashes = new Set<string>();
+        const namedHashValues = new Set<string>();
+        for (const obj of objects) {
+            if (obj.type !== 'file' || !obj.name || !hasHashes(obj)) continue;
+            namesWithHashes.add(obj.name.toLowerCase());
+            for (const hash of Object.values(obj.hashes)) namedHashValues.add(String(hash).toLowerCase());
+        }
+
+        const seen = new Set<string>();
+        return objects.filter((obj) => {
+            let key: string;
+            if (obj.type !== 'file') {
+                key = `${obj.type}|${this.iocValue(obj).toLowerCase()}`;
+            } else if (obj.name && hasHashes(obj)) {
+                key = `file|${obj.name.toLowerCase()}|${JSON.stringify(obj.hashes).toLowerCase()}`;
+            } else if (obj.name) {
+                if (namesWithHashes.has(obj.name.toLowerCase())) return false;
+                key = `file|${obj.name.toLowerCase()}`;
+            } else if (hasHashes(obj)) {
+                if (Object.values(obj.hashes).every((hash) => namedHashValues.has(String(hash).toLowerCase()))) return false;
+                key = `file||${JSON.stringify(obj.hashes).toLowerCase()}`;
+            } else {
+                key = `file|${obj.id}`;
+            }
+
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    }
+
+    private iocValue(obj: any): string {
+        return String(obj.value ?? obj.path ?? obj.key ?? obj.pid ?? obj.number ?? obj.name ?? obj.id);
     }
 
     /** Builds the downloadable JSON of IOCs grouped by type. */
