@@ -118,28 +118,16 @@ These mise tasks will install respective dependencies, execute a build with the 
 
 Integrations connect IMX to external threat intelligence sources, allowing users to retrieve indicators, evidences, events, and related threat data. Each integration is configured through the IMX Server env variables listed below. Env values are read as strings, so booleans must be written in lowercase as `true` or `false`.
 
-### Analyst1
+### VirusTotal (GTI)
 
-Connect to Analyst1, query for evidences, and convert them to STIX.
-
-| Variable                    | Type    | Default | Description                                                                |
-| --------------------------- | ------- | ------- | -------------------------------------------------------------------------- |
-| `A1_ENABLED`                | Boolean | `false` | Set to `true` to enable the Analyst1 integration.                          |
-| `A1_URL`                    | URL     | None    | Base URL of the Analyst1 API. Must end with a trailing slash.              |
-| `A1_USER`                   | String  | None    | Analyst1 username, in plain text. IMX encodes it for Basic authentication. |
-| `A1_PASS`                   | String  | None    | Analyst1 password, in plain text. IMX encodes it for Basic authentication. |
-| `A1_ALLOW_SEARCH_BY_ENV_ID` | Boolean | `true`  | Set to `true` to allow Analyst1 searches by environment ID.                |
-
-### Virus Total
-
-Connect to Virus Total and query for indicators.
+Connect to VirusTotal and query for indicators.
 
 | Variable              | Type    | Default                       | Description                                                                                                                |
 | --------------------- | ------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `VIRUS_TOTAL_ENABLED` | Boolean | `false`                       | Set to `true` to enable the Virus Total integration.                                                                       |
+| `VIRUS_TOTAL_ENABLED` | Boolean | `false`                       | Set to `true` to enable the VirusTotal integration.                                                                        |
 | `VIRUS_TOTAL_PROXY`   | Boolean | `false`                       | When `true`, sets a 10 second request timeout and disables TLS certificate verification for the entire IMX Server process. |
-| `VIRUS_TOTAL_URL`     | URL     | `https://www.virustotal.com/` | Base URL of Virus Total. Must end with a trailing slash.                                                                   |
-| `VIRUS_TOTAL_KEY`     | String  | None                          | Virus Total API key. Must be base64 encoded; IMX decodes it before sending it to Virus Total.                              |
+| `VIRUS_TOTAL_URL`     | URL     | `https://www.virustotal.com/` | Base URL of VirusTotal. Must end with a trailing slash.                                                                    |
+| `VIRUS_TOTAL_KEY`     | String  | None                          | VirusTotal API key. Must be base64 encoded; IMX decodes it before sending it to VirusTotal.                                |
 
 ### MISP
 
@@ -151,6 +139,18 @@ Connect to MISP and query for events and attributes. The MISP integration is bi-
 | `MISP_URL`     | URL     | None    | Base URL of the MISP server. Must end with a trailing slash.                               |
 | `MISP_KEY`     | String  | None    | MISP API key, in plain text. IMX sends it unchanged in the `Authorization` header.         |
 | `MISP_SSL`     | Boolean | None    | When `true`, IMX Server verifies the SSL certificate when connecting to the MISP instance. |
+
+### Analyst1
+
+Connect to Analyst1, query for evidences, and convert them to STIX.
+
+| Variable                    | Type    | Default | Description                                                                |
+| --------------------------- | ------- | ------- | -------------------------------------------------------------------------- |
+| `A1_ENABLED`                | Boolean | `false` | Set to `true` to enable the Analyst1 integration.                          |
+| `A1_URL`                    | URL     | None    | Base URL of the Analyst1 API. Must end with a trailing slash.              |
+| `A1_USER`                   | String  | None    | Analyst1 username, in plain text. IMX encodes it for Basic authentication. |
+| `A1_PASS`                   | String  | None    | Analyst1 password, in plain text. IMX encodes it for Basic authentication. |
+| `A1_ALLOW_SEARCH_BY_ENV_ID` | Boolean | `true`  | Set to `true` to allow Analyst1 searches by environment ID.                |
 
 ## License
 
