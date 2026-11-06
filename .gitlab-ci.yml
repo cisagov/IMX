@@ -47,7 +47,6 @@ stages:
   - release
   - mirror
 
-
 sonarqube:
   allow_failure: true
 
@@ -68,7 +67,6 @@ test-imx-py:
   artifacts:
     when: always
     paths:
-      # Overwrites the global paths array to capture BOTH items
       - $SERVICE/coverage.xml
       - $SERVICE/report.html
 
@@ -107,16 +105,16 @@ build-py:
     CONTEXT_DIR: "imx-py"
     DOCKERFILE_PATH: "./imx-py/Dockerfile"
 
-# Automatically merge the current GitLab main commit into main-ghe.
+# One-way GitLab branch synchronization:
 #
-# This job runs only on GitLab main. Its push to main-ghe starts a separate
-# main-ghe pipeline, which then mirrors main-ghe to private GitHub main.
+# GitLab main -> GitLab main-ghe
 #
-# Prerequisite:
-# - GITLAB_SYNC_USERNAME: GitLab project-access-token bot username or
-#   service-account username.
-# - GITLAB_SYNC_TOKEN: protected and masked token with write_repository.
-# - The token identity must be permitted to push to protected main-ghe.
+# main-ghe must initially be created from main. It may then include
+# private-only files, such as scripts/.
+#
+# Required protected CI/CD variables:
+# - GITLAB_SYNC_USERNAME
+# - GITLAB_SYNC_TOKEN
 sync-main-to-main-ghe:
   stage: mirror
   image:
@@ -147,35 +145,36 @@ sync-main-to-main-ghe:
     - git config user.name "GitLab CI Branch Sync"
     - git config user.email "gitlab-ci-branch-sync@example.invalid"
 
-    # Keep command echo disabled while handling the GitLab write token.
+    # Do not echo the authenticated GitLab remote URL in job logs.
     - set +x
     - GITLAB_PUSH_URL="https://${GITLAB_SYNC_USERNAME}:${GITLAB_SYNC_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
 
     # Obtain the current private-source branch.
     - git fetch origin "+refs/heads/main-ghe:refs/remotes/origin/main-ghe"
 
-    # Start from main-ghe so its private-only scripts/ directory is retained.
+    # Start from main-ghe so its private-only files remain.
     - git checkout -B main-ghe origin/main-ghe
 
-    # Merge the exact main commit that triggered this pipeline.
-    # If there is a merge conflict, the job fails and does not push anything.
+    # Merge the exact main commit that started this pipeline.
+    # A merge conflict stops the job and does not update main-ghe.
     - git merge --no-edit "${CI_COMMIT_SHA}"
 
-    # This push triggers a new pipeline on main-ghe.
+    # Pushing main-ghe triggers a separate main-ghe pipeline.
     - git push "${GITLAB_PUSH_URL}" "HEAD:refs/heads/main-ghe"
 
-# One-way branch synchronization:
+# One-way private GitHub branch synchronization:
 #
 # GitLab main-ghe -> Private GitHub main
 #
-# This job runs only from GitLab main-ghe.
+# This is deliberately a normal, non-force push.
+# Private GitHub main must initially share history with GitLab main-ghe,
+# or must be created from GitLab main-ghe during the approved initial setup.
 mirror-main-ghe-to-private-github-main:
   stage: mirror
   image:
     name: quay.apps.va-brm.th.ten/tie/github-auth:1.0.1
     entrypoint: [""]
 
-  # Full history is appropriate because this job pushes normal Git history.
   variables:
     GIT_DEPTH: "0"
 
@@ -198,35 +197,22 @@ mirror-main-ghe-to-private-github-main:
     - export GIT_TERMINAL_PROMPT=0
     - PRIVATE_GITHUB_URL="https://${GHEC_GIT_HOST}/${GHEC_ORG}/${GHEC_REPO}.git"
 
-    # Read only the current SHA of private GitHub main. This does not fetch,
-    # merge, or check out private GitHub files or history into GitLab.
+    # Fast-forward-only update:
+    # GitLab main-ghe -> Private GitHub main
+    #
+    # The push fails safely if GitHub main has unrelated history or if someone
+    # directly adds commits to GitHub main.
     - |
-      PRIVATE_MAIN_SHA="$(
-        git -c "http.https://${GHEC_GIT_HOST}/.extraheader=AUTHORIZATION: basic ${AUTH_B64}" \
-          ls-remote "${PRIVATE_GITHUB_URL}" refs/heads/main | awk '{print $1}'
-      )"
+      git -c "http.https://${GHEC_GIT_HOST}/.extraheader=AUTHORIZATION: basic ${AUTH_B64}" \
+        push "${PRIVATE_GITHUB_URL}" \
+        "HEAD:refs/heads/main"
 
-      if [ -n "${PRIVATE_MAIN_SHA}" ]; then
-        # Make private GitHub main match GitLab main-ghe.
-        # The lease fails safely if GitHub main changes after ls-remote runs.
-        git -c "http.https://${GHEC_GIT_HOST}/.extraheader=AUTHORIZATION: basic ${AUTH_B64}" \
-          push --no-thin \
-          --force-with-lease="refs/heads/main:${PRIVATE_MAIN_SHA}" \
-          "${PRIVATE_GITHUB_URL}" \
-          "HEAD:refs/heads/main"
-      else
-        # Create private GitHub main if it does not already exist.
-        git -c "http.https://${GHEC_GIT_HOST}/.extraheader=AUTHORIZATION: basic ${AUTH_B64}" \
-          push --no-thin \
-          "${PRIVATE_GITHUB_URL}" \
-          "HEAD:refs/heads/main"
-      fi
-
-# One-way tag synchronization:
+# One-way private GitHub tag synchronization:
 #
-# GitLab main-ghe tag -> Private GitHub tag with the same name.
+# GitLab tag on main-ghe history -> Private GitHub tag with the same name.
 #
-# Create private-release tags from main-ghe, not from main.
+# This job does not force-update tags. If the tag already exists on GitHub
+# and points to a different commit, GitHub rejects the push.
 mirror-main-ghe-tags-to-private-github:
   stage: mirror
   image:
@@ -249,10 +235,10 @@ mirror-main-ghe-tags-to-private-github:
   script:
     - set -eu
 
-    # Obtain main-ghe history for tag validation.
+    # Obtain main-ghe history to validate the tag target.
     - git fetch --no-tags origin "+refs/heads/main-ghe:refs/remotes/origin/main-ghe"
 
-    # Skip tags whose target commit is not part of main-ghe history.
+    # Only mirror a tag whose target commit is part of main-ghe history.
     - |
       if ! git merge-base --is-ancestor "$CI_COMMIT_SHA" "origin/main-ghe"; then
         echo "Tag ${CI_COMMIT_TAG} is not reachable from main-ghe."
@@ -260,11 +246,11 @@ mirror-main-ghe-tags-to-private-github:
         exit 0
       fi
 
-    # The GitHub token-generation script must exist in the tagged commit.
-    # This also prevents tags created directly on public main from proceeding.
+    # Confirm the private GitHub authentication script is present in the
+    # tagged commit. This prevents a public-main-only tag from being mirrored.
     - |
       if ! git cat-file -e "${CI_COMMIT_SHA}:scripts/generate-github-app-token.sh" 2>/dev/null; then
-        echo "Tag ${CI_COMMIT_TAG} does not contain the private scripts directory."
+        echo "Tag ${CI_COMMIT_TAG} does not contain scripts/generate-github-app-token.sh."
         echo "Skipping private GitHub tag mirror."
         exit 0
       fi
@@ -276,8 +262,9 @@ mirror-main-ghe-tags-to-private-github:
     - export GIT_TERMINAL_PROMPT=0
     - PRIVATE_GITHUB_URL="https://${GHEC_GIT_HOST}/${GHEC_ORG}/${GHEC_REPO}.git"
 
+    # Creates the tag when absent or confirms it when it already points
+    # to the same Git object. It does not move an existing GitHub tag.
     - |
       git -c "http.https://${GHEC_GIT_HOST}/.extraheader=AUTHORIZATION: basic ${AUTH_B64}" \
-        push --no-thin \
-        "${PRIVATE_GITHUB_URL}" \
+        push "${PRIVATE_GITHUB_URL}" \
         "refs/tags/${CI_COMMIT_TAG}:refs/tags/${CI_COMMIT_TAG}"
