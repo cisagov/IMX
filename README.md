@@ -128,7 +128,7 @@ Connect to Analyst1, query for evidences, and convert them to STIX.
 | `A1_URL`                    | URL     | None    | Base URL of the Analyst1 API. Must end with a trailing slash.              |
 | `A1_USER`                   | String  | None    | Analyst1 username, in plain text. IMX encodes it for Basic authentication. |
 | `A1_PASS`                   | String  | None    | Analyst1 password, in plain text. IMX encodes it for Basic authentication. |
-| `A1_ALLOW_SEARCH_BY_ENV_ID` | Boolean | `true`  | Not currently read by IMX Server.                                          |
+| `A1_ALLOW_SEARCH_BY_ENV_ID` | Boolean | `true`  | Set to `true` to allow Analyst1 searches by environment ID.                |
 
 ### Virus Total
 
@@ -147,10 +147,10 @@ Connect to MISP and query for events and attributes. The MISP integration is bi-
 
 | Variable       | Type    | Default | Description                                                                                       |
 | -------------- | ------- | ------- | ------------------------------------------------------------------------------------------------- |
-| `MISP_ENABLED` | Boolean | None    | Not currently read by IMX Server.                                                                 |
+| `MISP_ENABLED` | Boolean | None    | Enable MISP integration.                                                                          |
 | `MISP_URL`     | URL     | None    | Base URL of the MISP server. Must end with a trailing slash.                                      |
 | `MISP_KEY`     | String  | None    | MISP API key, in plain text. IMX sends it unchanged in the `Authorization` header.                |
-| `MISP_SSL`     | Boolean | None    | Not currently read by IMX Server. TLS certificate verification is always disabled for MISP calls. |
+| `MISP_SSL`     | Boolean | None    | When `true`, IMX Server verifies the SSL certificate when connecting to the MISP instance.        |
 
 ## License
 
