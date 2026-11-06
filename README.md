@@ -145,12 +145,12 @@ Connect to Virus Total and query for indicators.
 
 Connect to MISP and query for events and attributes. The MISP integration is bi-directional: IMX can pull from MISP and convert MISP JSON to STIX 2.1, or push to MISP by converting STIX 2.1 to MISP JSON.
 
-| Variable       | Type    | Default | Description                                                                                       |
-| -------------- | ------- | ------- | ------------------------------------------------------------------------------------------------- |
-| `MISP_ENABLED` | Boolean | None    | Enable MISP integration.                                                                          |
-| `MISP_URL`     | URL     | None    | Base URL of the MISP server. Must end with a trailing slash.                                      |
-| `MISP_KEY`     | String  | None    | MISP API key, in plain text. IMX sends it unchanged in the `Authorization` header.                |
-| `MISP_SSL`     | Boolean | None    | When `true`, IMX Server verifies the SSL certificate when connecting to the MISP instance.        |
+| Variable       | Type    | Default | Description                                                                                |
+| -------------- | ------- | ------- | ------------------------------------------------------------------------------------------ |
+| `MISP_ENABLED` | Boolean | `false` | Enable MISP integration.                                                                   |
+| `MISP_URL`     | URL     | None    | Base URL of the MISP server. Must end with a trailing slash.                               |
+| `MISP_KEY`     | String  | None    | MISP API key, in plain text. IMX sends it unchanged in the `Authorization` header.         |
+| `MISP_SSL`     | Boolean | None    | When `true`, IMX Server verifies the SSL certificate when connecting to the MISP instance. |
 
 ## License
 
