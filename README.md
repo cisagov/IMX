@@ -1,6 +1,6 @@
 # IMX - Indicator Messaging eXchange
 
-IMX is a tool used to create reports that cater to the STIX specification and it compliant with storing these reports within TAXII Servers.
+The IMX platform consists of a front-end TAXII client application, as well as an administrative portal used to manage TAXII Server resources.
 
 IMX itself is intended to be used along side a compatible [TAXII Server](https://github.com/cisagov/IMX-TAXII-Server) (Must follow [OASIS TAXII Committee Specifications](https://www.oasis-open.org/standard/taxii-version-2-1/)).
 
