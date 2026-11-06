@@ -1,3 +1,14 @@
+## 4.24.0 (2026-11-05)
+
+### Features
+
+* added deduping for raw data import 274c9c9
+* chunk files/dl if ioc>5000 2cfc124
+
+### Bug Fixes
+
+* update spec file da28b57
+
 ## 4.23.3 (2026-10-23)
 
 ### Bug Fixes
