@@ -1,3 +1,9 @@
+## 4.25.0 (2026-11-20)
+
+### Features
+
+* add github auth app to mirror to ghe 1796d4d
+
 ## 4.24.0 (2026-11-05)
 
 ### Features
