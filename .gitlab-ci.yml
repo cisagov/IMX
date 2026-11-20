@@ -1,5 +1,10 @@
 include:
   - component: $CI_SERVER_FQDN/eos/cde/elm/ci-components/security-public-content@0.3.1
+  - component: $CI_SERVER_FQDN/eos/cde/elm/ci-components/github-main-mirror@0.4.0
+    inputs:
+      destination_branch: main
+      rules:
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
   - project: eos/cde/elm/ops
     ref: main
     file: /ci-templates/gitleaks.yml
@@ -45,6 +50,7 @@ stages:
   - test
   - build
   - release
+  - mirror
 
 sonarqube:
   allow_failure: true
